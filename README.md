@@ -1,4 +1,4 @@
- PPedit
+PPedit
 ======
 
 PPedit is a web based WYSIWYG editor written as a JQuery plugin for the PeerPen project:
@@ -37,7 +37,7 @@ First clone this repository then follow the instructions below.
  -  Download and run [Node.js installer](http://nodejs.org/download/).
  - Run on the command line (May require Root/Admin privilieges): 
 
-    npm install -g coffee-script
+	`npm install -g coffee-script`
 
  - That's all. You can now run `coffee` from any directory.
 
@@ -45,11 +45,12 @@ First clone this repository then follow the instructions below.
 
  - Run on the command line (May require Root/Admin privilieges): 
 
-    npm install -g coffee-script-concat
+	`npm install -g coffee-script-concat`
 
 ### Install Selenium
 
-    TBA
+- Download and Install [Firefox](http://www.mozilla.org/en-US/firefox/new/)
+- Download and Install the latest version [Selenium IDE as a Firefox plugin](http://docs.seleniumhq.org/download/).
 
 ##Development Instruction
 
