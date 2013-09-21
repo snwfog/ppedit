@@ -2,15 +2,20 @@
 
 class CreateBoxCommand extends ICommand
 
-	@prevState
-
-	constructor: (aBox, aNewState) ->
-    	@box = aBox
-    	@newState = aNewState
+  constructor: (@root, @options) ->
+    super @root
+    @box = null
 
   execute: ->
-    @prevState = @box.isStateOn()
-    @box.setState(@newState)
+    settings = $.extend(
+      left:'50px'
+      top:'50px'
+      width:'100px'
+      height:'200px'
+    , @options);
+
+    @box = $('<div class="ppedit-box"></div>').css(settings)
+    @root.append @box
 
   undo: ->
-    @box.setPosition(@prevState)
+    @root.remove @box

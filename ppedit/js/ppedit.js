@@ -4,7 +4,9 @@ var Controller, CreateBoxCommand, EditorManager, ICommand, moveBoxCommand, _ref,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 ICommand = (function() {
-  function ICommand() {}
+  function ICommand(root) {
+    this.root = root;
+  }
 
   return ICommand;
 
@@ -38,50 +40,82 @@ moveBoxCommand = (function(_super) {
   }
 });
 
+CreateBoxCommand = (function(_super) {
+  __extends(CreateBoxCommand, _super);
+
+  function CreateBoxCommand(root, options) {
+    this.root = root;
+    this.options = options;
+    CreateBoxCommand.__super__.constructor.call(this, this.root);
+    this.box = null;
+  }
+
+  CreateBoxCommand.prototype.execute = function() {
+    var settings;
+    settings = $.extend({
+      left: '50px',
+      top: '50px',
+      width: '100px',
+      height: '200px'
+    }, this.options);
+    this.box = $('<div class="ppedit-box"></div>').css(settings);
+    return this.root.append(this.box);
+  };
+
+  CreateBoxCommand.prototype.undo = function() {
+    return this.root.remove(this.box);
+  };
+
+  return CreateBoxCommand;
+
+})(ICommand);
+
 EditorManager = (function() {
-  function EditorManager() {}
-
-  EditorManager.prototype.undoStack = [];
-
-  EditorManager.prototype.redoStack = [];
-
-  EditorManager.prototype.createBox = function() {};
-
-  EditorManager.prototype.moveBox = function() {};
+  function EditorManager(root) {
+    this.root = root;
+    this.undoStack = [];
+    this.redoStack = [];
+  }
 
   EditorManager.prototype.pushCommand = function(command) {
     command.execute();
-    return unoStack.push(command);
+    return this.undoStack.push(command);
   };
 
-  EditorManager.prototype.undoCommand = function() {
-    var lastExecutedCommand;
-    if (undoStack.length !== 0) {
-      lastExecutedCommand = undoStack.pop;
-      redoStack.push(lastExecutedCommand);
-      return lastExecutedCommand.undo();
-    }
-  };
-
-  EditorManager.prototype.redoCommand = function() {
-    var lastUndoCommand;
-    if (redoStack.length !== 0) {
-      lastUndoCommand = redoStack.pop;
-      undoStack.push(lastUndoCommand);
-      return lastUndoCommand.execute();
-    }
+  EditorManager.prototype.createBox = function(options) {
+    return this.pushCommand(new CreateBoxCommand(this.root, options));
   };
 
   return EditorManager;
 
 })();
 
+({
+  moveBox: function() {},
+  undoCommand: function() {
+    var lastExecutedCommand;
+    if (undoStack.length !== 0) {
+      lastExecutedCommand = this.undoStack.pop;
+      this.redoStack.push(lastExecutedCommand);
+      return lastExecutedCommand.undo();
+    }
+  },
+  redoCommand: function() {
+    var lastUndoCommand;
+    if (this.redoStack.length !== 0) {
+      lastUndoCommand = this.redoStack.pop;
+      this.undoStack.push(lastUndoCommand);
+      return lastUndoCommand.execute();
+    }
+  }
+});
+
 Controller = (function() {
   function Controller(root) {
     var createBoxbutton, editorManager;
     this.root = root;
+    this.root.addClass("ppedit-container");
     editorManager = new EditorManager(this.root);
-    this.root = this.root.addClass("ppedit-container");
     createBoxbutton = $("<button>Create Box</button>");
     this.root.append(createBoxbutton);
     createBoxbutton.click(function() {
@@ -102,27 +136,3 @@ Controller = (function() {
     return this;
   };
 })(jQuery);
-
-CreateBoxCommand = (function(_super) {
-  __extends(CreateBoxCommand, _super);
-
-  CreateBoxCommand.prevState;
-
-  function CreateBoxCommand(aBox, aNewState) {
-    this.box = aBox;
-    this.newState = aNewState;
-  }
-
-  CreateBoxCommand.prototype.execute = function() {
-    var prevState;
-    prevState = this.box.isStateOn();
-    return this.box.setState(this.newState);
-  };
-
-  CreateBoxCommand.prototype.undo = function() {
-    return this.box.setPosition(this.prevState);
-  };
-
-  return CreateBoxCommand;
-
-})(ICommand);

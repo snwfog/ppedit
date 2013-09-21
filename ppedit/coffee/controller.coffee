@@ -4,8 +4,8 @@ class Controller
 
   constructor: (@root) ->
 
+    @root.addClass("ppedit-container");
     editorManager = new EditorManager @root
-    @root = @root.addClass("ppedit-container");
 
     createBoxbutton = $("<button>Create Box</button>")
     @root.append(createBoxbutton);

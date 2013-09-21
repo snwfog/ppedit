@@ -1,24 +1,28 @@
+#= require CreateBoxCommand
+
 class EditorManager
 
-	undoStack : []
-	redoStack : []
+  constructor: (@root) ->
+    @undoStack = []
+    @redoStack = []
 
-	createBox: ->
+  pushCommand: (command) ->
+    command.execute()
+    @undoStack.push(command)
+
+  createBox: (options) ->
+    @pushCommand new CreateBoxCommand @root, options
 
 	moveBox: ->
-	
-	pushCommand: (command) ->
-		command.execute()
-		unoStack.push(command)
 
 	undoCommand: ->
 		if undoStack.length isnt 0
-			lastExecutedCommand = undoStack.pop
-			redoStack.push(lastExecutedCommand)
+			lastExecutedCommand = @undoStack.pop
+			@redoStack.push(lastExecutedCommand)
 			lastExecutedCommand.undo()
 
 	redoCommand: ->
-		if redoStack.length isnt 0
-			lastUndoCommand = redoStack.pop
-			undoStack.push(lastUndoCommand)
+		if @redoStack.length isnt 0
+			lastUndoCommand = @redoStack.pop
+			@undoStack.push(lastUndoCommand)
 			lastUndoCommand.execute()		
