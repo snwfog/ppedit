@@ -8,9 +8,9 @@ class moveBoxCommand extends ICommand
     	@box = aBox
     	@newPosition = aNewPosition
 
-    execute: ->
-    	@prevPosition = @box.getPosition()
-    	@box.setPosition(@newPosition)
+  execute: ->
+    @prevPosition = @box.getPosition()
+    @box.setPosition(@newPosition)
 
-    undo: ->
-    	@box.setPosition(@prevPosition)
+  undo: ->
+    @box.setPosition(@prevPosition)

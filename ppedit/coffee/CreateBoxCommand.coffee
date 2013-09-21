@@ -8,9 +8,9 @@ class CreateBoxCommand extends ICommand
     	@box = aBox
     	@newState = aNewState
 
-    execute: ->
-    	prevState = @box.isStateOn()
-    	@box.setState(@newState)
+  execute: ->
+    @prevState = @box.isStateOn()
+    @box.setState(@newState)
 
-    undo: ->
-    	@box.setPosition(@prevState)
+  undo: ->
+    @box.setPosition(@prevState)
