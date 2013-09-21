@@ -1,17 +1,24 @@
 class EditorManager
-  constructor: (@root) ->
 
-  createBox:(options) ->
-    settings = $.extend(
-      left:'50px'
-      top:'50px'
-      width:'100px'
-      height:'200px'
-    , options);
+	undoStack : []
+	redoStack : []
 
-    newBox = $('<div class="ppedit-box"><div>').css(settings).resizable()
-    @root.append(newBox)
+	createBox: ->
 
-  undo: ->
+	moveBox: ->
+	
+	pushCommand: (command) ->
+		command.execute()
+		unoStack.push(command)
 
-  redo: ->
+	undoCommand: ->
+		if undoStack.length isnt 0
+			lastExecutedCommand = undoStack.pop
+			redoStack.push(lastExecutedCommand)
+			lastExecutedCommand.undo()
+
+	redoCommand: ->
+		if redoStack.length isnt 0
+			lastUndoCommand = redoStack.pop
+			undoStack.push(lastUndoCommand)
+			lastUndoCommand.execute()		
