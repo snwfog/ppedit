@@ -1,15 +1,16 @@
-#= require(ICommand)
+#= require ICommand
 
-Class moveBoxCommand extends ICommand
+class moveBoxCommand extends ICommand
 
-	prevPosition
+  @prevPosition
+
 	constructor: (aBox, aNewPosition) ->
     	@box = aBox
     	@newPosition = aNewPosition
 
     execute: ->
-    	prevPosition = @box.getPosition()
+    	@prevPosition = @box.getPosition()
     	@box.setPosition(@newPosition)
 
     undo: ->
-    	@box.setPosition(prevPosition)
+    	@box.setPosition(@prevPosition)

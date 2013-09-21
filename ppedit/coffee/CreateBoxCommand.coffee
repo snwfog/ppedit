@@ -1,8 +1,9 @@
-#= require(ICommand)
+#= require ICommand
 
-Class CreateBoxCommand extends ICommand
+class CreateBoxCommand extends ICommand
 
-	prevState
+	@prevState
+
 	constructor: (aBox, aNewState) ->
     	@box = aBox
     	@newState = aNewState
@@ -12,4 +13,4 @@ Class CreateBoxCommand extends ICommand
     	@box.setState(@newState)
 
     undo: ->
-    	@box.setPosition(prevState)
+    	@box.setPosition(@prevState)
