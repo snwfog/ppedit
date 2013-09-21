@@ -14,7 +14,7 @@ EditorManager = (function() {
       width: '100px',
       height: '200px'
     }, options);
-    newBox = $('<div class="ppedit-box"><div>').css(settings);
+    newBox = $('<div class="ppedit-box"><div>').css(settings).resizable();
     return this.root.append(newBox);
   };
 
@@ -31,9 +31,9 @@ Controller = (function() {
     var createBoxbutton;
     this.root = root;
     this.editorManager = new EditorManager(this.root);
-    this.root = this.addClass("ppedit-container");
+    this.root = this.root.addClass("ppedit-container");
     createBoxbutton = $("<button>Create Box</button>");
-    this.append(createBoxbutton);
+    this.root.append(createBoxbutton);
     createBoxbutton.click(function() {
       return this.editorManager.createBox();
     });

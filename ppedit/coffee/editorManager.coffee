@@ -9,9 +9,9 @@ class EditorManager
       height:'200px'
     , options);
 
-    newBox = $('<div class="ppedit-box"><div>').css(settings)
+    newBox = $('<div class="ppedit-box"><div>').css(settings).resizable()
     @root.append(newBox)
 
   undo: ->
 
-  redo:  ->
+  redo: ->
