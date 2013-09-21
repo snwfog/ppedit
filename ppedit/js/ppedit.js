@@ -28,14 +28,14 @@ EditorManager = (function() {
 
 Controller = (function() {
   function Controller(root) {
-    var createBoxbutton;
+    var createBoxbutton, editorManager;
     this.root = root;
-    this.editorManager = new EditorManager(this.root);
+    editorManager = new EditorManager(this.root);
     this.root = this.root.addClass("ppedit-container");
     createBoxbutton = $("<button>Create Box</button>");
     this.root.append(createBoxbutton);
     createBoxbutton.click(function() {
-      return this.editorManager.createBox();
+      return editorManager.createBox();
     });
   }
 
