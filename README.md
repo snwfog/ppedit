@@ -34,10 +34,13 @@ First clone this repository then follow the instructions below.
 
 ### Install Coffee-Script
 
- -  Download and run [Node.js installer](http://nodejs.org/download/).
+ - Download and run [Node.js installer](http://nodejs.org/download/).
  - Run on the command line (May require Root/Admin privilieges): 
 
 	`npm install -g coffee-script`
+
+    *NOTE : For windows users, you need to cd into your nodejs installation directory to run the `npm` command 
+    (Default is C:/Program Files/nodjs).*
 
  - That's all. You can now run `coffee` from any directory.
 
@@ -45,7 +48,7 @@ First clone this repository then follow the instructions below.
 
  - Run on the command line (May require Root/Admin privilieges): 
 
-	`npm install -g coffee-script-concat`
+	`npm install -g coffeescript-concat`
 
 ### Install Selenium
 
