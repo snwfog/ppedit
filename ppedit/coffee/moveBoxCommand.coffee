@@ -1,16 +1,16 @@
 #= require ICommand
 
-class moveBoxCommand extends ICommand
+class MoveBoxCommand extends ICommand
 
-  @prevPosition
-
-	constructor: (aBox, aNewPosition) ->
-    	@box = aBox
-    	@newPosition = aNewPosition
+	constructor: (@box, @newX, @newY) ->
+    @prevStyle = @box.get(0).style
 
   execute: ->
-    @prevPosition = @box.getPosition()
-    @box.setPosition(@newPosition)
+    @box.css
+      left:@newX + 'px'
+      top:@newY + 'px'
 
   undo: ->
-    @box.setPosition(@prevPosition)
+    @box.css
+      left:@prevStyle.left
+      top:@prevStyle.top

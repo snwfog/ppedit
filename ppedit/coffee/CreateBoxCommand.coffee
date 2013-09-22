@@ -14,7 +14,19 @@ class CreateBoxCommand extends ICommand
       height:'200px'
     , @options);
 
-    @box = $('<div class="ppedit-box"></div>').css(settings)
+    @box = $('<div></div>')
+      .addClass('ppedit-box')
+      .attr('id', $.now())
+      .css(settings)
+      .attr('draggable', true)
+      .on 'dragstart', (event) ->
+
+        # Save the offset from the mouse to the top-left corner of the box
+        event.originalEvent.dataTransfer.setData 'mouseOffsetX', event.originalEvent.offsetX
+        event.originalEvent.dataTransfer.setData 'mouseOffsetY', event.originalEvent.offsetY
+
+        event.originalEvent.dataTransfer.setData 'boxId', this.id
+
     @root.append @box
 
   undo: ->
