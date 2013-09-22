@@ -12,34 +12,6 @@ ICommand = (function() {
 
 })();
 
-moveBoxCommand = (function(_super) {
-  __extends(moveBoxCommand, _super);
-
-  function moveBoxCommand() {
-    _ref = moveBoxCommand.__super__.constructor.apply(this, arguments);
-    return _ref;
-  }
-
-  moveBoxCommand.prevPosition;
-
-  return moveBoxCommand;
-
-})(ICommand);
-
-({
-  constructor: function(aBox, aNewPosition) {
-    this.box = aBox;
-    return this.newPosition = aNewPosition;
-  },
-  execute: function() {
-    this.prevPosition = this.box.getPosition();
-    return this.box.setPosition(this.newPosition);
-  },
-  undo: function() {
-    return this.box.setPosition(this.prevPosition);
-  }
-});
-
 CreateBoxCommand = (function(_super) {
   __extends(CreateBoxCommand, _super);
 
@@ -112,14 +84,15 @@ EditorManager = (function() {
 
 Controller = (function() {
   function Controller(root) {
-    var createBoxbutton, editorManager;
+    var createBoxbutton,
+      _this = this;
     this.root = root;
     this.root.addClass("ppedit-container");
-    editorManager = new EditorManager(this.root);
+    this.editorManager = new EditorManager(this.root);
     createBoxbutton = $("<button>Create Box</button>");
     this.root.append(createBoxbutton);
     createBoxbutton.click(function() {
-      return editorManager.createBox();
+      return _this.editorManager.createBox();
     });
   }
 
@@ -136,3 +109,31 @@ Controller = (function() {
     return this;
   };
 })(jQuery);
+
+moveBoxCommand = (function(_super) {
+  __extends(moveBoxCommand, _super);
+
+  function moveBoxCommand() {
+    _ref = moveBoxCommand.__super__.constructor.apply(this, arguments);
+    return _ref;
+  }
+
+  moveBoxCommand.prevPosition;
+
+  return moveBoxCommand;
+
+})(ICommand);
+
+({
+  constructor: function(aBox, aNewPosition) {
+    this.box = aBox;
+    return this.newPosition = aNewPosition;
+  },
+  execute: function() {
+    this.prevPosition = this.box.getPosition();
+    return this.box.setPosition(this.newPosition);
+  },
+  undo: function() {
+    return this.box.setPosition(this.prevPosition);
+  }
+});
