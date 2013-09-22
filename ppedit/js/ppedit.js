@@ -88,7 +88,6 @@ EditorManager = (function() {
       boxId = event.originalEvent.dataTransfer.getData('boxId');
       boxNewX = event.originalEvent.offsetX - event.originalEvent.dataTransfer.getData('mouseOffsetX');
       boxNewY = event.originalEvent.offsetY - event.originalEvent.dataTransfer.getData('mouseOffsetY');
-      console.log("x:" + boxNewX + ' y;');
       return _this.moveBox($('#' + boxId), boxNewX, boxNewY);
     });
   }
@@ -104,6 +103,21 @@ EditorManager = (function() {
   EditorManager.prototype.pushCommand = function(command) {
     command.execute();
     return this.undoStack.push(command);
+  };
+
+  EditorManager.prototype.undo = function() {
+    var lastExecutedCommand;
+    if (this.undoStack.length > 0) {
+      lastExecutedCommand = this.undoStack.pop;
+      lastExecutedCommand.undo();
+      return this.redoStack.push(lastExecutedCommand);
+    }
+  };
+
+  EditorManager.prototype.redo = function() {
+    if (this.redoStack.length > 0) {
+      return this.pushCommand(this.redoStack.pop);
+    }
   };
 
   return EditorManager;

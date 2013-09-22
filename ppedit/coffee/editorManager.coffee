@@ -10,7 +10,7 @@ class EditorManager
     @root.addClass("ppedit-container")
       .on 'dragover', (event) ->
         event.preventDefault()
-        
+
       .on 'drop', (event) =>
         # Move the box to mouse drop position
         event.preventDefault()
@@ -29,12 +29,12 @@ class EditorManager
     command.execute()
     @undoStack.push(command)
 
-  #undoCommand: ->
-	#	if @undoStack.length isnt 0
-#			lastExecutedCommand = @undoStack.pop
-#			@redoStack.push(lastExecutedCommand)
-#			lastExecutedCommand.undo()
+  undo: ->
+    if @undoStack.length > 0
+      lastExecutedCommand = @undoStack.pop
+      lastExecutedCommand.undo()
+      @redoStack.push(lastExecutedCommand)
 
-#  redoCommand: ->
-#		if @redoStack.length isnt 0
-#			@pushCommand @redoStack.pop
+  redo: ->
+    if @redoStack.length > 0
+      @pushCommand @redoStack.pop
