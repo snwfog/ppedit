@@ -59,7 +59,5 @@ First clone this repository then follow the instructions below.
 
  - Never edit directly the file ppedit/js/ppedit.js. This file is generated automatically from the *.coffee files located in the ppedit/coffee/ folder.
  - To generate the ppedit.js file, use the following commands :
-
-    cd (ppedit project root)/ppedit/                
-    coffeescript-concat -I coffee/ | coffee -s  --bare --compile > js/ppedit.js`
-
+	- `cd (ppedit project root)/ppedit/                `      
+	- `coffeescript-concat -I coffee/ | coffee -s  --compile > js/ppedit.js`
