@@ -24,7 +24,7 @@ class CreateBoxCommand extends ICommand
         # Save the offset from the mouse to the top-left corner of the box
         event.originalEvent.dataTransfer.setData 'mouseOffsetX', event.originalEvent.offsetX
         event.originalEvent.dataTransfer.setData 'mouseOffsetY', event.originalEvent.offsetY
-
+        event.originalEvent.dataTransfer.effectAllowed = 'move';
         event.originalEvent.dataTransfer.setData 'boxId', this.id
 
     @root.append @box

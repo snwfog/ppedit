@@ -12,6 +12,11 @@ class EditorManager
     @root.addClass("ppedit-container")
       .on 'dragover', (event) ->
         event.preventDefault()
+        boxId = event.originalEvent.dataTransfer.getData 'boxId'
+        boxNewX = event.originalEvent.offsetX - event.originalEvent.dataTransfer.getData 'mouseOffsetX'
+        boxNewY = event.originalEvent.offsetY - event.originalEvent.dataTransfer.getData 'mouseOffsetY'
+        @moveBox $('#' + boxId), boxNewX, boxNewY
+
 
       .on 'drop', (event) =>
         # Move the box to mouse drop position
