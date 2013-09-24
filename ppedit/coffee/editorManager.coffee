@@ -6,7 +6,9 @@ class EditorManager
   constructor: (@root) ->
     @undoStack = []
     @redoStack = []
+    @build()
 
+  build: ->
     @root.addClass("ppedit-container")
       .on 'dragover', (event) ->
         event.preventDefault()

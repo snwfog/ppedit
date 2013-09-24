@@ -13,6 +13,34 @@
 
   })();
 
+  MoveBoxCommand = (function(_super) {
+    __extends(MoveBoxCommand, _super);
+
+    function MoveBoxCommand(box, newX, newY) {
+      this.box = box;
+      this.newX = newX;
+      this.newY = newY;
+      this.prevStyle = this.box.get(0).style;
+    }
+
+    MoveBoxCommand.prototype.execute = function() {
+      return this.box.css({
+        left: this.newX + 'px',
+        top: this.newY + 'px'
+      });
+    };
+
+    MoveBoxCommand.prototype.undo = function() {
+      return this.box.css({
+        left: this.prevStyle.left,
+        top: this.prevStyle.top
+      });
+    };
+
+    return MoveBoxCommand;
+
+  })(ICommand);
+
   CreateBoxCommand = (function(_super) {
     __extends(CreateBoxCommand, _super);
 
@@ -47,41 +75,17 @@
 
   })(ICommand);
 
-  MoveBoxCommand = (function(_super) {
-    __extends(MoveBoxCommand, _super);
-
-    function MoveBoxCommand(box, newX, newY) {
-      this.box = box;
-      this.newX = newX;
-      this.newY = newY;
-      this.prevStyle = this.box.get(0).style;
-    }
-
-    MoveBoxCommand.prototype.execute = function() {
-      return this.box.css({
-        left: this.newX + 'px',
-        top: this.newY + 'px'
-      });
-    };
-
-    MoveBoxCommand.prototype.undo = function() {
-      return this.box.css({
-        left: this.prevStyle.left,
-        top: this.prevStyle.top
-      });
-    };
-
-    return MoveBoxCommand;
-
-  })(ICommand);
-
   EditorManager = (function() {
     function EditorManager(root) {
-      var _this = this;
       this.root = root;
       this.undoStack = [];
       this.redoStack = [];
-      this.root.addClass("ppedit-container").on('dragover', function(event) {
+      this.build();
+    }
+
+    EditorManager.prototype.build = function() {
+      var _this = this;
+      return this.root.addClass("ppedit-container").on('dragover', function(event) {
         return event.preventDefault();
       }).on('drop', function(event) {
         var boxId, boxNewX, boxNewY;
@@ -91,7 +95,7 @@
         boxNewY = event.originalEvent.offsetY - event.originalEvent.dataTransfer.getData('mouseOffsetY');
         return _this.moveBox($('#' + boxId), boxNewX, boxNewY);
       });
-    }
+    };
 
     EditorManager.prototype.createBox = function(options) {
       return this.pushCommand(new CreateBoxCommand(this.root, options));
