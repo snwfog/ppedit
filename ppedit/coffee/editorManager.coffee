@@ -6,34 +6,44 @@ class EditorManager
   constructor: (@root) ->
     @undoStack = []
     @redoStack = []
+    @boxes = []
+    @prevMousePosition = undefined
     @build()
 
   build: ->
     @root.addClass("ppedit-container")
-      .on 'dragover', (event) ->
-        event.preventDefault()
-        boxId = event.originalEvent.dataTransfer.getData 'boxId'
-        boxNewX = event.originalEvent.offsetX - event.originalEvent.dataTransfer.getData 'mouseOffsetX'
-        boxNewY = event.originalEvent.offsetY - event.originalEvent.dataTransfer.getData 'mouseOffsetY'
-        @moveBox $('#' + boxId), boxNewX, boxNewY
+      .mousemove (event) =>
+        for box in @boxes
+          do (box) =>
+            if box.mouseDown && @prevMousePosition?
+              delta =
+                x: event.clientX - @prevMousePosition.x
+                y: event.clientY - @prevMousePosition.y
+              currentPos =
+                x: parseInt(box.element.css('left'))
+                y: parseInt(box.element.css('top'))
+              box.element.css 'left', (delta.x + currentPos.x) + 'px'
+              box.element.css 'top', (delta.y + currentPos.y) + 'px'
 
+        @prevMousePosition =
+          x: event.clientX
+          y: event.clientY
 
-      .on 'drop', (event) =>
-        # Move the box to mouse drop position
-        event.preventDefault()
-        boxId = event.originalEvent.dataTransfer.getData 'boxId'
-        boxNewX = event.originalEvent.offsetX - event.originalEvent.dataTransfer.getData 'mouseOffsetX'
-        boxNewY = event.originalEvent.offsetY - event.originalEvent.dataTransfer.getData 'mouseOffsetY'
-        @moveBox $('#' + boxId), boxNewX, boxNewY
+      .mouseup =>
+        box.mouseDown = false for box in @boxes
+        @prevMousePosition = undefined
 
   createBox: (options) ->
-    @pushCommand new CreateBoxCommand @root, options
+    command = new CreateBoxCommand @root, options
+    @pushCommand command
+    @boxes.push command.box
 
   moveBox: (box, newX, newY) ->
     @pushCommand new MoveBoxCommand box, newX, newY
 
-  pushCommand: (command) ->
-    command.execute()
+  pushCommand: (command, execute ) ->
+    execute = false if !execute?
+    command.execute() if execute
     @undoStack.push(command)
 
   undo: ->
