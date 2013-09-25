@@ -44,5 +44,4 @@ class EditorManager
       @redoStack.push(lastExecutedCommand)
 
   redo: ->
-    if @redoStack.length > 0
-      @pushCommand @redoStack.pop
+    @pushCommand @redoStack.pop if @redoStack.length > 0

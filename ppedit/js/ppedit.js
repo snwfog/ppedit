@@ -26,7 +26,7 @@
         width: '100px',
         height: '200px'
       }, options);
-      this.element = $('<div></div>').addClass('ppedit-box').attr('id', $.now()).css(settings).mousedown(function() {
+      this.element = $('<textarea></textarea>').addClass('ppedit-box').attr('id', $.now()).css(settings).mousedown(function() {
         _this.mouseDown = true;
         return _this.prevPosition = _this.currentPosition();
       }).on('containerMouseMove', function(event, delta) {
@@ -40,6 +40,21 @@
         return _this.stopMoving();
       }).on('containerMouseUp', function() {
         return _this.stopMoving();
+      }).keydown(function(event) {
+        event.preventDefault();
+        if (event.which === 37) {
+          _this.move(-1, 0);
+        }
+        if (event.which === 38) {
+          _this.move(0, -1);
+        }
+        if (event.which === 39) {
+          _this.move(1, 0);
+        }
+        if (event.which === 40) {
+          _this.move(0, 1);
+        }
+        return _this.root.trigger('boxMoved', [_this, _this.currentPosition()]);
       });
     }
 
@@ -47,6 +62,17 @@
       this.mouseDown = false;
       this.root.trigger('boxMoved', [this, $.extend(true, {}, this.prevPosition)]);
       return this.prevPosition = void 0;
+    };
+
+    Box.prototype.move = function(deltaX, deltaY) {
+      var currentPos;
+      currentPos = this.currentPosition();
+      return this.setPosition(deltaX + currentPos.x, deltaY + currentPos.y);
+    };
+
+    Box.prototype.setPosition = function(x, y) {
+      this.element.css('left', x + 'px');
+      return this.element.css('top', y + 'px');
     };
 
     Box.prototype.currentPosition = function() {
