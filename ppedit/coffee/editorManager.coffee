@@ -26,11 +26,11 @@ class EditorManager
       .mouseup =>
         $('.ppedit-box').trigger 'containerMouseUp'
 
+      .on 'boxMoved', (event, box, originalPosition) =>
+        @pushCommand(new MoveBoxCommand(box, box.currentPosition(), originalPosition), false)
+
   createBox: (options) ->
     @pushCommand new CreateBoxCommand @root, options
-
-  moveBox: (box, newX, newY) ->
-    @pushCommand new MoveBoxCommand box, newX, newY
 
   pushCommand: (command, execute ) ->
     execute = true if !execute?

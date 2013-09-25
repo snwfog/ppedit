@@ -13,20 +13,70 @@
 
   })();
 
+  Box = (function() {
+    function Box(root, options) {
+      var settings,
+        _this = this;
+      this.root = root;
+      this.mouseDown = false;
+      this.prevPosition = void 0;
+      settings = $.extend({
+        left: '50px',
+        top: '50px',
+        width: '100px',
+        height: '200px'
+      }, options);
+      this.element = $('<div></div>').addClass('ppedit-box').attr('id', $.now()).css(settings).mousedown(function() {
+        _this.mouseDown = true;
+        return _this.prevPosition = _this.currentPosition();
+      }).on('containerMouseMove', function(event, delta) {
+        var currentPos;
+        if (_this.mouseDown && (delta != null)) {
+          currentPos = _this.currentPosition();
+          _this.element.css('left', (delta.x + currentPos.x) + 'px');
+          return _this.element.css('top', (delta.y + currentPos.y) + 'px');
+        }
+      }).on('containerMouseLeave', function() {
+        return _this.stopMoving();
+      }).on('containerMouseUp', function() {
+        return _this.stopMoving();
+      });
+    }
+
+    Box.prototype.stopMoving = function() {
+      this.mouseDown = false;
+      this.root.trigger('boxMoved', [this, $.extend(true, {}, this.prevPosition)]);
+      return this.prevPosition = void 0;
+    };
+
+    Box.prototype.currentPosition = function() {
+      return {
+        x: parseInt(this.element.css('left')),
+        y: parseInt(this.element.css('top'))
+      };
+    };
+
+    return Box;
+
+  })();
+
   MoveBoxCommand = (function(_super) {
     __extends(MoveBoxCommand, _super);
 
-    function MoveBoxCommand(box, newX, newY) {
+    function MoveBoxCommand(box, toPosition, fromPosition) {
       this.box = box;
-      this.newX = newX;
-      this.newY = newY;
-      this.prevStyle = this.box.get(0).style;
+      this.toPosition = toPosition;
+      this.prevStyle = this.box.element.get(0).style;
+      if (fromPosition != null) {
+        this.prevStyle.left = fromPosition.x;
+        this.prevStyle.top = fromPosition.y;
+      }
     }
 
     MoveBoxCommand.prototype.execute = function() {
       return this.box.css({
-        left: this.newX + 'px',
-        top: this.newY + 'px'
+        left: this.toPosition.x + 'px',
+        top: this.toPosition.y + 'px'
       });
     };
 
@@ -41,51 +91,6 @@
 
   })(ICommand);
 
-  Box = (function() {
-    function Box(options) {
-      var settings,
-        _this = this;
-      this.mouseDown = false;
-      this.prevPosition = void 0;
-      settings = $.extend({
-        left: '50px',
-        top: '50px',
-        width: '100px',
-        height: '200px'
-      }, options);
-      this.element = $('<div></div>').addClass('ppedit-box').attr('id', $.now()).css(settings).mousedown(function() {
-        _this.mouseDown = true;
-        return _this.prevPosition = {
-          x: parseInt(_this.element.css('left')),
-          y: parseInt(_this.element.css('top'))
-        };
-      }).on('containerMouseMove', function(event, delta) {
-        var currentPos;
-        if (_this.mouseDown && (delta != null)) {
-          currentPos = {
-            x: parseInt(_this.element.css('left')),
-            y: parseInt(_this.element.css('top'))
-          };
-          _this.element.css('left', (delta.x + currentPos.x) + 'px');
-          return _this.element.css('top', (delta.y + currentPos.y) + 'px');
-        }
-      }).on('containerMouseLeave', function() {
-        return _this.stopMoving();
-      }).on('containerMouseUp', function() {
-        return _this.stopMoving();
-      });
-    }
-
-    Box.prototype.stopMoving = function() {
-      console.log('stopped');
-      this.mouseDown = false;
-      return this.prevPosition = void 0;
-    };
-
-    return Box;
-
-  })();
-
   CreateBoxCommand = (function(_super) {
     __extends(CreateBoxCommand, _super);
 
@@ -97,7 +102,7 @@
     }
 
     CreateBoxCommand.prototype.execute = function() {
-      this.box = new Box(this.options);
+      this.box = new Box(this.root, this.options);
       return this.root.append(this.box.element);
     };
 
@@ -135,15 +140,13 @@
         return $('.ppedit-box').trigger('containerMouseLeave');
       }).mouseup(function() {
         return $('.ppedit-box').trigger('containerMouseUp');
+      }).on('boxMoved', function(event, box, originalPosition) {
+        return _this.pushCommand(new MoveBoxCommand(box, box.currentPosition(), originalPosition), false);
       });
     };
 
     EditorManager.prototype.createBox = function(options) {
       return this.pushCommand(new CreateBoxCommand(this.root, options));
-    };
-
-    EditorManager.prototype.moveBox = function(box, newX, newY) {
-      return this.pushCommand(new MoveBoxCommand(box, newX, newY));
     };
 
     EditorManager.prototype.pushCommand = function(command, execute) {

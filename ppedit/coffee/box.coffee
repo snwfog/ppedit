@@ -1,6 +1,6 @@
 class Box
 
-  constructor: (options)->
+  constructor: (@root, options)->
 
     # true if the user is currently leftclicking on the box.
     @mouseDown = false
@@ -19,15 +19,11 @@ class Box
     .css(settings)
     .mousedown =>
         @mouseDown = true
-        @prevPosition =
-          x: parseInt(@element.css('left'))
-          y: parseInt(@element.css('top'))
+        @prevPosition = @currentPosition()
 
     .on 'containerMouseMove', (event, delta) =>
         if @mouseDown && delta?
-          currentPos =
-            x: parseInt(@element.css('left'))
-            y: parseInt(@element.css('top'))
+          currentPos = @currentPosition()
           @element.css 'left', (delta.x + currentPos.x) + 'px'
           @element.css 'top', (delta.y + currentPos.y) + 'px'
 
@@ -39,4 +35,9 @@ class Box
 
   stopMoving: ->
     @mouseDown = false
+    @root.trigger 'boxMoved', [@, $.extend(true, {}, @prevPosition)]
     @prevPosition = undefined
+
+  currentPosition: ->
+    x: parseInt @element.css 'left'
+    y: parseInt @element.css 'top'

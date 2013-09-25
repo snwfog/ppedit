@@ -8,7 +8,7 @@ class CreateBoxCommand extends ICommand
     @box = null
 
   execute: ->
-    @box = new Box @options
+    @box = new Box @root, @options
     @root.append @box.element
 
   undo: ->
