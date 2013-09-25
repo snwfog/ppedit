@@ -11,6 +11,7 @@ class EditorManager
 
   build: ->
     @root.addClass("ppedit-container")
+      .attr('tabindex', 0)
       .mousemove (event) =>
         delta = undefined
         if @prevMouseEvent?
@@ -26,8 +27,11 @@ class EditorManager
       .mouseup =>
         $('.ppedit-box').trigger 'containerMouseUp'
 
+      .keydown (event) =>
+        $('.ppedit-box').trigger 'containerKeyDown', [event]
+
       .on 'boxMoved', (event, box, originalPosition) =>
-        @pushCommand(new MoveBoxCommand(box, box.currentPosition(), originalPosition), false)
+          @pushCommand(new MoveBoxCommand(box, box.currentPosition(), originalPosition), false)
 
   createBox: (options) ->
     @pushCommand new CreateBoxCommand @root, options
@@ -35,13 +39,13 @@ class EditorManager
   pushCommand: (command, execute ) ->
     execute = true if !execute?
     command.execute() if execute
-    @undoStack.push(command)
+    @undoStack.push command
 
   undo: ->
     if @undoStack.length > 0
       lastExecutedCommand = @undoStack.pop
       lastExecutedCommand.undo()
-      @redoStack.push(lastExecutedCommand)
+      @redoStack.push lastExecutedCommand
 
   redo: ->
     @pushCommand @redoStack.pop if @redoStack.length > 0

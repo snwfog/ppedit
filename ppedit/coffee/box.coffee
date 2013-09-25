@@ -3,7 +3,6 @@ class Box
   constructor: (@root, options)->
 
     # true if the user is currently leftclicking on the box.
-    @mouseDown = false
     @prevPosition = undefined
 
     settings = $.extend(
@@ -13,19 +12,17 @@ class Box
       height:'200px'
     , options);
 
-    @element = $('<textarea></textarea>')
+    @element = $('<div></div>')
     .addClass('ppedit-box')
+    .attr('tabindex', 0)
     .attr('id', $.now())
     .css(settings)
-    .mousedown =>
-      @mouseDown = true
+    .mousedown (event) =>
+      @element.addClass('ppedit-box-selected')
       @prevPosition = @currentPosition()
 
     .on 'containerMouseMove', (event, delta) =>
-      if @mouseDown && delta?
-        currentPos = @currentPosition()
-        @element.css 'left', (delta.x + currentPos.x) + 'px'
-        @element.css 'top', (delta.y + currentPos.y) + 'px'
+      @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
 
     .on 'containerMouseLeave', () =>
       @stopMoving()
@@ -33,30 +30,38 @@ class Box
     .on 'containerMouseUp', () =>
       @stopMoving()
 
-    .keydown (event) =>
+    .on 'containerKeyDown', (event, keyDownEvent) =>
+      @processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')
 
-      event.preventDefault()
+    .keydown (event) =>
+      @processKeyDownEvent(event)
+
+  processKeyDownEvent: (event) ->
 
       # left-arrow
       if event.which == 37
+        event.preventDefault()
         @move -1, 0
 
       # up-arrow
       if event.which == 38
+        event.preventDefault()
         @move 0, -1
 
       # right-arrow
       if event.which == 39
+        event.preventDefault()
         @move 1, 0
 
       # down-arrow
       if event.which == 40
+        event.preventDefault()
         @move 0, 1
 
       @root.trigger 'boxMoved', [@, @currentPosition()]
 
   stopMoving: ->
-    @mouseDown = false
+    @element.removeClass('ppedit-box-selected')
     @root.trigger 'boxMoved', [@, $.extend(true, {}, @prevPosition)]
     @prevPosition = undefined
 
