@@ -6,43 +6,34 @@ class EditorManager
   constructor: (@root) ->
     @undoStack = []
     @redoStack = []
-    @boxes = []
-    @prevMousePosition = undefined
+    @prevMouseEvent = undefined
     @build()
 
   build: ->
     @root.addClass("ppedit-container")
       .mousemove (event) =>
-        for box in @boxes
-          do (box) =>
-            if box.mouseDown && @prevMousePosition?
-              delta =
-                x: event.clientX - @prevMousePosition.x
-                y: event.clientY - @prevMousePosition.y
-              currentPos =
-                x: parseInt(box.element.css('left'))
-                y: parseInt(box.element.css('top'))
-              box.element.css 'left', (delta.x + currentPos.x) + 'px'
-              box.element.css 'top', (delta.y + currentPos.y) + 'px'
+        delta = undefined
+        if @prevMouseEvent?
+          delta =
+            x: event.clientX - @prevMouseEvent.clientX
+            y: event.clientY - @prevMouseEvent.clientY
+        $('.ppedit-box').trigger 'containerMouseMove', [delta]
+        @prevMouseEvent = event
 
-        @prevMousePosition =
-          x: event.clientX
-          y: event.clientY
+      .mouseleave =>
+        $('.ppedit-box').trigger 'containerMouseLeave'
 
       .mouseup =>
-        box.mouseDown = false for box in @boxes
-        @prevMousePosition = undefined
+        $('.ppedit-box').trigger 'containerMouseUp'
 
   createBox: (options) ->
-    command = new CreateBoxCommand @root, options
-    @pushCommand command
-    @boxes.push command.box
+    @pushCommand new CreateBoxCommand @root, options
 
   moveBox: (box, newX, newY) ->
     @pushCommand new MoveBoxCommand box, newX, newY
 
   pushCommand: (command, execute ) ->
-    execute = false if !execute?
+    execute = true if !execute?
     command.execute() if execute
     @undoStack.push(command)
 

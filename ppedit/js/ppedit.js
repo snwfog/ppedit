@@ -46,6 +46,7 @@
       var settings,
         _this = this;
       this.mouseDown = false;
+      this.prevPosition = void 0;
       settings = $.extend({
         left: '50px',
         top: '50px',
@@ -53,9 +54,33 @@
         height: '200px'
       }, options);
       this.element = $('<div></div>').addClass('ppedit-box').attr('id', $.now()).css(settings).mousedown(function() {
-        return _this.mouseDown = true;
+        _this.mouseDown = true;
+        return _this.prevPosition = {
+          x: parseInt(_this.element.css('left')),
+          y: parseInt(_this.element.css('top'))
+        };
+      }).on('containerMouseMove', function(event, delta) {
+        var currentPos;
+        if (_this.mouseDown && (delta != null)) {
+          currentPos = {
+            x: parseInt(_this.element.css('left')),
+            y: parseInt(_this.element.css('top'))
+          };
+          _this.element.css('left', (delta.x + currentPos.x) + 'px');
+          return _this.element.css('top', (delta.y + currentPos.y) + 'px');
+        }
+      }).on('containerMouseLeave', function() {
+        return _this.stopMoving();
+      }).on('containerMouseUp', function() {
+        return _this.stopMoving();
       });
     }
+
+    Box.prototype.stopMoving = function() {
+      console.log('stopped');
+      this.mouseDown = false;
+      return this.prevPosition = void 0;
+    };
 
     return Box;
 
@@ -89,64 +114,45 @@
       this.root = root;
       this.undoStack = [];
       this.redoStack = [];
-      this.boxes = [];
-      this.prevMousePosition = void 0;
+      this.prevMouseEvent = void 0;
       this.build();
     }
 
     EditorManager.prototype.build = function() {
       var _this = this;
       return this.root.addClass("ppedit-container").mousemove(function(event) {
-        var box, _fn, _i, _len, _ref;
-        _ref = _this.boxes;
-        _fn = function(box) {
-          var currentPos, delta;
-          console.log(box.mouseDown);
-          if (box.mouseDown && (_this.prevMousePosition != null)) {
-            delta = {
-              x: event.clientX - _this.prevMousePosition.x,
-              y: event.clientY - _this.prevMousePosition.y
-            };
-            currentPos = {
-              x: parseInt(box.element.css('left')),
-              y: parseInt(box.element.css('top'))
-            };
-            box.element.css('left', (delta.x + currentPos.x) + 'px');
-            return box.element.css('top', (delta.y + currentPos.y) + 'px');
-          }
-        };
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          box = _ref[_i];
-          _fn(box);
+        var delta;
+        delta = void 0;
+        if (_this.prevMouseEvent != null) {
+          delta = {
+            x: event.clientX - _this.prevMouseEvent.clientX,
+            y: event.clientY - _this.prevMouseEvent.clientY
+          };
         }
-        return _this.prevMousePosition = {
-          x: event.clientX,
-          y: event.clientY
-        };
+        $('.ppedit-box').trigger('containerMouseMove', [delta]);
+        return _this.prevMouseEvent = event;
+      }).mouseleave(function() {
+        return $('.ppedit-box').trigger('containerMouseLeave');
       }).mouseup(function() {
-        var box, _i, _len, _ref;
-        _ref = _this.boxes;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          box = _ref[_i];
-          box.mouseDown = false;
-        }
-        return _this.prevMousePosition = void 0;
+        return $('.ppedit-box').trigger('containerMouseUp');
       });
     };
 
     EditorManager.prototype.createBox = function(options) {
-      var command;
-      command = new CreateBoxCommand(this.root, options);
-      this.pushCommand(command);
-      return this.boxes.push(command.box);
+      return this.pushCommand(new CreateBoxCommand(this.root, options));
     };
 
     EditorManager.prototype.moveBox = function(box, newX, newY) {
       return this.pushCommand(new MoveBoxCommand(box, newX, newY));
     };
 
-    EditorManager.prototype.pushCommand = function(command) {
-      command.execute();
+    EditorManager.prototype.pushCommand = function(command, execute) {
+      if (execute == null) {
+        execute = true;
+      }
+      if (execute) {
+        command.execute();
+      }
       return this.undoStack.push(command);
     };
 
