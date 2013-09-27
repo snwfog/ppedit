@@ -2,6 +2,7 @@ class Canvas
   constructor: (@root) ->
     @element = undefined
     @downPosition = undefined
+    @rectSize = undefined
     @build()
 
   build: ->
@@ -13,13 +14,16 @@ class Canvas
       @downPosition =
         x:mouseEvent.offsetX
         y:mouseEvent.offsetY
+      @rectSize =
+        width:0
+        height:0
 
     .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
-      if @downPosition?
-        rectSize =
-          width:mouseMoveEvent.offsetX - @downPosition.x
-          height:mouseMoveEvent.offsetY - @downPosition.y
-        @drawRect @downPosition, rectSize
+      if @downPosition? && @rectSize?
+        console.log mouseMoveEvent
+        @rectSize.width += delta.x
+        @rectSize.height += delta.y
+        @drawRect @downPosition, @rectSize
 
     .on 'containerMouseLeave', () =>
       @clear()
@@ -32,6 +36,7 @@ class Canvas
 
   drawRect: (topLeft, size) ->
     @_context.clearRect(0, 0, @element.width(), @element.height())
+    @_context.globalAlpha = 0.2
     @_context.beginPath()
     @_context.rect(topLeft.x, topLeft.y, size.width, size.height)
     @_context.fillStyle = 'blue'
@@ -40,6 +45,7 @@ class Canvas
   clear: ->
     @_context.clearRect(0, 0, @element.width(), @element.height())
     @downPosition = undefined
+    @rectSize = undefined
 
 
 

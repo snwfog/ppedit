@@ -45,7 +45,8 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
       #  $this.each (index, el) ->
       #    # do something with el
       #
-      controller = new Controller $this
+      controller = new PCController $this
+      controller.onCtrlZPressed()
       controller.start()
 
       return $this
