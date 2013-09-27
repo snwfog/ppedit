@@ -38,31 +38,38 @@ class Box
 
   processKeyDownEvent: (event) ->
 
+      previousPosition = @currentPosition()
+      moved = false
+
       # left-arrow
       if event.which == 37
         event.preventDefault()
+        moved = true
         @move -1, 0
 
       # up-arrow
       if event.which == 38
         event.preventDefault()
+        moved = true
         @move 0, -1
 
       # right-arrow
       if event.which == 39
         event.preventDefault()
+        moved = true
         @move 1, 0
 
       # down-arrow
       if event.which == 40
         event.preventDefault()
+        moved = true
         @move 0, 1
 
-      @root.trigger 'boxMoved', [@, @currentPosition()]
+      @root.trigger 'boxMoved', [@, @currentPosition(), previousPosition] if moved
 
   stopMoving: ->
     @element.removeClass('ppedit-box-selected')
-    @root.trigger 'boxMoved', [@, $.extend(true, {}, @prevPosition)]
+    @root.trigger 'boxMoved', [@, @currentPosition(), $.extend(true, {}, @prevPosition)] if @prevPosition?
     @prevPosition = undefined
 
   move: (deltaX, deltaY) ->

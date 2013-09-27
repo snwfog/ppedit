@@ -46,28 +46,39 @@
     }
 
     Box.prototype.processKeyDownEvent = function(event) {
+      var moved, previousPosition;
+      previousPosition = this.currentPosition();
+      moved = false;
       if (event.which === 37) {
         event.preventDefault();
+        moved = true;
         this.move(-1, 0);
       }
       if (event.which === 38) {
         event.preventDefault();
+        moved = true;
         this.move(0, -1);
       }
       if (event.which === 39) {
         event.preventDefault();
+        moved = true;
         this.move(1, 0);
       }
       if (event.which === 40) {
         event.preventDefault();
+        moved = true;
         this.move(0, 1);
       }
-      return this.root.trigger('boxMoved', [this, this.currentPosition()]);
+      if (moved) {
+        return this.root.trigger('boxMoved', [this, this.currentPosition(), previousPosition]);
+      }
     };
 
     Box.prototype.stopMoving = function() {
       this.element.removeClass('ppedit-box-selected');
-      this.root.trigger('boxMoved', [this, $.extend(true, {}, this.prevPosition)]);
+      if (this.prevPosition != null) {
+        this.root.trigger('boxMoved', [this, this.currentPosition(), $.extend(true, {}, this.prevPosition)]);
+      }
       return this.prevPosition = void 0;
     };
 
@@ -143,25 +154,19 @@
     function MoveBoxCommand(box, toPosition, fromPosition) {
       this.box = box;
       this.toPosition = toPosition;
-      this.prevStyle = this.box.element.get(0).style;
-      if (fromPosition != null) {
-        this.prevStyle.left = fromPosition.x;
-        this.prevStyle.top = fromPosition.y;
+      this.fromPosition = fromPosition;
+      if (fromPosition == null) {
+        this.fromPosition = this.box.currentPosition();
       }
     }
 
     MoveBoxCommand.prototype.execute = function() {
-      return this.box.css({
-        left: this.toPosition.x + 'px',
-        top: this.toPosition.y + 'px'
-      });
+      return this.box.setPosition(this.toPosition.x, this.toPosition.y);
     };
 
     MoveBoxCommand.prototype.undo = function() {
-      return this.box.css({
-        left: this.prevStyle.left,
-        top: this.prevStyle.top
-      });
+      console.log(this);
+      return this.box.setPosition(this.fromPosition.x, this.fromPosition.y);
     };
 
     return MoveBoxCommand;
@@ -259,8 +264,8 @@
         return $('.ppedit-canvas').trigger('containerMouseUp');
       }).keydown(function(event) {
         return $('.ppedit-box').trigger('containerKeyDown', [event]);
-      }).on('boxMoved', function(event, box, originalPosition) {
-        return _this.pushCommand(new MoveBoxCommand(box, box.currentPosition(), originalPosition), false);
+      }).on('boxMoved', function(event, box, currentPosition, originalPosition) {
+        return _this.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false);
       });
       return this.canvas = new Canvas(this.root);
     };
@@ -274,10 +279,7 @@
     };
 
     EditorManager.prototype.pushCommand = function(command, execute) {
-      if (execute == null) {
-        execute = true;
-      }
-      if (execute) {
+      if ((execute == null) || execute) {
         command.execute();
       }
       return this.undoStack.unshift(command);

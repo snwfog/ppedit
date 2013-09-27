@@ -41,8 +41,8 @@ class EditorManager
       .keydown (event) =>
         $('.ppedit-box').trigger 'containerKeyDown', [event]
 
-      .on 'boxMoved', (event, box, originalPosition) =>
-        @pushCommand(new MoveBoxCommand(box, box.currentPosition(), originalPosition), false)
+      .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
+        @pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
 
     @canvas = new Canvas @root
 
@@ -54,8 +54,7 @@ class EditorManager
     @pushCommand new RemoveBoxesCommand @root, $('.ppedit-box')
 
   pushCommand: (command, execute ) ->
-    execute = true if !execute?
-    command.execute() if execute
+    command.execute() if !execute? || execute
     @undoStack.unshift command
 
   undo: ->
