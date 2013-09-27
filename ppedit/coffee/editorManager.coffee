@@ -1,5 +1,6 @@
 #= require CreateBoxCommand
 #= require MoveBoxCommand
+#= require Canvas
 
 class EditorManager
 
@@ -7,6 +8,7 @@ class EditorManager
     @undoStack = []
     @redoStack = []
     @prevMouseEvent = undefined
+    @canvas = undefined
     @build()
 
   build: ->
@@ -31,7 +33,10 @@ class EditorManager
         $('.ppedit-box').trigger 'containerKeyDown', [event]
 
       .on 'boxMoved', (event, box, originalPosition) =>
-          @pushCommand(new MoveBoxCommand(box, box.currentPosition(), originalPosition), false)
+        @pushCommand(new MoveBoxCommand(box, box.currentPosition(), originalPosition), false)
+
+    @canvas = new Canvas @root
+
 
   createBox: (options) ->
     @pushCommand new CreateBoxCommand @root, options
