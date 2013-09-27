@@ -28,7 +28,7 @@
       this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings).mousedown(function(event) {
         _this.element.addClass('ppedit-box-selected');
         return _this.prevPosition = _this.currentPosition();
-      }).on('containerMouseMove', function(event, delta) {
+      }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
           return _this.move(delta.x, delta.y);
         }
@@ -150,10 +150,48 @@
   Canvas = (function() {
     function Canvas(root) {
       this.root = root;
-      this.element = $('<canvas></canvas>').addClass('ppedit-canvas');
-      this.root.append(this.element);
-      this._context = this.element.get(0).getContext('2d');
+      this.element = void 0;
+      this.downPosition = void 0;
+      this.build();
     }
+
+    Canvas.prototype.build = function() {
+      var _this = this;
+      this.element = $('<canvas></canvas>').addClass('ppedit-canvas').attr('width', '1000px').attr('height', '500px').on('containerMouseDown', function(event, mouseEvent) {
+        return _this.downPosition = {
+          x: mouseEvent.offsetX,
+          y: mouseEvent.offsetY
+        };
+      }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
+        var rectSize;
+        if (_this.downPosition != null) {
+          rectSize = {
+            width: mouseMoveEvent.offsetX - _this.downPosition.x,
+            height: mouseMoveEvent.offsetY - _this.downPosition.y
+          };
+          return _this.drawRect(_this.downPosition, rectSize);
+        }
+      }).on('containerMouseLeave', function() {
+        return _this.clear();
+      }).on('containerMouseUp', function() {
+        return _this.clear();
+      });
+      this.root.append(this.element);
+      return this._context = this.element.get(0).getContext('2d');
+    };
+
+    Canvas.prototype.drawRect = function(topLeft, size) {
+      this._context.clearRect(0, 0, this.element.width(), this.element.height());
+      this._context.beginPath();
+      this._context.rect(topLeft.x, topLeft.y, size.width, size.height);
+      this._context.fillStyle = 'blue';
+      return this._context.fill();
+    };
+
+    Canvas.prototype.clear = function() {
+      this._context.clearRect(0, 0, this.element.width(), this.element.height());
+      return this.downPosition = void 0;
+    };
 
     return Canvas;
 
@@ -171,7 +209,11 @@
 
     EditorManager.prototype.build = function() {
       var _this = this;
-      this.root.addClass("ppedit-container").attr('tabindex', 0).mousemove(function(event) {
+      this.root.addClass("ppedit-container").attr('tabindex', 0).mousedown(function() {
+        if ($('.ppedit-box-selected').length === 0) {
+          return $('.ppedit-canvas').trigger('containerMouseDown', [event]);
+        }
+      }).mousemove(function(event) {
         var delta;
         delta = void 0;
         if (_this.prevMouseEvent != null) {
@@ -180,12 +222,15 @@
             y: event.clientY - _this.prevMouseEvent.clientY
           };
         }
-        $('.ppedit-box').trigger('containerMouseMove', [delta]);
+        $('.ppedit-box').trigger('containerMouseMove', [event, delta]);
+        $('.ppedit-canvas').trigger('containerMouseMove', [event, delta]);
         return _this.prevMouseEvent = event;
       }).mouseleave(function() {
-        return $('.ppedit-box').trigger('containerMouseLeave');
+        $('.ppedit-box').trigger('containerMouseLeave');
+        return $('.ppedit-canvas').trigger('containerMouseLeave');
       }).mouseup(function() {
-        return $('.ppedit-box').trigger('containerMouseUp');
+        $('.ppedit-box').trigger('containerMouseUp');
+        return $('.ppedit-canvas').trigger('containerMouseUp');
       }).keydown(function(event) {
         return $('.ppedit-box').trigger('containerKeyDown', [event]);
       }).on('boxMoved', function(event, box, originalPosition) {

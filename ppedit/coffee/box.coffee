@@ -21,7 +21,7 @@ class Box
       @element.addClass('ppedit-box-selected')
       @prevPosition = @currentPosition()
 
-    .on 'containerMouseMove', (event, delta) =>
+    .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
       @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
 
     .on 'containerMouseLeave', () =>

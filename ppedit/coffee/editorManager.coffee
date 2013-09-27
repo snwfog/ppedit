@@ -14,20 +14,28 @@ class EditorManager
   build: ->
     @root.addClass("ppedit-container")
       .attr('tabindex', 0)
+      .mousedown =>
+        if $('.ppedit-box-selected').length == 0
+          $('.ppedit-canvas').trigger 'containerMouseDown', [event]
+
       .mousemove (event) =>
         delta = undefined
         if @prevMouseEvent?
           delta =
             x: event.clientX - @prevMouseEvent.clientX
             y: event.clientY - @prevMouseEvent.clientY
-        $('.ppedit-box').trigger 'containerMouseMove', [delta]
+        $('.ppedit-box').trigger 'containerMouseMove', [event, delta]
+        $('.ppedit-canvas').trigger 'containerMouseMove', [event, delta]
+
         @prevMouseEvent = event
 
       .mouseleave =>
         $('.ppedit-box').trigger 'containerMouseLeave'
+        $('.ppedit-canvas').trigger 'containerMouseLeave'
 
       .mouseup =>
         $('.ppedit-box').trigger 'containerMouseUp'
+        $('.ppedit-canvas').trigger 'containerMouseUp'
 
       .keydown (event) =>
         $('.ppedit-box').trigger 'containerKeyDown', [event]
