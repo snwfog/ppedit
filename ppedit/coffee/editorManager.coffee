@@ -1,5 +1,6 @@
 #= require CreateBoxCommand
 #= require MoveBoxCommand
+#= require RemoveBoxesCommand
 
 class EditorManager
 
@@ -36,16 +37,19 @@ class EditorManager
   createBox: (options) ->
     @pushCommand new CreateBoxCommand @root, options
 
+  removeBox: (options) ->
+    @pushCommand new RemoveBoxesCommand @root, $('.ppedit-box')
+
   pushCommand: (command, execute ) ->
     execute = true if !execute?
     command.execute() if execute
-    @undoStack.push command
+    @undoStack.unshift command
 
   undo: ->
     if @undoStack.length > 0
-      lastExecutedCommand = @undoStack.pop
+      lastExecutedCommand = @undoStack.shift()
       lastExecutedCommand.undo()
-      @redoStack.push lastExecutedCommand
+      @redoStack.unshift lastExecutedCommand
 
   redo: ->
-    @pushCommand @redoStack.pop if @redoStack.length > 0
+    @pushCommand @redoStack.shift() if @redoStack.length > 0

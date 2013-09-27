@@ -12,4 +12,5 @@ class CreateBoxCommand extends ICommand
     @root.append @box.element
 
   undo: ->
-    @root.remove @box.element
+    # @root.remove @box.element
+    @box.element.remove()
