@@ -28,6 +28,9 @@ class Canvas
       @clear()
 
     .on 'containerMouseUp', () =>
+      @root.trigger 'canvasRectSelect', [
+        topLeft:@downPosition
+        size:@rectSize]
       @clear()
 
     @root.append(@element)

@@ -202,6 +202,12 @@
       }).on('containerMouseLeave', function() {
         return _this.clear();
       }).on('containerMouseUp', function() {
+        _this.root.trigger('canvasRectSelect', [
+          {
+            topLeft: _this.downPosition,
+            size: _this.rectSize
+          }
+        ]);
         return _this.clear();
       });
       this.root.append(this.element);
@@ -233,6 +239,23 @@
       this.element = $('<div></div>').addClass('ppedit-box-container');
       this.root.append(this.element);
     }
+
+    BoxesContainer.prototype.selectBoxesInRect = function(rect) {
+      var selectRect;
+      console.log(rect);
+      selectRect = {
+        topLeft: {
+          x: rect.topLeft.x + this.element.scrollLeft(),
+          y: rect.topLeft.y + this.element.scrollTop()
+        },
+        size: rect.size
+      };
+      return console.log(selectRect);
+    };
+
+    BoxesContainer.prototype.selectBoxes = function(boxesSelector) {
+      return boxesSelector.addClass('ppedit-box-selected');
+    };
 
     return BoxesContainer;
 
@@ -277,6 +300,8 @@
         return $('.ppedit-box').trigger('containerKeyDown', [event]);
       }).on('boxMoved', function(event, box, currentPosition, originalPosition) {
         return _this.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false);
+      }).on('canvasRectSelect', function(event, rect) {
+        return _this.boxesContainer.selectBoxesInRect(rect);
       });
       this.boxesContainer = new BoxesContainer(this.root);
       return this.canvas = new Canvas(this.root);

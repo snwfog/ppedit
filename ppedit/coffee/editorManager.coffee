@@ -47,6 +47,9 @@ class EditorManager
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
         @pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
 
+      .on 'canvasRectSelect', (event, rect) =>
+        @boxesContainer.selectBoxesInRect rect
+
     @boxesContainer = new BoxesContainer @root
     @canvas = new Canvas @root
 
