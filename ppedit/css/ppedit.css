@@ -46,3 +46,8 @@
     position: absolute;
     z-index: -500;
 }
+
+.ppedit-slider
+{
+    width:100px;
+}

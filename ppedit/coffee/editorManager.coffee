@@ -12,11 +12,16 @@ class EditorManager
     @prevMouseEvent = undefined
     @canvas = undefined
     @boxesContainer = undefined
+    @element = undefined
 
     @build()
 
   build: ->
-    @root.addClass("ppedit-container")
+    @element = $('<div></div>')
+    @root.append(@element)
+
+    @element.addClass("ppedit-container")
+      .addClass("col-xs-6")
       .attr('tabindex', 0)
       .mousedown =>
         if $('.ppedit-box-selected').length == 0
@@ -47,8 +52,8 @@ class EditorManager
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
         @pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
 
-    @boxesContainer = new BoxesContainer @root
-    @canvas = new Canvas @root
+    @boxesContainer = new BoxesContainer @element
+    @canvas = new Canvas @element
 
   createBox: (options) ->
     @pushCommand new CreateBoxCommand @boxesContainer.element, options

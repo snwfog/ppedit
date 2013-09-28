@@ -1,11 +1,24 @@
 #= require EditorManager
+#= require Panel
 
 class Controller
 
   constructor: (@root) ->
-    @editorManager = new EditorManager @root
+    @editorManager = undefined
+    @panel = undefined
+    @element = undefined
 
   start: ->
+
+    @element = $('
+      <div class="container">
+        <div class="row"></div>
+      </div>')
+    @root.append(@element)
+
+    row = @element.find('.row')
+    @editorManager = new EditorManager row
+    @panel = new Panel row
     createBoxbutton = $("<button>Create Box</button>")
     createRemovebutton = $("<button>Remove Box</button>")
     $('body').append(createBoxbutton);
@@ -14,5 +27,6 @@ class Controller
       @editorManager.createBox()
     createRemovebutton.click =>
       @editorManager.removeBox()
+
 
 
