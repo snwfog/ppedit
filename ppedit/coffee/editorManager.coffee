@@ -2,6 +2,7 @@
 #= require MoveBoxCommand
 #= require Canvas
 #= require RemoveBoxesCommand
+#= require BoxesContainer
 
 class EditorManager
 
@@ -10,6 +11,8 @@ class EditorManager
     @redoStack = []
     @prevMouseEvent = undefined
     @canvas = undefined
+    @boxesContainer = undefined
+
     @build()
 
   build: ->
@@ -44,14 +47,14 @@ class EditorManager
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
         @pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
 
+    @boxesContainer = new BoxesContainer @root
     @canvas = new Canvas @root
 
-
   createBox: (options) ->
-    @pushCommand new CreateBoxCommand @root, options
+    @pushCommand new CreateBoxCommand @boxesContainer.element, options
 
   removeBox: (options) ->
-    @pushCommand new RemoveBoxesCommand @root, $('.ppedit-box')
+    @pushCommand new RemoveBoxesCommand @boxesContainer.element, $('.ppedit-box')
 
   pushCommand: (command, execute ) ->
     command.execute() if !execute? || execute

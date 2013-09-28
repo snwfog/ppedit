@@ -20,7 +20,6 @@ class Canvas
 
     .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
       if @downPosition? && @rectSize?
-        console.log mouseMoveEvent
         @rectSize.width += delta.x
         @rectSize.height += delta.y
         @drawRect @downPosition, @rectSize

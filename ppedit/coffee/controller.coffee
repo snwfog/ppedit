@@ -8,8 +8,8 @@ class Controller
   start: ->
     createBoxbutton = $("<button>Create Box</button>")
     createRemovebutton = $("<button>Remove Box</button>")
-    @root.append(createBoxbutton);
-    @root.append(createRemovebutton);
+    $('body').append(createBoxbutton);
+    $('body').append(createRemovebutton);
     createBoxbutton.click =>
       @editorManager.createBox()
     createRemovebutton.click =>
