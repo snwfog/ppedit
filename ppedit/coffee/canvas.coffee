@@ -8,8 +8,8 @@ class Canvas
   build: ->
     @element = $('<canvas></canvas>')
     .addClass('ppedit-canvas')
-    .attr('width', '1000px')
-    .attr('height', '500px')
+    .attr('width', '600px')
+    .attr('height', '960px')
     .on 'containerMouseDown', (event, mouseEvent) =>
       @downPosition =
         x:mouseEvent.offsetX

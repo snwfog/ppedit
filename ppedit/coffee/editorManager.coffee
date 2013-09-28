@@ -21,7 +21,7 @@ class EditorManager
     @root.append(@element)
 
     @element.addClass("ppedit-container")
-      .addClass("col-xs-6")
+      .addClass("col-xs-8")
       .attr('tabindex', 0)
       .mousedown =>
         if $('.ppedit-box-selected').length == 0

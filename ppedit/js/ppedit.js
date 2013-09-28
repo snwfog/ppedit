@@ -184,7 +184,7 @@
 
     Canvas.prototype.build = function() {
       var _this = this;
-      this.element = $('<canvas></canvas>').addClass('ppedit-canvas').attr('width', '1000px').attr('height', '500px').on('containerMouseDown', function(event, mouseEvent) {
+      this.element = $('<canvas></canvas>').addClass('ppedit-canvas').attr('width', '600px').attr('height', '960px').on('containerMouseDown', function(event, mouseEvent) {
         _this.downPosition = {
           x: mouseEvent.offsetX,
           y: mouseEvent.offsetY
@@ -254,7 +254,7 @@
       var _this = this;
       this.element = $('<div></div>');
       this.root.append(this.element);
-      this.element.addClass("ppedit-container").addClass("col-xs-6").attr('tabindex', 0).mousedown(function() {
+      this.element.addClass("ppedit-container").addClass("col-xs-8").attr('tabindex', 0).mousedown(function() {
         if ($('.ppedit-box-selected').length === 0) {
           return $('.ppedit-canvas').trigger('containerMouseDown', [event]);
         }
@@ -321,41 +321,132 @@
 
   Panel = (function() {
     function Panel(root) {
+      var _this = this;
       this.root = root;
       this.element = $('\
-  <div class="col-xs-6">\
-      \
-       <button class="btn btn-info" id="moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
+        <div class="col-xs-4">\
+          \
+           <button class="btn btn-info" id="moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
 \
-       <button class="btn btn-info" id="moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button>\
+           <button class="btn btn-info" id="moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button>\
 \
-      <button class="btn btn-primary" id="addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>\
+          <button class="btn btn-primary" id="addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>\
 \
 \
-      <button class="btn btn-primary" id="removeElementBtn" type="button"><span class="glyphicon glyphicon-minus-sign"></span> Delete Element</button>\
-      \
-      \
-      <table class="table table-hover" id="dataPanel">\
-          <thead>   \
-              <tr>\
-                <th>Selector</th>\
-                <th>Name of Element</th>\
-                <th>Opacity</th>\
-              </tr>\
-          </thead>\
-          <tbody>\
-              <tr>\
-                      <td><input type="checkbox" name="chkk"></input></td>\
-                      <td><input type="text" class="input-block-level" placeholder="Enter name"></input></td>\
-                      <td><div class="slider"></div></td>\
-                    \
-              </tr>\
+          <button class="btn btn-primary" id="removeElementBtn" type="button"><span class="glyphicon glyphicon-minus-sign"></span> Delete Element</button>\
+          \
+          \
+          <table class="table table-hover" id="dataPanel">\
+              <thead>   \
+                  <tr>\
+                    <th>Selector</th>\
+                    <th>Name of Element</th>\
+                    <th>Opacity</th>\
+                  </tr>\
+              </thead>\
+              <tbody>\
+                  <tr>\
+                          <td><input type="checkbox" name="chkk"></input></td>\
+                          <td><input type="text" class="input-block-level" placeholder="Enter name"></input></td>\
+                          <td><div class="ppedit-slider"></div></td>\
+                        \
+                  </tr>\
 \
-          </tbody>\
-      </table>\
-	</div>');
+              </tbody>\
+          </table>\
+        </div>');
       this.root.append(this.element);
+      $("#moveElementUpBtn").click(function() {
+        return _this.moveElementUp("dataPanel");
+      });
+      $("#moveElementDownBtn").click(function() {
+        return _this.moveElementDown("dataPanel");
+      });
+      $("#addElementBtn").click(function() {
+        return _this.addElement("dataPanel");
+      });
+      $("#removeElementBtn").click(function() {
+        return _this.deleteElement("dataPanel");
+      });
+      this.createSlider($(".ppedit-slider"));
     }
+
+    Panel.prototype.moveElementUp = function(panelID) {
+      var checkboxRow, chkbox, e, i, row, rowCount, _results;
+      try {
+        checkboxRow = document.getElementById(panelID);
+        rowCount = panel.rows.length;
+        i = 0;
+        _results = [];
+        while (i < rowCount) {
+          row = panel.rows[i];
+          chkbox = row.cells[0].childNodes[0];
+          if (null !== chkbox && true === chkbox.checked) {
+            if (rowCount <= 1) {
+              alert("Please select a row.");
+              break;
+            }
+            checkboxRow.moveRow(chkbox.checked, checkboxRow.rows.length + 1);
+          }
+          _results.push(i++);
+        }
+        return _results;
+      } catch (_error) {
+        e = _error;
+        return alert(e);
+      }
+    };
+
+    Panel.prototype.moveElementUpDown = function(panelID) {
+      var newRow;
+      newRow = $("        <tr>            <td><input type=\"checkbox\" name=\"chkk\"></input></td>            <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>            <td><div class=\"ppedit-slider\"></div></td>        </tr>");
+      $("#" + panelID + " tbody").append(newRow);
+      return this.createSlider(newRow.find(".ppedit-slider"));
+    };
+
+    Panel.prototype.addElement = function(panelID) {
+      var newRow;
+      newRow = $("        <tr>            <td><input type=\"checkbox\" name=\"chkk\"></input></td>            <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>            <td><div class=\"ppedit-slider\"></div></td>                            </tr>");
+      $("#" + panelID + " tbody").append(newRow);
+      return this.createSlider(newRow.find(".ppedit-slider"));
+    };
+
+    Panel.prototype.deleteElement = function(panelID) {
+      var chkbox, e, i, panel, row, rowCount, _results;
+      try {
+        panel = document.getElementById(panelID);
+        rowCount = panel.rows.length;
+        i = 0;
+        _results = [];
+        while (i < rowCount) {
+          row = panel.rows[i];
+          chkbox = row.cells[0].childNodes[0];
+          if (null !== chkbox && true === chkbox.checked) {
+            if (rowCount <= 1) {
+              alert("Cannot delete all the rows.");
+              break;
+            }
+            panel.deleteRow(i);
+            rowCount--;
+            i--;
+          }
+          _results.push(i++);
+        }
+        return _results;
+      } catch (_error) {
+        e = _error;
+        return alert(e);
+      }
+    };
+
+    Panel.prototype.createSlider = function(selector) {
+      return selector.slider({
+        min: 0,
+        max: 100,
+        step: 1,
+        value: 100
+      });
+    };
 
     return Panel;
 
