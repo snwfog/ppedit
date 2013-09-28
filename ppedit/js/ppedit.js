@@ -100,6 +100,20 @@
       };
     };
 
+    Box.bounds = function(boxSelector) {
+      var result;
+      return result = {
+        topLeft: {
+          x: boxSelector.position().left,
+          y: boxSelector.position().top
+        },
+        size: {
+          width: boxSelector.width(),
+          height: boxSelector.height()
+        }
+      };
+    };
+
     return Box;
 
   })();
@@ -202,12 +216,14 @@
       }).on('containerMouseLeave', function() {
         return _this.clear();
       }).on('containerMouseUp', function() {
-        _this.root.trigger('canvasRectSelect', [
-          {
-            topLeft: _this.downPosition,
-            size: _this.rectSize
-          }
-        ]);
+        if ((_this.downPosition != null) && _this.rectSize) {
+          _this.root.trigger('canvasRectSelect', [
+            {
+              topLeft: _this.downPosition,
+              size: _this.rectSize
+            }
+          ]);
+        }
         return _this.clear();
       });
       this.root.append(this.element);
@@ -238,11 +254,11 @@
       this.root = root;
       this.element = $('<div></div>').addClass('ppedit-box-container');
       this.root.append(this.element);
+      this.boxes = [];
     }
 
     BoxesContainer.prototype.selectBoxesInRect = function(rect) {
       var selectRect;
-      console.log(rect);
       selectRect = {
         topLeft: {
           x: rect.topLeft.x + this.element.scrollLeft(),
@@ -250,11 +266,26 @@
         },
         size: rect.size
       };
-      return console.log(selectRect);
+      if (selectRect.size.width < 0) {
+        selectRect.topLeft.x -= selectRect.size.width;
+        selectRect.size.width *= -1;
+      }
+      if (selectRect.size.height < 0) {
+        selectRect.topLeft.y -= selectRect.size.height;
+        selectRect.size.height *= -1;
+      }
+      return $('.ppedit-box').each(function(index, box) {
+        if (BoxesContainer._rectContainsRect(selectRect, Box.bounds($(box)))) {
+          console.log('truedsf');
+        }
+        if (BoxesContainer._rectContainsRect(selectRect, Box.bounds($(box)))) {
+          return $(box).addClass('ppedit-box-selected');
+        }
+      });
     };
 
-    BoxesContainer.prototype.selectBoxes = function(boxesSelector) {
-      return boxesSelector.addClass('ppedit-box-selected');
+    BoxesContainer._rectContainsRect = function(outerRect, innerRect) {
+      return innerRect.topLeft.x >= outerRect.topLeft.x && innerRect.topLeft.y >= outerRect.topLeft.y && innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width && innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height;
     };
 
     return BoxesContainer;
