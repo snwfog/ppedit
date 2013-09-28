@@ -30,3 +30,9 @@
 {
     border-color:blue;
 }
+
+.ppedit-canvas
+{
+    position: absolute;
+    z-index: -500;
+}

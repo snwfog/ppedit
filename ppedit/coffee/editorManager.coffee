@@ -1,5 +1,6 @@
 #= require CreateBoxCommand
 #= require MoveBoxCommand
+#= require Canvas
 #= require RemoveBoxesCommand
 
 class EditorManager
@@ -8,31 +9,43 @@ class EditorManager
     @undoStack = []
     @redoStack = []
     @prevMouseEvent = undefined
+    @canvas = undefined
     @build()
 
   build: ->
     @root.addClass("ppedit-container")
       .attr('tabindex', 0)
+      .mousedown =>
+        if $('.ppedit-box-selected').length == 0
+          $('.ppedit-canvas').trigger 'containerMouseDown', [event]
+
       .mousemove (event) =>
         delta = undefined
         if @prevMouseEvent?
           delta =
             x: event.clientX - @prevMouseEvent.clientX
             y: event.clientY - @prevMouseEvent.clientY
-        $('.ppedit-box').trigger 'containerMouseMove', [delta]
+        $('.ppedit-box').trigger 'containerMouseMove', [event, delta]
+        $('.ppedit-canvas').trigger 'containerMouseMove', [event, delta]
+
         @prevMouseEvent = event
 
       .mouseleave =>
         $('.ppedit-box').trigger 'containerMouseLeave'
+        $('.ppedit-canvas').trigger 'containerMouseLeave'
 
       .mouseup =>
         $('.ppedit-box').trigger 'containerMouseUp'
+        $('.ppedit-canvas').trigger 'containerMouseUp'
 
       .keydown (event) =>
         $('.ppedit-box').trigger 'containerKeyDown', [event]
 
-      .on 'boxMoved', (event, box, originalPosition) =>
-          @pushCommand(new MoveBoxCommand(box, box.currentPosition(), originalPosition), false)
+      .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
+        @pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
+
+    @canvas = new Canvas @root
+
 
   createBox: (options) ->
     @pushCommand new CreateBoxCommand @root, options
@@ -41,8 +54,7 @@ class EditorManager
     @pushCommand new RemoveBoxesCommand @root, $('.ppedit-box')
 
   pushCommand: (command, execute ) ->
-    execute = true if !execute?
-    command.execute() if execute
+    command.execute() if !execute? || execute
     @undoStack.unshift command
 
   undo: ->
