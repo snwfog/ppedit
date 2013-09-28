@@ -16,12 +16,12 @@ class BoxesContainer
       size:rect.size
 
     if selectRect.size.width < 0
-      selectRect.topLeft.x -= selectRect.size.width
-      selectRect.size.width *= -1
+      selectRect.topLeft.x -= Math.abs(selectRect.size.width)
+      selectRect.size.width = Math.abs(selectRect.size.width)
 
     if selectRect.size.height < 0
-      selectRect.topLeft.y -= selectRect.size.height
-      selectRect.size.height *= -1
+      selectRect.topLeft.y -= Math.abs(selectRect.size.height)
+      selectRect.size.height = Math.abs(selectRect.size.height)
 
     $('.ppedit-box').each (index, box) ->
       $(box).addClass 'ppedit-box-selected' if BoxesContainer._rectContainsRect selectRect, Box.bounds($(box))
