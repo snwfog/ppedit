@@ -83,13 +83,3 @@ class Box
   currentPosition: ->
     x: parseInt @element.css 'left'
     y: parseInt @element.css 'top'
-
-  @bounds: (boxSelector) ->
-
-    result =
-      topLeft:
-        x:boxSelector.position().left
-        y:boxSelector.position().top
-      size:
-        width:boxSelector.width()
-        height:boxSelector.height()

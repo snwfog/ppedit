@@ -23,11 +23,20 @@ class BoxesContainer
       selectRect.topLeft.y -= Math.abs(selectRect.size.height)
       selectRect.size.height = Math.abs(selectRect.size.height)
 
-    $('.ppedit-box').each (index, box) ->
-      $(box).addClass 'ppedit-box-selected' if BoxesContainer._rectContainsRect selectRect, Box.bounds($(box))
+    $('.ppedit-box').each (index, box) =>
+      $(box).addClass 'ppedit-box-selected' if BoxesContainer._rectContainsRect selectRect, @boxBounds($(box))
+
+  boxBounds: (boxSelector) ->
+    console.log boxSelector.position()
+    result =
+      topLeft:
+        x:boxSelector.position().left + @element.scrollLeft()
+        y:boxSelector.position().top + @element.scrollTop()
+      size:
+        width:boxSelector.width()
+        height:boxSelector.height()
 
   @_rectContainsRect: (outerRect, innerRect) ->
-#    true
     return (innerRect.topLeft.x >= outerRect.topLeft.x &&
       innerRect.topLeft.y >= outerRect.topLeft.y &&
       innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width &&

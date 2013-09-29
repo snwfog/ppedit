@@ -100,20 +100,6 @@
       };
     };
 
-    Box.bounds = function(boxSelector) {
-      var result;
-      return result = {
-        topLeft: {
-          x: boxSelector.position().left,
-          y: boxSelector.position().top
-        },
-        size: {
-          width: boxSelector.width(),
-          height: boxSelector.height()
-        }
-      };
-    };
-
     return Box;
 
   })();
@@ -258,7 +244,8 @@
     }
 
     BoxesContainer.prototype.selectBoxesInRect = function(rect) {
-      var selectRect;
+      var selectRect,
+        _this = this;
       selectRect = {
         topLeft: {
           x: rect.topLeft.x + this.element.scrollLeft(),
@@ -275,10 +262,25 @@
         selectRect.size.height = Math.abs(selectRect.size.height);
       }
       return $('.ppedit-box').each(function(index, box) {
-        if (BoxesContainer._rectContainsRect(selectRect, Box.bounds($(box)))) {
+        if (BoxesContainer._rectContainsRect(selectRect, _this.boxBounds($(box)))) {
           return $(box).addClass('ppedit-box-selected');
         }
       });
+    };
+
+    BoxesContainer.prototype.boxBounds = function(boxSelector) {
+      var result;
+      console.log(boxSelector.position());
+      return result = {
+        topLeft: {
+          x: boxSelector.position().left + this.element.scrollLeft(),
+          y: boxSelector.position().top + this.element.scrollTop()
+        },
+        size: {
+          width: boxSelector.width(),
+          height: boxSelector.height()
+        }
+      };
     };
 
     BoxesContainer._rectContainsRect = function(outerRect, innerRect) {
