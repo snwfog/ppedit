@@ -64,6 +64,10 @@ class EditorManager
   removeBox: (options) ->
     @pushCommand new RemoveBoxesCommand @boxesContainer.element, $('.ppedit-box')
 
+  deleteOnFocus: ->
+    if $('.ppedit-box:focus').length > 0
+      @pushCommand new RemoveBoxesCommand @boxesContainer.element, $('.ppedit-box:focus')
+
   pushCommand: (command, execute ) ->
     command.execute() if !execute? || execute
     @undoStack.unshift command

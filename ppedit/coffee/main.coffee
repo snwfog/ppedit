@@ -46,9 +46,7 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
       #    # do something with el
       #
       controller = new PCController $this
-      controller.onCtrlZPressed()
-      controller.start()
-
+      
       return $this
 
     doSomething: (what) ->
