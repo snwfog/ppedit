@@ -5,11 +5,12 @@ class PCController extends Controller
   
   constructor: (@root) ->
     super @root
-
-  onCtrlZPressed: ->
-    $(document).bind 'keypress', 'Ctrl+z', (event) =>
-      @editorManager.undo()
-
-  onCtrlYPressed: ->
-    $(document).bind 'keypress', 'Ctrl+y', (event) =>
-      @editorManager.redo()
+    @editorManager.root.keydown (event) =>
+      if event.keyCode == 90 && event.ctrlKey
+        @editorManager.undo()
+    @editorManager.root.  keydown (event) =>
+      if event.keyCode == 89 && event.ctrlKey
+        @editorManager.redo()
+    @editorManager.root.keydown (event) =>
+      if event.keyCode == 46 || (event.keyCode == 46 && event.ctrlKey)
+        @editorManager.deleteOnFocus()

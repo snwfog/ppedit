@@ -4,12 +4,6 @@
 class Controller
 
   constructor: (@root) ->
-    @editorManager = undefined
-    @panel = undefined
-    @element = undefined
-
-  start: ->
-
     @element = $('
       <div class="container">
         <div class="row"></div>
