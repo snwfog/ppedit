@@ -346,6 +346,12 @@
       return this.pushCommand(new RemoveBoxesCommand(this.boxesContainer.element, $('.ppedit-box')));
     };
 
+    EditorManager.prototype.deleteOnFocus = function() {
+      if ($('.ppedit-box:focus').length > 0) {
+        return this.pushCommand(new RemoveBoxesCommand(this.boxesContainer.element, $('.ppedit-box:focus')));
+      }
+    };
+
     EditorManager.prototype.pushCommand = function(command, execute) {
       if ((execute == null) || execute) {
         command.execute();
@@ -507,15 +513,9 @@
 
   Controller = (function() {
     function Controller(root) {
-      this.root = root;
-      this.editorManager = void 0;
-      this.panel = void 0;
-      this.element = void 0;
-    }
-
-    Controller.prototype.start = function() {
       var createBoxbutton, createRemovebutton, row,
         _this = this;
+      this.root = root;
       this.element = $('\
       <div class="container">\
         <div class="row"></div>\
@@ -531,10 +531,10 @@
       createBoxbutton.click(function() {
         return _this.editorManager.createBox();
       });
-      return createRemovebutton.click(function() {
+      createRemovebutton.click(function() {
         return _this.editorManager.removeBox();
       });
-    };
+    }
 
     return Controller;
 
@@ -544,23 +544,25 @@
     __extends(PCController, _super);
 
     function PCController(root) {
+      var _this = this;
       this.root = root;
       PCController.__super__.constructor.call(this, this.root);
+      this.editorManager.root.keydown(function(event) {
+        if (event.keyCode === 90 && event.ctrlKey) {
+          return _this.editorManager.undo();
+        }
+      });
+      this.editorManager.root.keydown(function(event) {
+        if (event.keyCode === 89 && event.ctrlKey) {
+          return _this.editorManager.redo();
+        }
+      });
+      this.editorManager.root.keydown(function(event) {
+        if (event.keyCode === 46 || (event.keyCode === 46 && event.ctrlKey)) {
+          return _this.editorManager.deleteOnFocus();
+        }
+      });
     }
-
-    PCController.prototype.onCtrlZPressed = function() {
-      var _this = this;
-      return $(document).bind('keypress', 'Ctrl+z', function(event) {
-        return _this.editorManager.undo();
-      });
-    };
-
-    PCController.prototype.onCtrlYPressed = function() {
-      var _this = this;
-      return $(document).bind('keypress', 'Ctrl+y', function(event) {
-        return _this.editorManager.redo();
-      });
-    };
 
     return PCController;
 
@@ -591,8 +593,6 @@
         $this = $(this);
         $.extend(_settings, options || {});
         controller = new PCController($this);
-        controller.onCtrlZPressed();
-        controller.start();
         return $this;
       },
       doSomething: function(what) {
