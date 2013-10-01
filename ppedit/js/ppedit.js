@@ -132,11 +132,13 @@
       this.root = root;
       this.options = options;
       CreateBoxCommand.__super__.constructor.call(this, this.root);
-      this.box = null;
+      this.box = void 0;
     }
 
     CreateBoxCommand.prototype.execute = function() {
-      this.box = new Box(this.root, this.options);
+      if (this.box == null) {
+        this.box = new Box(this.root, this.options);
+      }
       return this.root.append(this.box.element);
     };
 
@@ -165,7 +167,6 @@
     };
 
     MoveBoxCommand.prototype.undo = function() {
-      console.log(this);
       return this.box.setPosition(this.fromPosition.x, this.fromPosition.y);
     };
 
@@ -270,7 +271,6 @@
 
     BoxesContainer.prototype.boxBounds = function(boxSelector) {
       var result;
-      console.log(boxSelector.position());
       return result = {
         topLeft: {
           x: boxSelector.position().left + this.element.scrollLeft(),
@@ -349,8 +349,8 @@
     };
 
     EditorManager.prototype.deleteOnFocus = function() {
-      if ($('.ppedit-box:focus').length > 0) {
-        return this.pushCommand(new RemoveBoxesCommand(this.boxesContainer.element, $('.ppedit-box:focus')));
+      if ($('.ppedit-box:focus, .ppedit-box-selected').length > 0) {
+        return this.pushCommand(new RemoveBoxesCommand(this.boxesContainer.element, $('.ppedit-box:focus, .ppedit-box-selected')));
       }
     };
 
@@ -387,15 +387,16 @@
       this.element = $('\
         <div class="col-xs-4">\
           \
-           <button class="btn btn-info" id="moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
+           <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
 \
-           <button class="btn btn-info" id="moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button>\
+           <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button>\
 \
-          <button class="btn btn-primary" id="addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>\
+          <button class="btn btn-sm btn-primary addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>\
 \
 \
-          <button class="btn btn-primary" id="removeElementBtn" type="button"><span class="glyphicon glyphicon-minus-sign"></span> Delete Element</button>\
+          <button class="btn btn-sm btn-primary removeElementBtn" type="button"><span class="glyphicon glyphicon-minus-sign"></span> Delete Element</button>\
           \
+          <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>\
           \
           <table class="table table-hover" id="dataPanel">\
               <thead>   \
@@ -406,28 +407,25 @@
                   </tr>\
               </thead>\
               <tbody>\
-                  <tr>\
-                          <td><input type="checkbox" name="chkk"></input></td>\
-                          <td><input type="text" class="input-block-level" placeholder="Enter name"></input></td>\
-                          <td><div class="ppedit-slider"></div></td>\
-                        \
-                  </tr>\
+                \
 \
               </tbody>\
           </table>\
         </div>');
       this.root.append(this.element);
-      $("#moveElementUpBtn").click(function() {
+      $(".moveElementUpBtn").click(function() {
         return _this.moveElementUp("dataPanel");
       });
-      $("#moveElementDownBtn").click(function() {
+      $(".moveElementDownBtn").click(function() {
         return _this.moveElementDown("dataPanel");
       });
-      $("#addElementBtn").click(function() {
-        return _this.addElement("dataPanel");
+      $(".addElementBtn").click(function() {
+        _this.addElement("dataPanel");
+        return _this.root.trigger('panelClickAddBtnClick', []);
       });
-      $("#removeElementBtn").click(function() {
-        return _this.deleteElement("dataPanel");
+      $(".removeElementBtn").click(function() {
+        _this.deleteElement("dataPanel");
+        return _this.root.trigger('panelClickDeleteBtnClick', []);
       });
       this.createSlider($(".ppedit-slider"));
     }
@@ -515,7 +513,7 @@
 
   Controller = (function() {
     function Controller(root) {
-      var createBoxbutton, createRemovebutton, row,
+      var row,
         _this = this;
       this.root = root;
       this.element = $('\
@@ -526,14 +524,10 @@
       row = this.element.find('.row');
       this.editorManager = new EditorManager(row);
       this.panel = new Panel(row);
-      createBoxbutton = $("<button>Create Box</button>");
-      createRemovebutton = $("<button>Remove Box</button>");
-      $('body').append(createBoxbutton);
-      $('body').append(createRemovebutton);
-      createBoxbutton.click(function() {
+      row.on('panelClickAddBtnClick', function(event) {
         return _this.editorManager.createBox();
       });
-      createRemovebutton.click(function() {
+      row.on('panelClickDeleteBtnClick', function(event) {
         return _this.editorManager.removeBox();
       });
     }
@@ -551,16 +545,15 @@
       PCController.__super__.constructor.call(this, this.root);
       this.editorManager.root.keydown(function(event) {
         if (event.keyCode === 90 && event.ctrlKey) {
-          return _this.editorManager.undo();
+          event.preventDefault();
+          _this.editorManager.undo();
         }
-      });
-      this.editorManager.root.keydown(function(event) {
         if (event.keyCode === 89 && event.ctrlKey) {
-          return _this.editorManager.redo();
+          event.preventDefault();
+          _this.editorManager.redo();
         }
-      });
-      this.editorManager.root.keydown(function(event) {
         if (event.keyCode === 46 || (event.keyCode === 46 && event.ctrlKey)) {
+          event.preventDefault();
           return _this.editorManager.deleteOnFocus();
         }
       });

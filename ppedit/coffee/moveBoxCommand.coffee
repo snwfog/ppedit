@@ -10,5 +10,4 @@ class MoveBoxCommand extends ICommand
     @box.setPosition(@toPosition.x, @toPosition.y)
 
   undo: ->
-    console.log @
     @box.setPosition(@fromPosition.x, @fromPosition.y)

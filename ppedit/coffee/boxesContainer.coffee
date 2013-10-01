@@ -27,7 +27,6 @@ class BoxesContainer
       $(box).addClass 'ppedit-box-selected' if BoxesContainer._rectContainsRect selectRect, @boxBounds($(box))
 
   boxBounds: (boxSelector) ->
-    console.log boxSelector.position()
     result =
       topLeft:
         x:boxSelector.position().left + @element.scrollLeft()

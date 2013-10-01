@@ -13,13 +13,11 @@ class Controller
     row = @element.find('.row')
     @editorManager = new EditorManager row
     @panel = new Panel row
-    createBoxbutton = $("<button>Create Box</button>")
-    createRemovebutton = $("<button>Remove Box</button>")
-    $('body').append(createBoxbutton);
-    $('body').append(createRemovebutton);
-    createBoxbutton.click =>
+
+    row.on 'panelClickAddBtnClick', (event) =>
       @editorManager.createBox()
-    createRemovebutton.click =>
+
+    row.on 'panelClickDeleteBtnClick', (event) =>
       @editorManager.removeBox()
 
 

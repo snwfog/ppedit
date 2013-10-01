@@ -6,11 +6,15 @@ class PCController extends Controller
   constructor: (@root) ->
     super @root
     @editorManager.root.keydown (event) =>
+
       if event.keyCode == 90 && event.ctrlKey
+        event.preventDefault()
         @editorManager.undo()
-    @editorManager.root.  keydown (event) =>
+
       if event.keyCode == 89 && event.ctrlKey
+        event.preventDefault()
         @editorManager.redo()
-    @editorManager.root.keydown (event) =>
+
       if event.keyCode == 46 || (event.keyCode == 46 && event.ctrlKey)
+        event.preventDefault()
         @editorManager.deleteOnFocus()

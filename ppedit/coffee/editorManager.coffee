@@ -65,8 +65,8 @@ class EditorManager
     @pushCommand new RemoveBoxesCommand @boxesContainer.element, $('.ppedit-box')
 
   deleteOnFocus: ->
-    if $('.ppedit-box:focus').length > 0
-      @pushCommand new RemoveBoxesCommand @boxesContainer.element, $('.ppedit-box:focus')
+    if $('.ppedit-box:focus, .ppedit-box-selected').length > 0
+      @pushCommand new RemoveBoxesCommand @boxesContainer.element, $('.ppedit-box:focus, .ppedit-box-selected')
 
   pushCommand: (command, execute ) ->
     command.execute() if !execute? || execute

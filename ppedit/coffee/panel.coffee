@@ -4,15 +4,16 @@ class Panel
     @element = $('
         <div class="col-xs-4">
           
-           <button class="btn btn-info" id="moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>
+           <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>
 
-           <button class="btn btn-info" id="moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button>
+           <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button>
 
-          <button class="btn btn-primary" id="addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>
+          <button class="btn btn-sm btn-primary addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>
 
 
-          <button class="btn btn-primary" id="removeElementBtn" type="button"><span class="glyphicon glyphicon-minus-sign"></span> Delete Element</button>
+          <button class="btn btn-sm btn-primary removeElementBtn" type="button"><span class="glyphicon glyphicon-minus-sign"></span> Delete Element</button>
           
+          <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>
           
           <table class="table table-hover" id="dataPanel">
               <thead>   
@@ -23,12 +24,7 @@ class Panel
                   </tr>
               </thead>
               <tbody>
-                  <tr>
-                          <td><input type="checkbox" name="chkk"></input></td>
-                          <td><input type="text" class="input-block-level" placeholder="Enter name"></input></td>
-                          <td><div class="ppedit-slider"></div></td>
-                        
-                  </tr>
+                
 
               </tbody>
           </table>
@@ -36,17 +32,19 @@ class Panel
 
     @root.append(@element)
 
-    $("#moveElementUpBtn").click =>
+    $(".moveElementUpBtn").click =>
         @moveElementUp "dataPanel"
 
-    $("#moveElementDownBtn").click =>
+    $(".moveElementDownBtn").click =>
         @moveElementDown "dataPanel"
 
-    $("#addElementBtn").click =>
+    $(".addElementBtn").click =>
         @addElement "dataPanel"
+        @root.trigger 'panelClickAddBtnClick', []       
 
-    $("#removeElementBtn").click =>
+    $(".removeElementBtn").click =>
         @deleteElement "dataPanel"
+        @root.trigger 'panelClickDeleteBtnClick', []   
 
     @createSlider $(".ppedit-slider")
 
