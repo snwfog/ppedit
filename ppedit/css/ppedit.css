@@ -51,3 +51,12 @@
 {
     width:100px;
 }
+
+.ppedit-grid
+{
+    position: absolute;
+    width:600px;
+    height:960px;
+    opacity:0.5;
+    z-index: -499;
+}

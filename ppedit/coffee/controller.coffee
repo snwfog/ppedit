@@ -1,5 +1,6 @@
 #= require EditorManager
 #= require Panel
+#= require Grid
 
 class Controller
 
@@ -20,5 +21,7 @@ class Controller
     row.on 'panelClickDeleteBtnClick', (event) =>
       @editorManager.removeBox()
 
+    row.on 'panelClickGridBtnClick', (event) =>
+      @editorManager.grid.toggleGrid()
 
 
