@@ -1,7 +1,6 @@
-#= require ICommand
 #= require Box
 
-class MoveBoxCommand extends ICommand
+class MoveBoxCommand
 
 	constructor: (@box, @toPosition, @fromPosition) ->
     @fromPosition = @box.currentPosition() if !fromPosition?

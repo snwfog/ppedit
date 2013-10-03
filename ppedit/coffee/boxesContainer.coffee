@@ -1,14 +1,25 @@
 #= require Box
 
-
 class BoxesContainer
+
   constructor: (@root) ->
-    @element = $('<div></div>').addClass('ppedit-box-container')
-    @root.append(@element)
     @boxes = {}
+    @undoStack = []
+    @redoStack = []
 
+    @element = $('<div></div>')
+      .addClass('ppedit-box-container')
+
+    @root.append(@element)
+
+    @element.on 'boxMoved', (event, box, currentPosition, originalPosition) =>
+      @_pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
+
+  ###
+  Selects the boxes contained in the passed rect.
+  The rect position is relative to the root.
+  ###
   selectBoxesInRect: (rect) ->
-
     # translate rectangle by the scrollPosition
     selectRect =
       topLeft:
@@ -24,9 +35,13 @@ class BoxesContainer
       selectRect.topLeft.y -= Math.abs(selectRect.size.height)
       selectRect.size.height = Math.abs(selectRect.size.height)
 
-    $('.ppedit-box').each (index, box) =>
+    @element.find('.ppedit-box').each (index, box) =>
       $(box).addClass 'ppedit-box-selected' if BoxesContainer._rectContainsRect selectRect, @boxBounds($(box))
 
+  ###
+  Returns the bounding rectangle of the box matching the
+  passed box selector.
+  ###
   boxBounds: (boxSelector) ->
     result =
       topLeft:
@@ -36,10 +51,14 @@ class BoxesContainer
         width:boxSelector.width()
         height:boxSelector.height()
 
+  ###
+  Creates a new box with the passed options ands adds it to the list.
+  ###
   createBox: (options) ->
-    box = new Box @root, @options
-    @addBox box
-    return box
+    @_pushCommand new CreateBoxCommand this, options
+
+  removeBox: (options) ->
+    @_pushCommand new RemoveBoxesCommand this
 
   ###
   Adds the passed Box Object to the Box List
@@ -48,13 +67,6 @@ class BoxesContainer
     @element.append box.element
     box.bindEvents()
     @boxes[box.element.attr('id')] = box
-
-  ###
-  Returns an array of Box objects matching the
-  passed Selector
-  ###
-  boxesFromSelector: (selector) ->
-    @element.find(selector).each ->
 
   ###
   Deletes the Box objects corresponding to the
@@ -81,9 +93,42 @@ class BoxesContainer
     else
       return $.extend(true, {}, @boxes)
 
+  deleteSelectedBoxes: ->
+    selectedBoxes = @element.find '.ppedit-box:focus, .ppedit-box-selected'
+    if selectedBoxes.length > 0
+      @_pushCommand new RemoveBoxesCommand this, selectedBoxes
+
+  ###
+  Undo the last executed command
+  ###
+  undo: ->
+    if @undoStack.length > 0
+      lastCommand = @undoStack.pop()
+      lastCommand.undo()
+      @redoStack.push lastCommand
+
+  ###
+  Redo the last executed command
+  ###
+  redo: ->
+    if @redoStack.length > 0
+      redoCommand = @redoStack.pop()
+      redoCommand.execute()
+      @undoStack.push redoCommand
+
+  ###
+  Inserts the passed command into the undo stack
+  flow. This method execute the command by default, set
+  the execute argument to false in order to prevent that behavior.
+  ###
+  _pushCommand: (command, execute ) ->
+    command.execute() if !execute? or execute
+    @undoStack.push command
+    @redoStack.splice 0, @redoStack.length
+
   ###
   Returns true if the innerRect Rectangle is fully
-  contained in the outerRect Rectangle, false otherwise.
+  contained within the outerRect Rectangle, false otherwise.
   ###
   @_rectContainsRect: (outerRect, innerRect) ->
     return (innerRect.topLeft.x >= outerRect.topLeft.x &&

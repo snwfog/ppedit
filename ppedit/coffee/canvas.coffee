@@ -30,7 +30,7 @@ class Canvas
     .on 'containerMouseUp', () =>
       @root.trigger 'canvasRectSelect', [
         topLeft:@downPosition
-        size:@rectSize] if @downPosition? && @rectSize
+        size:@rectSize] if @downPosition? && @rectSize?
       @clear()
 
     @root.append(@element)

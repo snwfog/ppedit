@@ -9,12 +9,12 @@ class PCController extends Controller
 
       if event.keyCode == 90 && event.ctrlKey
         event.preventDefault()
-        @editorManager.undo()
+        @editorManager.boxesContainer.undo()
 
       if event.keyCode == 89 && event.ctrlKey
         event.preventDefault()
-        @editorManager.redo()
+        @editorManager.boxesContainer.redo()
 
       if event.keyCode == 46 || (event.keyCode == 46 && event.ctrlKey)
         event.preventDefault()
-        @editorManager.deleteSelectedBoxes()
+        @editorManager.boxesContainer.deleteSelectedBoxes()

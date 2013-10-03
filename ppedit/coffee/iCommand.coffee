@@ -1,2 +1,0 @@
-class ICommand
-  constructor: (@root) ->

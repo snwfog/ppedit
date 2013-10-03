@@ -1,17 +1,13 @@
-#= require ICommand
 #= require Box
 #= require BoxesContainer
 
-class CreateBoxCommand extends ICommand
+class CreateBoxCommand
 
-  constructor: (@root, @boxesContainer, @options) ->
-    super @root
+  constructor: (@boxesContainer, @options) ->
     @box = undefined
 
   execute: ->
-    if !@box?
-      @box = @boxesContainer.createBox(@options) 
-    else
+      @box = new Box @boxesContainer.element, @options if !@box?
       @boxesContainer.addBox @box
 
   undo: ->

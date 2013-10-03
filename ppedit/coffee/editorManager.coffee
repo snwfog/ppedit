@@ -8,8 +8,6 @@
 class EditorManager
 
   constructor: (@root) ->
-    @undoStack = []
-    @redoStack = []
     @prevMouseEvent = undefined
     @canvas = undefined
     @grid = undefined
@@ -35,23 +33,17 @@ class EditorManager
           delta =
             x: event.clientX - @prevMouseEvent.clientX
             y: event.clientY - @prevMouseEvent.clientY
-        $('.ppedit-box').trigger 'containerMouseMove', [event, delta]
-        $('.ppedit-canvas').trigger 'containerMouseMove', [event, delta]
+        @element.find('*').trigger 'containerMouseMove', [event, delta]
         @prevMouseEvent = event
 
       .mouseleave =>
-        $('.ppedit-box').trigger 'containerMouseLeave'
-        $('.ppedit-canvas').trigger 'containerMouseLeave'
+        @element.find('*').trigger 'containerMouseLeave'
 
       .mouseup =>
-        $('.ppedit-box').trigger 'containerMouseUp'
-        $('.ppedit-canvas').trigger 'containerMouseUp'
+        @element.find('*').trigger 'containerMouseUp'
 
       .keydown (event) =>
-        $('.ppedit-box').trigger 'containerKeyDown', [event]
-
-      .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
-        @pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
+        @element.find('*').trigger 'containerKeyDown', [event]
 
       .on 'canvasRectSelect', (event, rect) =>
         @boxesContainer.selectBoxesInRect rect
@@ -59,31 +51,3 @@ class EditorManager
     @boxesContainer = new BoxesContainer @element
     @canvas = new Canvas @element
     @grid = new Grid @element
-
-  createBox: (options) ->
-    @pushCommand new CreateBoxCommand @boxesContainer.element, @boxesContainer, options
-
-  removeBox: (options) ->
-    @pushCommand new RemoveBoxesCommand @boxesContainer.element, @boxesContainer
-
-  deleteSelectedBoxes: ->
-    selectedBoxes = $('.ppedit-box:focus, .ppedit-box-selected')
-    if selectedBoxes.length > 0
-      @pushCommand new RemoveBoxesCommand @boxesContainer.element, @boxesContainer, selectedBoxes
-
-  pushCommand: (command, execute ) ->
-    command.execute() if !execute? or execute
-    @undoStack.push command
-    @redoStack.splice 0, @redoStack.length
-
-  undo: ->
-    if @undoStack.length > 0
-      lastCommand = @undoStack.pop()
-      lastCommand.undo()
-      @redoStack.push lastCommand
-
-  redo: ->
-    if @redoStack.length > 0
-      redoCommand = @redoStack.pop()
-      redoCommand.execute()
-      @undoStack.push redoCommand

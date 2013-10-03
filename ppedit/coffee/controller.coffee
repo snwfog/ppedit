@@ -8,7 +8,8 @@ class Controller
     @element = $('
       <div class="container">
         <div class="row"></div>
-      </div>')
+      </div>
+    ')
     @root.append(@element)
 
     row = @element.find('.row')
@@ -16,10 +17,10 @@ class Controller
     @panel = new Panel row
 
     row.on 'panelClickAddBtnClick', (event) =>
-      @editorManager.createBox()
+      @editorManager.boxesContainer.createBox()
 
     row.on 'panelClickDeleteBtnClick', (event) =>
-      @editorManager.removeBox()
+      @editorManager.boxesContainer.removeBox()
 
     row.on 'panelClickGridBtnClick', (event) =>
       @editorManager.grid.toggleGrid()
