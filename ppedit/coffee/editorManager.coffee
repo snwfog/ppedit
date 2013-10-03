@@ -3,6 +3,7 @@
 #= require Canvas
 #= require RemoveBoxesCommand
 #= require BoxesContainer
+#= require Grid
 
 class EditorManager
 
@@ -11,6 +12,7 @@ class EditorManager
     @redoStack = []
     @prevMouseEvent = undefined
     @canvas = undefined
+    @grid = undefined
     @boxesContainer = undefined
     @element = undefined
 
@@ -57,6 +59,7 @@ class EditorManager
 
     @boxesContainer = new BoxesContainer @element
     @canvas = new Canvas @element
+    @grid = new Grid @element
 
   createBox: (options) ->
     @pushCommand new CreateBoxCommand @boxesContainer.element, @boxesContainer, options

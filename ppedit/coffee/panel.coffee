@@ -2,7 +2,7 @@ class Panel
   constructor: (@root) ->
 
     @element = $('
-        <div class="col-xs-4">
+        <div class="col-xs-5">
           
            <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>
 
@@ -13,7 +13,7 @@ class Panel
 
           <button class="btn btn-sm btn-primary removeElementBtn" type="button"><span class="glyphicon glyphicon-minus-sign"></span> Delete Element</button>
           
-          <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>
+          <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>
           
           <table class="table table-hover" id="dataPanel">
               <thead>   
@@ -45,6 +45,9 @@ class Panel
     $(".removeElementBtn").click =>
         @deleteElement "dataPanel"
         @root.trigger 'panelClickDeleteBtnClick', []   
+
+    $(".gridElementBtn").click =>
+        @root.trigger 'panelClickGridBtnClick', [] 
 
     @createSlider $(".ppedit-slider")
 
