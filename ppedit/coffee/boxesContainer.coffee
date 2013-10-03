@@ -45,7 +45,6 @@ class BoxesContainer
   Adds the passed Box Object to the Box List
   ###
   addBox: (box) ->
-    console.log box
     @element.append box.element
     box.bindEvents()
     @boxes[box.element.attr('id')] = box

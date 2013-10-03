@@ -72,14 +72,18 @@ class EditorManager
       @pushCommand new RemoveBoxesCommand @boxesContainer.element, @boxesContainer, selectedBoxes
 
   pushCommand: (command, execute ) ->
-    command.execute() if !execute? || execute
-    @undoStack.unshift command
+    command.execute() if !execute? or execute
+    @undoStack.push command
+    @redoStack.splice 0, @redoStack.length
 
   undo: ->
     if @undoStack.length > 0
-      lastExecutedCommand = @undoStack.shift()
-      lastExecutedCommand.undo()
-      @redoStack.unshift lastExecutedCommand
+      lastCommand = @undoStack.pop()
+      lastCommand.undo()
+      @redoStack.push lastCommand
 
   redo: ->
-    @pushCommand @redoStack.shift() if @redoStack.length > 0
+    if @redoStack.length > 0
+      redoCommand = @redoStack.pop()
+      redoCommand.execute()
+      @undoStack.push redoCommand

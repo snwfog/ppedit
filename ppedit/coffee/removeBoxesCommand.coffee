@@ -16,7 +16,6 @@ class RemoveBoxesCommand extends ICommand
       boxArray = boxesSelector.toArray()
       @boxIds = (box.id for box in boxArray)
     @boxes = @boxesContainer.getBoxesFromIds @boxIds
-    console.log @boxes
 
   execute: ->
     @boxesContainer.removeBoxes @boxIds

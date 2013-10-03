@@ -511,21 +511,25 @@
       if ((execute == null) || execute) {
         command.execute();
       }
-      return this.undoStack.unshift(command);
+      this.undoStack.push(command);
+      return this.redoStack.splice(0, this.redoStack.length);
     };
 
     EditorManager.prototype.undo = function() {
-      var lastExecutedCommand;
+      var lastCommand;
       if (this.undoStack.length > 0) {
-        lastExecutedCommand = this.undoStack.shift();
-        lastExecutedCommand.undo();
-        return this.redoStack.unshift(lastExecutedCommand);
+        lastCommand = this.undoStack.pop();
+        lastCommand.undo();
+        return this.redoStack.push(lastCommand);
       }
     };
 
     EditorManager.prototype.redo = function() {
+      var redoCommand;
       if (this.redoStack.length > 0) {
-        return this.pushCommand(this.redoStack.shift());
+        redoCommand = this.redoStack.pop();
+        redoCommand.execute();
+        return this.undoStack.push(redoCommand);
       }
     };
 
