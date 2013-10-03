@@ -184,6 +184,7 @@
 
     BoxesContainer.prototype.addBox = function(box) {
       this.element.append(box.element);
+      console.log(box);
       box.bindEvents();
       return this.boxes[box.element.attr('id')] = box;
     };
@@ -216,25 +217,28 @@
     };
 
     /*
-    Returns the Box objects corresponding to the
+    Returns an array of Box objects corresponding to the
     passed boxIds. Passing no arguments will return
     all Box objects.
     */
 
 
     BoxesContainer.prototype.getBoxesFromIds = function(boxIds) {
-      var id, _i, _len;
+      var id;
       if (boxIds != null) {
-        for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
-          id = boxIds[_i];
-          if (this.boxes[id] != null) {
-            return {
-              id: this.boxes[id]
-            };
+        return (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
+            id = boxIds[_i];
+            if (this.boxes[id] != null) {
+              _results.push(this.boxes[id]);
+            }
           }
-        }
+          return _results;
+        }).call(this);
       } else {
-        return $.extend(true, {}, this.boxes);
+        return $.extend(true, [], this.boxes);
       }
     };
 
@@ -325,6 +329,8 @@
         })();
       }
       this.boxes = this.boxesContainer.getBoxesFromIds(this.boxIds);
+      console.log(this.boxIds);
+      console.log(this.boxes);
     }
 
     RemoveBoxesCommand.prototype.execute = function() {
@@ -332,11 +338,11 @@
     };
 
     RemoveBoxesCommand.prototype.undo = function() {
-      var box, id, _ref, _results;
+      var box, _i, _len, _ref, _results;
       _ref = this.boxes;
       _results = [];
-      for (id in _ref) {
-        box = _ref[id];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
         _results.push(this.boxesContainer.addBox(box));
       }
       return _results;

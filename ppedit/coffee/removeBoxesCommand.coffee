@@ -18,6 +18,6 @@ class RemoveBoxesCommand
     @boxesContainer.removeBoxes @boxIds
 
   undo: ->
-    for id, box of @boxes
-      @boxesContainer.addBox box
+    @boxesContainer.addBox box for box in @boxes
+
 

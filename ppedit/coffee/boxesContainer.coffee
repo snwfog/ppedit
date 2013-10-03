@@ -83,15 +83,15 @@ class BoxesContainer
         delete @boxes[id]
 
   ###
-  Returns the Box objects corresponding to the
+  Returns an array of Box objects corresponding to the
   passed boxIds. Passing no arguments will return
   all Box objects.
   ###
   getBoxesFromIds: (boxIds) ->
     if boxIds?
-      return {id:@boxes[id]} for id in boxIds when @boxes[id]?
+      return (@boxes[id] for id in boxIds when @boxes[id]?)
     else
-      return $.extend(true, {}, @boxes)
+      return $.extend(true, [], @boxes)
 
   deleteSelectedBoxes: ->
     selectedBoxes = @element.find '.ppedit-box:focus, .ppedit-box-selected'
