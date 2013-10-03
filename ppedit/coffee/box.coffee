@@ -17,10 +17,14 @@ class Box
     .attr('tabindex', 0)
     .attr('id', $.now())
     .css(settings)
+    @bindEvents()
+
+  bindEvents: ->
+    @element
     .mousedown (event) =>
       @element.addClass('ppedit-box-selected')
       @prevPosition = @currentPosition()
-
+ 
     .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
       @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
 

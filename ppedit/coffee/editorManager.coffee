@@ -59,14 +59,14 @@ class EditorManager
     @canvas = new Canvas @element
 
   createBox: (options) ->
-    @pushCommand new CreateBoxCommand @boxesContainer.element, options
+    @pushCommand new CreateBoxCommand @boxesContainer.element, @boxesContainer, options
 
   removeBox: (options) ->
-    @pushCommand new RemoveBoxesCommand @boxesContainer.element, $('.ppedit-box')
+    @pushCommand new RemoveBoxesCommand @boxesContainer.element, @boxesContainer
 
   deleteOnFocus: ->
     if $('.ppedit-box:focus, .ppedit-box-selected').length > 0
-      @pushCommand new RemoveBoxesCommand @boxesContainer.element, $('.ppedit-box:focus, .ppedit-box-selected')
+      @pushCommand new RemoveBoxesCommand @boxesContainer.element, @boxesContainer, $('.ppedit-box:focus, .ppedit-box-selected')
 
   pushCommand: (command, execute ) ->
     command.execute() if !execute? || execute

@@ -15,8 +15,7 @@
 
   Box = (function() {
     function Box(root, options) {
-      var settings,
-        _this = this;
+      var settings;
       this.root = root;
       this.prevPosition = void 0;
       settings = $.extend({
@@ -25,7 +24,13 @@
         width: '100px',
         height: '200px'
       }, options);
-      this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings).mousedown(function(event) {
+      this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings);
+      this.bindEvents();
+    }
+
+    Box.prototype.bindEvents = function() {
+      var _this = this;
+      return this.element.mousedown(function(event) {
         _this.element.addClass('ppedit-box-selected');
         return _this.prevPosition = _this.currentPosition();
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
@@ -43,7 +48,7 @@
       }).keydown(function(event) {
         return _this.processKeyDownEvent(event);
       });
-    }
+    };
 
     Box.prototype.processKeyDownEvent = function(event) {
       var moved, previousPosition;
@@ -104,21 +109,110 @@
 
   })();
 
+  BoxesContainer = (function() {
+    function BoxesContainer(root) {
+      this.root = root;
+      this.element = $('<div></div>').addClass('ppedit-box-container');
+      this.root.append(this.element);
+      this.boxes = [];
+    }
+
+    BoxesContainer.prototype.selectBoxesInRect = function(rect) {
+      var selectRect,
+        _this = this;
+      selectRect = {
+        topLeft: {
+          x: rect.topLeft.x + this.element.scrollLeft(),
+          y: rect.topLeft.y + this.element.scrollTop()
+        },
+        size: rect.size
+      };
+      if (selectRect.size.width < 0) {
+        selectRect.topLeft.x -= Math.abs(selectRect.size.width);
+        selectRect.size.width = Math.abs(selectRect.size.width);
+      }
+      if (selectRect.size.height < 0) {
+        selectRect.topLeft.y -= Math.abs(selectRect.size.height);
+        selectRect.size.height = Math.abs(selectRect.size.height);
+      }
+      return $('.ppedit-box').each(function(index, box) {
+        if (BoxesContainer._rectContainsRect(selectRect, _this.boxBounds($(box)))) {
+          return $(box).addClass('ppedit-box-selected');
+        }
+      });
+    };
+
+    BoxesContainer.prototype.boxBounds = function(boxSelector) {
+      var result;
+      return result = {
+        topLeft: {
+          x: boxSelector.position().left + this.element.scrollLeft(),
+          y: boxSelector.position().top + this.element.scrollTop()
+        },
+        size: {
+          width: boxSelector.width(),
+          height: boxSelector.height()
+        }
+      };
+    };
+
+    BoxesContainer._rectContainsRect = function(outerRect, innerRect) {
+      return innerRect.topLeft.x >= outerRect.topLeft.x && innerRect.topLeft.y >= outerRect.topLeft.y && innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width && innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height;
+    };
+
+    BoxesContainer.prototype.createBox = function(options) {
+      var box;
+      box = new Box(this.root, this.options);
+      this.addBox(box);
+      return box;
+    };
+
+    BoxesContainer.prototype.addBox = function(box) {
+      this.element.append(box.element);
+      return this.boxes.push(box);
+    };
+
+    BoxesContainer.prototype.removeBoxes = function(boxes) {
+      var box, _i, _len;
+      if (boxes == null) {
+        boxes = this.boxes;
+      }
+      for (_i = 0, _len = boxes.length; _i < _len; _i++) {
+        box = boxes[_i];
+        box.element.remove();
+      }
+      return this.boxes = [];
+    };
+
+    return BoxesContainer;
+
+  })();
+
   RemoveBoxesCommand = (function(_super) {
     __extends(RemoveBoxesCommand, _super);
 
-    function RemoveBoxesCommand(root, boxes) {
+    function RemoveBoxesCommand(root, boxesContainer, boxes) {
       this.root = root;
+      this.boxesContainer = boxesContainer;
       this.boxes = boxes;
       RemoveBoxesCommand.__super__.constructor.call(this, this.root);
+      this.boxes = this.boxesContainer.boxes;
     }
 
     RemoveBoxesCommand.prototype.execute = function() {
-      return this.boxes.remove();
+      return this.boxesContainer.removeBoxes();
     };
 
     RemoveBoxesCommand.prototype.undo = function() {
-      return this.root.append(this.boxes);
+      var item, _i, _len, _ref, _results;
+      _ref = this.boxes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        item = _ref[_i];
+        this.boxesContainer.addBox(item);
+        _results.push(item.bindEvents());
+      }
+      return _results;
     };
 
     return RemoveBoxesCommand;
@@ -128,8 +222,9 @@
   CreateBoxCommand = (function(_super) {
     __extends(CreateBoxCommand, _super);
 
-    function CreateBoxCommand(root, options) {
+    function CreateBoxCommand(root, boxesContainer, options) {
       this.root = root;
+      this.boxesContainer = boxesContainer;
       this.options = options;
       CreateBoxCommand.__super__.constructor.call(this, this.root);
       this.box = void 0;
@@ -137,9 +232,10 @@
 
     CreateBoxCommand.prototype.execute = function() {
       if (this.box == null) {
-        this.box = new Box(this.root, this.options);
+        return this.box = this.boxesContainer.createBox(this.options);
+      } else {
+        return this.boxesContainer.addBox(this.box);
       }
-      return this.root.append(this.box.element);
     };
 
     CreateBoxCommand.prototype.undo = function() {
@@ -236,61 +332,6 @@
 
   })();
 
-  BoxesContainer = (function() {
-    function BoxesContainer(root) {
-      this.root = root;
-      this.element = $('<div></div>').addClass('ppedit-box-container');
-      this.root.append(this.element);
-      this.boxes = [];
-    }
-
-    BoxesContainer.prototype.selectBoxesInRect = function(rect) {
-      var selectRect,
-        _this = this;
-      selectRect = {
-        topLeft: {
-          x: rect.topLeft.x + this.element.scrollLeft(),
-          y: rect.topLeft.y + this.element.scrollTop()
-        },
-        size: rect.size
-      };
-      if (selectRect.size.width < 0) {
-        selectRect.topLeft.x -= Math.abs(selectRect.size.width);
-        selectRect.size.width = Math.abs(selectRect.size.width);
-      }
-      if (selectRect.size.height < 0) {
-        selectRect.topLeft.y -= Math.abs(selectRect.size.height);
-        selectRect.size.height = Math.abs(selectRect.size.height);
-      }
-      return $('.ppedit-box').each(function(index, box) {
-        if (BoxesContainer._rectContainsRect(selectRect, _this.boxBounds($(box)))) {
-          return $(box).addClass('ppedit-box-selected');
-        }
-      });
-    };
-
-    BoxesContainer.prototype.boxBounds = function(boxSelector) {
-      var result;
-      return result = {
-        topLeft: {
-          x: boxSelector.position().left + this.element.scrollLeft(),
-          y: boxSelector.position().top + this.element.scrollTop()
-        },
-        size: {
-          width: boxSelector.width(),
-          height: boxSelector.height()
-        }
-      };
-    };
-
-    BoxesContainer._rectContainsRect = function(outerRect, innerRect) {
-      return innerRect.topLeft.x >= outerRect.topLeft.x && innerRect.topLeft.y >= outerRect.topLeft.y && innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width && innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height;
-    };
-
-    return BoxesContainer;
-
-  })();
-
   EditorManager = (function() {
     function EditorManager(root) {
       this.root = root;
@@ -341,16 +382,16 @@
     };
 
     EditorManager.prototype.createBox = function(options) {
-      return this.pushCommand(new CreateBoxCommand(this.boxesContainer.element, options));
+      return this.pushCommand(new CreateBoxCommand(this.boxesContainer.element, this.boxesContainer, options));
     };
 
     EditorManager.prototype.removeBox = function(options) {
-      return this.pushCommand(new RemoveBoxesCommand(this.boxesContainer.element, $('.ppedit-box')));
+      return this.pushCommand(new RemoveBoxesCommand(this.boxesContainer.element, this.boxesContainer));
     };
 
     EditorManager.prototype.deleteOnFocus = function() {
       if ($('.ppedit-box:focus, .ppedit-box-selected').length > 0) {
-        return this.pushCommand(new RemoveBoxesCommand(this.boxesContainer.element, $('.ppedit-box:focus, .ppedit-box-selected')));
+        return this.pushCommand(new RemoveBoxesCommand(this.boxesContainer.element, this.boxesContainer, $('.ppedit-box:focus, .ppedit-box-selected')));
       }
     };
 

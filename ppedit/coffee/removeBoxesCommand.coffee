@@ -1,13 +1,17 @@
 #= require ICommand
 #= require Box
+#= require BoxesContainer
 
 class RemoveBoxesCommand extends ICommand
 
-  constructor: (@root, @boxes) ->
+  constructor: (@root, @boxesContainer, @boxes) ->
     super @root
+    @boxes = @boxesContainer.boxes
 
   execute: ->
-    @boxes.remove()
+    @boxesContainer.removeBoxes()
 
   undo: ->
-    @root.append(@boxes)
+    for item in @boxes
+      @boxesContainer.addBox item
+      item.bindEvents()

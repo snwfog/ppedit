@@ -1,5 +1,6 @@
 #= require Box
 
+
 class BoxesContainer
   constructor: (@root) ->
     @element = $('<div></div>').addClass('ppedit-box-container')
@@ -40,3 +41,28 @@ class BoxesContainer
       innerRect.topLeft.y >= outerRect.topLeft.y &&
       innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width &&
       innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height)
+
+  createBox: (options) ->
+    box = new Box @root, @options
+    @addBox box
+    return box
+
+  addBox: (box) ->
+    @element.append box.element
+    @boxes.push box
+
+  removeBoxes: (boxes) ->
+    boxes = @boxes if !boxes?
+    for box in boxes
+      box.element.remove()
+      #boxIndex = @boxes.indexOf(box)
+      #@boxes.splice boxIndex, 1
+    @boxes = []
+
+
+
+
+
+
+
+
