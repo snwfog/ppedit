@@ -4,14 +4,24 @@
 
 class RemoveBoxesCommand extends ICommand
 
-  constructor: (@root, @boxesContainer, @boxes) ->
+  ###
+  Class constructor, omit the boxesSelector argument to
+  issue a command for removing all boxes.
+  ###
+  constructor: (@root, @boxesContainer, boxesSelector) ->
     super @root
-    @boxes = @boxesContainer.boxes
+
+    if boxesSelector?
+      # Getting the boxes to delete
+      boxArray = boxesSelector.toArray()
+      @boxIds = (box.id for box in boxArray)
+    @boxes = @boxesContainer.getBoxesFromIds @boxIds
+    console.log @boxes
 
   execute: ->
-    @boxesContainer.removeBoxes()
+    @boxesContainer.removeBoxes @boxIds
 
   undo: ->
-    for item in @boxes
-      @boxesContainer.addBox item
-      item.bindEvents()
+    for id, box of @boxes
+      @boxesContainer.addBox box
+

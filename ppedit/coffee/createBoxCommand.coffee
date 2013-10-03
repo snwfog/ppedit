@@ -15,5 +15,4 @@ class CreateBoxCommand extends ICommand
       @boxesContainer.addBox @box
 
   undo: ->
-    @box.element.remove()
-    #@boxesContainer.removeBoxes [@box]
+    @boxesContainer.removeBoxes [@box.element.attr('id')]

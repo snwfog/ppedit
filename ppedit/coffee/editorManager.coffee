@@ -37,7 +37,6 @@ class EditorManager
             y: event.clientY - @prevMouseEvent.clientY
         $('.ppedit-box').trigger 'containerMouseMove', [event, delta]
         $('.ppedit-canvas').trigger 'containerMouseMove', [event, delta]
-
         @prevMouseEvent = event
 
       .mouseleave =>
@@ -67,9 +66,10 @@ class EditorManager
   removeBox: (options) ->
     @pushCommand new RemoveBoxesCommand @boxesContainer.element, @boxesContainer
 
-  deleteOnFocus: ->
-    if $('.ppedit-box:focus, .ppedit-box-selected').length > 0
-      @pushCommand new RemoveBoxesCommand @boxesContainer.element, @boxesContainer, $('.ppedit-box:focus, .ppedit-box-selected')
+  deleteSelectedBoxes: ->
+    selectedBoxes = $('.ppedit-box:focus, .ppedit-box-selected')
+    if selectedBoxes.length > 0
+      @pushCommand new RemoveBoxesCommand @boxesContainer.element, @boxesContainer, selectedBoxes
 
   pushCommand: (command, execute ) ->
     command.execute() if !execute? || execute

@@ -17,4 +17,4 @@ class PCController extends Controller
 
       if event.keyCode == 46 || (event.keyCode == 46 && event.ctrlKey)
         event.preventDefault()
-        @editorManager.deleteOnFocus()
+        @editorManager.deleteSelectedBoxes()

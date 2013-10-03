@@ -17,7 +17,6 @@ class Box
     .attr('tabindex', 0)
     .attr('id', $.now())
     .css(settings)
-    @bindEvents()
 
   bindEvents: ->
     @element
