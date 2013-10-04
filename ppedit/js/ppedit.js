@@ -12,8 +12,8 @@
       settings = $.extend({
         left: '50px',
         top: '50px',
-        width: '100px',
-        height: '200px'
+        width: '150px',
+        height: '100px'
       }, options);
       this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings);
     }
