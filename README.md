@@ -61,6 +61,8 @@ First clone this repository then follow the instructions below.
 	- `coffeescript-concat -I coffee/ | coffee -s  --compile > js/ppedit.js`
 	
  - Open the main.html file on a browser to see what the editor looks like
+ 
+ - You can also run the `compileCoffee.sh` file to generate the ppedit.js and the ppedit-test.js in one command. 
 
 ### Testing
 
@@ -71,6 +73,8 @@ First clone this repository then follow the instructions below.
 	- `coffeescript-concat -I coffee/tests | coffee -s  --compile > js/ppedit-tests.js`
 	
  - Open the tests.html file on a browser to run and see the results of the tests. Clear your browser cache and refresh your page to run the tests again.
+ 
+  - You can also run the `compileCoffee.sh` file to generate the ppedit.js and the ppedit-test.js in one command.
  
 ##Third Party Librairies Used
 
@@ -85,6 +89,9 @@ First clone this repository then follow the instructions below.
 ###Testing :
 
  - [Jasmine](http://pivotal.github.io/jasmine/) : Jasmine is a behavior-driven testing framework for testing JavaScript code. 
+ 
  - [Jasmine-query](https://github.com/velesin/jasmine-jquery) : jasmine-jquery provides two extensions for Jasmine.
+ 
  - [jQuery Simulate](https://github.com/jquery/jquery-simulate) : jQuery Simulate allows to simulate mouseEvents and keyBoards events on a browser.
+ 
  - [jQuery Simulate Extended Plugin 1.2.0](https://github.com/j-ulrich/jquery-simulate-ext) : The simulate extended plugin provides methods for simulating complex user interactions based on the jQuery.simulate() plugin.
