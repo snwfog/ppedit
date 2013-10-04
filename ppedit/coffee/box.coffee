@@ -8,8 +8,8 @@ class Box
     settings = $.extend(
       left:'50px'
       top:'50px'
-      width:'100px'
-      height:'200px'
+      width:'150px'
+      height:'100px'
     , options);
 
     @element = $('<div></div>')

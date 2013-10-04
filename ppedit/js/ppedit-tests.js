@@ -6,4 +6,12 @@
     });
   });
 
+  describe("A test for issue CAP-14 : As a user, I want to reposition elements visible on my work area", function() {
+    return it("adds a box on add element button click", function() {
+      $(".editor").ppedit();
+      $(".addElementBtn").click();
+      return expect($(".editor").find('.ppedit-box')).toHaveLength(1);
+    });
+  });
+
 }).call(this);
