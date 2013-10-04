@@ -1,6 +1,7 @@
 #= require EditorManager
 #= require Panel
 #= require Grid
+#= require Box
 
 class Controller
 
@@ -14,10 +15,11 @@ class Controller
 
     row = @element.find('.row')
     @editorManager = new EditorManager row
-    @panel = new Panel row
+    @panel = new Panel row, @editorManager
 
     row.on 'panelClickAddBtnClick', (event) =>
-      @editorManager.boxesContainer.createBox()
+      box = @editorManager.boxesContainer.createBox()
+      @panel.addElement "dataPanel", box.element.attr('id')
 
     row.on 'panelClickDeleteBtnClick', (event) =>
       @editorManager.boxesContainer.removeBox()

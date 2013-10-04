@@ -130,7 +130,7 @@
         size: rect.size
       };
       if (selectRect.size.width < 0) {
-        selectRect.topLeft.x -= Math.abs(selectRect.size.width);
+        selectRect.topLeft.x -= MoveBoxCommandath.abs(selectRect.size.width);
         selectRect.size.width = Math.abs(selectRect.size.width);
       }
       if (selectRect.size.height < 0) {
@@ -165,12 +165,16 @@
     };
 
     /*
-    Creates a new box with the passed options ands adds it to the list.
+    Creates a new box with the passed options ands adds it to the list,
+    then return the boxes newly created.
     */
 
 
     BoxesContainer.prototype.createBox = function(options) {
-      return this._pushCommand(new CreateBoxCommand(this, options));
+      var createBoxCommand;
+      createBoxCommand = new CreateBoxCommand(this, options);
+      this._pushCommand(createBoxCommand);
+      return createBoxCommand.box;
     };
 
     BoxesContainer.prototype.removeBox = function(options) {
@@ -247,6 +251,10 @@
       if (selectedBoxes.length > 0) {
         return this._pushCommand(new RemoveBoxesCommand(this, selectedBoxes));
       }
+    };
+
+    BoxesContainer.prototype.chageBoxOpacity = function(boxid, opacityVal) {
+      return this.boxes[boxid].element.css("opacity", opacityVal);
     };
 
     /*
@@ -534,9 +542,10 @@
   })();
 
   Panel = (function() {
-    function Panel(root) {
+    function Panel(root, editorManager) {
       var _this = this;
       this.root = root;
+      this.editorManager = editorManager;
       this.element = $('\
         <div class="col-xs-5">\
           \
@@ -573,7 +582,6 @@
         return _this.moveElementDown("dataPanel");
       });
       $(".addElementBtn").click(function() {
-        _this.addElement("dataPanel");
         return _this.root.trigger('panelClickAddBtnClick', []);
       });
       $(".removeElementBtn").click(function() {
@@ -583,7 +591,6 @@
       $(".gridElementBtn").click(function() {
         return _this.root.trigger('panelClickGridBtnClick', []);
       });
-      this.createSlider($(".ppedit-slider"));
     }
 
     Panel.prototype.moveElementUp = function(panelID) {
@@ -612,18 +619,24 @@
       }
     };
 
-    Panel.prototype.moveElementUpDown = function(panelID) {
-      var newRow;
-      newRow = $("        <tr>            <td><input type=\"checkbox\" name=\"chkk\"></input></td>            <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>            <td><div class=\"ppedit-slider\"></div></td>        </tr>");
-      $("#" + panelID + " tbody").append(newRow);
-      return this.createSlider(newRow.find(".ppedit-slider"));
-    };
+    Panel.prototype.moveElementUpDown = function(panelID) {};
 
-    Panel.prototype.addElement = function(panelID) {
-      var newRow;
-      newRow = $("        <tr>            <td><input type=\"checkbox\" name=\"chkk\"></input></td>            <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>            <td><div class=\"ppedit-slider\"></div></td>                            </tr>");
+    Panel.prototype.addElement = function(panelID, boxid) {
+      var newRow,
+        _this = this;
+      newRow = $("        <tr>            <td><input type=\"checkbox\" name=\"chkk\"></input></td>            <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>            <td><div class=\"ppedit-slider\"></div></td>                            </tr>").attr('ppedit-box-id', boxid);
       $("#" + panelID + " tbody").append(newRow);
-      return this.createSlider(newRow.find(".ppedit-slider"));
+      return newRow.find(".ppedit-slider").slider({
+        min: 0,
+        max: 100,
+        step: 1,
+        value: 100
+      }).on('slide', function(event) {
+        var boxId, opacityVal;
+        opacityVal = $(event.target).val();
+        boxId = newRow.attr('ppedit-box-id');
+        return _this.editorManager.boxesContainer.chageBoxOpacity(boxId, parseInt(opacityVal) / 100);
+      });
     };
 
     Panel.prototype.deleteElement = function(panelID) {
@@ -654,15 +667,6 @@
       }
     };
 
-    Panel.prototype.createSlider = function(selector) {
-      return selector.slider({
-        min: 0,
-        max: 100,
-        step: 1,
-        value: 100
-      });
-    };
-
     return Panel;
 
   })();
@@ -680,9 +684,11 @@
       this.root.append(this.element);
       row = this.element.find('.row');
       this.editorManager = new EditorManager(row);
-      this.panel = new Panel(row);
+      this.panel = new Panel(row, this.editorManager);
       row.on('panelClickAddBtnClick', function(event) {
-        return _this.editorManager.boxesContainer.createBox();
+        var box;
+        box = _this.editorManager.boxesContainer.createBox();
+        return _this.panel.addElement("dataPanel", box.element.attr('id'));
       });
       row.on('panelClickDeleteBtnClick', function(event) {
         return _this.editorManager.boxesContainer.removeBox();
