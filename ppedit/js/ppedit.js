@@ -184,7 +184,6 @@
 
     BoxesContainer.prototype.addBox = function(box) {
       this.element.append(box.element);
-      console.log(box);
       box.bindEvents();
       return this.boxes[box.element.attr('id')] = box;
     };
@@ -329,8 +328,6 @@
         })();
       }
       this.boxes = this.boxesContainer.getBoxesFromIds(this.boxIds);
-      console.log(this.boxIds);
-      console.log(this.boxes);
     }
 
     RemoveBoxesCommand.prototype.execute = function() {
