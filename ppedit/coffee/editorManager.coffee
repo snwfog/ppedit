@@ -48,8 +48,6 @@ class EditorManager
       .on 'canvasRectSelect', (event, rect) =>
         @boxesContainer.selectBoxesInRect rect
 
-      # .on 'ondlide'
-
     @boxesContainer = new BoxesContainer @element
     @canvas = new Canvas @element
     @grid = new Grid @element

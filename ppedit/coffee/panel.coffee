@@ -1,7 +1,5 @@
-#= require EditorManager
-
 class Panel
-  constructor: (@root, @editorManager) ->
+  constructor: (@root) ->
 
     @element = $('
         <div class="col-xs-5">
@@ -93,7 +91,7 @@ class Panel
       .on 'slide', (event) =>
         opacityVal = $(event.target).val()
         boxId = newRow.attr('ppedit-box-id')
-        @editorManager.boxesContainer.chageBoxOpacity boxId, parseInt(opacityVal)/100
+        @root.trigger 'onRowSliderValChanged', [boxId, parseInt(opacityVal)/100]
 
   deleteElement: (panelID) ->
     try

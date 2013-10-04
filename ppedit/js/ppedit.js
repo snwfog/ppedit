@@ -542,10 +542,9 @@
   })();
 
   Panel = (function() {
-    function Panel(root, editorManager) {
+    function Panel(root) {
       var _this = this;
       this.root = root;
-      this.editorManager = editorManager;
       this.element = $('\
         <div class="col-xs-5">\
           \
@@ -635,7 +634,7 @@
         var boxId, opacityVal;
         opacityVal = $(event.target).val();
         boxId = newRow.attr('ppedit-box-id');
-        return _this.editorManager.boxesContainer.chageBoxOpacity(boxId, parseInt(opacityVal) / 100);
+        return _this.root.trigger('onRowSliderValChanged', [boxId, parseInt(opacityVal) / 100]);
       });
     };
 
@@ -684,7 +683,7 @@
       this.root.append(this.element);
       row = this.element.find('.row');
       this.editorManager = new EditorManager(row);
-      this.panel = new Panel(row, this.editorManager);
+      this.panel = new Panel(row);
       row.on('panelClickAddBtnClick', function(event) {
         var box;
         box = _this.editorManager.boxesContainer.createBox();
@@ -695,6 +694,9 @@
       });
       row.on('panelClickGridBtnClick', function(event) {
         return _this.editorManager.grid.toggleGrid();
+      });
+      row.on('onRowSliderValChanged', function(event, boxId, opacityVal) {
+        return _this.editorManager.boxesContainer.chageBoxOpacity(boxId, opacityVal);
       });
     }
 
