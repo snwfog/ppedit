@@ -28,7 +28,7 @@ class BoxesContainer
       size:rect.size
 
     if selectRect.size.width < 0
-      selectRect.topLeft.x -= Math.abs(selectRect.size.width)
+      selectRect.topLeft.x -= MoveBoxCommandath.abs(selectRect.size.width)
       selectRect.size.width = Math.abs(selectRect.size.width)
 
     if selectRect.size.height < 0
@@ -52,10 +52,13 @@ class BoxesContainer
         height:boxSelector.height()
 
   ###
-  Creates a new box with the passed options ands adds it to the list.
+  Creates a new box with the passed options ands adds it to the list,
+  then return the boxes newly created.
   ###
   createBox: (options) ->
-    @_pushCommand new CreateBoxCommand this, options
+    createBoxCommand = new CreateBoxCommand this, options
+    @_pushCommand createBoxCommand
+    return createBoxCommand.box
 
   removeBox: (options) ->
     @_pushCommand new RemoveBoxesCommand this
@@ -97,6 +100,9 @@ class BoxesContainer
     selectedBoxes = @element.find '.ppedit-box:focus, .ppedit-box-selected'
     if selectedBoxes.length > 0
       @_pushCommand new RemoveBoxesCommand this, selectedBoxes
+
+  chageBoxOpacity: (boxid, opacityVal) ->
+        @boxes[boxid].element.css("opacity", opacityVal)
 
   ###
   Undo the last executed command

@@ -1,5 +1,7 @@
+#= require EditorManager
+
 class Panel
-  constructor: (@root) ->
+  constructor: (@root, @editorManager) ->
 
     @element = $('
         <div class="col-xs-5">
@@ -39,7 +41,7 @@ class Panel
         @moveElementDown "dataPanel"
 
     $(".addElementBtn").click =>
-        @addElement "dataPanel"
+        
         @root.trigger 'panelClickAddBtnClick', []       
 
     $(".removeElementBtn").click =>
@@ -49,12 +51,11 @@ class Panel
     $(".gridElementBtn").click =>
         @root.trigger 'panelClickGridBtnClick', [] 
 
-    @createSlider $(".ppedit-slider")
-
   moveElementUp: (panelID) ->
     try
       checkboxRow = document.getElementById(panelID)
-      rowCount = panel.rows.length
+      rowCount = panel.rows
+      .length
       i = 0
 
       while i < rowCount
@@ -70,24 +71,29 @@ class Panel
       alert e
  
   moveElementUpDown: (panelID) ->
-    newRow = $("
-        <tr>
-            <td><input type=\"checkbox\" name=\"chkk\"></input></td>
-            <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>
-            <td><div class=\"ppedit-slider\"></div></td>
-        </tr>")
-    $("#" + panelID + " tbody").append newRow
-    @createSlider newRow.find(".ppedit-slider")
 
-  addElement: (panelID) ->
+  addElement: (panelID, boxid) ->
     newRow = $("
         <tr>
             <td><input type=\"checkbox\" name=\"chkk\"></input></td>
             <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>
             <td><div class=\"ppedit-slider\"></div></td>                    
         </tr>")
+    .attr('ppedit-box-id', boxid)
     $("#" + panelID + " tbody").append newRow
-    @createSlider newRow.find(".ppedit-slider")
+
+    newRow
+      .find(".ppedit-slider")
+      .slider(
+        min: 0
+        max: 100
+        step: 1
+        value: 100
+      )
+      .on 'slide', (event) =>
+        opacityVal = $(event.target).val()
+        boxId = newRow.attr('ppedit-box-id')
+        @editorManager.boxesContainer.chageBoxOpacity boxId, parseInt(opacityVal)/100
 
   deleteElement: (panelID) ->
     try
@@ -108,11 +114,3 @@ class Panel
         i++
     catch e
       alert e
-
-  createSlider: (selector) ->
-    selector.slider(
-      min: 0
-      max: 100
-      step: 1
-      value: 100
-    )
