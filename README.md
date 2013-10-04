@@ -71,3 +71,20 @@ First clone this repository then follow the instructions below.
 	- `coffeescript-concat -I coffee/tests | coffee -s  --compile > js/ppedit-tests.js`
 	
  - Open the tests.html file on a browser to run and see the results of the tests. Clear your browser cache and refresh your page to run the tests again.
+ 
+##Third Party Librairies Used
+
+###Coding :
+
+ - [jQuery](http://jquery.com/) : provides an API simpler than the built-in Javascript for HTML document traversal and manipulation, event handling, animation, and Ajax.
+ 
+ - [CoffeeScript](http://coffeescript.org/) : CoffeeScript is a little language that compiles into JavaScript.
+ 
+ - [coffeescript-concat](https://github.com/fairfieldt/coffeescript-concat) : coffeescript-concat is a utility that preprocesses and concatenates CoffeeScript source files, allowing to create package javascript source files.
+
+###Testing :
+
+ - [Jasmine](http://pivotal.github.io/jasmine/) : Jasmine is a behavior-driven testing framework for testing JavaScript code. 
+ - [Jasmine-query](https://github.com/velesin/jasmine-jquery) : jasmine-jquery provides two extensions for Jasmine.
+ - [jQuery Simulate](https://github.com/jquery/jquery-simulate) : jQuery Simulate allows to simulate mouseEvents and keyBoards events on a browser.
+ - [jQuery Simulate Extended Plugin 1.2.0](https://github.com/j-ulrich/jquery-simulate-ext) : The simulate extended plugin provides methods for simulating complex user interactions based on the jQuery.simulate() plugin.
