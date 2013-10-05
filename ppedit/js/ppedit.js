@@ -130,7 +130,7 @@
         size: rect.size
       };
       if (selectRect.size.width < 0) {
-        selectRect.topLeft.x -= MoveBoxCommandath.abs(selectRect.size.width);
+        selectRect.topLeft.x -= Math.abs(selectRect.size.width);
         selectRect.size.width = Math.abs(selectRect.size.width);
       }
       if (selectRect.size.height < 0) {
@@ -526,6 +526,7 @@
       }).mouseleave(function() {
         return _this.element.find('*').trigger('containerMouseLeave');
       }).mouseup(function() {
+        console.log('mouseup');
         return _this.element.find('*').trigger('containerMouseUp');
       }).keydown(function(event) {
         return _this.element.find('*').trigger('containerKeyDown', [event]);

@@ -36,9 +36,9 @@
     overflow:auto;
 }
 
-.ppedit-box .ppedit-box-selected
+.ppedit-box-selected
 {
-    border-color:blue;
+    border-style:dashed;
 }
 
 .ppedit-canvas

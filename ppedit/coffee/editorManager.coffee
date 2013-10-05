@@ -40,6 +40,7 @@ class EditorManager
         @element.find('*').trigger 'containerMouseLeave'
 
       .mouseup =>
+        console.log 'mouseup'
         @element.find('*').trigger 'containerMouseUp'
 
       .keydown (event) =>
