@@ -549,9 +549,14 @@
       this.element = $('\
         <div class="col-xs-5">\
           \
+           <!-- <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
+\
+           <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> -->\
 \
           <button class="btn btn-sm btn-primary addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>\
 \
+          <button class="btn btn-sm btn-primary removeElementBtn" type="button"><span class="glyphicon glyphicon-minus-sign"></span> Delete Element</button>\
+          \
           <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>\
           \
           <table class="table table-hover" id="dataPanel">\
