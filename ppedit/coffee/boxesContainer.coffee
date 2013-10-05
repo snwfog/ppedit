@@ -85,6 +85,7 @@ class BoxesContainer
         @boxes[id].element.remove()
         delete @boxes[id]
 
+        
   ###
   Returns an array of Box objects corresponding to the
   passed boxIds. Passing no arguments will return
@@ -103,6 +104,7 @@ class BoxesContainer
 
   chageBoxOpacity: (boxid, opacityVal) ->
         @boxes[boxid].element.css("opacity", opacityVal)
+
 
   ###
   Undo the last executed command
@@ -141,10 +143,3 @@ class BoxesContainer
     innerRect.topLeft.y >= outerRect.topLeft.y &&
     innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width &&
     innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height)
-
-
-
-
-
-
-

@@ -10,14 +10,15 @@ class Panel
 
           <button class="btn btn-sm btn-primary addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>
 
-          <button class="btn btn-sm btn-primary removeElementBtn" type="button"><span class="glyphicon glyphicon-minus-sign"></span> Delete Element</button>
-          
           <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>
           
+           <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>
+          
+
           <table class="table table-hover" id="dataPanel">
               <thead>   
                   <tr>
-                    <th>Selector</th>
+                    <th>Remove</th>
                     <th>Name of Element</th>
                     <th>Opacity</th>
                   </tr>
@@ -31,48 +32,25 @@ class Panel
 
     @root.append(@element)
 
-    $(".moveElementUpBtn").click =>
-        @moveElementUp "dataPanel"
-
-    $(".moveElementDownBtn").click =>
-        @moveElementDown "dataPanel"
-
     $(".addElementBtn").click =>
-        
         @root.trigger 'panelClickAddBtnClick', []       
 
-    $(".removeElementBtn").click =>
-        @deleteElement "dataPanel"
-        @root.trigger 'panelClickDeleteBtnClick', []   
+    $(".clearAllElementBtn").click =>
+        @clearAll "dataPanel"  
+        @root.trigger 'panelClickClearAllBtnClick', [] 
 
     $(".gridElementBtn").click =>
         @root.trigger 'panelClickGridBtnClick', [] 
 
   moveElementUp: (panelID) ->
-    try
-      checkboxRow = document.getElementById(panelID)
-      rowCount = panel.rows
-      .length
-      i = 0
-
-      while i < rowCount
-        row = panel.rows[i]
-        chkbox = row.cells[0].childNodes[0]
-        if null isnt chkbox and true is chkbox.checked
-          if rowCount <= 1
-            alert "Please select a row."
-            break
-          checkboxRow.moveRow chkbox.checked, checkboxRow.rows.length + 1 #move first row to the end of the table instead
-        i++
-    catch e
-      alert e
+    
  
   moveElementUpDown: (panelID) ->
 
   addElement: (panelID, boxid) ->
-    newRow = $("
+   newRow = $("
         <tr>
-            <td><input type=\"checkbox\" name=\"chkk\"></input></td>
+            <td><button type=\"button\" class=\"btn btn-sm btn-danger deleteElementBtn\"><span class=\"glyphicon glyphicon-remove-sign glyphicon-red\"></span></button></td>
             <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>
             <td><div class=\"ppedit-slider\"></div></td>                    
         </tr>")
@@ -92,22 +70,12 @@ class Panel
         boxId = newRow.attr('ppedit-box-id')
         @root.trigger 'onRowSliderValChanged', [boxId, parseInt(opacityVal)/100]
 
-  deleteElement: (panelID) ->
-    try
-      panel = document.getElementById(panelID)
-      rowCount = panel.rows.length
-      i = 0
+    newRow
+      .find(".deleteElementBtn")
+      .on 'click', (event) =>
+        boxIds = newRow.attr('ppedit-box-id')
+        @root.trigger 'onRowDeleteBtnClick',[boxIds]
+        newRow.remove()
 
-      while i < rowCount
-        row = panel.rows[i]
-        chkbox = row.cells[0].childNodes[0]
-        if null isnt chkbox and true is chkbox.checked
-          if rowCount <= 1
-            alert "Cannot delete all the rows."
-            break
-          panel.deleteRow i
-          rowCount--
-          i--
-        i++
-    catch e
-      alert e
+  clearAll: (panelID) ->
+    $("#" + panelID + " td").remove()

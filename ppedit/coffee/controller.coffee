@@ -21,13 +21,18 @@ class Controller
       box = @editorManager.boxesContainer.createBox()
       @panel.addElement "dataPanel", box.element.attr('id')
 
-    row.on 'panelClickDeleteBtnClick', (event) =>
-      @editorManager.boxesContainer.removeBox()
-
     row.on 'panelClickGridBtnClick', (event) =>
       @editorManager.grid.toggleGrid()
+    
+    row.on 'panelClickClearAllBtnClick', (event) =>
+      @editorManager.boxesContainer.removeBoxes()
+    
+    row.on 'onRowDeleteBtnClick', (event, boxId) =>
+      @editorManager.boxesContainer.removeBoxes [boxId]
 
     row.on 'onRowSliderValChanged', (event, boxId, opacityVal) =>
       @editorManager.boxesContainer.chageBoxOpacity(boxId, opacityVal)
+
+      
 
 
