@@ -555,14 +555,15 @@
 \
           <button class="btn btn-sm btn-primary addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>\
 \
-          <button class="btn btn-sm btn-primary removeElementBtn" type="button"><span class="glyphicon glyphicon-minus-sign"></span> Delete Element</button>\
-          \
           <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>\
           \
+           <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>\
+          \
+\
           <table class="table table-hover" id="dataPanel">\
               <thead>   \
                   <tr>\
-                    <th>Selector</th>\
+                    <th>Remove</th>\
                     <th>Name of Element</th>\
                     <th>Opacity</th>\
                   </tr>\
@@ -574,58 +575,28 @@
           </table>\
         </div>');
       this.root.append(this.element);
-      $(".moveElementUpBtn").click(function() {
-        return _this.moveElementUp("dataPanel");
-      });
-      $(".moveElementDownBtn").click(function() {
-        return _this.moveElementDown("dataPanel");
-      });
       $(".addElementBtn").click(function() {
         return _this.root.trigger('panelClickAddBtnClick', []);
       });
-      $(".removeElementBtn").click(function() {
-        _this.deleteElement("dataPanel");
-        return _this.root.trigger('panelClickDeleteBtnClick', []);
+      $(".clearAllElementBtn").click(function() {
+        _this.clearAll("dataPanel");
+        return _this.root.trigger('panelClickClearAllBtnClick', []);
       });
       $(".gridElementBtn").click(function() {
         return _this.root.trigger('panelClickGridBtnClick', []);
       });
     }
 
-    Panel.prototype.moveElementUp = function(panelID) {
-      var checkboxRow, chkbox, e, i, row, rowCount, _results;
-      try {
-        checkboxRow = document.getElementById(panelID);
-        rowCount = panel.rows.length;
-        i = 0;
-        _results = [];
-        while (i < rowCount) {
-          row = panel.rows[i];
-          chkbox = row.cells[0].childNodes[0];
-          if (null !== chkbox && true === chkbox.checked) {
-            if (rowCount <= 1) {
-              alert("Please select a row.");
-              break;
-            }
-            checkboxRow.moveRow(chkbox.checked, checkboxRow.rows.length + 1);
-          }
-          _results.push(i++);
-        }
-        return _results;
-      } catch (_error) {
-        e = _error;
-        return alert(e);
-      }
-    };
+    Panel.prototype.moveElementUp = function(panelID) {};
 
     Panel.prototype.moveElementUpDown = function(panelID) {};
 
     Panel.prototype.addElement = function(panelID, boxid) {
       var newRow,
         _this = this;
-      newRow = $("        <tr>            <td><input type=\"checkbox\" name=\"chkk\"></input></td>            <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>            <td><div class=\"ppedit-slider\"></div></td>                            </tr>").attr('ppedit-box-id', boxid);
+      newRow = $("        <tr>            <td><button type=\"button\" class=\"btn btn-sm btn-danger deleteElementBtn\"><span class=\"glyphicon glyphicon-remove-sign glyphicon-red\"></span></button></td>            <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>            <td><div class=\"ppedit-slider\"></div></td>                            </tr>").attr('ppedit-box-id', boxid);
       $("#" + panelID + " tbody").append(newRow);
-      return newRow.find(".ppedit-slider").slider({
+      newRow.find(".ppedit-slider").slider({
         min: 0,
         max: 100,
         step: 1,
@@ -636,34 +607,16 @@
         boxId = newRow.attr('ppedit-box-id');
         return _this.root.trigger('onRowSliderValChanged', [boxId, parseInt(opacityVal) / 100]);
       });
+      return newRow.find(".deleteElementBtn").on('click', function(event) {
+        var boxIds;
+        boxIds = newRow.attr('ppedit-box-id');
+        _this.root.trigger('onRowDeleteBtnClick', [boxIds]);
+        return newRow.remove();
+      });
     };
 
-    Panel.prototype.deleteElement = function(panelID) {
-      var chkbox, e, i, panel, row, rowCount, _results;
-      try {
-        panel = document.getElementById(panelID);
-        rowCount = panel.rows.length;
-        i = 0;
-        _results = [];
-        while (i < rowCount) {
-          row = panel.rows[i];
-          chkbox = row.cells[0].childNodes[0];
-          if (null !== chkbox && true === chkbox.checked) {
-            if (rowCount <= 1) {
-              alert("Cannot delete all the rows.");
-              break;
-            }
-            panel.deleteRow(i);
-            rowCount--;
-            i--;
-          }
-          _results.push(i++);
-        }
-        return _results;
-      } catch (_error) {
-        e = _error;
-        return alert(e);
-      }
+    Panel.prototype.clearAll = function(panelID) {
+      return $("#" + panelID + " td").remove();
     };
 
     return Panel;
@@ -689,11 +642,14 @@
         box = _this.editorManager.boxesContainer.createBox();
         return _this.panel.addElement("dataPanel", box.element.attr('id'));
       });
-      row.on('panelClickDeleteBtnClick', function(event) {
-        return _this.editorManager.boxesContainer.removeBox();
-      });
       row.on('panelClickGridBtnClick', function(event) {
         return _this.editorManager.grid.toggleGrid();
+      });
+      row.on('panelClickClearAllBtnClick', function(event) {
+        return _this.editorManager.boxesContainer.removeBoxes();
+      });
+      row.on('onRowDeleteBtnClick', function(event, boxId) {
+        return _this.editorManager.boxesContainer.removeBoxes([boxId]);
       });
       row.on('onRowSliderValChanged', function(event, boxId, opacityVal) {
         return _this.editorManager.boxesContainer.chageBoxOpacity(boxId, opacityVal);
