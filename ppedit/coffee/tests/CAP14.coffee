@@ -6,8 +6,3 @@ ppeditDescribe "A test for issue CAP-14 : As a user, I want to reposition elemen
 
     $(".addElementBtn").click()
     expect($(".editor").find('.ppedit-box')).toHaveLength(1)
-
-  it "does a box on add element button click", ->
-
-    $(".addElementBtn").click()
-    expect($(".editor").find('.ppedit-box')).toHaveLength(1)
