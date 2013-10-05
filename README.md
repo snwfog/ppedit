@@ -75,6 +75,8 @@ First clone this repository then follow the instructions below.
  - Open the tests.html file on a browser to run and see the results of the tests. Clear your browser cache and refresh your page to run the tests again.
  
   - You can also run the `compileCoffee.sh` file to generate the ppedit.js and the ppedit-test.js in one command.
+  		    
+  - Check the file `CAPTemplate.coffee` to find out how to write a ppedit jasmine test suite.
  
 ##Third Party Librairies Used
 
