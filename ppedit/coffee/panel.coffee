@@ -12,6 +12,8 @@ class Panel
 
           <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>
           
+          <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button>
+
            <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>
           
 
@@ -50,7 +52,7 @@ class Panel
   addElement: (panelID, boxid) ->
    newRow = $("
         <tr>
-            <td><button type=\"button\" class=\"btn btn-sm btn-danger deleteElementBtn\"><span class=\"glyphicon glyphicon-remove-sign glyphicon-red\"></span></button></td>
+            <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>
             <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>
             <td><div class=\"ppedit-slider\"></div></td>                    
         </tr>")
