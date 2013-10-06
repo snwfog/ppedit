@@ -58,7 +58,7 @@ First clone this repository then follow the instructions below.
  
  - To generate the ppedit.js file, use the following commands :
 	- `cd (ppedit project root)/ppedit/                `      
-	- `coffeescript-concat -R coffee/src | coffee -s  --compile > js/ppedit.js`
+	- `coffee node_modules/coffeescript-concat/coffeescript-concat.coffee -R coffee/src | coffee -s --compile > js/ppedit.js`
 	
  - Open the main.html file on a browser to see what the editor looks like
  
@@ -70,7 +70,7 @@ First clone this repository then follow the instructions below.
 
  - To generate the ppedit-tests.js file, use the following commands :
     - `cd (ppedit project root)/ppedit/                `      
-	- `coffeescript-concat -R coffee/tests | coffee -s  --compile > js/ppedit-tests.js`
+	- `coffee node_modules/coffeescript-concat/coffeescript-concat.coffee -R coffee/tests | coffee -s --compile > js/ppedit-tests.js`
 	
  - Open the tests.html file on a browser to run and see the results of the tests. Clear your browser cache and refresh your page to run the tests again.
  
