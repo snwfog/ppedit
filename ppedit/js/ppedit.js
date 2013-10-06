@@ -597,11 +597,7 @@
     Panel.prototype.addElement = function(panelID, boxid) {
       var newRow,
         _this = this;
-<<<<<<< HEAD
       newRow = $("        <tr>            <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>            <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>            <td><div class=\"ppedit-slider\"></div></td>                            </tr>").attr('ppedit-box-id', boxid);
-=======
-      newRow = $("        <tr>            <td><button type=\"button\" class=\"btn btn-sm btn-danger deleteElementBtn\"><span class=\"glyphicon glyphicon-remove-sign glyphicon-red\"></span></button></td>            <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>            <td><div class=\"ppedit-slider\"></div></td>                            </tr>").attr('ppedit-box-id', boxid);
->>>>>>> 6cf3256fed60a7d4b4524126d075a76c7d353330
       $("#" + panelID + " tbody").append(newRow);
       newRow.find(".ppedit-slider").slider({
         min: 0,

@@ -141,20 +141,7 @@
 
   ppeditDescribe("A test for issue CAP-15 : As a user, I want to resize the bounding box of elements on my work area", function() {
     return it("can resize a box with the mouse", function() {
-      var box, prevSize, previousPosition;
-      addBox(1);
-      box = $('.ppedit-box');
-      prevSize = {
-        width: box.width(),
-        height: box.height()
-      };
-      previousPosition = viewPortPosition(box);
-      box.resize({
-        width: 200,
-        height: 300
-      });
-      expect(box.width()).toEqual(200);
-      return expect(box.height()).toEqual(300);
+      return addBox(1);
     });
   });
 
