@@ -168,30 +168,20 @@
     };
 
     /*
-    Deletes the Box objects corresponding to the
-    passed boxIds. Passing no arguments will delete
-    all Box objects.
+    Given an array of box ids, deletes all box objects
+    with those ids.
     */
 
 
     BoxesContainer.prototype.removeBoxes = function(boxIds) {
-      var box, boxId, id, _i, _len, _ref, _results;
-      if (boxIds == null) {
-        _ref = this.boxes;
-        for (boxId in _ref) {
-          box = _ref[boxId];
-          box.element.remove();
-        }
-        return this.boxes = {};
-      } else {
-        _results = [];
-        for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
-          id = boxIds[_i];
-          this.boxes[id].element.remove();
-          _results.push(delete this.boxes[id]);
-        }
-        return _results;
+      var id, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
+        id = boxIds[_i];
+        this.boxes[id].element.remove();
+        _results.push(delete this.boxes[id]);
       }
+      return _results;
     };
 
     /*
@@ -218,6 +208,15 @@
       } else {
         return $.extend(true, [], this.boxes);
       }
+    };
+
+    /*
+    Returns a selector matching all boxes
+    */
+
+
+    BoxesContainer.prototype.getAllBoxes = function() {
+      return this.element.find('.ppedit-box');
     };
 
     /*
@@ -248,59 +247,44 @@
   })();
 
   RemoveBoxesCommand = (function() {
-    /*
-    Class constructor, omit the boxesSelector argument to
-    issue a command for removing all boxes.
-    */
-
     function RemoveBoxesCommand(editor, boxesSelector) {
       var box, boxArray;
       this.editor = editor;
-      if (boxesSelector != null) {
-        boxArray = boxesSelector.toArray();
-        this.boxIds = (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = boxArray.length; _i < _len; _i++) {
-            box = boxArray[_i];
-            _results.push(box.id);
-          }
-          return _results;
-        })();
-      }
+      boxArray = boxesSelector.toArray();
+      this.boxIds = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = boxArray.length; _i < _len; _i++) {
+          box = boxArray[_i];
+          _results.push(box.id);
+        }
+        return _results;
+      })();
       this.boxes = this.editor.editorManager.boxesContainer.getBoxesFromIds(this.boxIds);
     }
 
     RemoveBoxesCommand.prototype.execute = function() {
       var boxId, _i, _len, _ref, _results;
       this.editor.editorManager.boxesContainer.removeBoxes(this.boxIds);
-      if (this.boxIds != null) {
-        _ref = this.boxIds;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          boxId = _ref[_i];
-          _results.push(this.editor.panel.element.find("tr[ppedit-box-id=" + boxId + "]").remove());
-        }
-        return _results;
+      _ref = this.boxIds;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        boxId = _ref[_i];
+        _results.push(this.editor.panel.removeBoxRow(boxId));
       }
+      return _results;
     };
 
     RemoveBoxesCommand.prototype.undo = function() {
-      var box, boxId, _i, _j, _len, _len1, _ref, _ref1, _results;
+      var box, _i, _len, _ref, _results;
       _ref = this.boxes;
+      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
         this.editor.editorManager.boxesContainer.addBox(box);
+        _results.push(this.editor.panel.addBoxRow(box.element.attr('id')));
       }
-      if (this.boxIds != null) {
-        _ref1 = this.boxIds;
-        _results = [];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          boxId = _ref1[_j];
-          _results.push(this.editor.panel.addElement("dataPanel", boxId));
-        }
-        return _results;
-      }
+      return _results;
     };
 
     return RemoveBoxesCommand;
@@ -347,12 +331,12 @@
         this.box = new Box(this.editor.editorManager.boxesContainer.element, this.options);
       }
       this.editor.editorManager.boxesContainer.addBox(this.box);
-      return this.editor.panel.addElement("dataPanel", this.box.element.attr('id'));
+      return this.editor.panel.addBoxRow(this.box.element.attr('id'));
     };
 
     CreateBoxCommand.prototype.undo = function() {
       this.editor.editorManager.boxesContainer.removeBoxes([this.box.element.attr('id')]);
-      return this.editor.panel.element.find('tr[ppedit-box-id=' + (this.box.element.attr("id")) + ']').remove();
+      return this.editor.panel.removeBoxRow([this.box.element.attr('id')]);
     };
 
     return CreateBoxCommand;
@@ -579,7 +563,7 @@
                <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>\
 \
 \
-              <table class="table table-hover" id="dataPanel">\
+              <table class="table table-hover dataPanel">\
                   <thead>\
                       <tr>\
                         <th>Remove</th>\
@@ -595,14 +579,13 @@
             </div>');
       this.root.append(this.element);
       $(".addElementBtn").click(function() {
-        return _this.root.trigger('panelClickAddBtnClick', []);
+        return _this.root.trigger('panelClickAddBtnClick');
       });
       $(".clearAllElementBtn").click(function() {
-        _this.clearAll("dataPanel");
-        return _this.root.trigger('panelClickClearAllBtnClick', []);
+        return _this.root.trigger('panelClickClearAllBtnClick');
       });
       $(".gridElementBtn").click(function() {
-        return _this.root.trigger('panelClickGridBtnClick', []);
+        return _this.root.trigger('panelClickGridBtnClick');
       });
     }
 
@@ -610,11 +593,16 @@
 
     Panel.prototype.moveElementUpDown = function(panelID) {};
 
-    Panel.prototype.addElement = function(panelID, boxid) {
+    /*
+    Adds a row to be associated with the passed box id.
+    */
+
+
+    Panel.prototype.addBoxRow = function(boxid) {
       var newRow,
         _this = this;
       newRow = $("            <tr>                <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>                <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>                <td><div class=\"ppedit-slider\"></div></td>            </tr>").attr('ppedit-box-id', boxid);
-      $("#" + panelID + " tbody").append(newRow);
+      this.element.find('.dataPanel tbody').append(newRow);
       newRow.find(".ppedit-slider").slider({
         min: 0,
         max: 100,
@@ -630,8 +618,13 @@
       });
     };
 
-    Panel.prototype.clearAll = function(panelID) {
-      return $("#" + panelID + " td").remove();
+    /*
+    Removes the row associated with the passed box id.
+    */
+
+
+    Panel.prototype.removeBoxRow = function(boxId) {
+      return this.element.find("tr[ppedit-box-id=" + boxId + "]").remove();
     };
 
     return Panel;
@@ -707,10 +700,9 @@
         return _this.editorManager.grid.toggleGrid();
       });
       row.on('panelClickClearAllBtnClick', function(event) {
-        return _this.commandManager.pushCommand(new RemoveBoxesCommand(_this));
+        return _this.commandManager.pushCommand(new RemoveBoxesCommand(_this, _this.editorManager.boxesContainer.getAllBoxes()));
       });
       row.on('onRowDeleteBtnClick', function(event, boxId) {
-        console.log('onRowDeleteBtnClick');
         return _this.commandManager.pushCommand(new RemoveBoxesCommand(_this, _this.root.find('#' + boxId)));
       });
       row.on('onRowSliderValChanged', function(event, boxId, opacityVal) {

@@ -55,19 +55,13 @@ class BoxesContainer
     @boxes[box.element.attr('id')] = box
 
   ###
-  Deletes the Box objects corresponding to the
-  passed boxIds. Passing no arguments will delete
-  all Box objects.
+  Given an array of box ids, deletes all box objects
+  with those ids.
   ###
   removeBoxes: (boxIds) ->
-    if !boxIds?
-      box.element.remove() for boxId, box of @boxes
-      @boxes = {}
-    else
-      for id in boxIds
-        @boxes[id].element.remove()
-        delete @boxes[id]
-
+    for id in boxIds
+      @boxes[id].element.remove()
+      delete @boxes[id]
 
   ###
   Returns an array of Box objects corresponding to the
@@ -79,6 +73,12 @@ class BoxesContainer
       return (@boxes[id] for id in boxIds when @boxes[id]?)
     else
       return $.extend(true, [], @boxes)
+
+  ###
+  Returns a selector matching all boxes
+  ###
+  getAllBoxes: ->
+    return @element.find '.ppedit-box'
 
   ###
   Returns a selector to the currently selected boxes

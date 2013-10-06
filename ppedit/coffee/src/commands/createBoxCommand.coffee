@@ -12,8 +12,8 @@ class CreateBoxCommand
   execute: ->
     @box = new Box @editor.editorManager.boxesContainer.element, @options if !@box?
     @editor.editorManager.boxesContainer.addBox @box
-    @editor.panel.addElement "dataPanel", @box.element.attr('id')
+    @editor.panel.addBoxRow @box.element.attr('id')
 
   undo: ->
     @editor.editorManager.boxesContainer.removeBoxes [@box.element.attr('id')]
-    @editor.panel.element.find('tr[ppedit-box-id=' + (@box.element.attr "id") + ']').remove()
+    @editor.panel.removeBoxRow [@box.element.attr('id')]

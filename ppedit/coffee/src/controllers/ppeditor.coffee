@@ -44,7 +44,7 @@ class PPEditor
       @editorManager.grid.toggleGrid()
     
     row.on 'panelClickClearAllBtnClick', (event) =>
-      @commandManager.pushCommand new RemoveBoxesCommand this
+      @commandManager.pushCommand new RemoveBoxesCommand this, @editorManager.boxesContainer.getAllBoxes()
     
     row.on 'onRowDeleteBtnClick', (event, boxId) =>
       @commandManager.pushCommand new RemoveBoxesCommand this, @root.find('#' + boxId)
