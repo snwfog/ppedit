@@ -357,28 +357,6 @@
 
   })();
 
-  CreateBoxCommand = (function() {
-    function CreateBoxCommand(boxesContainer, options) {
-      this.boxesContainer = boxesContainer;
-      this.options = options;
-      this.box = void 0;
-    }
-
-    CreateBoxCommand.prototype.execute = function() {
-      if (this.box == null) {
-        this.box = new Box(this.boxesContainer.element, this.options);
-      }
-      return this.boxesContainer.addBox(this.box);
-    };
-
-    CreateBoxCommand.prototype.undo = function() {
-      return this.boxesContainer.removeBoxes([this.box.element.attr('id')]);
-    };
-
-    return CreateBoxCommand;
-
-  })();
-
   MoveBoxCommand = (function() {
     function MoveBoxCommand(box, toPosition, fromPosition) {
       this.box = box;
@@ -398,6 +376,28 @@
     };
 
     return MoveBoxCommand;
+
+  })();
+
+  CreateBoxCommand = (function() {
+    function CreateBoxCommand(boxesContainer, options) {
+      this.boxesContainer = boxesContainer;
+      this.options = options;
+      this.box = void 0;
+    }
+
+    CreateBoxCommand.prototype.execute = function() {
+      if (this.box == null) {
+        this.box = new Box(this.boxesContainer.element, this.options);
+      }
+      return this.boxesContainer.addBox(this.box);
+    };
+
+    CreateBoxCommand.prototype.undo = function() {
+      return this.boxesContainer.removeBoxes([this.box.element.attr('id')]);
+    };
+
+    return CreateBoxCommand;
 
   })();
 
