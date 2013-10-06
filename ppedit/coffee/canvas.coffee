@@ -19,7 +19,7 @@ class Canvas
         height:0
 
     .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
-      if @downPosition? && @rectSize?
+      if @downPosition? && @rectSize? && delta?
         @rectSize.width += delta.x
         @rectSize.height += delta.y
         @drawRect @downPosition, @rectSize

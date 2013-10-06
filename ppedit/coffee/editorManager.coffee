@@ -8,7 +8,7 @@
 class EditorManager
 
   constructor: (@root) ->
-    @prevMouseEvent = undefined
+    @prevMouseMoveEvent = undefined
     @canvas = undefined
     @grid = undefined
     @boxesContainer = undefined
@@ -29,21 +29,22 @@ class EditorManager
 
       .mousemove (event) =>
         delta = undefined
-        if @prevMouseEvent?
+        if @prevMouseMoveEvent?
           delta =
-            x: event.clientX - @prevMouseEvent.clientX
-            y: event.clientY - @prevMouseEvent.clientY
+            x: event.clientX - @prevMouseMoveEvent.clientX
+            y: event.clientY - @prevMouseMoveEvent.clientY
         @element.find('*').trigger 'containerMouseMove', [event, delta]
-        @prevMouseEvent = event
+        @prevMouseMoveEvent = event
 
       .mouseleave =>
         @element.find('*').trigger 'containerMouseLeave'
+        @prevMouseMoveEvent = undefined
 
       .mouseup =>
-        console.log 'mouseup'
         @element.find('*').trigger 'containerMouseUp'
+        @prevMouseMoveEvent = undefined
 
-      .keydown (event) =>
+    .keydown (event) =>
         @element.find('*').trigger 'containerKeyDown', [event]
 
       .on 'canvasRectSelect', (event, rect) =>

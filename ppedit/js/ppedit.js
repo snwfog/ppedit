@@ -24,6 +24,9 @@
         _this.element.addClass('ppedit-box-selected');
         return _this.prevPosition = _this.currentPosition();
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
+        if (delta != null) {
+          console.log(delta);
+        }
         if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
           return _this.move(delta.x, delta.y);
         }
@@ -422,7 +425,7 @@
           height: 0
         };
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
-        if ((_this.downPosition != null) && (_this.rectSize != null)) {
+        if ((_this.downPosition != null) && (_this.rectSize != null) && (delta != null)) {
           _this.rectSize.width += delta.x;
           _this.rectSize.height += delta.y;
           return _this.drawRect(_this.downPosition, _this.rectSize);
@@ -496,7 +499,7 @@
   EditorManager = (function() {
     function EditorManager(root) {
       this.root = root;
-      this.prevMouseEvent = void 0;
+      this.prevMouseMoveEvent = void 0;
       this.canvas = void 0;
       this.grid = void 0;
       this.boxesContainer = void 0;
@@ -515,19 +518,20 @@
       }).mousemove(function(event) {
         var delta;
         delta = void 0;
-        if (_this.prevMouseEvent != null) {
+        if (_this.prevMouseMoveEvent != null) {
           delta = {
-            x: event.clientX - _this.prevMouseEvent.clientX,
-            y: event.clientY - _this.prevMouseEvent.clientY
+            x: event.clientX - _this.prevMouseMoveEvent.clientX,
+            y: event.clientY - _this.prevMouseMoveEvent.clientY
           };
         }
         _this.element.find('*').trigger('containerMouseMove', [event, delta]);
-        return _this.prevMouseEvent = event;
+        return _this.prevMouseMoveEvent = event;
       }).mouseleave(function() {
-        return _this.element.find('*').trigger('containerMouseLeave');
+        _this.element.find('*').trigger('containerMouseLeave');
+        return _this.prevMouseMoveEvent = void 0;
       }).mouseup(function() {
-        console.log('mouseup');
-        return _this.element.find('*').trigger('containerMouseUp');
+        _this.element.find('*').trigger('containerMouseUp');
+        return _this.prevMouseMoveEvent = void 0;
       }).keydown(function(event) {
         return _this.element.find('*').trigger('containerKeyDown', [event]);
       }).on('canvasRectSelect', function(event, rect) {

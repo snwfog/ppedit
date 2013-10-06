@@ -1,14 +1,20 @@
 #= require <ppeditTestCustomMatchers.coffee>
 
 ###
+Returns the position of the first element in the set of matched
+elements relative to the browser viewport.
+###
+viewPortPosition = (jQuerySelector) ->
+  left: jQuerySelector.offset().left + jQuerySelector.scrollLeft()
+  top: jQuerySelector.offset().top + jQuerySelector.scrollTop()
+
+###
 Simulates moving the passed box
 by the specified distance amount
 ###
 moveBox = (boxSelector, distance) ->
 
-  previousPosition =
-    left: boxSelector.offset().left + boxSelector.scrollLeft()
-    top: boxSelector.offset().top + boxSelector.scrollTop()
+  previousPosition = viewPortPosition boxSelector
 
   boxSelector
     .simulate "mousedown",
@@ -24,9 +30,32 @@ moveBox = (boxSelector, distance) ->
       clientY:previousPosition.top + 1 + distance.dy
 
     .simulate "mouseup",
-      clientX:previousPosition.left + distance.dx
-      clientY:previousPosition.top + distance.dy
+      clientX:previousPosition.left + 1 + distance.dx
+      clientY:previousPosition.top + 1 + distance.dy
 
-  expect(boxSelector.offset()).toBeEqualToPosition
+  expect(viewPortPosition boxSelector).toBeEqualToPosition
     left:previousPosition.left + distance.dx
     top:previousPosition.top + distance.dy
+
+###
+Simulates a rectangular selection on the passed
+canvas with the parameter specified by the passed rect
+###
+selectRectangle = (canvasSelector, rect) ->
+
+  canvasSelector
+    .simulate "mousedown",
+      clientX:rect.topLeft.left
+      clientY:rect.topLeft.top
+
+    .simulate "mousemove",
+      clientX:rect.topLeft.left
+      clientY:rect.topLeft.top
+
+    .simulate "mousemove",
+      clientX:rect.topLeft.left + rect.size.width
+      clientY:rect.topLeft.top + rect.size.height
+
+    .simulate "mouseup",
+      clientX:rect.topLeft.left + rect.size.width
+      clientY:rect.topLeft.top + rect.size.height
