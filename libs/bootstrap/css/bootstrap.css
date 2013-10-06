@@ -2400,6 +2400,7 @@ input[type="button"].btn-block {
   line-height: 1;
 }
 
+
 .glyphicon-asterisk:before {
   content: "\2a";
 }
