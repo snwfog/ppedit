@@ -69,15 +69,12 @@ class Panel
       )
     .on 'slide', (event) =>
         opacityVal = $(event.target).val()
-        boxId = newRow.attr('ppedit-box-id')
-        @root.trigger 'onRowSliderValChanged', [boxId, parseInt(opacityVal)/100]
+        @root.trigger 'onRowSliderValChanged', [boxid, parseInt(opacityVal)/100]
 
     newRow
     .find(".deleteElementBtn")
     .on 'click', (event) =>
-        boxIds = newRow.attr('ppedit-box-id')
-        @root.trigger 'onRowDeleteBtnClick',[boxIds]
-        newRow.remove()
+        @root.trigger 'onRowDeleteBtnClick', [boxid]
 
   clearAll: (panelID) ->
     $("#" + panelID + " td").remove()

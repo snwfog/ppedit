@@ -1,20 +1,18 @@
-#= require Controller
-#= require EditorManager
-
-class PCController extends Controller
+class PCController
   
-  constructor: (@root) ->
-    super @root
-    @editorManager.root.keydown (event) =>
+  constructor: (@element) ->
 
+  bindEvents: ->
+
+    @element.keydown (event) =>
       if event.keyCode == 90 && event.ctrlKey
         event.preventDefault()
-        @editorManager.boxesContainer.commandManager.undo()
+        @element.trigger 'requestUndo'
 
       if event.keyCode == 89 && event.ctrlKey
         event.preventDefault()
-        @editorManager.boxesContainer.commandManager.redo()
+        @element.trigger 'requestRedo'
 
       if event.keyCode == 46 || (event.keyCode == 46 && event.ctrlKey)
         event.preventDefault()
-        @editorManager.boxesContainer.deleteSelectedBoxes()
+        @element.trigger 'requestDelete'

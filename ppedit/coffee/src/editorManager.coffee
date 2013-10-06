@@ -1,7 +1,4 @@
-#= require CreateBoxCommand
-#= require MoveBoxCommand
 #= require Canvas
-#= require RemoveBoxesCommand
 #= require BoxesContainer
 #= require Grid
 

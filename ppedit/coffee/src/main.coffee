@@ -1,4 +1,4 @@
-#= require Controller
+#= require PPEditor
 
 ###
 FooBar jQuery Plugin v1.0 - It makes Foo as easy as coding Bar (?).
@@ -45,7 +45,7 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
       #  $this.each (index, el) ->
       #    # do something with el
       #
-      controller = new PCController $this
+      editor = new PPEditor $this
       
       return $this
 

@@ -1,19 +1,14 @@
 #= require Box
-#= require CommandManager
 
 class BoxesContainer
 
   constructor: (@root) ->
     @boxes = {}
-    @commandManager = new CommandManager
 
     @element = $('<div></div>')
     .addClass('ppedit-box-container')
 
     @root.append(@element)
-
-    @element.on 'boxMoved', (event, box, currentPosition, originalPosition) =>
-      @commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
 
   ###
   Selects the boxes contained in the passed rect.
@@ -52,18 +47,6 @@ class BoxesContainer
         height:boxSelector.height()
 
   ###
-  Creates a new box with the passed options ands adds it to the list,
-  then return the boxes newly created.
-  ###
-  createBox: (options) ->
-    createBoxCommand = new CreateBoxCommand this, options
-    @commandManager.pushCommand createBoxCommand
-    return createBoxCommand.box
-
-  removeBox: (options) ->
-    @commandManager.pushCommand new RemoveBoxesCommand this
-
-  ###
   Adds the passed Box Object to the Box List
   ###
   addBox: (box) ->
@@ -97,10 +80,11 @@ class BoxesContainer
     else
       return $.extend(true, [], @boxes)
 
-  deleteSelectedBoxes: ->
-    selectedBoxes = @element.find '.ppedit-box:focus, .ppedit-box-selected'
-    if selectedBoxes.length > 0
-      @commandManager.pushCommand new RemoveBoxesCommand this, selectedBoxes
+  ###
+  Returns a selector to the currently selected boxes
+  ###
+  getSelectedBoxes: ->
+    return @element.find '.ppedit-box:focus, .ppedit-box-selected'
 
   chageBoxOpacity: (boxid, opacityVal) ->
     @boxes[boxid].element.css("opacity", opacityVal)

@@ -1,14 +1,19 @@
 #= require Box
-#= require BoxesContainer
 
+###
+A command that creates a new box with the passed options
+ands adds it to the list.
+###
 class CreateBoxCommand
 
-  constructor: (@boxesContainer, @options) ->
+  constructor: (@editor, @options) ->
     @box = undefined
 
   execute: ->
-      @box = new Box @boxesContainer.element, @options if !@box?
-      @boxesContainer.addBox @box
+    @box = new Box @editor.editorManager.boxesContainer.element, @options if !@box?
+    @editor.editorManager.boxesContainer.addBox @box
+    @editor.panel.addElement "dataPanel", @box.element.attr('id')
 
   undo: ->
-    @boxesContainer.removeBoxes [@box.element.attr('id')]
+    @editor.editorManager.boxesContainer.removeBoxes [@box.element.attr('id')]
+    @editor.panel.element.find('tr[ppedit-box-id=' + (@box.element.attr "id") + ']').remove()
