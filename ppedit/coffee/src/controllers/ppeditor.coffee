@@ -23,7 +23,7 @@ class PPEditor
     @root.append(@element)
 
     @controller.bindEvents()
-    @controller.element
+    @controller.root
       .on 'requestUndo', (event) =>
         @commandManager.undo()
 

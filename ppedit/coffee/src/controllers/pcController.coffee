@@ -1,18 +1,18 @@
 class PCController
   
-  constructor: (@element) ->
+  constructor: (@root) ->
 
   bindEvents: ->
 
-    @element.keydown (event) =>
+    @root.keydown (event) =>
       if event.keyCode == 90 && event.ctrlKey
         event.preventDefault()
-        @element.trigger 'requestUndo'
+        @root.trigger 'requestUndo'
 
       if event.keyCode == 89 && event.ctrlKey
         event.preventDefault()
-        @element.trigger 'requestRedo'
+        @root.trigger 'requestRedo'
 
       if event.keyCode == 46 || (event.keyCode == 46 && event.ctrlKey)
         event.preventDefault()
-        @element.trigger 'requestDelete'
+        @root.trigger 'requestDelete'
