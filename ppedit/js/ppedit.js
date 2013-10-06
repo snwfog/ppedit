@@ -24,9 +24,6 @@
         _this.element.addClass('ppedit-box-selected');
         return _this.prevPosition = _this.currentPosition();
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
-        if (delta != null) {
-          console.log(delta);
-        }
         if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
           return _this.move(delta.x, delta.y);
         }

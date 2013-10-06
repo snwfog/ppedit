@@ -1,4 +1,5 @@
 #= require <ppeditTest.coffee>
+#= require <ppeditTestHelper.coffee>
 
 ppeditDescribe "A ppedit Jasmine test template", ->
 
