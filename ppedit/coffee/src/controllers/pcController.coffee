@@ -9,11 +9,11 @@ class PCController extends Controller
 
       if event.keyCode == 90 && event.ctrlKey
         event.preventDefault()
-        @editorManager.boxesContainer.undo()
+        @editorManager.boxesContainer.commandManager.undo()
 
       if event.keyCode == 89 && event.ctrlKey
         event.preventDefault()
-        @editorManager.boxesContainer.redo()
+        @editorManager.boxesContainer.commandManager.redo()
 
       if event.keyCode == 46 || (event.keyCode == 46 && event.ctrlKey)
         event.preventDefault()

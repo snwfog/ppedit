@@ -1,19 +1,19 @@
 #= require Box
+#= require CommandManager
 
 class BoxesContainer
 
   constructor: (@root) ->
     @boxes = {}
-    @undoStack = []
-    @redoStack = []
+    @commandManager = new CommandManager
 
     @element = $('<div></div>')
-      .addClass('ppedit-box-container')
+    .addClass('ppedit-box-container')
 
     @root.append(@element)
 
     @element.on 'boxMoved', (event, box, currentPosition, originalPosition) =>
-      @_pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
+      @commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
 
   ###
   Selects the boxes contained in the passed rect.
@@ -57,11 +57,11 @@ class BoxesContainer
   ###
   createBox: (options) ->
     createBoxCommand = new CreateBoxCommand this, options
-    @_pushCommand createBoxCommand
+    @commandManager.pushCommand createBoxCommand
     return createBoxCommand.box
 
   removeBox: (options) ->
-    @_pushCommand new RemoveBoxesCommand this
+    @commandManager.pushCommand new RemoveBoxesCommand this
 
   ###
   Adds the passed Box Object to the Box List
@@ -85,7 +85,7 @@ class BoxesContainer
         @boxes[id].element.remove()
         delete @boxes[id]
 
-        
+
   ###
   Returns an array of Box objects corresponding to the
   passed boxIds. Passing no arguments will return
@@ -100,39 +100,10 @@ class BoxesContainer
   deleteSelectedBoxes: ->
     selectedBoxes = @element.find '.ppedit-box:focus, .ppedit-box-selected'
     if selectedBoxes.length > 0
-      @_pushCommand new RemoveBoxesCommand this, selectedBoxes
+      @commandManager.pushCommand new RemoveBoxesCommand this, selectedBoxes
 
   chageBoxOpacity: (boxid, opacityVal) ->
-        @boxes[boxid].element.css("opacity", opacityVal)
-
-
-  ###
-  Undo the last executed command
-  ###
-  undo: ->
-    if @undoStack.length > 0
-      lastCommand = @undoStack.pop()
-      lastCommand.undo()
-      @redoStack.push lastCommand
-
-  ###
-  Redo the last executed command
-  ###
-  redo: ->
-    if @redoStack.length > 0
-      redoCommand = @redoStack.pop()
-      redoCommand.execute()
-      @undoStack.push redoCommand
-
-  ###
-  Inserts the passed command into the undo stack
-  flow. This method execute the command by default, set
-  the execute argument to false in order to prevent that behavior.
-  ###
-  _pushCommand: (command, execute ) ->
-    command.execute() if !execute? or execute
-    @undoStack.push command
-    @redoStack.splice 0, @redoStack.length
+    @boxes[boxid].element.css("opacity", opacityVal)
 
   ###
   Returns true if the innerRect Rectangle is fully
