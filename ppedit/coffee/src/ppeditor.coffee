@@ -1,4 +1,5 @@
-#= require EditorManager
+#= require Graphic
+#= require EditArea
 #= require Panel
 #= require Grid
 #= require Box
@@ -7,20 +8,33 @@
 #= require RemoveBoxesCommand
 #= require CreateBoxCommand
 
-class PPEditor
+class PPEditor extends Graphic
 
   constructor: (@root) ->
+    super @root
 
     @controller = ControllerFactory.getController @root
-
     @commandManager = new CommandManager
+    @area = undefined
+    @panel = undefined
 
+  buildElement: ->
     @element = $('
       <div class="container">
         <div class="row"></div>
       </div>
     ')
-    @root.append(@element)
+
+    row = @element.find('.row')
+    @area = new EditArea row
+    @panel = new Panel row
+    @area.buildElement()
+    @panel.buildElement()
+
+    row.append @area.element
+    row.append @panel.element
+
+  bindEvents: ->
 
     @controller.bindEvents()
     @controller.root
@@ -31,26 +45,26 @@ class PPEditor
         @commandManager.redo()
 
       .on 'requestDelete', (event) =>
-        @commandManager.pushCommand new RemoveBoxesCommand this, @editorManager.boxesContainer.getSelectedBoxes()
+        @commandManager.pushCommand new RemoveBoxesCommand this, @area.boxesContainer.getSelectedBoxes()
 
-    row = @element.find('.row')
-    @editorManager = new EditorManager row
-    @panel = new Panel row
+    @element.find('.row')
+      .on 'panelClickAddBtnClick', (event) =>
+        @commandManager.pushCommand new CreateBoxCommand this
 
-    row.on 'panelClickAddBtnClick', (event) =>
-      @commandManager.pushCommand new CreateBoxCommand this
-
-    row.on 'panelClickGridBtnClick', (event) =>
-      @editorManager.grid.toggleGrid()
+      .on 'panelClickGridBtnClick', (event) =>
+        @area.grid.toggleGrid()
     
-    row.on 'panelClickClearAllBtnClick', (event) =>
-      @commandManager.pushCommand new RemoveBoxesCommand this, @editorManager.boxesContainer.getAllBoxes()
+      .on 'panelClickClearAllBtnClick', (event) =>
+        @commandManager.pushCommand new RemoveBoxesCommand this, @area.boxesContainer.getAllBoxes()
     
-    row.on 'onRowDeleteBtnClick', (event, boxId) =>
-      @commandManager.pushCommand new RemoveBoxesCommand this, @root.find('#' + boxId)
+      .on 'onRowDeleteBtnClick', (event, boxId) =>
+        @commandManager.pushCommand new RemoveBoxesCommand this, @root.find('#' + boxId)
 
-    row.on 'onRowSliderValChanged', (event, boxId, opacityVal) =>
-      @editorManager.boxesContainer.chageBoxOpacity(boxId, opacityVal)
+      .on 'onRowSliderValChanged', (event, boxId, opacityVal) =>
+        @area.boxesContainer.chageBoxOpacity(boxId, opacityVal)
 
-    @editorManager.boxesContainer.element.on 'boxMoved', (event, box, currentPosition, originalPosition) =>
+    @area.boxesContainer.element.on 'boxMoved', (event, box, currentPosition, originalPosition) =>
       @commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
+
+    @area.bindEvents()
+    @panel.bindEvents()

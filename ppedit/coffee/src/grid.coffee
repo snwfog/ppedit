@@ -1,7 +1,12 @@
-class Grid
-  constructor: (@root) ->
+#= require Graphic
 
-    @elementGrid = $('
+class Grid extends Graphic
+
+  constructor: (@root) ->
+    super @root
+
+  buildElement: ->
+    @element = $('
        <div class="ppedit-grid">
             <svg width="100%" height="100%">
               <defs>
@@ -18,8 +23,5 @@ class Grid
             </svg>
       </div>')
 
-    @root.append(@elementGrid)
-
   toggleGrid: ->
-    @elementGrid.toggle()
-
+    @element.toggle()

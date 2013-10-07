@@ -10,10 +10,10 @@ class CreateBoxCommand
     @box = undefined
 
   execute: ->
-    @box = new Box @editor.editorManager.boxesContainer.element, @options if !@box?
-    @editor.editorManager.boxesContainer.addBox @box
+    @box = new Box @editor.area.boxesContainer.element, @options if !@box?
+    @editor.area.boxesContainer.addBox @box
     @editor.panel.addBoxRow @box.element.attr('id')
 
   undo: ->
-    @editor.editorManager.boxesContainer.removeBoxes [@box.element.attr('id')]
+    @editor.area.boxesContainer.removeBoxes [@box.element.attr('id')]
     @editor.panel.removeBoxRow [@box.element.attr('id')]

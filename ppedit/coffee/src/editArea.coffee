@@ -1,25 +1,38 @@
+#= require Graphic
 #= require Canvas
 #= require BoxesContainer
 #= require Grid
 
-class EditorManager
+class EditArea extends Graphic
 
   constructor: (@root) ->
+    super @root
+
     @prevMouseMoveEvent = undefined
     @canvas = undefined
     @grid = undefined
     @boxesContainer = undefined
-    @element = undefined
 
-    @build()
-
-  build: ->
+  buildElement: ->
     @element = $('<div></div>')
-    @root.append(@element)
-
-    @element.addClass("ppedit-container")
+      .addClass("ppedit-container")
       .addClass("col-xs-8")
       .attr('tabindex', 0)
+
+    @boxesContainer = new BoxesContainer @element
+    @canvas = new Canvas @element
+    @grid = new Grid @element
+
+    @boxesContainer.buildElement()
+    @canvas.buildElement()
+    @grid.buildElement()
+
+    @element.append @boxesContainer.element
+    @element.append @canvas.element
+    @element.append @grid.element
+
+  bindEvents:->
+    @element
       .mousedown =>
         if $('.ppedit-box-selected').length == 0
           $('.ppedit-canvas').trigger 'containerMouseDown', [event]
@@ -41,12 +54,12 @@ class EditorManager
         @element.find('*').trigger 'containerMouseUp'
         @prevMouseMoveEvent = undefined
 
-    .keydown (event) =>
+      .keydown (event) =>
         @element.find('*').trigger 'containerKeyDown', [event]
 
       .on 'canvasRectSelect', (event, rect) =>
         @boxesContainer.selectBoxesInRect rect
 
-    @boxesContainer = new BoxesContainer @element
-    @canvas = new Canvas @element
-    @grid = new Grid @element
+    @boxesContainer.bindEvents()
+    @canvas.bindEvents()
+    @grid.bindEvents()

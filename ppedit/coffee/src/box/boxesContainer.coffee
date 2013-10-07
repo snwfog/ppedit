@@ -1,14 +1,14 @@
+#= require Graphic
 #= require Box
 
-class BoxesContainer
+class BoxesContainer extends Graphic
 
   constructor: (@root) ->
+    super @root
     @boxes = {}
 
-    @element = $('<div></div>')
-    .addClass('ppedit-box-container')
-
-    @root.append(@element)
+  buildElement: ->
+    @element = $('<div></div>').addClass('ppedit-box-container')
 
   ###
   Selects the boxes contained in the passed rect.
@@ -50,6 +50,7 @@ class BoxesContainer
   Adds the passed Box Object to the Box List
   ###
   addBox: (box) ->
+    box.buildElement()
     @element.append box.element
     box.bindEvents()
     @boxes[box.element.attr('id')] = box
@@ -65,14 +66,10 @@ class BoxesContainer
 
   ###
   Returns an array of Box objects corresponding to the
-  passed boxIds. Passing no arguments will return
-  all Box objects.
+  passed boxIds.
   ###
   getBoxesFromIds: (boxIds) ->
-    if boxIds?
-      return (@boxes[id] for id in boxIds when @boxes[id]?)
-    else
-      return $.extend(true, [], @boxes)
+    return (@boxes[id] for id in boxIds when @boxes[id]?)
 
   ###
   Returns a selector matching all boxes

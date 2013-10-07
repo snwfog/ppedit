@@ -46,6 +46,9 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
       #    # do something with el
       #
       editor = new PPEditor $this
+      editor.buildElement()
+      $this.append editor.element
+      editor.bindEvents()
       
       return $this
 

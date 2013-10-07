@@ -1,6 +1,10 @@
-class Panel
-  constructor: (@root) ->
+#= require Graphic
 
+class Panel extends Graphic
+  constructor: (@root) ->
+    super @root
+
+  buildElement: ->
     @element = $('
             <div class="col-xs-5">
 
@@ -32,8 +36,7 @@ class Panel
               </table>
             </div>')
 
-    @root.append(@element)
-
+  bindEvents: ->
     $(".addElementBtn").click =>
       @root.trigger 'panelClickAddBtnClick'
 

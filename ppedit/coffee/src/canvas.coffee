@@ -1,39 +1,45 @@
-class Canvas
+#= require Graphic
+
+class Canvas extends Graphic
+
   constructor: (@root) ->
-    @element = undefined
+    super @root
+
     @downPosition = undefined
     @rectSize = undefined
-    @build()
+    @_context = undefined
 
-  build: ->
+  buildElement: ->
     @element = $('<canvas></canvas>')
-    .addClass('ppedit-canvas')
-    .attr('width', '600px')
-    .attr('height', '960px')
-    .on 'containerMouseDown', (event, mouseEvent) =>
-      @downPosition =
-        x:mouseEvent.offsetX
-        y:mouseEvent.offsetY
-      @rectSize =
-        width:0
-        height:0
+      .addClass('ppedit-canvas')
+      .attr('width', '600px')
+      .attr('height', '960px')
 
-    .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
-      if @downPosition? && @rectSize? && delta?
-        @rectSize.width += delta.x
-        @rectSize.height += delta.y
-        @drawRect @downPosition, @rectSize
+  bindEvents:->
+    @element
+      .on 'containerMouseDown', (event, mouseEvent) =>
+        @downPosition =
+          x:mouseEvent.offsetX
+          y:mouseEvent.offsetY
+        @rectSize =
+          width:0
+          height:0
 
-    .on 'containerMouseLeave', () =>
-      @clear()
+      .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
+        if @downPosition? && @rectSize? && delta?
+          @rectSize.width += delta.x
+          @rectSize.height += delta.y
+          @drawRect @downPosition, @rectSize
 
-    .on 'containerMouseUp', () =>
-      @root.trigger 'canvasRectSelect', [
-        topLeft:@downPosition
-        size:@rectSize] if @downPosition? && @rectSize?
-      @clear()
+      .on 'containerMouseLeave', () =>
+        @clear()
 
-    @root.append(@element)
+      .on 'containerMouseUp', () =>
+        @root.trigger 'canvasRectSelect', [
+          topLeft:@downPosition
+          size:@rectSize] if @downPosition? && @rectSize?
+        @clear()
+
     @_context = @element.get(0).getContext('2d')
 
   drawRect: (topLeft, size) ->

@@ -1,45 +1,50 @@
-class Box
+#= require Graphic
 
-  constructor: (@root, options)->
+class Box extends Graphic
+
+  constructor: (@root, @options)->
+    super @root
 
     # true if the user is currently leftclicking on the box.
     @prevPosition = undefined
 
-    settings = $.extend(
-      left:'50px'
-      top:'50px'
-      width:'75px'
-      height:'50px'
-    , options);
+  buildElement: ->
+    if !@element?
+      settings = $.extend(
+        left:'50px'
+        top:'50px'
+        width:'75px'
+        height:'50px'
+      , @options);
 
-    @element = $('<div></div>')
-    .addClass('ppedit-box')
-    .attr('tabindex', 0)
-    .attr('id', $.now())
-    .css(settings)
+      @element = $('<div></div>')
+      .addClass('ppedit-box')
+      .attr('tabindex', 0)
+      .attr('id', $.now())
+      .css(settings)
 
   bindEvents: ->
     @element
-    .mousedown (event) =>
-      @element.addClass('ppedit-box-selected')
-      @prevPosition = @currentPosition()
- 
-    .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
-      @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
+      .mousedown (event) =>
+        @element.addClass('ppedit-box-selected')
+        @prevPosition = @currentPosition()
 
-    .on 'containerMouseLeave', () =>
-      @stopMoving()
+      .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
+        @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
 
-    .on 'containerMouseUp', () =>
-      @stopMoving()
+      .on 'containerMouseLeave', () =>
+        @stopMoving()
 
-    .on 'containerKeyDown', (event, keyDownEvent) =>
-      @processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')
+      .on 'containerMouseUp', () =>
+        @stopMoving()
 
-    .keydown (event) =>
-      @processKeyDownEvent(event)
+      .on 'containerKeyDown', (event, keyDownEvent) =>
+        @_processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')
 
-  processKeyDownEvent: (event) ->
+      .keydown (event) =>
+        @_processKeyDownEvent(event)
+
+  _processKeyDownEvent: (event) ->
 
       previousPosition = @currentPosition()
       moved = false
