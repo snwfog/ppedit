@@ -30,10 +30,7 @@ PPedit is a web based WYSIWYG editor written as a JQuery plugin for the PeerPen 
 
 ##Development environment installation
 
-First clone this repository then follow the instructions below.
-
-### Install Coffee-Script
-
+ - Clone this repository.
  - Download and run [Node.js installer](http://nodejs.org/download/).
  - Run on the command line (May require Root/Admin privilieges): 
 
@@ -43,12 +40,6 @@ First clone this repository then follow the instructions below.
     (Default is C:/Program Files/nodjs).*
 
  - That's all. You can now run the `coffee` command from any directory.
-
-### Install [Coffee-script-concat ](https://github.com/fairfieldt/coffeescript-concat)
-
- - Run on the command line (May require Root/Admin privilieges): 
-
-	`npm install -g coffeescript-concat`
 
 ##Development Instructions
 
