@@ -401,6 +401,106 @@
 
   })();
 
+  PCController = (function() {
+    function PCController(root) {
+      this.root = root;
+    }
+
+    PCController.prototype.bindEvents = function() {
+      var _this = this;
+      return this.root.keydown(function(event) {
+        if (event.keyCode === 90 && event.ctrlKey) {
+          event.preventDefault();
+          _this.root.trigger('requestUndo');
+        }
+        if (event.keyCode === 89 && event.ctrlKey) {
+          event.preventDefault();
+          _this.root.trigger('requestRedo');
+        }
+        if (event.keyCode === 46 || (event.keyCode === 46 && event.ctrlKey)) {
+          event.preventDefault();
+          return _this.root.trigger('requestDelete');
+        }
+      });
+    };
+
+    return PCController;
+
+  })();
+
+  MacController = (function() {
+    MacController.COMMAND_LEFT_KEY_CODE = 91;
+
+    MacController.COMMAND_RIGHT_KEY_CODE = 93;
+
+    MacController.Z_KEY_CODE = 90;
+
+    MacController.Y_KEY_CODE = 89;
+
+    MacController.DELETE_KEY_CODE = 8;
+
+    function MacController(root) {
+      this.root = root;
+      this.leftCmdKeyPressed = false;
+      this.rightCmdKeyPressed = false;
+    }
+
+    MacController.prototype.bindEvents = function() {
+      var _this = this;
+      return this.root.keydown(function(event) {
+        if (event.keyCode === MacController.COMMAND_LEFT_KEY_CODE) {
+          return _this.leftCmdKeyPressed = true;
+        } else if (event.keyCode === MacController.COMMAND_RIGHT_KEY_CODE) {
+          return _this.rightCmdKeyPressed = true;
+        } else if (event.keyCode === MacController.Z_KEY_CODE && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestUndo');
+        } else if (event.keyCode === MacController.Y_KEY_CODE && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestRedo');
+        } else if (event.keyCode === MacController.DELETE_KEY_CODE && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestDelete');
+        }
+      }).keyup(function(event) {
+        if (event.keyCode === MacController.COMMAND_LEFT_KEY_CODE) {
+          _this.leftCmdKeyPressed = false;
+        }
+        if (event.keyCode === MacController.COMMAND_RIGHT_KEY_CODE) {
+          return _this.rightCmdKeyPressed = false;
+        }
+      });
+    };
+
+    MacController.prototype._cmdKeyIsPressed = function() {
+      return this.rightCmdKeyPressed || this.leftCmdKeyPressed;
+    };
+
+    return MacController;
+
+  })();
+
+  /*
+  the ControllerFactory determines which controller
+  to used based on the user's Operating System.
+  */
+
+
+  ControllerFactory = (function() {
+    function ControllerFactory() {}
+
+    ControllerFactory.getController = function(root) {
+      if (navigator.userAgent.match(/Macintosh/).length > 0) {
+        return new MacController(root);
+      } else {
+        return new PCController(root);
+      }
+    };
+
+    return ControllerFactory;
+
+  })();
+
   Canvas = (function() {
     function Canvas(root) {
       this.root = root;
@@ -628,97 +728,6 @@
     };
 
     return Panel;
-
-  })();
-
-  PCController = (function() {
-    function PCController(root) {
-      this.root = root;
-    }
-
-    PCController.prototype.bindEvents = function() {
-      var _this = this;
-      return this.root.keydown(function(event) {
-        if (event.keyCode === 90 && event.ctrlKey) {
-          event.preventDefault();
-          _this.root.trigger('requestUndo');
-        }
-        if (event.keyCode === 89 && event.ctrlKey) {
-          event.preventDefault();
-          _this.root.trigger('requestRedo');
-        }
-        if (event.keyCode === 46 || (event.keyCode === 46 && event.ctrlKey)) {
-          event.preventDefault();
-          return _this.root.trigger('requestDelete');
-        }
-      });
-    };
-
-    return PCController;
-
-  })();
-
-  MacController = (function() {
-    MacController.COMMAND_LEFT_KEY_CODE = 91;
-
-    MacController.COMMAND_RIGHT_KEY_CODE = 93;
-
-    MacController.Z_KEY_CODE = 90;
-
-    MacController.Y_KEY_CODE = 89;
-
-    MacController.DELETE_KEY_CODE = 8;
-
-    function MacController(root) {
-      this.root = root;
-      this.leftCmdKeyPressed = false;
-      this.rightCmdKeyPressed = false;
-    }
-
-    MacController.prototype.bindEvents = function() {
-      var _this = this;
-      return this.root.keydown(function(event) {
-        console.log('cmdpressed:' + _this._cmdKeyIsPressed());
-        if (event.keyCode === MacController.COMMAND_LEFT_KEY_CODE) {
-          return _this.leftCmdKeyPressed = true;
-        } else if (event.keyCode === MacController.COMMAND_RIGHT_KEY_CODE) {
-          return _this.rightCmdKeyPressed = true;
-        } else if (event.keyCode === MacController.Z_KEY_CODE && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestUndo');
-        } else if (event.keyCode === MacController.Y_KEY_CODE && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestRedo');
-        } else if (event.keyCode === MacController.DELETE_KEY_CODE && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestDelete');
-        }
-      }).keyup(function(event) {
-        if (event.keyCode === MacController.COMMAND_LEFT_KEY_CODE) {
-          _this.leftCmdKeyPressed = false;
-        }
-        if (event.keyCode === MacController.COMMAND_RIGHT_KEY_CODE) {
-          return _this.rightCmdKeyPressed = false;
-        }
-      });
-    };
-
-    MacController.prototype._cmdKeyIsPressed = function() {
-      return this.rightCmdKeyPressed || this.leftCmdKeyPressed;
-    };
-
-    return MacController;
-
-  })();
-
-  ControllerFactory = (function() {
-    function ControllerFactory() {}
-
-    ControllerFactory.getController = function(root) {
-      return new MacController(root);
-    };
-
-    return ControllerFactory;
 
   })();
 

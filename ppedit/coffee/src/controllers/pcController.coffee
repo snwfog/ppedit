@@ -3,7 +3,6 @@ class PCController
   constructor: (@root) ->
 
   bindEvents: ->
-
     @root.keydown (event) =>
       if event.keyCode == 90 && event.ctrlKey
         event.preventDefault()
