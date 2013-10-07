@@ -30,8 +30,8 @@ class BoxesContainer extends Graphic
       selectRect.topLeft.y -= Math.abs(selectRect.size.height)
       selectRect.size.height = Math.abs(selectRect.size.height)
 
-    @element.find('.ppedit-box').each (index, box) =>
-      $(box).addClass 'ppedit-box-selected' if BoxesContainer._rectContainsRect selectRect, @boxBounds($(box))
+    @getAllBoxes().each (index, box) =>
+      @boxes[box.id].select() if BoxesContainer._rectContainsRect selectRect, @boxBounds($(box))
 
   ###
   Returns the bounding rectangle of the box matching the
@@ -82,6 +82,13 @@ class BoxesContainer extends Graphic
   ###
   getSelectedBoxes: ->
     return @element.find '.ppedit-box:focus, .ppedit-box-selected'
+
+  ###
+  Returns a selector to the currently selected boxes,
+  excluding the focused one, if any.
+  ###
+  getNotFocusedSelectedBoxes: ->
+    return @element.find '.ppedit-box-selected'
 
   chageBoxOpacity: (boxid, opacityVal) ->
     @boxes[boxid].element.css("opacity", opacityVal)

@@ -13,6 +13,19 @@
     }
   };
 
+  ppeditDescribe = function(suitDescription, specDefinitions) {
+    return describe('', function() {
+      beforeEach(function() {
+        this.addMatchers(ppeditMatchers);
+        return $(".editor").ppedit();
+      });
+      afterEach(function() {
+        return $('.editor').children().remove();
+      });
+      return describe(suitDescription, specDefinitions);
+    });
+  };
+
   /*
   Returns the position of the first element in the set of matched
   elements relative to the browser viewport.
@@ -86,19 +99,6 @@
     }).simulate("mouseup", {
       clientX: rect.topLeft.left + rect.size.width,
       clientY: rect.topLeft.top + rect.size.height
-    });
-  };
-
-  ppeditDescribe = function(suitDescription, specDefinitions) {
-    return describe('', function() {
-      beforeEach(function() {
-        this.addMatchers(ppeditMatchers);
-        return $(".editor").ppedit();
-      });
-      afterEach(function() {
-        return $('.editor').children().remove();
-      });
-      return describe(suitDescription, specDefinitions);
     });
   };
 

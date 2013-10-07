@@ -26,8 +26,7 @@ class Box extends Graphic
   bindEvents: ->
     @element
       .mousedown (event) =>
-        @element.addClass('ppedit-box-selected')
-        @prevPosition = @currentPosition()
+        @select()
 
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
@@ -91,3 +90,10 @@ class Box extends Graphic
   currentPosition: ->
     x: parseInt @element.css 'left'
     y: parseInt @element.css 'top'
+
+  ###
+  Marks the box as selected
+  ###
+  select: ->
+    @element.addClass('ppedit-box-selected')
+    @prevPosition = @currentPosition()

@@ -34,8 +34,8 @@ class EditArea extends Graphic
   bindEvents:->
     @element
       .mousedown =>
-        if $('.ppedit-box-selected').length == 0
-          $('.ppedit-canvas').trigger 'containerMouseDown', [event]
+        if @boxesContainer.getNotFocusedSelectedBoxes().length == 0
+          @canvas.element.trigger 'containerMouseDown', [event]
 
       .mousemove (event) =>
         delta = undefined

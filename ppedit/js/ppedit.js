@@ -66,8 +66,7 @@ Abstract Class, represents an Dom node
     Box.prototype.bindEvents = function() {
       var _this = this;
       return this.element.mousedown(function(event) {
-        _this.element.addClass('ppedit-box-selected');
-        return _this.prevPosition = _this.currentPosition();
+        return _this.select();
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
           return _this.move(delta.x, delta.y);
@@ -140,6 +139,16 @@ Abstract Class, represents an Dom node
       };
     };
 
+    /*
+    Marks the box as selected
+    */
+
+
+    Box.prototype.select = function() {
+      this.element.addClass('ppedit-box-selected');
+      return this.prevPosition = this.currentPosition();
+    };
+
     return Box;
 
   })(Graphic);
@@ -181,9 +190,9 @@ Abstract Class, represents an Dom node
         selectRect.topLeft.y -= Math.abs(selectRect.size.height);
         selectRect.size.height = Math.abs(selectRect.size.height);
       }
-      return this.element.find('.ppedit-box').each(function(index, box) {
+      return this.getAllBoxes().each(function(index, box) {
         if (BoxesContainer._rectContainsRect(selectRect, _this.boxBounds($(box)))) {
-          return $(box).addClass('ppedit-box-selected');
+          return _this.boxes[box.id].select();
         }
       });
     };
@@ -274,6 +283,16 @@ Abstract Class, represents an Dom node
 
     BoxesContainer.prototype.getSelectedBoxes = function() {
       return this.element.find('.ppedit-box:focus, .ppedit-box-selected');
+    };
+
+    /*
+    Returns a selector to the currently selected boxes,
+    excluding the focused one, if any.
+    */
+
+
+    BoxesContainer.prototype.getNotFocusedSelectedBoxes = function() {
+      return this.element.find('.ppedit-box-selected');
     };
 
     BoxesContainer.prototype.chageBoxOpacity = function(boxid, opacityVal) {
@@ -679,8 +698,8 @@ Abstract Class, represents an Dom node
     EditArea.prototype.bindEvents = function() {
       var _this = this;
       this.element.mousedown(function() {
-        if ($('.ppedit-box-selected').length === 0) {
-          return $('.ppedit-canvas').trigger('containerMouseDown', [event]);
+        if (_this.boxesContainer.getNotFocusedSelectedBoxes().length === 0) {
+          return _this.canvas.element.trigger('containerMouseDown', [event]);
         }
       }).mousemove(function(event) {
         var delta;
@@ -859,6 +878,7 @@ Abstract Class, represents an Dom node
         return _this.area.boxesContainer.chageBoxOpacity(boxId, opacityVal);
       });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
+        console.log('bmoved');
         return _this.commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false);
       });
       this.area.bindEvents();
