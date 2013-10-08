@@ -572,7 +572,7 @@ Abstract Class, represents an Dom node
     function ControllerFactory() {}
 
     ControllerFactory.getController = function(root) {
-      if (navigator.userAgent.match(/Macintosh/).length > 0) {
+      if (navigator.userAgent.match(/Macintosh/) === !null) {
         return new MacController(root);
       } else {
         return new PCController(root);

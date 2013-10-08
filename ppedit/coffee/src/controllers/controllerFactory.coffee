@@ -8,7 +8,7 @@ to used based on the user's Operating System.
 class ControllerFactory
 
   @getController: (root) ->
-    if navigator.userAgent.match(/Macintosh/).length > 0
+    if navigator.userAgent.match(/Macintosh/) is not null
       return new MacController root
     else
       return new PCController root
