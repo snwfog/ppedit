@@ -10,6 +10,14 @@ class BoxesContainer extends Graphic
   buildElement: ->
     @element = $('<div></div>').addClass('ppedit-box-container')
 
+  bindEvents: ->
+    @element.dblclick (event) =>
+      event.preventDefault()
+      boxCssOptions =
+        left:event.offsetX + @element.scrollLeft()
+        top:event.offsetY + @element.scrollTop()
+      @root.trigger 'addBoxRequested', [boxCssOptions] if @getSelectedBoxes().length == 0
+
   ###
   Selects the boxes contained in the passed rect.
   The rect position is relative to the root.
@@ -50,7 +58,7 @@ class BoxesContainer extends Graphic
   Adds the passed Box Object to the Box List
   ###
   addBox: (box) ->
-    box.buildElement()
+    box.buildElement() if !box.element?
     @element.append box.element
     box.bindEvents()
     @boxes[box.element.attr('id')] = box
@@ -61,7 +69,9 @@ class BoxesContainer extends Graphic
   ###
   removeBoxes: (boxIds) ->
     for id in boxIds
-      @boxes[id].element.remove()
+      @boxes[id].element
+        .removeClass('ppedit-box-selected')
+        .remove()
       delete @boxes[id]
 
   ###

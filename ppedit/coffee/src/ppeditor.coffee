@@ -63,8 +63,12 @@ class PPEditor extends Graphic
       .on 'onRowSliderValChanged', (event, boxId, opacityVal) =>
         @area.boxesContainer.chageBoxOpacity(boxId, opacityVal)
 
-    @area.boxesContainer.element.on 'boxMoved', (event, box, currentPosition, originalPosition) =>
-      @commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
+      .on 'addBoxRequested', (event, boxCssOptions) =>
+        @commandManager.pushCommand new CreateBoxCommand this, boxCssOptions
+
+    @area.boxesContainer.element
+      .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
+        @commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
 
     @area.bindEvents()
     @panel.bindEvents()

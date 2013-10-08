@@ -52,15 +52,13 @@ Abstract Class, represents an Dom node
 
     Box.prototype.buildElement = function() {
       var settings;
-      if (this.element == null) {
-        settings = $.extend({
-          left: '50px',
-          top: '50px',
-          width: '75px',
-          height: '50px'
-        }, this.options);
-        return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings);
-      }
+      settings = $.extend({
+        left: '50px',
+        top: '50px',
+        width: '75px',
+        height: '50px'
+      }, this.options);
+      return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings);
     };
 
     Box.prototype.bindEvents = function() {
@@ -166,6 +164,21 @@ Abstract Class, represents an Dom node
       return this.element = $('<div></div>').addClass('ppedit-box-container');
     };
 
+    BoxesContainer.prototype.bindEvents = function() {
+      var _this = this;
+      return this.element.dblclick(function(event) {
+        var boxCssOptions;
+        event.preventDefault();
+        boxCssOptions = {
+          left: event.offsetX + _this.element.scrollLeft(),
+          top: event.offsetY + _this.element.scrollTop()
+        };
+        if (_this.getSelectedBoxes().length === 0) {
+          return _this.root.trigger('addBoxRequested', [boxCssOptions]);
+        }
+      });
+    };
+
     /*
     Selects the boxes contained in the passed rect.
     The rect position is relative to the root.
@@ -223,7 +236,9 @@ Abstract Class, represents an Dom node
 
 
     BoxesContainer.prototype.addBox = function(box) {
-      box.buildElement();
+      if (box.element == null) {
+        box.buildElement();
+      }
       this.element.append(box.element);
       box.bindEvents();
       return this.boxes[box.element.attr('id')] = box;
@@ -240,7 +255,7 @@ Abstract Class, represents an Dom node
       _results = [];
       for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
         id = boxIds[_i];
-        this.boxes[id].element.remove();
+        this.boxes[id].element.removeClass('ppedit-box-selected').remove();
         _results.push(delete this.boxes[id]);
       }
       return _results;
@@ -876,9 +891,10 @@ Abstract Class, represents an Dom node
         return _this.commandManager.pushCommand(new RemoveBoxesCommand(_this, _this.root.find('#' + boxId)));
       }).on('onRowSliderValChanged', function(event, boxId, opacityVal) {
         return _this.area.boxesContainer.chageBoxOpacity(boxId, opacityVal);
+      }).on('addBoxRequested', function(event, boxCssOptions) {
+        return _this.commandManager.pushCommand(new CreateBoxCommand(_this, boxCssOptions));
       });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
-        console.log('bmoved');
         return _this.commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false);
       });
       this.area.bindEvents();

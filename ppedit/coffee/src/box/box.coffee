@@ -9,19 +9,18 @@ class Box extends Graphic
     @prevPosition = undefined
 
   buildElement: ->
-    if !@element?
-      settings = $.extend(
-        left:'50px'
-        top:'50px'
-        width:'75px'
-        height:'50px'
-      , @options);
+    settings = $.extend(
+      left:'50px'
+      top:'50px'
+      width:'75px'
+      height:'50px'
+    , @options);
 
-      @element = $('<div></div>')
-      .addClass('ppedit-box')
-      .attr('tabindex', 0)
-      .attr('id', $.now())
-      .css(settings)
+    @element = $('<div></div>')
+    .addClass('ppedit-box')
+    .attr('tabindex', 0)
+    .attr('id', $.now())
+    .css(settings)
 
   bindEvents: ->
     @element
