@@ -58,13 +58,16 @@ Abstract Class, represents an Dom node
         width: '75px',
         height: '50px'
       }, this.options);
-      return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings);
+      return this.element = $('<textarea></textarea>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings);
     };
 
     Box.prototype.bindEvents = function() {
       var _this = this;
       return this.element.mousedown(function(event) {
+        event.preventDefault();
         return _this.select();
+      }).dblclick(function() {
+        return _this.element.focus();
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
           return _this.move(delta.x, delta.y);
@@ -148,183 +151,6 @@ Abstract Class, represents an Dom node
     };
 
     return Box;
-
-  })(Graphic);
-
-  BoxesContainer = (function(_super) {
-    __extends(BoxesContainer, _super);
-
-    function BoxesContainer(root) {
-      this.root = root;
-      BoxesContainer.__super__.constructor.call(this, this.root);
-      this.boxes = {};
-    }
-
-    BoxesContainer.prototype.buildElement = function() {
-      return this.element = $('<div></div>').addClass('ppedit-box-container');
-    };
-
-    BoxesContainer.prototype.bindEvents = function() {
-      var _this = this;
-      return this.element.dblclick(function(event) {
-        var boxCssOptions;
-        event.preventDefault();
-        boxCssOptions = {
-          left: event.offsetX + _this.element.scrollLeft(),
-          top: event.offsetY + _this.element.scrollTop()
-        };
-        if (_this.getSelectedBoxes().length === 0) {
-          return _this.root.trigger('addBoxRequested', [boxCssOptions]);
-        }
-      });
-    };
-
-    /*
-    Selects the boxes contained in the passed rect.
-    The rect position is relative to the root.
-    */
-
-
-    BoxesContainer.prototype.selectBoxesInRect = function(rect) {
-      var selectRect,
-        _this = this;
-      selectRect = {
-        topLeft: {
-          x: rect.topLeft.x + this.element.scrollLeft(),
-          y: rect.topLeft.y + this.element.scrollTop()
-        },
-        size: rect.size
-      };
-      if (selectRect.size.width < 0) {
-        selectRect.topLeft.x -= Math.abs(selectRect.size.width);
-        selectRect.size.width = Math.abs(selectRect.size.width);
-      }
-      if (selectRect.size.height < 0) {
-        selectRect.topLeft.y -= Math.abs(selectRect.size.height);
-        selectRect.size.height = Math.abs(selectRect.size.height);
-      }
-      return this.getAllBoxes().each(function(index, box) {
-        if (BoxesContainer._rectContainsRect(selectRect, _this.boxBounds($(box)))) {
-          return _this.boxes[box.id].select();
-        }
-      });
-    };
-
-    /*
-    Returns the bounding rectangle of the box matching the
-    passed box selector.
-    */
-
-
-    BoxesContainer.prototype.boxBounds = function(boxSelector) {
-      var result;
-      return result = {
-        topLeft: {
-          x: boxSelector.position().left + this.element.scrollLeft(),
-          y: boxSelector.position().top + this.element.scrollTop()
-        },
-        size: {
-          width: boxSelector.width(),
-          height: boxSelector.height()
-        }
-      };
-    };
-
-    /*
-    Adds the passed Box Object to the Box List
-    */
-
-
-    BoxesContainer.prototype.addBox = function(box) {
-      if (box.element == null) {
-        box.buildElement();
-      }
-      this.element.append(box.element);
-      box.bindEvents();
-      return this.boxes[box.element.attr('id')] = box;
-    };
-
-    /*
-    Given an array of box ids, deletes all box objects
-    with those ids.
-    */
-
-
-    BoxesContainer.prototype.removeBoxes = function(boxIds) {
-      var id, _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
-        id = boxIds[_i];
-        this.boxes[id].element.removeClass('ppedit-box-selected').remove();
-        _results.push(delete this.boxes[id]);
-      }
-      return _results;
-    };
-
-    /*
-    Returns an array of Box objects corresponding to the
-    passed boxIds.
-    */
-
-
-    BoxesContainer.prototype.getBoxesFromIds = function(boxIds) {
-      var id;
-      return (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
-          id = boxIds[_i];
-          if (this.boxes[id] != null) {
-            _results.push(this.boxes[id]);
-          }
-        }
-        return _results;
-      }).call(this);
-    };
-
-    /*
-    Returns a selector matching all boxes
-    */
-
-
-    BoxesContainer.prototype.getAllBoxes = function() {
-      return this.element.find('.ppedit-box');
-    };
-
-    /*
-    Returns a selector to the currently selected boxes
-    */
-
-
-    BoxesContainer.prototype.getSelectedBoxes = function() {
-      return this.element.find('.ppedit-box:focus, .ppedit-box-selected');
-    };
-
-    /*
-    Returns a selector to the currently selected boxes,
-    excluding the focused one, if any.
-    */
-
-
-    BoxesContainer.prototype.getNotFocusedSelectedBoxes = function() {
-      return this.element.find('.ppedit-box-selected');
-    };
-
-    BoxesContainer.prototype.chageBoxOpacity = function(boxid, opacityVal) {
-      return this.boxes[boxid].element.css("opacity", opacityVal);
-    };
-
-    /*
-    Returns true if the innerRect Rectangle is fully
-    contained within the outerRect Rectangle, false otherwise.
-    */
-
-
-    BoxesContainer._rectContainsRect = function(outerRect, innerRect) {
-      return innerRect.topLeft.x >= outerRect.topLeft.x && innerRect.topLeft.y >= outerRect.topLeft.y && innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width && innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height;
-    };
-
-    return BoxesContainer;
 
   })(Graphic);
 
@@ -572,7 +398,7 @@ Abstract Class, represents an Dom node
     function ControllerFactory() {}
 
     ControllerFactory.getController = function(root) {
-      if (navigator.userAgent.match(/Macintosh/) === !null) {
+      if (navigator.userAgent.match(/Macintosh/) !== null) {
         return new MacController(root);
       } else {
         return new PCController(root);
@@ -582,6 +408,183 @@ Abstract Class, represents an Dom node
     return ControllerFactory;
 
   })();
+
+  BoxesContainer = (function(_super) {
+    __extends(BoxesContainer, _super);
+
+    function BoxesContainer(root) {
+      this.root = root;
+      BoxesContainer.__super__.constructor.call(this, this.root);
+      this.boxes = {};
+    }
+
+    BoxesContainer.prototype.buildElement = function() {
+      return this.element = $('<div></div>').addClass('ppedit-box-container');
+    };
+
+    BoxesContainer.prototype.bindEvents = function() {
+      var _this = this;
+      return this.element.dblclick(function(event) {
+        var boxCssOptions;
+        event.preventDefault();
+        boxCssOptions = {
+          left: event.offsetX + _this.element.scrollLeft(),
+          top: event.offsetY + _this.element.scrollTop()
+        };
+        if (_this.getSelectedBoxes().length === 0) {
+          return _this.root.trigger('addBoxRequested', [boxCssOptions]);
+        }
+      });
+    };
+
+    /*
+    Selects the boxes contained in the passed rect.
+    The rect position is relative to the root.
+    */
+
+
+    BoxesContainer.prototype.selectBoxesInRect = function(rect) {
+      var selectRect,
+        _this = this;
+      selectRect = {
+        topLeft: {
+          x: rect.topLeft.x + this.element.scrollLeft(),
+          y: rect.topLeft.y + this.element.scrollTop()
+        },
+        size: rect.size
+      };
+      if (selectRect.size.width < 0) {
+        selectRect.topLeft.x -= Math.abs(selectRect.size.width);
+        selectRect.size.width = Math.abs(selectRect.size.width);
+      }
+      if (selectRect.size.height < 0) {
+        selectRect.topLeft.y -= Math.abs(selectRect.size.height);
+        selectRect.size.height = Math.abs(selectRect.size.height);
+      }
+      return this.getAllBoxes().each(function(index, box) {
+        if (BoxesContainer._rectContainsRect(selectRect, _this.boxBounds($(box)))) {
+          return _this.boxes[box.id].select();
+        }
+      });
+    };
+
+    /*
+    Returns the bounding rectangle of the box matching the
+    passed box selector.
+    */
+
+
+    BoxesContainer.prototype.boxBounds = function(boxSelector) {
+      var result;
+      return result = {
+        topLeft: {
+          x: boxSelector.position().left + this.element.scrollLeft(),
+          y: boxSelector.position().top + this.element.scrollTop()
+        },
+        size: {
+          width: boxSelector.width(),
+          height: boxSelector.height()
+        }
+      };
+    };
+
+    /*
+    Adds the passed Box Object to the Box List
+    */
+
+
+    BoxesContainer.prototype.addBox = function(box) {
+      if (box.element == null) {
+        box.buildElement();
+      }
+      this.element.append(box.element);
+      box.bindEvents();
+      return this.boxes[box.element.attr('id')] = box;
+    };
+
+    /*
+    Given an array of box ids, deletes all box objects
+    with those ids.
+    */
+
+
+    BoxesContainer.prototype.removeBoxes = function(boxIds) {
+      var id, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
+        id = boxIds[_i];
+        this.boxes[id].element.removeClass('ppedit-box-selected').remove();
+        _results.push(delete this.boxes[id]);
+      }
+      return _results;
+    };
+
+    /*
+    Returns an array of Box objects corresponding to the
+    passed boxIds.
+    */
+
+
+    BoxesContainer.prototype.getBoxesFromIds = function(boxIds) {
+      var id;
+      return (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
+          id = boxIds[_i];
+          if (this.boxes[id] != null) {
+            _results.push(this.boxes[id]);
+          }
+        }
+        return _results;
+      }).call(this);
+    };
+
+    /*
+    Returns a selector matching all boxes
+    */
+
+
+    BoxesContainer.prototype.getAllBoxes = function() {
+      return this.element.find('.ppedit-box');
+    };
+
+    /*
+    Returns a selector to the currently selected boxes
+    */
+
+
+    BoxesContainer.prototype.getSelectedBoxes = function() {
+      return this.element.find('.ppedit-box:focus, .ppedit-box-selected');
+    };
+
+    /*
+    Returns a selector to the currently selected boxes,
+    excluding the focused one, if any.
+    */
+
+
+    BoxesContainer.prototype.getNotFocusedSelectedBoxes = function() {
+      return this.element.find('.ppedit-box-selected');
+    };
+
+    BoxesContainer.prototype.chageBoxOpacity = function(boxid, opacityVal) {
+      return this.boxes[boxid].element.css("opacity", opacityVal);
+    };
+
+    /*
+    Returns true if the innerRect Rectangle is fully
+    contained within the outerRect Rectangle, false otherwise.
+    */
+
+
+    BoxesContainer._rectContainsRect = function(outerRect, innerRect) {
+      return innerRect.topLeft.x >= outerRect.topLeft.x && innerRect.topLeft.y >= outerRect.topLeft.y && innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width && innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height;
+    };
+
+    return BoxesContainer;
+
+  })(Graphic);
 
   Canvas = (function(_super) {
     __extends(Canvas, _super);
@@ -854,7 +857,7 @@ Abstract Class, represents an Dom node
     function PPEditor(root) {
       this.root = root;
       PPEditor.__super__.constructor.call(this, this.root);
-      this.controller = ControllerFactory.getController(this.root);
+      this.controller = void 0;
       this.commandManager = new CommandManager;
       this.area = void 0;
       this.panel = void 0;
@@ -867,6 +870,7 @@ Abstract Class, represents an Dom node
         <div class="row"></div>\
       </div>\
     ');
+      this.controller = ControllerFactory.getController(this.element);
       row = this.element.find('.row');
       this.area = new EditArea(row);
       this.panel = new Panel(row);
@@ -878,8 +882,7 @@ Abstract Class, represents an Dom node
 
     PPEditor.prototype.bindEvents = function() {
       var _this = this;
-      this.controller.bindEvents();
-      this.controller.root.on('requestUndo', function(event) {
+      this.element.on('requestUndo', function(event) {
         return _this.commandManager.undo();
       }).on('requestRedo', function(event) {
         return _this.commandManager.redo();
@@ -903,7 +906,8 @@ Abstract Class, represents an Dom node
         return _this.commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false);
       });
       this.area.bindEvents();
-      return this.panel.bindEvents();
+      this.panel.bindEvents();
+      return this.controller.bindEvents();
     };
 
     return PPEditor;
