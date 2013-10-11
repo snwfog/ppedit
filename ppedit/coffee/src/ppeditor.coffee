@@ -13,7 +13,7 @@ class PPEditor extends Graphic
   constructor: (@root) ->
     super @root
 
-    @controller = ControllerFactory.getController @root
+    @controller = undefined
     @commandManager = new CommandManager
     @area = undefined
     @panel = undefined
@@ -25,9 +25,12 @@ class PPEditor extends Graphic
       </div>
     ')
 
+    @controller = ControllerFactory.getController @element
+
     row = @element.find('.row')
     @area = new EditArea row
     @panel = new Panel row
+
     @area.buildElement()
     @panel.buildElement()
 
@@ -36,8 +39,7 @@ class PPEditor extends Graphic
 
   bindEvents: ->
 
-    @controller.bindEvents()
-    @controller.root
+    @element
       .on 'requestUndo', (event) =>
         @commandManager.undo()
 
@@ -72,3 +74,4 @@ class PPEditor extends Graphic
 
     @area.bindEvents()
     @panel.bindEvents()
+    @controller.bindEvents()

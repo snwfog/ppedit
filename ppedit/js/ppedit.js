@@ -849,7 +849,7 @@ Abstract Class, represents an Dom node
     function PPEditor(root) {
       this.root = root;
       PPEditor.__super__.constructor.call(this, this.root);
-      this.controller = ControllerFactory.getController(this.root);
+      this.controller = void 0;
       this.commandManager = new CommandManager;
       this.area = void 0;
       this.panel = void 0;
@@ -862,6 +862,7 @@ Abstract Class, represents an Dom node
         <div class="row"></div>\
       </div>\
     ');
+      this.controller = ControllerFactory.getController(this.element);
       row = this.element.find('.row');
       this.area = new EditArea(row);
       this.panel = new Panel(row);
@@ -873,8 +874,7 @@ Abstract Class, represents an Dom node
 
     PPEditor.prototype.bindEvents = function() {
       var _this = this;
-      this.controller.bindEvents();
-      this.controller.root.on('requestUndo', function(event) {
+      this.element.on('requestUndo', function(event) {
         return _this.commandManager.undo();
       }).on('requestRedo', function(event) {
         return _this.commandManager.redo();
@@ -898,7 +898,8 @@ Abstract Class, represents an Dom node
         return _this.commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false);
       });
       this.area.bindEvents();
-      return this.panel.bindEvents();
+      this.panel.bindEvents();
+      return this.controller.bindEvents();
     };
 
     return PPEditor;
