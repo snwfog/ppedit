@@ -20,7 +20,12 @@ class Panel extends Graphic
 
                <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>
 
-
+               <select class="fontTypeBtn">
+                 <option value="Times New Roman">Times New Roman</option>
+                 <option value="Arial">Arial</option>
+                 <option value="Inconsolata">Inconsolata</option>
+                 <option value="Glyphicons Halflings">Glyphicons Halflings</option>
+               </select>
               <table class="table table-hover dataPanel">
                   <thead>
                       <tr>
