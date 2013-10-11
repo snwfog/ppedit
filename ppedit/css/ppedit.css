@@ -36,7 +36,8 @@
     overflow:auto;
 }
 
-.ppedit-box-selected
+.ppedit-box-selected,
+.ppedit-box:focus
 {
     border-style:dashed;
 }
