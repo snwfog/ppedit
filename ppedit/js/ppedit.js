@@ -58,13 +58,16 @@ Abstract Class, represents an Dom node
         width: '75px',
         height: '50px'
       }, this.options);
-      return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings);
+      return this.element = $('<textarea></textarea>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings);
     };
 
     Box.prototype.bindEvents = function() {
       var _this = this;
       return this.element.mousedown(function(event) {
+        event.preventDefault();
         return _this.select();
+      }).dblclick(function() {
+        return _this.element.focus();
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
           return _this.move(delta.x, delta.y);
@@ -820,7 +823,7 @@ Abstract Class, represents an Dom node
         max: 100,
         step: 1,
         value: 100
-      }).slider('setValue', 50).on('slide', function(event) {
+      }).on('slide', function(event) {
         var opacityVal;
         opacityVal = $(event.target).val();
         return _this.root.trigger('onRowSliderValChanged', [boxid, parseInt(opacityVal) / 100]);

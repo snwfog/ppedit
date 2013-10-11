@@ -16,7 +16,7 @@ class Box extends Graphic
       height:'50px'
     , @options);
 
-    @element = $('<div></div>')
+    @element = $('<textarea></textarea>')
     .addClass('ppedit-box')
     .attr('tabindex', 0)
     .attr('id', $.now())
@@ -25,7 +25,11 @@ class Box extends Graphic
   bindEvents: ->
     @element
       .mousedown (event) =>
+        event.preventDefault()
         @select()
+
+      .dblclick =>
+        @element.focus()
 
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
