@@ -50,8 +50,8 @@ class EditArea extends Graphic
         @element.find('*').trigger 'containerMouseLeave'
         @prevMouseMoveEvent = undefined
 
-      .mouseup =>
-        @element.find('*').trigger 'containerMouseUp'
+      .mouseup (event) =>
+        @element.find('*').trigger 'containerMouseUp', [event]
         @prevMouseMoveEvent = undefined
 
       .keydown (event) =>

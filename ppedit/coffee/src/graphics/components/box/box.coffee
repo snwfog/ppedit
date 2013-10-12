@@ -1,4 +1,5 @@
 #= require Graphic
+#= require Geometry
 
 class Box extends Graphic
 
@@ -25,11 +26,19 @@ class Box extends Graphic
   bindEvents: ->
     @element
       .mousedown (event) =>
+        event.stopPropagation()
         event.preventDefault()
-        @select()
 
-      .dblclick =>
-        @element.focus()
+      .click (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+        @toggleSelect()
+
+      .dblclick () =>
+        event.stopPropagation()
+        event.preventDefault()
+        @stopMoving()
+        @toggleFocus()
 
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
@@ -37,15 +46,16 @@ class Box extends Graphic
       .on 'containerMouseLeave', () =>
         @stopMoving()
 
-      .on 'containerMouseUp', () =>
-        @stopMoving()
-
       .on 'containerKeyDown', (event, keyDownEvent) =>
         @_processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')
 
       .keydown (event) =>
-        @_processKeyDownEvent(event)
+        @_processKeyDownEvent(event) if !@isFocused()
 
+  ###
+  Matches directional arrows event
+  to pixel-by-pixel movement
+  ###
   _processKeyDownEvent: (event) ->
 
       previousPosition = @currentPosition()
@@ -78,8 +88,10 @@ class Box extends Graphic
       @root.trigger 'boxMoved', [@, @currentPosition(), previousPosition] if moved
 
   stopMoving: ->
+
     @element.removeClass('ppedit-box-selected')
-    @root.trigger 'boxMoved', [@, @currentPosition(), $.extend(true, {}, @prevPosition)] if @prevPosition?
+    if @prevPosition? && !Geometry.pointEqualToPoint(@currentPosition(), @prevPosition)
+      @root.trigger 'boxMoved', [@, @currentPosition(), $.extend(true, {}, @prevPosition)] if @prevPosition?
     @prevPosition = undefined
 
   move: (deltaX, deltaY) ->
@@ -100,3 +112,21 @@ class Box extends Graphic
   select: ->
     @element.addClass('ppedit-box-selected')
     @prevPosition = @currentPosition()
+
+  ###
+  Returns true if the element is currently focused, false otherwise
+  ###
+  isFocused: ->
+    return @element.get(0) == document.activeElement
+
+  toggleSelect: ->
+    if @element.hasClass('ppedit-box-selected')
+      @stopMoving()
+    else
+      @select()
+
+  toggleFocus: ->
+    if @isFocused()
+      @element.blur()
+    else
+      @element.focus()

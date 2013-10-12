@@ -1,22 +1,34 @@
 #= require Graphic
 #= require Box
+#= require Geometry
 
 class BoxesContainer extends Graphic
 
+  @CLICK_TIME_INTERVAL: 200
+
   constructor: (@root) ->
     super @root
+
     @boxes = {}
+    @lastDownEvent = undefined
 
   buildElement: ->
     @element = $('<div></div>').addClass('ppedit-box-container')
 
   bindEvents: ->
-    @element.dblclick (event) =>
-      event.preventDefault()
-      boxCssOptions =
-        left:event.offsetX + @element.scrollLeft()
-        top:event.offsetY + @element.scrollTop()
-      @root.trigger 'addBoxRequested', [boxCssOptions] if @getSelectedBoxes().length == 0
+    @element
+      .mousedown (event) =>
+        @lastDownEvent = event
+
+      .mouseup (event) =>
+        # Click happend
+        if event.timeStamp - @lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL
+          @unSelectAllBoxes()
+
+      .dblclick (event) =>
+        event.preventDefault()
+        boxCssOptions = @getPointClicked(event)
+        @root.trigger 'addBoxRequested', [boxCssOptions] if @getSelectedBoxes().length == 0
 
   ###
   Selects the boxes contained in the passed rect.
@@ -26,20 +38,20 @@ class BoxesContainer extends Graphic
     # translate rectangle by the scrollPosition
     selectRect =
       topLeft:
-        x:rect.topLeft.x + @element.scrollLeft()
-        y:rect.topLeft.y + @element.scrollTop()
+        left:rect.topLeft.left + @element.scrollLeft()
+        top:rect.topLeft.top + @element.scrollTop()
       size:rect.size
 
     if selectRect.size.width < 0
-      selectRect.topLeft.x -= Math.abs(selectRect.size.width)
+      selectRect.topLeft.left -= Math.abs(selectRect.size.width)
       selectRect.size.width = Math.abs(selectRect.size.width)
 
     if selectRect.size.height < 0
-      selectRect.topLeft.y -= Math.abs(selectRect.size.height)
+      selectRect.topLeft.top -= Math.abs(selectRect.size.height)
       selectRect.size.height = Math.abs(selectRect.size.height)
 
     @getAllBoxes().each (index, box) =>
-      @boxes[box.id].select() if BoxesContainer._rectContainsRect selectRect, @boxBounds($(box))
+      @boxes[box.id].select() if Geometry.rectContainsRect selectRect, @boxBounds($(box))
 
   ###
   Returns the bounding rectangle of the box matching the
@@ -48,8 +60,8 @@ class BoxesContainer extends Graphic
   boxBounds: (boxSelector) ->
     result =
       topLeft:
-        x:boxSelector.position().left + @element.scrollLeft()
-        y:boxSelector.position().top + @element.scrollTop()
+        left:boxSelector.position().left + @element.scrollLeft()
+        top:boxSelector.position().top + @element.scrollTop()
       size:
         width:boxSelector.width()
         height:boxSelector.height()
@@ -103,12 +115,15 @@ class BoxesContainer extends Graphic
   chageBoxOpacity: (boxid, opacityVal) ->
     @boxes[boxid].element.css("opacity", opacityVal)
 
+  unSelectAllBoxes: ->
+    box.stopMoving() for id, box of @boxes
+
   ###
-  Returns true if the innerRect Rectangle is fully
-  contained within the outerRect Rectangle, false otherwise.
+  Returns the position relative to the top left corner
+  of the element from the passed mouseEvent.
   ###
-  @_rectContainsRect: (outerRect, innerRect) ->
-    return (innerRect.topLeft.x >= outerRect.topLeft.x &&
-    innerRect.topLeft.y >= outerRect.topLeft.y &&
-    innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width &&
-    innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height)
+  getPointClicked: (mouseEvent) ->
+    return {
+      left:event.offsetX + @element.scrollLeft()
+      top:event.offsetY + @element.scrollTop()
+    }
