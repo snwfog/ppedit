@@ -106,7 +106,6 @@ Abstract Class, represents an Dom node
       }).click(function(event) {
         event.stopPropagation();
         event.preventDefault();
-        _this.element.blur();
         return _this.toggleSelect();
       }).dblclick(function() {
         event.stopPropagation();

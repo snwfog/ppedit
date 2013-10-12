@@ -61,7 +61,7 @@
   moveBox = function(boxSelector, distance) {
     var previousPosition;
     previousPosition = viewPortPosition(boxSelector);
-    boxSelector.simulate("mousedown", {
+    boxSelector.simulate('click', {
       clientX: previousPosition.left + 1,
       clientY: previousPosition.top + 1
     }).simulate("mousemove", {
@@ -70,7 +70,10 @@
     }).simulate("mousemove", {
       clientX: previousPosition.left + 1 + distance.dx,
       clientY: previousPosition.top + 1 + distance.dy
-    }).simulate("mouseup", {
+    }).simulate('click', {
+      clientX: previousPosition.left + 1 + distance.dx,
+      clientY: previousPosition.top + 1 + distance.dy
+    }).simulate('mouseup', {
       clientX: previousPosition.left + 1 + distance.dx,
       clientY: previousPosition.top + 1 + distance.dy
     });
@@ -162,6 +165,25 @@
         dx: 100,
         dy: 100
       });
+    });
+  });
+
+  ppeditDescribe("A test for issue CAP-114 : As a user, I want to be able to enter text inside an element", function() {
+    return it("can enter text inside a Box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      moveBox(box, {
+        dx: 0,
+        dy: 200
+      });
+      box.simulate('dblclick', {
+        clientX: viewPortPosition(box).left,
+        clientY: viewPortPosition(box).top
+      });
+      expect(box.get(0)).toEqual(document.activeElement);
+      box.val('Lorem ipsum dolor sin amet');
+      return expect(box).toHaveValue('Lorem ipsum dolor sin amet');
     });
   });
 
