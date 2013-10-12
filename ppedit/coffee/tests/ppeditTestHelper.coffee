@@ -24,7 +24,7 @@ moveBox = (boxSelector, distance) ->
   previousPosition = viewPortPosition boxSelector
 
   boxSelector
-    .simulate "mousedown",
+    .simulate 'click',
       clientX:previousPosition.left + 1
       clientY:previousPosition.top + 1
 
@@ -36,9 +36,13 @@ moveBox = (boxSelector, distance) ->
       clientX:previousPosition.left + 1 + distance.dx
       clientY:previousPosition.top + 1 + distance.dy
 
-    .simulate "mouseup",
+    .simulate 'click',
       clientX:previousPosition.left + 1 + distance.dx
       clientY:previousPosition.top + 1 + distance.dy
+
+    .simulate 'mouseup',
+        clientX:previousPosition.left + 1 + distance.dx
+        clientY:previousPosition.top + 1 + distance.dy
 
   expect(viewPortPosition boxSelector).toBeEqualToPosition
     left:previousPosition.left + distance.dx
