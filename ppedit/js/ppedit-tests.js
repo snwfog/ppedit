@@ -139,6 +139,13 @@
     });
   });
 
+  ppeditDescribe("A test for issue CAP-25 : As a user, I want to name my document, so that I can distinguish between my documents", function() {
+    return it("can input text inside the textarea to name document", function() {
+      $('.addElementBtn').val('documentName');
+      return expect($('.addElementBtn')).toHaveValue('documentName');
+    });
+  });
+
   ppeditDescribe("A test for issue CAP-15 : As a user, I want to resize the bounding box of elements on my work area", function() {
     return it("can resize a box with the mouse", function() {
       return addBox(1);

@@ -763,31 +763,43 @@ Abstract Class, represents an Dom node
             <div class="col-xs-5">\
 \
                <!-- <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
+              <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> \
+                -->\
+              <form class="form-inline" role="form" style="padding-top: 5px;">\
+                <div class="form-group col-lg-20">\
+                  <fieldset style="padding-left: 15px;">\
+                    <input class="form-control form-control input-lg" id="focusedInput" type="text" placeholder="Name of document">\
+                      <span class="help-block">Example: My Resume</span>\
 \
-               <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> -->\
+                      <hr>\
 \
-              <button class="btn btn-sm btn-primary addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>\
+                      <button class="btn btn-sm btn-primary addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>\
 \
-              <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>\
+                      <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>\
 \
-              <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button>\
+                      <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button>\
 \
-               <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>\
-\
-\
-              <table class="table table-hover dataPanel">\
-                  <thead>\
-                      <tr>\
-                        <th>Remove</th>\
-                        <th>Name of Element</th>\
-                        <th>Opacity</th>\
-                      </tr>\
-                  </thead>\
-                  <tbody>\
+                      <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>\
 \
 \
-                  </tbody>\
-              </table>\
+                      <table class="table table-hover dataPanel">\
+                          <thead>\
+                              <tr>\
+                                <th>Remove</th>\
+                                <th>Name of Element</th>\
+                                <th>Opacity</th>\
+                              </tr>\
+                          </thead>\
+                          <tbody>\
+\
+\
+                          </tbody>\
+                      </table>\
+                    \
+                    <button type="submit" class="btn btn btn-success" style="float: right;">Save</button>\
+                  </fieldset>\
+                </div>\
+              </form>\
             </div>');
     };
 
