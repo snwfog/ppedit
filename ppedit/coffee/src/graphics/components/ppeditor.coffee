@@ -6,7 +6,7 @@
 #= require CommandManager
 #= require ControllerFactory
 #= require RemoveBoxesCommand
-#= require CreateBoxCommand
+#= require CreateBoxesCommand
 
 class PPEditor extends Graphic
 
@@ -51,7 +51,7 @@ class PPEditor extends Graphic
 
     @element.find('.row')
       .on 'panelClickAddBtnClick', (event) =>
-        @commandManager.pushCommand new CreateBoxCommand this
+        @commandManager.pushCommand new CreateBoxesCommand this
 
       .on 'panelClickGridBtnClick', (event) =>
         @area.grid.toggleGrid()
@@ -66,7 +66,7 @@ class PPEditor extends Graphic
         @area.boxesContainer.chageBoxOpacity(boxId, opacityVal)
 
       .on 'addBoxRequested', (event, boxCssOptions) =>
-        @commandManager.pushCommand new CreateBoxCommand this, boxCssOptions
+        @commandManager.pushCommand new CreateBoxesCommand this, [boxCssOptions]
 
     @area.boxesContainer.element
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>

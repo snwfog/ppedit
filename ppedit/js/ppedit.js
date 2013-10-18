@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, CommandManager, ControllerFactory, CreateBoxCommand, EditArea, Geometry, Graphic, Grid, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+  var Box, BoxesContainer, Canvas, CommandManager, ControllerFactory, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -294,32 +294,60 @@ Abstract Class, represents an Dom node
   })();
 
   /*
-  A command that creates a new box with the passed options
+  A command that creates one or more boxes with the passed options
   ands adds it to the list.
   */
 
 
-  CreateBoxCommand = (function() {
-    function CreateBoxCommand(editor, options) {
+  CreateBoxesCommand = (function() {
+    /*
+    Creates a command that, when executed, will create
+    one or more boxes with a passed list of options, one
+    for each box to create and add it to the list of current boxes.
+    If no optionsList is passed, only one box is created with the default options.
+    */
+
+    function CreateBoxesCommand(editor, optionsList) {
       this.editor = editor;
-      this.options = options;
-      this.box = void 0;
+      this.optionsList = optionsList;
+      this.boxes = [];
     }
 
-    CreateBoxCommand.prototype.execute = function() {
-      if (this.box == null) {
-        this.box = new Box(this.editor.area.boxesContainer.element, this.options);
+    CreateBoxesCommand.prototype.execute = function() {
+      var i, _i, _ref, _results;
+      if (this.optionsList != null) {
+        _results = [];
+        for (i = _i = 0, _ref = this.optionsList - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+          if (this.boxes[i] == null) {
+            this.boxes[i] = new Box(this.editor.area.boxesContainer.element, this.options);
+          }
+          console.log(this.boxes[i]);
+          this.editor.area.boxesContainer.addBox(this.boxes[i]);
+          _results.push(this.editor.panel.addBoxRow(this.boxes[i].element.attr('id')));
+        }
+        return _results;
+      } else {
+        if (this.boxes.length === 0) {
+          this.boxes.push(new Box(this.editor.area.boxesContainer.element));
+        }
+        this.editor.area.boxesContainer.addBox(this.boxes[0]);
+        return this.editor.panel.addBoxRow(this.boxes[0].element.attr('id'));
       }
-      this.editor.area.boxesContainer.addBox(this.box);
-      return this.editor.panel.addBoxRow(this.box.element.attr('id'));
     };
 
-    CreateBoxCommand.prototype.undo = function() {
-      this.editor.area.boxesContainer.removeBoxes([this.box.element.attr('id')]);
-      return this.editor.panel.removeBoxRow([this.box.element.attr('id')]);
+    CreateBoxesCommand.prototype.undo = function() {
+      var box, _i, _len, _ref, _results;
+      _ref = this.boxes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        this.editor.area.boxesContainer.removeBoxes([box.element.attr('id')]);
+        _results.push(this.editor.panel.removeBoxRow([box.element.attr('id')]));
+      }
+      return _results;
     };
 
-    return CreateBoxCommand;
+    return CreateBoxesCommand;
 
   })();
 
@@ -989,7 +1017,7 @@ Abstract Class, represents an Dom node
         return _this.commandManager.pushCommand(new RemoveBoxesCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
       });
       this.element.find('.row').on('panelClickAddBtnClick', function(event) {
-        return _this.commandManager.pushCommand(new CreateBoxCommand(_this));
+        return _this.commandManager.pushCommand(new CreateBoxesCommand(_this));
       }).on('panelClickGridBtnClick', function(event) {
         return _this.area.grid.toggleGrid();
       }).on('panelClickClearAllBtnClick', function(event) {
@@ -999,7 +1027,7 @@ Abstract Class, represents an Dom node
       }).on('onRowSliderValChanged', function(event, boxId, opacityVal) {
         return _this.area.boxesContainer.chageBoxOpacity(boxId, opacityVal);
       }).on('addBoxRequested', function(event, boxCssOptions) {
-        return _this.commandManager.pushCommand(new CreateBoxCommand(_this, boxCssOptions));
+        return _this.commandManager.pushCommand(new CreateBoxesCommand(_this, [boxCssOptions]));
       });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
         return _this.commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false);

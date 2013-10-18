@@ -10,8 +10,7 @@ ppeditDescribe "A test for issue CAP-114 : As a user, I want to be able to enter
     box.simulate 'dblclick'
     expect(box).toBeFocused()
 
-    box.simulate "key-sequence", {
+    box.simulate "key-sequence",
       sequence: "Lorem ipsum dolor sin amet"
       callback: ->
         expect(box).toHaveHtml('Lorem ipsum dolor sin amet')
-    }
