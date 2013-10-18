@@ -5,16 +5,13 @@ ppeditDescribe "A test for issue CAP-114 : As a user, I want to be able to enter
 
   it "can enter text inside a Box", ->
     addBox 1
-
     box = $('.ppedit-box')
 
-    moveBox box, {dx:0, dy:200}
+    box.simulate 'dblclick'
+    expect(box).toBeFocused()
 
-    $('.editor').simulate("key-combo", {combo: "ctrl+shift+a"});
-
-    expect(box.get(0)).toEqual(document.activeElement)
-
-    # Enter Some Text
-    box.val 'Lorem ipsum dolor sin amet'
-    expect(box).toHaveValue('Lorem ipsum dolor sin amet')
-
+    box.simulate "key-sequence", {
+      sequence: "Lorem ipsum dolor sin amet"
+      callback: ->
+        expect(box).toHaveHtml('Lorem ipsum dolor sin amet')
+    }
