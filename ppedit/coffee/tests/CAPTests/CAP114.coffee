@@ -10,9 +10,7 @@ ppeditDescribe "A test for issue CAP-114 : As a user, I want to be able to enter
 
     moveBox box, {dx:0, dy:200}
 
-    box.simulate 'dblclick',
-      clientX:viewPortPosition(box).left
-      clientY:viewPortPosition(box).top
+    $('.editor').simulate("key-combo", {combo: "ctrl+shift+a"});
 
     expect(box.get(0)).toEqual(document.activeElement)
 

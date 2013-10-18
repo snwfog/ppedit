@@ -165,11 +165,9 @@ Abstract Class, represents an Dom node
     };
 
     Box.prototype.stopMoving = function() {
-      this.element.removeClass('ppedit-box-selected').blur();
+      this.element.removeClass('ppedit-box-selected');
       if ((this.prevPosition != null) && !Geometry.pointEqualToPoint(this.currentPosition(), this.prevPosition)) {
-        if (this.prevPosition != null) {
-          this.root.trigger('boxMoved', [this, this.currentPosition(), $.extend(true, {}, this.prevPosition)]);
-        }
+        this.root.trigger('boxMoved', [this, this.currentPosition(), $.extend(true, {}, this.prevPosition)]);
       }
       return this.prevPosition = void 0;
     };
@@ -507,7 +505,7 @@ Abstract Class, represents an Dom node
       return this.element.mousedown(function(event) {
         return _this.lastDownEvent = event;
       }).mouseup(function(event) {
-        if (event.timeStamp - _this.lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL) {
+        if ((_this.lastDownEvent != null) && event.timeStamp - _this.lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL) {
           return _this.unSelectAllBoxes();
         }
       }).dblclick(function(event) {

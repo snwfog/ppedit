@@ -168,6 +168,29 @@
     });
   });
 
+  ppeditDescribe('A test for issue CAP-116 : "Cannot Undo Box moved" bug.', function() {
+    return it("can undo a box move command", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      moveBox(box, {
+        dx: 0,
+        dy: 200
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "meta+z"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "ctrl+z"
+      });
+      expect($('.ppedit-box')).toHaveLength(1);
+      return expect(box.position()).toBeEqualToPosition({
+        top: 50,
+        left: 50
+      });
+    });
+  });
+
   ppeditDescribe("A test for issue CAP-114 : As a user, I want to be able to enter text inside an element", function() {
     return it("can enter text inside a Box", function() {
       var box;
@@ -177,9 +200,8 @@
         dx: 0,
         dy: 200
       });
-      box.simulate('dblclick', {
-        clientX: viewPortPosition(box).left,
-        clientY: viewPortPosition(box).top
+      $('.editor').simulate("key-combo", {
+        combo: "ctrl+shift+a"
       });
       expect(box.get(0)).toEqual(document.activeElement);
       box.val('Lorem ipsum dolor sin amet');

@@ -92,7 +92,7 @@ class Box extends Graphic
 
     @element.removeClass('ppedit-box-selected')
     if @prevPosition? && !Geometry.pointEqualToPoint(@currentPosition(), @prevPosition)
-      @root.trigger 'boxMoved', [@, @currentPosition(), $.extend(true, {}, @prevPosition)] if @prevPosition?
+      @root.trigger 'boxMoved', [@, @currentPosition(), $.extend(true, {}, @prevPosition)]
     @prevPosition = undefined
 
   move: (deltaX, deltaY) ->
