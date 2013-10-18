@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, CommandManager, ControllerFactory, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+  var Box, BoxesContainer, Canvas, CommandManager, ControllerFactory, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -321,7 +321,6 @@ Abstract Class, represents an Dom node
           if (this.boxes[i] == null) {
             this.boxes[i] = new Box(this.editor.area.boxesContainer.element, this.options);
           }
-          console.log(this.boxes[i]);
           this.editor.area.boxesContainer.addBox(this.boxes[i]);
           _results.push(this.editor.panel.addBoxRow(this.boxes[i].element.attr('id')));
         }
@@ -409,6 +408,34 @@ Abstract Class, represents an Dom node
 
   })();
 
+  /*
+  Helper Class that provides static constants to keyboard keycodes.
+  */
+
+
+  KeyCodes = (function() {
+    function KeyCodes() {}
+
+    KeyCodes.C = 67;
+
+    KeyCodes.P = 86;
+
+    KeyCodes.Z = 90;
+
+    KeyCodes.Y = 89;
+
+    KeyCodes.DELETE = 46;
+
+    KeyCodes.MAC_CMD_LEFT = 91;
+
+    KeyCodes.MAC_CMD_RIGHT = 93;
+
+    KeyCodes.MAC_DELETE = 8;
+
+    return KeyCodes;
+
+  })();
+
   PCController = (function() {
     function PCController(root) {
       this.root = root;
@@ -417,15 +444,15 @@ Abstract Class, represents an Dom node
     PCController.prototype.bindEvents = function() {
       var _this = this;
       return this.root.keydown(function(event) {
-        if (event.keyCode === 90 && event.ctrlKey) {
+        if (event.keyCode === KeyCodes.Z && event.ctrlKey) {
           event.preventDefault();
           _this.root.trigger('requestUndo');
         }
-        if (event.keyCode === 89 && event.ctrlKey) {
+        if (event.keyCode === KeyCodes.Y && event.ctrlKey) {
           event.preventDefault();
           _this.root.trigger('requestRedo');
         }
-        if (event.keyCode === 46 || (event.keyCode === 46 && event.ctrlKey)) {
+        if (event.keyCode === KeyCodes.DELETE || (event.keyCode === KeyCodes.DELETE && event.ctrlKey)) {
           event.preventDefault();
           return _this.root.trigger('requestDelete');
         }
@@ -437,16 +464,6 @@ Abstract Class, represents an Dom node
   })();
 
   MacController = (function() {
-    MacController.COMMAND_LEFT_KEY_CODE = 91;
-
-    MacController.COMMAND_RIGHT_KEY_CODE = 93;
-
-    MacController.Z_KEY_CODE = 90;
-
-    MacController.Y_KEY_CODE = 89;
-
-    MacController.DELETE_KEY_CODE = 8;
-
     function MacController(root) {
       this.root = root;
       this.leftCmdKeyPressed = false;
@@ -456,25 +473,28 @@ Abstract Class, represents an Dom node
     MacController.prototype.bindEvents = function() {
       var _this = this;
       return this.root.keydown(function(event) {
-        if (event.keyCode === MacController.COMMAND_LEFT_KEY_CODE) {
+        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
           return _this.leftCmdKeyPressed = true;
-        } else if (event.keyCode === MacController.COMMAND_RIGHT_KEY_CODE) {
+        } else if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
           return _this.rightCmdKeyPressed = true;
-        } else if (event.keyCode === MacController.Z_KEY_CODE && _this._cmdKeyIsPressed()) {
+        } else if (event.keyCode === KeyCodes.Z && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestUndo');
-        } else if (event.keyCode === MacController.Y_KEY_CODE && _this._cmdKeyIsPressed()) {
+        } else if (event.keyCode === KeyCodes.Y && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestRedo');
-        } else if (event.keyCode === MacController.DELETE_KEY_CODE && _this._cmdKeyIsPressed()) {
+        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed()) {
           event.preventDefault();
-          return _this.root.trigger('requestDelete');
+          return _this.root.trigger('requestCopy');
+        } else if (event.keyCode === KeyCodes.P && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestPaste');
         }
       }).keyup(function(event) {
-        if (event.keyCode === MacController.COMMAND_LEFT_KEY_CODE) {
+        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
           _this.leftCmdKeyPressed = false;
         }
-        if (event.keyCode === MacController.COMMAND_RIGHT_KEY_CODE) {
+        if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
           return _this.rightCmdKeyPressed = false;
         }
       });
@@ -1027,6 +1047,7 @@ Abstract Class, represents an Dom node
       }).on('onRowSliderValChanged', function(event, boxId, opacityVal) {
         return _this.area.boxesContainer.chageBoxOpacity(boxId, opacityVal);
       }).on('addBoxRequested', function(event, boxCssOptions) {
+        console.log('addBoxRequested');
         return _this.commandManager.pushCommand(new CreateBoxesCommand(_this, [boxCssOptions]));
       });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
