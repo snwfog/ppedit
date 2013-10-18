@@ -61,7 +61,7 @@
   moveBox = function(boxSelector, distance) {
     var previousPosition;
     previousPosition = viewPortPosition(boxSelector);
-    boxSelector.simulate("mousedown", {
+    boxSelector.simulate('click', {
       clientX: previousPosition.left + 1,
       clientY: previousPosition.top + 1
     }).simulate("mousemove", {
@@ -70,7 +70,10 @@
     }).simulate("mousemove", {
       clientX: previousPosition.left + 1 + distance.dx,
       clientY: previousPosition.top + 1 + distance.dy
-    }).simulate("mouseup", {
+    }).simulate('click', {
+      clientX: previousPosition.left + 1 + distance.dx,
+      clientY: previousPosition.top + 1 + distance.dy
+    }).simulate('mouseup', {
       clientX: previousPosition.left + 1 + distance.dx,
       clientY: previousPosition.top + 1 + distance.dy
     });
@@ -139,6 +142,13 @@
     });
   });
 
+  ppeditDescribe("A test for issue CAP-25 : As a user, I want to name my document, so that I can distinguish between my documents", function() {
+    return it("can input text inside the textarea to name document", function() {
+      $('.addElementBtn').val('documentName');
+      return expect($('.addElementBtn')).toHaveValue('documentName');
+    });
+  });
+
   ppeditDescribe("A test for issue CAP-15 : As a user, I want to resize the bounding box of elements on my work area", function() {
     return it("can resize a box with the mouse", function() {
       return addBox(1);
@@ -165,6 +175,7 @@
     });
   });
 
+<<<<<<< HEAD
   ppeditDescribe("A test for issue CAP-44 : As a user,  I want options to show or hide the grid, and snap or unsnap my elements in the work area.", function() {
     return it("adds a box on grid button click", function() {
       expect($(".ppedit-grid")).toHaveCss({
@@ -193,6 +204,24 @@
   ppeditDescribe("A test for issue CAP-15 : As a user, I want to resize the bounding box of elements on my work area.", function() {
     return it("resize bounding boxof elements", function() {
       return expect($(".editor").find('.ppedit-box')).toHaveLength(1);
+=======
+  ppeditDescribe("A test for issue CAP-114 : As a user, I want to be able to enter text inside an element", function() {
+    return it("can enter text inside a Box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      moveBox(box, {
+        dx: 0,
+        dy: 200
+      });
+      box.simulate('dblclick', {
+        clientX: viewPortPosition(box).left,
+        clientY: viewPortPosition(box).top
+      });
+      expect(box.get(0)).toEqual(document.activeElement);
+      box.val('Lorem ipsum dolor sin amet');
+      return expect(box).toHaveValue('Lorem ipsum dolor sin amet');
+>>>>>>> 0e6dd839ea46ec3d158c5e37e3559ceacbaa3c30
     });
   });
 

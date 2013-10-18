@@ -5,7 +5,11 @@ Abstract Class, represents an Dom node
 
 
 (function() {
+<<<<<<< HEAD
   var Box, BoxesContainer, Canvas, ChangeFontTypeCommand, CommandManager, ControllerFactory, CreateBoxCommand, EditArea, Graphic, Grid, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+=======
+  var Box, BoxesContainer, Canvas, CommandManager, ControllerFactory, CreateBoxCommand, EditArea, Geometry, Graphic, Grid, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+>>>>>>> 0e6dd839ea46ec3d158c5e37e3559ceacbaa3c30
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -40,6 +44,43 @@ Abstract Class, represents an Dom node
 
   })();
 
+  Geometry = (function() {
+    function Geometry() {}
+
+    /*
+    Returns true if the innerRect Rectangle is fully
+    contained within the outerRect Rectangle, false otherwise.
+    */
+
+
+    Geometry.rectContainsRect = function(outerRect, innerRect) {
+      return innerRect.topLeft.left >= outerRect.topLeft.left && innerRect.topLeft.top >= outerRect.topLeft.top && innerRect.topLeft.left + innerRect.size.width <= outerRect.topLeft.left + outerRect.size.width && innerRect.topLeft.top + innerRect.size.height <= outerRect.topLeft.top + outerRect.size.height;
+    };
+
+    /*
+    Returns true if the passed point is contained
+     within the passed rectangle, false otherwise.
+    */
+
+
+    Geometry.rectContainsPoint = function(rect, point) {
+      return point.left >= rect.topLeft.left && point.top >= rect.topLeft.top && point.left <= rect.topLeft.left + rect.size.width && point.top <= rect.topLeft.top + rect.size.height;
+    };
+
+    /*
+    Returns true if the passed points have the
+    same coordinate, false otherwise.
+    */
+
+
+    Geometry.pointEqualToPoint = function(point1, point2) {
+      return point1.left === point2.left && point1.top === point2.top;
+    };
+
+    return Geometry;
+
+  })();
+
   Box = (function(_super) {
     __extends(Box, _super);
 
@@ -64,26 +105,39 @@ Abstract Class, represents an Dom node
     Box.prototype.bindEvents = function() {
       var _this = this;
       return this.element.mousedown(function(event) {
+        event.stopPropagation();
+        return event.preventDefault();
+      }).click(function(event) {
+        event.stopPropagation();
         event.preventDefault();
-        return _this.select();
+        return _this.toggleSelect();
       }).dblclick(function() {
-        return _this.element.focus();
+        event.stopPropagation();
+        event.preventDefault();
+        _this.stopMoving();
+        return _this.toggleFocus();
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
           return _this.move(delta.x, delta.y);
         }
       }).on('containerMouseLeave', function() {
         return _this.stopMoving();
-      }).on('containerMouseUp', function() {
-        return _this.stopMoving();
       }).on('containerKeyDown', function(event, keyDownEvent) {
         if (_this.element.hasClass('ppedit-box-selected')) {
           return _this._processKeyDownEvent(keyDownEvent);
         }
       }).keydown(function(event) {
-        return _this._processKeyDownEvent(event);
+        if (!_this.isFocused()) {
+          return _this._processKeyDownEvent(event);
+        }
       });
     };
+
+    /*
+    Matches directional arrows event
+    to pixel-by-pixel movement
+    */
+
 
     Box.prototype._processKeyDownEvent = function(event) {
       var moved, previousPosition;
@@ -116,8 +170,10 @@ Abstract Class, represents an Dom node
 
     Box.prototype.stopMoving = function() {
       this.element.removeClass('ppedit-box-selected');
-      if (this.prevPosition != null) {
-        this.root.trigger('boxMoved', [this, this.currentPosition(), $.extend(true, {}, this.prevPosition)]);
+      if ((this.prevPosition != null) && !Geometry.pointEqualToPoint(this.currentPosition(), this.prevPosition)) {
+        if (this.prevPosition != null) {
+          this.root.trigger('boxMoved', [this, this.currentPosition(), $.extend(true, {}, this.prevPosition)]);
+        }
       }
       return this.prevPosition = void 0;
     };
@@ -148,6 +204,31 @@ Abstract Class, represents an Dom node
     Box.prototype.select = function() {
       this.element.addClass('ppedit-box-selected');
       return this.prevPosition = this.currentPosition();
+    };
+
+    /*
+    Returns true if the element is currently focused, false otherwise
+    */
+
+
+    Box.prototype.isFocused = function() {
+      return this.element.get(0) === document.activeElement;
+    };
+
+    Box.prototype.toggleSelect = function() {
+      if (this.element.hasClass('ppedit-box-selected')) {
+        return this.stopMoving();
+      } else {
+        return this.select();
+      }
+    };
+
+    Box.prototype.toggleFocus = function() {
+      if (this.isFocused()) {
+        return this.element.blur();
+      } else {
+        return this.element.focus();
+      }
     };
 
     return Box;
@@ -456,10 +537,13 @@ Abstract Class, represents an Dom node
   BoxesContainer = (function(_super) {
     __extends(BoxesContainer, _super);
 
+    BoxesContainer.CLICK_TIME_INTERVAL = 200;
+
     function BoxesContainer(root) {
       this.root = root;
       BoxesContainer.__super__.constructor.call(this, this.root);
       this.boxes = {};
+      this.lastDownEvent = void 0;
     }
 
     BoxesContainer.prototype.buildElement = function() {
@@ -468,13 +552,16 @@ Abstract Class, represents an Dom node
 
     BoxesContainer.prototype.bindEvents = function() {
       var _this = this;
-      return this.element.dblclick(function(event) {
+      return this.element.mousedown(function(event) {
+        return _this.lastDownEvent = event;
+      }).mouseup(function(event) {
+        if (event.timeStamp - _this.lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL) {
+          return _this.unSelectAllBoxes();
+        }
+      }).dblclick(function(event) {
         var boxCssOptions;
         event.preventDefault();
-        boxCssOptions = {
-          left: event.offsetX + _this.element.scrollLeft(),
-          top: event.offsetY + _this.element.scrollTop()
-        };
+        boxCssOptions = _this.getPointClicked(event);
         if (_this.getSelectedBoxes().length === 0) {
           return _this.root.trigger('addBoxRequested', [boxCssOptions]);
         }
@@ -492,21 +579,21 @@ Abstract Class, represents an Dom node
         _this = this;
       selectRect = {
         topLeft: {
-          x: rect.topLeft.x + this.element.scrollLeft(),
-          y: rect.topLeft.y + this.element.scrollTop()
+          left: rect.topLeft.left + this.element.scrollLeft(),
+          top: rect.topLeft.top + this.element.scrollTop()
         },
         size: rect.size
       };
       if (selectRect.size.width < 0) {
-        selectRect.topLeft.x -= Math.abs(selectRect.size.width);
+        selectRect.topLeft.left -= Math.abs(selectRect.size.width);
         selectRect.size.width = Math.abs(selectRect.size.width);
       }
       if (selectRect.size.height < 0) {
-        selectRect.topLeft.y -= Math.abs(selectRect.size.height);
+        selectRect.topLeft.top -= Math.abs(selectRect.size.height);
         selectRect.size.height = Math.abs(selectRect.size.height);
       }
       return this.getAllBoxes().each(function(index, box) {
-        if (BoxesContainer._rectContainsRect(selectRect, _this.boxBounds($(box)))) {
+        if (Geometry.rectContainsRect(selectRect, _this.boxBounds($(box)))) {
           return _this.boxes[box.id].select();
         }
       });
@@ -522,8 +609,8 @@ Abstract Class, represents an Dom node
       var result;
       return result = {
         topLeft: {
-          x: boxSelector.position().left + this.element.scrollLeft(),
-          y: boxSelector.position().top + this.element.scrollTop()
+          left: boxSelector.position().left + this.element.scrollLeft(),
+          top: boxSelector.position().top + this.element.scrollTop()
         },
         size: {
           width: boxSelector.width(),
@@ -616,14 +703,28 @@ Abstract Class, represents an Dom node
       return this.boxes[boxid].element.css("opacity", opacityVal);
     };
 
+    BoxesContainer.prototype.unSelectAllBoxes = function() {
+      var box, id, _ref, _results;
+      _ref = this.boxes;
+      _results = [];
+      for (id in _ref) {
+        box = _ref[id];
+        _results.push(box.stopMoving());
+      }
+      return _results;
+    };
+
     /*
-    Returns true if the innerRect Rectangle is fully
-    contained within the outerRect Rectangle, false otherwise.
+    Returns the position relative to the top left corner
+    of the element from the passed mouseEvent.
     */
 
 
-    BoxesContainer._rectContainsRect = function(outerRect, innerRect) {
-      return innerRect.topLeft.x >= outerRect.topLeft.x && innerRect.topLeft.y >= outerRect.topLeft.y && innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width && innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height;
+    BoxesContainer.prototype.getPointClicked = function(mouseEvent) {
+      return {
+        left: event.offsetX + this.element.scrollLeft(),
+        top: event.offsetY + this.element.scrollTop()
+      };
     };
 
     /*
@@ -665,8 +766,8 @@ Abstract Class, represents an Dom node
       var _this = this;
       this.element.on('containerMouseDown', function(event, mouseEvent) {
         _this.downPosition = {
-          x: mouseEvent.offsetX,
-          y: mouseEvent.offsetY
+          left: mouseEvent.offsetX,
+          top: mouseEvent.offsetY
         };
         return _this.rectSize = {
           width: 0,
@@ -698,7 +799,7 @@ Abstract Class, represents an Dom node
       this._context.clearRect(0, 0, this.element.width(), this.element.height());
       this._context.globalAlpha = 0.2;
       this._context.beginPath();
-      this._context.rect(topLeft.x, topLeft.y, size.width, size.height);
+      this._context.rect(topLeft.left, topLeft.top, size.width, size.height);
       this._context.fillStyle = 'blue';
       return this._context.fill();
     };
@@ -793,8 +894,8 @@ Abstract Class, represents an Dom node
       }).mouseleave(function() {
         _this.element.find('*').trigger('containerMouseLeave');
         return _this.prevMouseMoveEvent = void 0;
-      }).mouseup(function() {
-        _this.element.find('*').trigger('containerMouseUp');
+      }).mouseup(function(event) {
+        _this.element.find('*').trigger('containerMouseUp', [event]);
         return _this.prevMouseMoveEvent = void 0;
       }).keydown(function(event) {
         return _this.element.find('*').trigger('containerKeyDown', [event]);
@@ -823,17 +924,25 @@ Abstract Class, represents an Dom node
             <div class="col-xs-5">\
 \
                <!-- <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
+              <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> \
+                -->\
+              <form class="form-inline" role="form" style="padding-top: 5px;">\
+                <div class="form-group col-lg-20">\
+                  <fieldset style="padding-left: 15px;">\
+                    <input class="form-control form-control input-lg" id="focusedInput" type="text" placeholder="Name of document">\
+                      <span class="help-block">Example: My Resume</span>\
 \
-               <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> -->\
+                      <hr>\
 \
-              <button class="btn btn-sm btn-primary addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>\
+                      <button class="btn btn-sm btn-primary addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>\
 \
-              <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>\
+                      <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>\
 \
-              <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button>\
+                      <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button>\
 \
-               <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>\
+                      <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>\
 \
+<<<<<<< HEAD
                <select class="fontTypeBtn">\
                  <option value="Times New Roman" selected>Times New Roman</option>\
                  <option value="Arial">Arial</option>\
@@ -849,10 +958,27 @@ Abstract Class, represents an Dom node
                       </tr>\
                   </thead>\
                   <tbody>\
+=======
+\
+                      <table class="table table-hover dataPanel">\
+                          <thead>\
+                              <tr>\
+                                <th>Remove</th>\
+                                <th>Name of Element</th>\
+                                <th>Opacity</th>\
+                              </tr>\
+                          </thead>\
+                          <tbody>\
+>>>>>>> 0e6dd839ea46ec3d158c5e37e3559ceacbaa3c30
 \
 \
-                  </tbody>\
-              </table>\
+                          </tbody>\
+                      </table>\
+                    \
+                    <button type="submit" class="btn btn btn-success" style="float: right;">Save</button>\
+                  </fieldset>\
+                </div>\
+              </form>\
             </div>');
     };
 

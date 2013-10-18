@@ -19,8 +19,8 @@ class Canvas extends Graphic
     @element
       .on 'containerMouseDown', (event, mouseEvent) =>
         @downPosition =
-          x:mouseEvent.offsetX
-          y:mouseEvent.offsetY
+          left:mouseEvent.offsetX
+          top:mouseEvent.offsetY
         @rectSize =
           width:0
           height:0
@@ -46,7 +46,7 @@ class Canvas extends Graphic
     @_context.clearRect(0, 0, @element.width(), @element.height())
     @_context.globalAlpha = 0.2
     @_context.beginPath()
-    @_context.rect(topLeft.x, topLeft.y, size.width, size.height)
+    @_context.rect(topLeft.left, topLeft.top, size.width, size.height)
     @_context.fillStyle = 'blue'
     @_context.fill()
 
