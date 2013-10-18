@@ -173,7 +173,7 @@ Abstract Class, represents an Dom node
     };
 
     Box.prototype.stopMoving = function() {
-      this.element.removeClass('ppedit-box-selected').blur();
+      this.element.removeClass('ppedit-box-selected');
       if ((this.prevPosition != null) && !Geometry.pointEqualToPoint(this.currentPosition(), this.prevPosition)) {
         if (this.prevPosition != null) {
           this.root.trigger('boxMoved', [this, this.currentPosition(), $.extend(true, {}, this.prevPosition)]);
