@@ -13,9 +13,7 @@ ppeditDescribe 'A test for issue CAP-116 : "Cannot Undo Box moved" bug.', ->
     $('.ppedit-box-container').simulate "key-combo", {combo: "meta+z"} # if Mac
     $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+z"} # if Windows
 
-    expect($('.ppedit-box')).toHaveLength(1)
-    expect(box.position()).toBeEqualToPosition(
+    expect($('.ppedit-box')).toHaveLength 1
+    expect(box.position()).toBeEqualToPosition
       top: 50
       left: 50
-    )
-

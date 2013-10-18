@@ -107,7 +107,7 @@ Abstract Class, represents an Dom node
         event.stopPropagation();
         event.preventDefault();
         return _this.toggleSelect();
-      }).dblclick(function() {
+      }).dblclick(function(event) {
         event.stopPropagation();
         event.preventDefault();
         _this.stopMoving();
@@ -175,7 +175,7 @@ Abstract Class, represents an Dom node
     Box.prototype.move = function(deltaX, deltaY) {
       var currentPos;
       currentPos = this.currentPosition();
-      return this.setPosition(deltaX + currentPos.x, deltaY + currentPos.y);
+      return this.setPosition(deltaX + currentPos.left, deltaY + currentPos.top);
     };
 
     Box.prototype.setPosition = function(x, y) {
@@ -184,10 +184,7 @@ Abstract Class, represents an Dom node
     };
 
     Box.prototype.currentPosition = function() {
-      return {
-        x: parseInt(this.element.css('left')),
-        y: parseInt(this.element.css('top'))
-      };
+      return this.element.position();
     };
 
     /*
@@ -285,11 +282,11 @@ Abstract Class, represents an Dom node
     }
 
     MoveBoxCommand.prototype.execute = function() {
-      return this.box.setPosition(this.toPosition.x, this.toPosition.y);
+      return this.box.setPosition(this.toPosition.left, this.toPosition.top);
     };
 
     MoveBoxCommand.prototype.undo = function() {
-      return this.box.setPosition(this.fromPosition.x, this.fromPosition.y);
+      return this.box.setPosition(this.fromPosition.left, this.fromPosition.top);
     };
 
     return MoveBoxCommand;

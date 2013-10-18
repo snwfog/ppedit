@@ -35,7 +35,7 @@ class Box extends Graphic
         event.preventDefault()
         @toggleSelect()
 
-      .dblclick () =>
+      .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault()
         @stopMoving()
@@ -89,7 +89,6 @@ class Box extends Graphic
       @root.trigger 'boxMoved', [@, @currentPosition(), previousPosition] if moved
 
   stopMoving: ->
-
     @element.removeClass('ppedit-box-selected')
     if @prevPosition? && !Geometry.pointEqualToPoint(@currentPosition(), @prevPosition)
       @root.trigger 'boxMoved', [@, @currentPosition(), $.extend(true, {}, @prevPosition)]
@@ -97,15 +96,14 @@ class Box extends Graphic
 
   move: (deltaX, deltaY) ->
     currentPos = @currentPosition()
-    @setPosition deltaX + currentPos.x, deltaY + currentPos.y
+    @setPosition deltaX + currentPos.left, deltaY + currentPos.top
 
   setPosition: (x, y) ->
     @element.css 'left', x + 'px'
     @element.css 'top', y + 'px'
 
   currentPosition: ->
-    x: parseInt @element.css 'left'
-    y: parseInt @element.css 'top'
+    @element.position()
 
   ###
   Marks the box as selected
