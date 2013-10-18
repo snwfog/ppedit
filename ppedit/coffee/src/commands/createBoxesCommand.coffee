@@ -17,16 +17,22 @@ class CreateBoxesCommand
 
   execute: ->
     if @optionsList?
-      for i in [0..@optionsList-1]
-        @boxes[i] = new Box @editor.area.boxesContainer.element, @options if !@boxes[i]?
-        @editor.area.boxesContainer.addBox @boxes[i]
-        @editor.panel.addBoxRow @boxes[i].element.attr('id')
+      if @boxes.length == 0
+        @boxes.push new Box @editor.area.boxesContainer.element, options for options in @optionsList
+      @_addBox box for box in @boxes
     else
       @boxes.push new Box @editor.area.boxesContainer.element if @boxes.length == 0
-      @editor.area.boxesContainer.addBox @boxes[0]
-      @editor.panel.addBoxRow @boxes[0].element.attr('id')
+      @_addBox @boxes[0]
 
   undo: ->
     for box in @boxes
       @editor.area.boxesContainer.removeBoxes [box.element.attr('id')]
       @editor.panel.removeBoxRow [box.element.attr('id')]
+
+  ###
+  Adds the passed box to the boxcontainer and
+  create a corresponding row in the panel
+  ###
+  _addBox: (box) ->
+    @editor.area.boxesContainer.addBox box
+    @editor.panel.addBoxRow box.element.attr('id')

@@ -314,23 +314,27 @@ Abstract Class, represents an Dom node
     }
 
     CreateBoxesCommand.prototype.execute = function() {
-      var i, _i, _ref, _results;
+      var box, options, _i, _j, _len, _len1, _ref, _ref1, _results;
       if (this.optionsList != null) {
-        _results = [];
-        for (i = _i = 0, _ref = this.optionsList - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-          if (this.boxes[i] == null) {
-            this.boxes[i] = new Box(this.editor.area.boxesContainer.element, this.options);
+        if (this.boxes.length === 0) {
+          _ref = this.optionsList;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            options = _ref[_i];
+            this.boxes.push(new Box(this.editor.area.boxesContainer.element, options));
           }
-          this.editor.area.boxesContainer.addBox(this.boxes[i]);
-          _results.push(this.editor.panel.addBoxRow(this.boxes[i].element.attr('id')));
+        }
+        _ref1 = this.boxes;
+        _results = [];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          box = _ref1[_j];
+          _results.push(this._addBox(box));
         }
         return _results;
       } else {
         if (this.boxes.length === 0) {
           this.boxes.push(new Box(this.editor.area.boxesContainer.element));
         }
-        this.editor.area.boxesContainer.addBox(this.boxes[0]);
-        return this.editor.panel.addBoxRow(this.boxes[0].element.attr('id'));
+        return this._addBox(this.boxes[0]);
       }
     };
 
@@ -344,6 +348,17 @@ Abstract Class, represents an Dom node
         _results.push(this.editor.panel.removeBoxRow([box.element.attr('id')]));
       }
       return _results;
+    };
+
+    /*
+    Adds the passed box to the boxcontainer and
+    create a corresponding row in the panel
+    */
+
+
+    CreateBoxesCommand.prototype._addBox = function(box) {
+      this.editor.area.boxesContainer.addBox(box);
+      return this.editor.panel.addBoxRow(box.element.attr('id'));
     };
 
     return CreateBoxesCommand;
@@ -1047,7 +1062,6 @@ Abstract Class, represents an Dom node
       }).on('onRowSliderValChanged', function(event, boxId, opacityVal) {
         return _this.area.boxesContainer.chageBoxOpacity(boxId, opacityVal);
       }).on('addBoxRequested', function(event, boxCssOptions) {
-        console.log('addBoxRequested');
         return _this.commandManager.pushCommand(new CreateBoxesCommand(_this, [boxCssOptions]));
       });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
