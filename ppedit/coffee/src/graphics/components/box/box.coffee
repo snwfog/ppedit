@@ -17,9 +17,10 @@ class Box extends Graphic
       height:'50px'
     , @options);
 
-    @element = $('<textarea></textarea>')
+    @element = $('<div></div>')
     .addClass('ppedit-box')
     .attr('tabindex', 0)
+    .attr('contenteditable', true)
     .attr('id', $.now())
     .css(settings)
 

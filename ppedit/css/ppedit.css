@@ -44,6 +44,11 @@
     border-style:dashed;
 }
 
+.ppedit-box:focus
+{
+    border-color:blue;
+}
+
 .ppedit-canvas
 {
     position: absolute;

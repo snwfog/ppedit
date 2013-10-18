@@ -95,7 +95,7 @@ Abstract Class, represents an Dom node
         width: '75px',
         height: '50px'
       }, this.options);
-      return this.element = $('<textarea></textarea>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings);
+      return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('contenteditable', true).attr('id', $.now()).css(settings);
     };
 
     Box.prototype.bindEvents = function() {
@@ -165,7 +165,7 @@ Abstract Class, represents an Dom node
     };
 
     Box.prototype.stopMoving = function() {
-      this.element.removeClass('ppedit-box-selected');
+      this.element.removeClass('ppedit-box-selected').blur();
       if ((this.prevPosition != null) && !Geometry.pointEqualToPoint(this.currentPosition(), this.prevPosition)) {
         if (this.prevPosition != null) {
           this.root.trigger('boxMoved', [this, this.currentPosition(), $.extend(true, {}, this.prevPosition)]);
