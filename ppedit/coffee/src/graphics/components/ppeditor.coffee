@@ -68,6 +68,9 @@ class PPEditor extends Graphic
       .on 'addBoxRequested', (event, boxCssOptions) =>
         @commandManager.pushCommand new CreateBoxCommand this, boxCssOptions
 
+      .on 'fontTypeChanged', (event, newFontType) =>
+        @commandManager.pushCommand new ChangeFontTypeCommand this, newFontType, @area.boxesContainer.getSelectedBoxes()
+
     @area.boxesContainer.element
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
         @commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)

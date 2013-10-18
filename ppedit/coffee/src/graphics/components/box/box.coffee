@@ -19,6 +19,7 @@ class Box extends Graphic
     @element = $('<textarea></textarea>')
     .addClass('ppedit-box')
     .attr('tabindex', 0)
+    .css('font-family', 'Times New Roman')
     .attr('id', $.now())
     .css(settings)
 

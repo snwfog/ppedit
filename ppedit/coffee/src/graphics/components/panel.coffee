@@ -21,7 +21,7 @@ class Panel extends Graphic
                <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>
 
                <select class="fontTypeBtn">
-                 <option value="Times New Roman">Times New Roman</option>
+                 <option value="Times New Roman" selected>Times New Roman</option>
                  <option value="Arial">Arial</option>
                  <option value="Inconsolata">Inconsolata</option>
                  <option value="Glyphicons Halflings">Glyphicons Halflings</option>
@@ -51,13 +51,18 @@ class Panel extends Graphic
     $(".gridElementBtn").click =>
       @root.trigger 'panelClickGridBtnClick'
 
+    @element.find("select").change (event) =>
+      newFontType = $(event.target).find("option:selected").val()
+      @root.trigger 'fontTypeChanged', [newFontType]
+
+
   moveElementUp: (panelID) ->
 
   moveElementUpDown: (panelID) ->
 
   ###
   Adds a row to be associated with the passed box id.
-  ###
+  ### 
   addBoxRow: (boxid) ->
     newRow = $("
             <tr>

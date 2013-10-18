@@ -112,3 +112,16 @@ class BoxesContainer extends Graphic
     innerRect.topLeft.y >= outerRect.topLeft.y &&
     innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width &&
     innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height)
+
+  ###
+  Given an array of box ids, change font type of all box objects
+  with those ids.
+  ###
+  changeFontType: (boxIds, newFontType) ->
+    for id in boxIds
+      @boxes[id].element
+        .css("font-family", newFontType)
+
+
+
+

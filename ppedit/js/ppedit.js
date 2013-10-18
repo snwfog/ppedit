@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, CommandManager, ControllerFactory, CreateBoxCommand, EditArea, Graphic, Grid, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+  var Box, BoxesContainer, Canvas, ChangeFontTypeCommand, CommandManager, ControllerFactory, CreateBoxCommand, EditArea, Graphic, Grid, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -58,7 +58,7 @@ Abstract Class, represents an Dom node
         width: '75px',
         height: '50px'
       }, this.options);
-      return this.element = $('<textarea></textarea>').addClass('ppedit-box').attr('tabindex', 0).attr('id', $.now()).css(settings);
+      return this.element = $('<textarea></textarea>').addClass('ppedit-box').attr('tabindex', 0).css('font-family', 'Times New Roman').attr('id', $.now()).css(settings);
     };
 
     Box.prototype.bindEvents = function() {
@@ -306,6 +306,50 @@ Abstract Class, represents an Dom node
     };
 
     return CommandManager;
+
+  })();
+
+  ChangeFontTypeCommand = (function() {
+    function ChangeFontTypeCommand(editor, newFontType, boxesSelector) {
+      var box, boxArray;
+      this.editor = editor;
+      this.newFontType = newFontType;
+      this.prevFontType = {};
+      boxArray = boxesSelector.toArray();
+      this.boxIds = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = boxArray.length; _i < _len; _i++) {
+          box = boxArray[_i];
+          _results.push(box.id);
+        }
+        return _results;
+      })();
+      this.boxes = this.editor.area.boxesContainer.getBoxesFromIds(this.boxIds);
+    }
+
+    ChangeFontTypeCommand.prototype.execute = function() {
+      var box, _i, _len, _ref;
+      _ref = this.boxes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        this.prevFontType[box] = box.element.css("font-family");
+      }
+      return this.editor.area.boxesContainer.changeFontType(this.boxIds, this.newFontType);
+    };
+
+    ChangeFontTypeCommand.prototype.undo = function() {
+      var box, _i, _len, _ref, _results;
+      _ref = this.boxes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        _results.push(box.element.css("font-family", this.prevFontType[box]));
+      }
+      return _results;
+    };
+
+    return ChangeFontTypeCommand;
 
   })();
 
@@ -582,6 +626,22 @@ Abstract Class, represents an Dom node
       return innerRect.topLeft.x >= outerRect.topLeft.x && innerRect.topLeft.y >= outerRect.topLeft.y && innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width && innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height;
     };
 
+    /*
+    Given an array of box ids, change font type of all box objects
+    with those ids.
+    */
+
+
+    BoxesContainer.prototype.changeFontType = function(boxIds, newFontType) {
+      var id, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
+        id = boxIds[_i];
+        _results.push(this.boxes[id].element.css("font-family", newFontType));
+      }
+      return _results;
+    };
+
     return BoxesContainer;
 
   })(Graphic);
@@ -775,7 +835,7 @@ Abstract Class, represents an Dom node
                <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>\
 \
                <select class="fontTypeBtn">\
-                 <option value="Times New Roman">Times New Roman</option>\
+                 <option value="Times New Roman" selected>Times New Roman</option>\
                  <option value="Arial">Arial</option>\
                  <option value="Inconsolata">Inconsolata</option>\
                  <option value="Glyphicons Halflings">Glyphicons Halflings</option>\
@@ -804,8 +864,13 @@ Abstract Class, represents an Dom node
       $(".clearAllElementBtn").click(function() {
         return _this.root.trigger('panelClickClearAllBtnClick');
       });
-      return $(".gridElementBtn").click(function() {
+      $(".gridElementBtn").click(function() {
         return _this.root.trigger('panelClickGridBtnClick');
+      });
+      return this.element.find("select").change(function(event) {
+        var newFontType;
+        newFontType = $(event.target).find("option:selected").val();
+        return _this.root.trigger('fontTypeChanged', [newFontType]);
       });
     };
 
@@ -901,6 +966,8 @@ Abstract Class, represents an Dom node
         return _this.area.boxesContainer.chageBoxOpacity(boxId, opacityVal);
       }).on('addBoxRequested', function(event, boxCssOptions) {
         return _this.commandManager.pushCommand(new CreateBoxCommand(_this, boxCssOptions));
+      }).on('fontTypeChanged', function(event, newFontType) {
+        return _this.commandManager.pushCommand(new ChangeFontTypeCommand(_this, newFontType, _this.area.boxesContainer.getSelectedBoxes()));
       });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
         return _this.commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false);
