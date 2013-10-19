@@ -22,3 +22,15 @@ ppeditDescribe "A test for issue CAP-14 : As a user, I want to reposition elemen
     addBox 2
     moveBox $('.ppedit-box'), {dx:150, dy:180}
     moveBox $('.ppedit-box'), {dx:100, dy:100}
+
+  it "deletes a box when clicking on ctrl+delete", ->
+    addBox 1
+
+    $('.ppedit-box').simulate 'click'
+    expect($('.ppedit-box-selected')).toHaveLength(1)
+
+    # Simulating ctrl + delete
+    $('.ppedit-box-container').simulate 'key-combo', {combo: 'ctrl+46'}; # If Windows
+    $('.ppedit-box-container').simulate 'key-combo', {combo: 'meta+8'}; # If Mac
+
+    expect($('.ppedit-box')).toHaveLength(0)

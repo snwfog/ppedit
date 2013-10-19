@@ -646,6 +646,9 @@ Abstract Class, represents an Dom node
         } else if (event.keyCode === KeyCodes.Y && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestRedo');
+        } else if (event.keyCode === KeyCodes.MAC_DELETE && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestDelete');
         } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestCopy');

@@ -97,11 +97,11 @@
 						target.simulate("keydown", eventOptions);
 						break;
 					default:
-						if (key.length > 1) {
+						if (key.length > 1 && !key.match(/^\d+$/)) {
 							throw 'Syntax error: expecting "+" between each key';
 						}
 						else {
-							keyCode = $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(key);
+							keyCode = key.match(/^\d+$/) ? parseInt(key) : $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(key);
 							holdKeys.unshift(keyCode);
 							eventOptions.keyCode = keyCode;
 							eventOptions.which = keyCode;
