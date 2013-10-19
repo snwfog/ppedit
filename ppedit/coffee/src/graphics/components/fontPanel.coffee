@@ -1,0 +1,54 @@
+#= require Graphic
+
+class FontPanel extends Graphic
+  constructor: (@root) ->
+    super @root
+
+  buildElement: ->
+    @element =$('
+            <div class="col-xs-5" style ="padding-left: 30px">
+            <select class="fontTypeBtn">
+                 <option value="Times New Roman" selected>Times New Roman</option>
+                 <option value="Arial">Arial</option>
+                 <option value="Inconsolata">Inconsolata</option>
+                 <option value="Glyphicons Halflings">Glyphicons Halflings</option>
+               </select>
+               
+               <select class="fontSizeBtn">
+                 <option value="6">6</option>
+                 <option value="8">8</option>
+                 <option value="10" selected>10</option>
+                 <option value="11">11</option>
+                 <option value="12">12</option>
+                 <option value="14">14</option>
+                 <option value="16">16</option>
+                 <option value="20">20</option>
+               </select>
+
+               <button class="weightBtn" type="button">B</button>
+               <button class="underlineBtn" type="button">U</button>
+               <button class="italicBtn" type="button">I</button>
+             </div>')
+
+  bindEvents: ->
+    @element.find("select.fontTypeBtn").change (event) =>
+      newFontType = $(event.target).find("option:selected").val()
+      @root.trigger 'fontTypeChanged', [newFontType]
+
+    @element.find("select.fontSizeBtn").change (event) =>
+      newFontSize = $(event.target).find("option:selected").val()+"pt"
+      @root.trigger 'fontSizeChanged', [newFontSize]
+
+    @element.find(".weightBtn").click (event) =>
+      btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+      @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+
+    @element.find(".underlineBtn").click (event) =>
+      btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+      @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontUnderlinedBtnEnableClick' else 'fontUnderlinedBtnDisableClick')
+
+    @element.find(".italicBtn").click (event) =>
+      btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+      @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontItalicBtnEnableClick' else 'fontItalicBtnDisableClick')
+
+
