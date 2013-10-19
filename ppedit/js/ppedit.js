@@ -1214,7 +1214,7 @@ Abstract Class, represents an Dom node
       });
       this.element.find("select.fontSizeBtn").change(function(event) {
         var newFontSize;
-        newFontSize = $(event.target).find("option:selected").val() + "0%";
+        newFontSize = $(event.target).find("option:selected").val() + "pt";
         return _this.root.trigger('fontSizeChanged', [newFontSize]);
       });
       this.element.find(".weightBtn").click(function(event) {
