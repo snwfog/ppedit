@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, Clipboard, CommandManager, ControllerFactory, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+  var Box, BoxesContainer, Canvas, Clipboard, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -315,7 +315,6 @@ Abstract Class, represents an Dom node
 
     CreateBoxesCommand.prototype.execute = function() {
       var box, options, _i, _j, _len, _len1, _ref, _ref1, _results;
-      console.log(this.optionsList);
       if (this.optionsList != null) {
         if (this.boxes.length === 0) {
           _ref = this.optionsList;
@@ -363,6 +362,50 @@ Abstract Class, represents an Dom node
     };
 
     return CreateBoxesCommand;
+
+  })();
+
+  CopyBoxesCommand = (function() {
+    function CopyBoxesCommand(editor, boxesClones) {
+      this.editor = editor;
+      this.boxesClones = boxesClones;
+      this.newBoxes = [];
+    }
+
+    CopyBoxesCommand.prototype.execute = function() {
+      var box, i, _i, _ref, _results,
+        _this = this;
+      if (this.newBoxes.length === 0) {
+        this.boxesClones.each(function(index, boxItem) {
+          var box, boxOptions;
+          boxOptions = CSSJSON.toJSON(boxItem.style.cssText).attributes;
+          box = new Box(_this.editor.area.boxesContainer.element, boxOptions);
+          return _this.newBoxes[index] = box;
+        });
+      }
+      _results = [];
+      for (i = _i = 0, _ref = this.newBoxes.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        box = this.newBoxes[i];
+        this.editor.area.boxesContainer.addBox(box);
+        box.element.html(this.boxesClones.eq(i).html());
+        _results.push(this.editor.panel.addBoxRow(box.element.attr('id')));
+      }
+      return _results;
+    };
+
+    CopyBoxesCommand.prototype.undo = function() {
+      var box, _i, _len, _ref, _results;
+      _ref = this.newBoxes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        this.editor.area.boxesContainer.removeBoxes([box.element.attr('id')]);
+        _results.push(this.editor.panel.removeBoxRow([box.element.attr('id')]));
+      }
+      return _results;
+    };
+
+    return CopyBoxesCommand;
 
   })();
 
@@ -1016,15 +1059,11 @@ Abstract Class, represents an Dom node
 
   Clipboard = (function() {
     function Clipboard() {
-      this.itemsStyles = [];
+      this.items = void 0;
     }
 
     Clipboard.prototype.saveItemsStyle = function(newItems) {
-      var _this = this;
-      this.itemsStyles = [];
-      return newItems.each(function(index, item) {
-        return _this.itemsStyles.push(CSSJSON.toJSON(item.style.cssText).attributes);
-      });
+      return this.items = newItems.clone();
     };
 
     return Clipboard;
@@ -1072,8 +1111,8 @@ Abstract Class, represents an Dom node
       }).on('requestCopy', function(event) {
         return _this.clipboard.saveItemsStyle(_this.area.boxesContainer.getSelectedBoxes());
       }).on('requestPaste', function(event) {
-        if (_this.clipboard.itemsStyles.length !== 0) {
-          return _this.commandManager.pushCommand(new CreateBoxesCommand(_this, _this.clipboard.itemsStyles));
+        if (_this.clipboard.items.length !== 0) {
+          return _this.commandManager.pushCommand(new CopyBoxesCommand(_this, _this.clipboard.items));
         }
       });
       this.element.find('.row').on('panelClickAddBtnClick', function(event) {

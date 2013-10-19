@@ -8,6 +8,7 @@
 #= require RemoveBoxesCommand
 #= require CreateBoxesCommand
 #= require Clipboard
+#= require CopyBoxesCommand
 
 class PPEditor extends Graphic
 
@@ -56,8 +57,8 @@ class PPEditor extends Graphic
         @clipboard.saveItemsStyle @area.boxesContainer.getSelectedBoxes()
 
       .on 'requestPaste', (event) =>
-        if @clipboard.itemsStyles.length != 0
-          @commandManager.pushCommand new CreateBoxesCommand this, @clipboard.itemsStyles
+        if @clipboard.items.length != 0
+          @commandManager.pushCommand new CopyBoxesCommand this, @clipboard.items
 
     @element.find('.row')
       .on 'panelClickAddBtnClick', (event) =>

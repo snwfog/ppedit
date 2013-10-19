@@ -16,7 +16,6 @@ class CreateBoxesCommand
     @boxes = []
 
   execute: ->
-    console.log @optionsList
     if @optionsList?
       if @boxes.length == 0
         @boxes.push new Box @editor.area.boxesContainer.element, options for options in @optionsList
