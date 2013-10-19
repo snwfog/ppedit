@@ -34,12 +34,15 @@ class PPEditor extends Graphic
     row = @element.find('.row')
     @area = new EditArea row
     @panel = new Panel row
+    @fontPanel = new FontPanel row
 
     @area.buildElement()
     @panel.buildElement()
+    @fontPanel.buildElement()
 
     row.append @area.element
     row.append @panel.element
+    row.append @fontPanel.element
 
   bindEvents: ->
 
@@ -110,4 +113,5 @@ class PPEditor extends Graphic
 
     @area.bindEvents()
     @panel.bindEvents()
+    @fontPanel.bindEvents()
     @controller.bindEvents()

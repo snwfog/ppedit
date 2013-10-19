@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+  var Box, BoxesContainer, Canvas, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, FontPanel, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1148,28 +1148,6 @@ Abstract Class, represents an Dom node
                       <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>\
 \
 \
-               <select class="fontTypeBtn">\
-                 <option value="Times New Roman" selected>Times New Roman</option>\
-                 <option value="Arial">Arial</option>\
-                 <option value="Inconsolata">Inconsolata</option>\
-                 <option value="Glyphicons Halflings">Glyphicons Halflings</option>\
-               </select>\
-               \
-               <select class="fontSizeBtn">\
-                 <option value="6">6</option>\
-                 <option value="8">8</option>\
-                 <option value="10" selected>10</option>\
-                 <option value="11">11</option>\
-                 <option value="12">12</option>\
-                 <option value="14">14</option>\
-                 <option value="16">16</option>\
-                 <option value="20">20</option>\
-               </select>\
-\
-               <button class="weightBtn" type="button">B</button>\
-               <button class="underlineBtn" type="button">U</button>\
-               <button class="italicBtn" type="button">I</button>\
-\
               <table class="table table-hover dataPanel">\
                   <thead>\
                       <tr>\
@@ -1201,33 +1179,8 @@ Abstract Class, represents an Dom node
       $(".clearAllElementBtn").click(function() {
         return _this.root.trigger('panelClickClearAllBtnClick');
       });
-      $(".gridElementBtn").click(function() {
+      return $(".gridElementBtn").click(function() {
         return _this.root.trigger('panelClickGridBtnClick');
-      });
-      this.element.find("select.fontTypeBtn").change(function(event) {
-        var newFontType;
-        newFontType = $(event.target).find("option:selected").val();
-        return _this.root.trigger('fontTypeChanged', [newFontType]);
-      });
-      this.element.find("select.fontSizeBtn").change(function(event) {
-        var newFontSize;
-        newFontSize = $(event.target).find("option:selected").val() + "pt";
-        return _this.root.trigger('fontSizeChanged', [newFontSize]);
-      });
-      this.element.find(".weightBtn").click(function(event) {
-        var btn;
-        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
-        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
-      });
-      this.element.find(".underlineBtn").click(function(event) {
-        var btn;
-        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
-        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontUnderlinedBtnEnableClick' : 'fontUnderlinedBtnDisableClick');
-      });
-      return this.element.find(".italicBtn").click(function(event) {
-        var btn;
-        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
-        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');
       });
     };
 
@@ -1311,10 +1264,13 @@ Abstract Class, represents an Dom node
       row = this.element.find('.row');
       this.area = new EditArea(row);
       this.panel = new Panel(row);
+      this.fontPanel = new FontPanel(row);
       this.area.buildElement();
       this.panel.buildElement();
+      this.fontPanel.buildElement();
       row.append(this.area.element);
-      return row.append(this.panel.element);
+      row.append(this.panel.element);
+      return row.append(this.fontPanel.element);
     };
 
     PPEditor.prototype.bindEvents = function() {
@@ -1366,10 +1322,79 @@ Abstract Class, represents an Dom node
       });
       this.area.bindEvents();
       this.panel.bindEvents();
+      this.fontPanel.bindEvents();
       return this.controller.bindEvents();
     };
 
     return PPEditor;
+
+  })(Graphic);
+
+  FontPanel = (function(_super) {
+    __extends(FontPanel, _super);
+
+    function FontPanel(root) {
+      this.root = root;
+      FontPanel.__super__.constructor.call(this, this.root);
+    }
+
+    FontPanel.prototype.buildElement = function() {
+      return this.element = $('\
+            <div class="col-xs-5" style ="padding-left: 30px">\
+            <select class="fontTypeBtn">\
+                 <option value="Times New Roman" selected>Times New Roman</option>\
+                 <option value="Arial">Arial</option>\
+                 <option value="Inconsolata">Inconsolata</option>\
+                 <option value="Glyphicons Halflings">Glyphicons Halflings</option>\
+               </select>\
+               \
+               <select class="fontSizeBtn">\
+                 <option value="6">6</option>\
+                 <option value="8">8</option>\
+                 <option value="10" selected>10</option>\
+                 <option value="11">11</option>\
+                 <option value="12">12</option>\
+                 <option value="14">14</option>\
+                 <option value="16">16</option>\
+                 <option value="20">20</option>\
+               </select>\
+\
+               <button class="weightBtn" type="button">B</button>\
+               <button class="underlineBtn" type="button">U</button>\
+               <button class="italicBtn" type="button">I</button>\
+             </div>');
+    };
+
+    FontPanel.prototype.bindEvents = function() {
+      var _this = this;
+      this.element.find("select.fontTypeBtn").change(function(event) {
+        var newFontType;
+        newFontType = $(event.target).find("option:selected").val();
+        return _this.root.trigger('fontTypeChanged', [newFontType]);
+      });
+      this.element.find("select.fontSizeBtn").change(function(event) {
+        var newFontSize;
+        newFontSize = $(event.target).find("option:selected").val() + "pt";
+        return _this.root.trigger('fontSizeChanged', [newFontSize]);
+      });
+      this.element.find(".weightBtn").click(function(event) {
+        var btn;
+        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+      });
+      this.element.find(".underlineBtn").click(function(event) {
+        var btn;
+        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontUnderlinedBtnEnableClick' : 'fontUnderlinedBtnDisableClick');
+      });
+      return this.element.find(".italicBtn").click(function(event) {
+        var btn;
+        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');
+      });
+    };
+
+    return FontPanel;
 
   })(Graphic);
 
