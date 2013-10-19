@@ -9,6 +9,7 @@
 #= require CreateBoxesCommand
 #= require Clipboard
 #= require CopyBoxesCommand
+#= require ChangeFontWeightCommand
 
 class PPEditor extends Graphic
 
@@ -85,8 +86,11 @@ class PPEditor extends Graphic
       .on 'fontSizeChanged', (event, newFontSize) =>
         @commandManager.pushCommand new ChangeFontSizeCommand this, newFontSize, @area.boxesContainer.getSelectedBoxes()
 
-      .on 'fontWeightChanged', (event) =>
-        @commandManager.pushCommand new ChangeFontWeightCommand this, @area.boxesContainer.getSelectedBoxes()
+      .on 'fontWeightBtnEnableClick', (event) =>
+        @commandManager.pushCommand new ChangeFontWeightCommand this, @area.boxesContainer.getSelectedBoxes(), true
+
+      .on 'fontWeightBtnDisableClick', (event) =>
+        @commandManager.pushCommand new ChangeFontWeightCommand this, @area.boxesContainer.getSelectedBoxes(), false
 
       .on 'fontUnderlined', (event) =>
         @commandManager.pushCommand new UnderlineFontCommand this, @area.boxesContainer.getSelectedBoxes()

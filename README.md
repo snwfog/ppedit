@@ -16,7 +16,9 @@ PPedit is a web based WYSIWYG editor written as a JQuery plugin for the PeerPen 
       
         <!-- PPedit REQUIRES jQuery -->
         <script src="libs/jquery/jquery-2.0.3.min.js"></script>
-        
+
+        <script src="libs/cssjson/cssjson.js"></script>
+
         <script src="ppedit/js/ppedit.js"></script>
     
         <script>

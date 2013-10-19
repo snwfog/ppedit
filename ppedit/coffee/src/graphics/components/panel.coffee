@@ -90,8 +90,9 @@ class Panel extends Graphic
       newFontSize = $(event.target).find("option:selected").val()+"0%"
       @root.trigger 'fontSizeChanged', [newFontSize]
 
-    @element.find(".weightBtn").click =>
-      @root.trigger 'fontWeightChanged'
+    @element.find(".weightBtn").click (event) =>
+      btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+      @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
 
     @element.find(".underlineBtn").click =>
       @root.trigger 'fontUnderlined'

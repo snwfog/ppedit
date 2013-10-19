@@ -1,34 +1,9 @@
 #= require Box
+#= require ChangeStyleCommand
 
-class ChangeFontWeightCommand
+class ChangeFontWeightCommand extends ChangeStyleCommand
 
-  constructor: (@editor, boxesSelector) ->
+  constructor: (@editor, boxesSelector, enable) ->
 
-    @prevFontWeight = {}
-    boxArray = boxesSelector.toArray()
-    @boxIds = (box.id for box in boxArray)
-    @boxes = @editor.area.boxesContainer.getBoxesFromIds @boxIds
-
-  execute: ->
-    for box in @boxes
-      @prevFontWeight[box] = box.element.css('font-weight')
-      if(box.element.css('font-weight') == 400)
-        box.element.css('font-weight', 'bold')
-      else
-        box.element.css('font-weight', 'normal')
-
-  undo: ->
-    for box in @boxes
-      box.element.css('font-weight', @prevFontWeight[box])
-
-###
-  command = new changeboxesstylecommand(boxes, {font-weight: 'bold'})
-
-  ==>
-    for all boxes
-      save the boxes style in an array
-
-    execute:
-      json = $.extend(@prevstyle, {font-weight: 'bold'})
-      box.element.css(json)
-###
+    fontWeightValue = if enable then 'bold' else 'normal'
+    super @editor, boxesSelector, {'font-weight': fontWeightValue}

@@ -10,12 +10,12 @@ ppeditDescribe 'A test for issue "CAP-48 : As a user, I want to copy and paste a
     box.simulate 'click'
 
     # If Mac
-    $('.ppedit-box-container').simulate "key-combo", {combo: "meta+c"} # if Mac
-    $('.ppedit-box-container').simulate "key-combo", {combo: "meta+v"} # if Windows
+    $('.ppedit-box-container').simulate "key-combo", {combo: "meta+c"}
+    $('.ppedit-box-container').simulate "key-combo", {combo: "meta+v"}
 
     # If Windows
-    $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+c"} # if Mac
-    $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+v"} # if Windows
+    $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+c"}
+    $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+v"}
 
     expect($('.ppedit-box')).toHaveLength(2)
 

@@ -88,10 +88,20 @@ class BoxesContainer extends Graphic
 
   ###
   Returns an array of Box objects corresponding to the
-  passed boxIds.
+  passed array of boxIds.
   ###
   getBoxesFromIds: (boxIds) ->
     return (@boxes[id] for id in boxIds when @boxes[id]?)
+
+  ###
+  Returns an list of box objects corresponding to the
+  passed selector matching box elements.
+  ###
+  getBoxesFromSelector: (selector) ->
+    results = {}
+    for box in selector.toArray()
+      results[box.id] = @boxes[box.id]
+    return results
 
   ###
   Returns a selector matching all boxes
@@ -145,6 +155,13 @@ class BoxesContainer extends Graphic
     for id in boxIds
       @boxes[id].element
         .css("font-size", newFontSize)
+
+  ###
+  Given a box id and css option object,
+  apply the css onto to element of the passed box
+  ###
+  setBoxCss: (boxId, cssOptions) ->
+    @boxes[boxId].element.css(cssOptions)
 
   getPointClicked: (mouseEvent) ->
     return {
