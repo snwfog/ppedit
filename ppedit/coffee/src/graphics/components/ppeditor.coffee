@@ -78,6 +78,7 @@ class PPEditor extends Graphic
       .on 'addBoxRequested', (event, boxCssOptions) =>
         @commandManager.pushCommand new CreateBoxesCommand this, [boxCssOptions]
 
+      
       .on 'fontTypeChanged', (event, newFontType) =>
         @commandManager.pushCommand new ChangeFontTypeCommand this, newFontType, @area.boxesContainer.getSelectedBoxes()
 
@@ -85,11 +86,11 @@ class PPEditor extends Graphic
         @commandManager.pushCommand new ChangeFontSizeCommand this, newFontSize, @area.boxesContainer.getSelectedBoxes()
 
       .on 'fontWeightChanged', (event) =>
-        @commandManager.pushCommand new ChangeFontWeightCommand this, @area.boxesContainer.getSelectedBoxes()
+        @commandManager.pushCommand new ChangeFontWeightCommand this, @area.boxesContainer.getSelectedBoxes(), 
 
       .on 'fontUnderlined', (event) =>
         @commandManager.pushCommand new UnderlineFontCommand this, @area.boxesContainer.getSelectedBoxes()
-    
+      
       .on 'fontItalic', (event) =>
         @commandManager.pushCommand new ItalicFontCommand this, @area.boxesContainer.getSelectedBoxes()
 

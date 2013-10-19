@@ -22,6 +22,7 @@ class ChangeFontWeightCommand
       box.element.css('font-weight', @prevFontWeight[box])
 
 ###
+  @prevStatus = JSONCSS.toJSON{boxesSelector.style. ...}
   command = new changeboxesstylecommand(boxes, {font-weight: 'bold'})
 
   ==>

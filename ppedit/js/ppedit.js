@@ -5,11 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-<<<<<<< HEAD
-  var Box, BoxesContainer, Canvas, ChangeFontSizeCommand, ChangeFontTypeCommand, ChangeFontWeightCommand, CommandManager, ControllerFactory, CreateBoxCommand, EditArea, Geometry, Graphic, Grid, ItalicFontCommand, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand, UnderlineFontCommand,
-=======
-  var Box, BoxesContainer, Canvas, Clipboard, CommandManager, ControllerFactory, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
->>>>>>> 935b98cfd0588bd05d883d40946231b86ffc1c7d
+  var Box, BoxesContainer, Canvas, ChangeFontSizeCommand, ChangeFontTypeCommand, ChangeFontWeightCommand, Clipboard, CommandManager, ControllerFactory, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, ItalicFontCommand, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand, UnderlineFontCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -519,7 +515,6 @@ Abstract Class, represents an Dom node
 
   })();
 
-<<<<<<< HEAD
   ChangeFontWeightCommand = (function() {
     function ChangeFontWeightCommand(editor, boxesSelector) {
       var box, boxArray;
@@ -570,6 +565,7 @@ Abstract Class, represents an Dom node
   })();
 
   /*
+    @prevStatus = JSONCSS.toJSON{boxesSelector.style. ...}
     command = new changeboxesstylecommand(boxes, {font-weight: 'bold'})
   
     ==>
@@ -667,7 +663,9 @@ Abstract Class, represents an Dom node
     };
 
     return ChangeFontSizeCommand;
-=======
+
+  })();
+
   /*
   Helper Class that provides static constants to keyboard keycodes.
   */
@@ -693,7 +691,6 @@ Abstract Class, represents an Dom node
     KeyCodes.MAC_DELETE = 8;
 
     return KeyCodes;
->>>>>>> 935b98cfd0588bd05d883d40946231b86ffc1c7d
 
   })();
 
@@ -1411,8 +1408,7 @@ Abstract Class, represents an Dom node
       }).on('onRowSliderValChanged', function(event, boxId, opacityVal) {
         return _this.area.boxesContainer.chageBoxOpacity(boxId, opacityVal);
       }).on('addBoxRequested', function(event, boxCssOptions) {
-<<<<<<< HEAD
-        return _this.commandManager.pushCommand(new CreateBoxCommand(_this, boxCssOptions));
+        return _this.commandManager.pushCommand(new CreateBoxesCommand(_this, [boxCssOptions]));
       }).on('fontTypeChanged', function(event, newFontType) {
         return _this.commandManager.pushCommand(new ChangeFontTypeCommand(_this, newFontType, _this.area.boxesContainer.getSelectedBoxes()));
       }).on('fontSizeChanged', function(event, newFontSize) {
@@ -1423,9 +1419,6 @@ Abstract Class, represents an Dom node
         return _this.commandManager.pushCommand(new UnderlineFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
       }).on('fontItalic', function(event) {
         return _this.commandManager.pushCommand(new ItalicFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
-=======
-        return _this.commandManager.pushCommand(new CreateBoxesCommand(_this, [boxCssOptions]));
->>>>>>> 935b98cfd0588bd05d883d40946231b86ffc1c7d
       });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
         return _this.commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false);
