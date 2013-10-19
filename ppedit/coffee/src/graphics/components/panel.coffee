@@ -87,7 +87,7 @@ class Panel extends Graphic
       @root.trigger 'fontTypeChanged', [newFontType]
 
     @element.find("select.fontSizeBtn").change (event) =>
-      newFontSize = $(event.target).find("option:selected").val()+"0%"
+      newFontSize = parseInt($(event.target).find("option:selected").val())*10/6.25 +"px"
       @root.trigger 'fontSizeChanged', [newFontSize]
 
     @element.find(".weightBtn").click =>

@@ -262,6 +262,51 @@
     });
   });
 
+  ppeditDescribe("A test for issue CAP-44 : As a user,   I want to change font settings of my text documents.", function() {
+    it("change font family on select font family on the panel", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      box.simulate('click');
+      $('.fontTypeBtn').val('Glyphicons Halflings').change();
+      return expect($(".ppedit-box")).toHaveCss({
+        'font-family': "'Glyphicons Halflings'"
+      });
+    });
+    it("change font size on select font size on the panel", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      box.simulate('click');
+      $('.fontSizeBtn').val('20').change();
+      return expect($(".ppedit-box").css('font-size')).toEqual('32px');
+    });
+    it("change font weight on font bold on the panel", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      box.simulate('click');
+      $('.weightBtn').simulate('click');
+      return expect($(".ppedit-box").css('font-weight')).toEqual('bold');
+    });
+    it("change font underline on font underline on the panel", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      box.simulate('click');
+      $('.underlineBtn').simulate('click');
+      return expect($(".ppedit-box").css('text-decoration')).toEqual('underline');
+    });
+    return it("change font italic on font italic on the panel", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      box.simulate('click');
+      $('.italicBtn').simulate('click');
+      return expect($(".ppedit-box").css('font-style')).toEqual('italic');
+    });
+  });
+
   ppeditDescribe('A test for issue CAP-116 : "Cannot Undo Box moved" bug.', function() {
     return it("can undo a box move command", function() {
       var box;
