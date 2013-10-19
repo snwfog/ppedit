@@ -278,8 +278,8 @@
       addBox(1);
       box = $('.ppedit-box');
       box.simulate('click');
-      $('.fontSizeBtn').val('20').change();
-      return expect($(".ppedit-box").css('font-size')).toEqual('32px');
+      $('.fontSizeBtn').val('12').change();
+      return expect($(".ppedit-box").css('font-size')).toEqual('16px');
     });
     it("change font weight on font bold on the panel", function() {
       var box;
