@@ -21,8 +21,8 @@ class BoxesContainer extends Graphic
         @lastDownEvent = event
       
       .mouseup (event) =>
-        # Click happend
-        if event.timeStamp - @lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL
+        # Click happened
+        if @lastDownEvent? && event.timeStamp - @lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL
           @unSelectAllBoxes()
 
       .dblclick (event) =>

@@ -5,7 +5,11 @@ Abstract Class, represents an Dom node
 
 
 (function() {
+<<<<<<< HEAD
   var Box, BoxesContainer, Canvas, ChangeFontSizeCommand, ChangeFontTypeCommand, ChangeFontWeightCommand, CommandManager, ControllerFactory, CreateBoxCommand, EditArea, Geometry, Graphic, Grid, ItalicFontCommand, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand, UnderlineFontCommand,
+=======
+  var Box, BoxesContainer, Canvas, Clipboard, CommandManager, ControllerFactory, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+>>>>>>> 935b98cfd0588bd05d883d40946231b86ffc1c7d
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -106,7 +110,7 @@ Abstract Class, represents an Dom node
       }).click(function(event) {
         event.preventDefault();
         return _this.toggleSelect();
-      }).dblclick(function() {
+      }).dblclick(function(event) {
         event.stopPropagation();
         event.preventDefault();
         _this.stopMoving();
@@ -160,9 +164,7 @@ Abstract Class, represents an Dom node
     Box.prototype.stopMoving = function() {
       this.element.removeClass('ppedit-box-selected');
       if ((this.prevPosition != null) && !Geometry.pointEqualToPoint(this.currentPosition(), this.prevPosition)) {
-        if (this.prevPosition != null) {
-          this.root.trigger('boxMoved', [this, this.currentPosition(), $.extend(true, {}, this.prevPosition)]);
-        }
+        this.root.trigger('boxMoved', [this, this.currentPosition(), $.extend(true, {}, this.prevPosition)]);
       }
       return this.prevPosition = void 0;
     };
@@ -170,7 +172,7 @@ Abstract Class, represents an Dom node
     Box.prototype.move = function(deltaX, deltaY) {
       var currentPos;
       currentPos = this.currentPosition();
-      return this.setPosition(deltaX + currentPos.x, deltaY + currentPos.y);
+      return this.setPosition(deltaX + currentPos.left, deltaY + currentPos.top);
     };
 
     Box.prototype.setPosition = function(x, y) {
@@ -179,10 +181,7 @@ Abstract Class, represents an Dom node
     };
 
     Box.prototype.currentPosition = function() {
-      return {
-        x: parseInt(this.element.css('left')),
-        y: parseInt(this.element.css('top'))
-      };
+      return this.element.position();
     };
 
     /*
@@ -329,11 +328,11 @@ Abstract Class, represents an Dom node
     }
 
     MoveBoxCommand.prototype.execute = function() {
-      return this.box.setPosition(this.toPosition.x, this.toPosition.y);
+      return this.box.setPosition(this.toPosition.left, this.toPosition.top);
     };
 
     MoveBoxCommand.prototype.undo = function() {
-      return this.box.setPosition(this.fromPosition.x, this.fromPosition.y);
+      return this.box.setPosition(this.fromPosition.left, this.fromPosition.top);
     };
 
     return MoveBoxCommand;
@@ -390,32 +389,75 @@ Abstract Class, represents an Dom node
   })();
 
   /*
-  A command that creates a new box with the passed options
+  A command that creates one or more boxes with the passed options
   ands adds it to the list.
   */
 
 
-  CreateBoxCommand = (function() {
-    function CreateBoxCommand(editor, options) {
+  CreateBoxesCommand = (function() {
+    /*
+    Creates a command that, when executed, will create
+    one or more boxes with a passed array of options, one
+    for each box to create and add it to the list of current boxes.
+    If no optionsList is passed, only one box is created with the default options.
+    */
+
+    function CreateBoxesCommand(editor, optionsList) {
       this.editor = editor;
-      this.options = options;
-      this.box = void 0;
+      this.optionsList = optionsList;
+      this.boxes = [];
     }
 
-    CreateBoxCommand.prototype.execute = function() {
-      if (this.box == null) {
-        this.box = new Box(this.editor.area.boxesContainer.element, this.options);
+    CreateBoxesCommand.prototype.execute = function() {
+      var box, options, _i, _j, _len, _len1, _ref, _ref1, _results;
+      console.log(this.optionsList);
+      if (this.optionsList != null) {
+        if (this.boxes.length === 0) {
+          _ref = this.optionsList;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            options = _ref[_i];
+            this.boxes.push(new Box(this.editor.area.boxesContainer.element, options));
+          }
+        }
+        _ref1 = this.boxes;
+        _results = [];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          box = _ref1[_j];
+          _results.push(this._addBox(box));
+        }
+        return _results;
+      } else {
+        if (this.boxes.length === 0) {
+          this.boxes.push(new Box(this.editor.area.boxesContainer.element));
+        }
+        return this._addBox(this.boxes[0]);
       }
-      this.editor.area.boxesContainer.addBox(this.box);
-      return this.editor.panel.addBoxRow(this.box.element.attr('id'));
     };
 
-    CreateBoxCommand.prototype.undo = function() {
-      this.editor.area.boxesContainer.removeBoxes([this.box.element.attr('id')]);
-      return this.editor.panel.removeBoxRow([this.box.element.attr('id')]);
+    CreateBoxesCommand.prototype.undo = function() {
+      var box, _i, _len, _ref, _results;
+      _ref = this.boxes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        this.editor.area.boxesContainer.removeBoxes([box.element.attr('id')]);
+        _results.push(this.editor.panel.removeBoxRow([box.element.attr('id')]));
+      }
+      return _results;
     };
 
-    return CreateBoxCommand;
+    /*
+    Adds the passed box to the boxcontainer and
+    create a corresponding row in the panel
+    */
+
+
+    CreateBoxesCommand.prototype._addBox = function(box) {
+      this.editor.area.boxesContainer.addBox(box);
+      return this.editor.panel.addBoxRow(box.element.attr('id'));
+    };
+
+    return CreateBoxesCommand;
 
   })();
 
@@ -477,6 +519,7 @@ Abstract Class, represents an Dom node
 
   })();
 
+<<<<<<< HEAD
   ChangeFontWeightCommand = (function() {
     function ChangeFontWeightCommand(editor, boxesSelector) {
       var box, boxArray;
@@ -624,6 +667,33 @@ Abstract Class, represents an Dom node
     };
 
     return ChangeFontSizeCommand;
+=======
+  /*
+  Helper Class that provides static constants to keyboard keycodes.
+  */
+
+
+  KeyCodes = (function() {
+    function KeyCodes() {}
+
+    KeyCodes.C = 67;
+
+    KeyCodes.P = 86;
+
+    KeyCodes.Z = 90;
+
+    KeyCodes.Y = 89;
+
+    KeyCodes.DELETE = 46;
+
+    KeyCodes.MAC_CMD_LEFT = 91;
+
+    KeyCodes.MAC_CMD_RIGHT = 93;
+
+    KeyCodes.MAC_DELETE = 8;
+
+    return KeyCodes;
+>>>>>>> 935b98cfd0588bd05d883d40946231b86ffc1c7d
 
   })();
 
@@ -635,15 +705,15 @@ Abstract Class, represents an Dom node
     PCController.prototype.bindEvents = function() {
       var _this = this;
       return this.root.keydown(function(event) {
-        if (event.keyCode === 90 && event.ctrlKey) {
+        if (event.keyCode === KeyCodes.Z && event.ctrlKey) {
           event.preventDefault();
           _this.root.trigger('requestUndo');
         }
-        if (event.keyCode === 89 && event.ctrlKey) {
+        if (event.keyCode === KeyCodes.Y && event.ctrlKey) {
           event.preventDefault();
           _this.root.trigger('requestRedo');
         }
-        if (event.keyCode === 46 || (event.keyCode === 46 && event.ctrlKey)) {
+        if (event.keyCode === KeyCodes.DELETE || (event.keyCode === KeyCodes.DELETE && event.ctrlKey)) {
           event.preventDefault();
           return _this.root.trigger('requestDelete');
         }
@@ -655,16 +725,6 @@ Abstract Class, represents an Dom node
   })();
 
   MacController = (function() {
-    MacController.COMMAND_LEFT_KEY_CODE = 91;
-
-    MacController.COMMAND_RIGHT_KEY_CODE = 93;
-
-    MacController.Z_KEY_CODE = 90;
-
-    MacController.Y_KEY_CODE = 89;
-
-    MacController.DELETE_KEY_CODE = 8;
-
     function MacController(root) {
       this.root = root;
       this.leftCmdKeyPressed = false;
@@ -674,25 +734,28 @@ Abstract Class, represents an Dom node
     MacController.prototype.bindEvents = function() {
       var _this = this;
       return this.root.keydown(function(event) {
-        if (event.keyCode === MacController.COMMAND_LEFT_KEY_CODE) {
+        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
           return _this.leftCmdKeyPressed = true;
-        } else if (event.keyCode === MacController.COMMAND_RIGHT_KEY_CODE) {
+        } else if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
           return _this.rightCmdKeyPressed = true;
-        } else if (event.keyCode === MacController.Z_KEY_CODE && _this._cmdKeyIsPressed()) {
+        } else if (event.keyCode === KeyCodes.Z && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestUndo');
-        } else if (event.keyCode === MacController.Y_KEY_CODE && _this._cmdKeyIsPressed()) {
+        } else if (event.keyCode === KeyCodes.Y && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestRedo');
-        } else if (event.keyCode === MacController.DELETE_KEY_CODE && _this._cmdKeyIsPressed()) {
+        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed()) {
           event.preventDefault();
-          return _this.root.trigger('requestDelete');
+          return _this.root.trigger('requestCopy');
+        } else if (event.keyCode === KeyCodes.P && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestPaste');
         }
       }).keyup(function(event) {
-        if (event.keyCode === MacController.COMMAND_LEFT_KEY_CODE) {
+        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
           _this.leftCmdKeyPressed = false;
         }
-        if (event.keyCode === MacController.COMMAND_RIGHT_KEY_CODE) {
+        if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
           return _this.rightCmdKeyPressed = false;
         }
       });
@@ -748,7 +811,7 @@ Abstract Class, represents an Dom node
       return this.element.mousedown(function(event) {
         return _this.lastDownEvent = event;
       }).mouseup(function(event) {
-        if (event.timeStamp - _this.lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL) {
+        if ((_this.lastDownEvent != null) && event.timeStamp - _this.lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL) {
           return _this.unSelectAllBoxes();
         }
       }).dblclick(function(event) {
@@ -1275,14 +1338,32 @@ Abstract Class, represents an Dom node
 
   })(Graphic);
 
+  Clipboard = (function() {
+    function Clipboard() {
+      this.itemsStyles = [];
+    }
+
+    Clipboard.prototype.saveItemsStyle = function(newItems) {
+      var _this = this;
+      this.itemsStyles = [];
+      return newItems.each(function(index, item) {
+        return _this.itemsStyles.push(CSSJSON.toJSON(item.style.cssText).attributes);
+      });
+    };
+
+    return Clipboard;
+
+  })();
+
   PPEditor = (function(_super) {
     __extends(PPEditor, _super);
 
     function PPEditor(root) {
       this.root = root;
       PPEditor.__super__.constructor.call(this, this.root);
-      this.controller = void 0;
+      this.clipboard = new Clipboard;
       this.commandManager = new CommandManager;
+      this.controller = void 0;
       this.area = void 0;
       this.panel = void 0;
     }
@@ -1312,9 +1393,15 @@ Abstract Class, represents an Dom node
         return _this.commandManager.redo();
       }).on('requestDelete', function(event) {
         return _this.commandManager.pushCommand(new RemoveBoxesCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+      }).on('requestCopy', function(event) {
+        return _this.clipboard.saveItemsStyle(_this.area.boxesContainer.getSelectedBoxes());
+      }).on('requestPaste', function(event) {
+        if (_this.clipboard.itemsStyles.length !== 0) {
+          return _this.commandManager.pushCommand(new CreateBoxesCommand(_this, _this.clipboard.itemsStyles));
+        }
       });
       this.element.find('.row').on('panelClickAddBtnClick', function(event) {
-        return _this.commandManager.pushCommand(new CreateBoxCommand(_this));
+        return _this.commandManager.pushCommand(new CreateBoxesCommand(_this));
       }).on('panelClickGridBtnClick', function(event) {
         return _this.area.grid.toggleGrid();
       }).on('panelClickClearAllBtnClick', function(event) {
@@ -1324,6 +1411,7 @@ Abstract Class, represents an Dom node
       }).on('onRowSliderValChanged', function(event, boxId, opacityVal) {
         return _this.area.boxesContainer.chageBoxOpacity(boxId, opacityVal);
       }).on('addBoxRequested', function(event, boxCssOptions) {
+<<<<<<< HEAD
         return _this.commandManager.pushCommand(new CreateBoxCommand(_this, boxCssOptions));
       }).on('fontTypeChanged', function(event, newFontType) {
         return _this.commandManager.pushCommand(new ChangeFontTypeCommand(_this, newFontType, _this.area.boxesContainer.getSelectedBoxes()));
@@ -1335,6 +1423,9 @@ Abstract Class, represents an Dom node
         return _this.commandManager.pushCommand(new UnderlineFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
       }).on('fontItalic', function(event) {
         return _this.commandManager.pushCommand(new ItalicFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+=======
+        return _this.commandManager.pushCommand(new CreateBoxesCommand(_this, [boxCssOptions]));
+>>>>>>> 935b98cfd0588bd05d883d40946231b86ffc1c7d
       });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
         return _this.commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false);

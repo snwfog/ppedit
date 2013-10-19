@@ -6,7 +6,7 @@ class MoveBoxCommand
     @fromPosition = @box.currentPosition() if !fromPosition?
 
   execute: ->
-    @box.setPosition(@toPosition.x, @toPosition.y)
+    @box.setPosition @toPosition.left, @toPosition.top
 
   undo: ->
-    @box.setPosition(@fromPosition.x, @fromPosition.y)
+    @box.setPosition @fromPosition.left, @fromPosition.top

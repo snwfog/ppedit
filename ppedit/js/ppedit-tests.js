@@ -142,13 +142,6 @@
     });
   });
 
-  ppeditDescribe("A test for issue CAP-25 : As a user, I want to name my document, so that I can distinguish between my documents", function() {
-    return it("can input text inside the textarea to name document", function() {
-      $('.addElementBtn').val('documentName');
-      return expect($('.addElementBtn')).toHaveValue('documentName');
-    });
-  });
-
   ppeditDescribe("A test for issue CAP-15 : As a user, I want to resize the bounding box of elements on my work area", function() {
     return it("can resize a box with the mouse", function() {
       return addBox(1);
@@ -156,14 +149,23 @@
   });
 
   ppeditDescribe("A test for issue CAP-14 : As a user, I want to reposition elements visible on my work area", function() {
-    it("adds a box on add element button click", function() {
-      $(".addElementBtn").click();
-      return expect($(".editor").find('.ppedit-box')).toHaveLength(1);
+    it("adds a box when clicking the add element button once", function() {
+      return addBox(1);
+    });
+    it("adds multiples boxes when clicking the add element button multiple times", function() {
+      return addBox(10);
+    });
+    it("adds a box when doubleclicking the container", function() {
+      $(".ppedit-box-container").simulate('dblclick');
+      return expect($('.ppedit-box')).toHaveLength(1);
+    });
+    it("adds 2 boxes when doubleclicking the container twice", function() {
+      $(".ppedit-box-container").simulate('dblclick');
+      $(".ppedit-box-container").simulate('dblclick');
+      return expect($('.ppedit-box')).toHaveLength(2);
     });
     return it("repositions elements with the mouse", function() {
-      $(".addElementBtn").click();
-      $(".addElementBtn").click();
-      expect($(".editor").find('.ppedit-box')).toHaveLength(2);
+      addBox(2);
       moveBox($('.ppedit-box'), {
         dx: 150,
         dy: 180
@@ -175,8 +177,8 @@
     });
   });
 
-  ppeditDescribe("A test for issue CAP-114 : As a user, I want to be able to enter text inside an element", function() {
-    return it("can enter text inside a Box", function() {
+  ppeditDescribe('A test for issue CAP-116 : "Cannot Undo Box moved" bug.', function() {
+    return it("can undo a box move command", function() {
       var box;
       addBox(1);
       box = $('.ppedit-box');
@@ -184,13 +186,40 @@
         dx: 0,
         dy: 200
       });
-      box.simulate('dblclick', {
-        clientX: viewPortPosition(box).left,
-        clientY: viewPortPosition(box).top
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "meta+z"
       });
-      expect(box.get(0)).toEqual(document.activeElement);
-      box.val('Lorem ipsum dolor sin amet');
-      return expect(box).toHaveValue('Lorem ipsum dolor sin amet');
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "ctrl+z"
+      });
+      expect($('.ppedit-box')).toHaveLength(1);
+      return expect(box.position()).toBeEqualToPosition({
+        top: 50,
+        left: 50
+      });
+    });
+  });
+
+  ppeditDescribe("A test for issue CAP-114 : As a user, I want to be able to enter text inside an element", function() {
+    return it("can enter text inside a Box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      box.simulate('dblclick');
+      expect(box).toBeFocused();
+      return box.simulate("key-sequence", {
+        sequence: "Lorem ipsum dolor sin amet",
+        callback: function() {
+          return expect(box).toHaveHtml('Lorem ipsum dolor sin amet');
+        }
+      });
+    });
+  });
+
+  ppeditDescribe("A test for issue CAP-25 : As a user, I want to name my document, so that I can distinguish between my documents", function() {
+    return it("can input text inside the textarea to name document", function() {
+      $('.addElementBtn').val('documentName');
+      return expect($('.addElementBtn')).toHaveValue('documentName');
     });
   });
 

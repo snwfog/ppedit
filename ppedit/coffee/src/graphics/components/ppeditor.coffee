@@ -6,17 +6,20 @@
 #= require CommandManager
 #= require ControllerFactory
 #= require RemoveBoxesCommand
-#= require CreateBoxCommand
+#= require CreateBoxesCommand
+#= require Clipboard
 
 class PPEditor extends Graphic
 
   constructor: (@root) ->
     super @root
 
-    @controller = undefined
+    @clipboard = new Clipboard
     @commandManager = new CommandManager
+    @controller = undefined
     @area = undefined
     @panel = undefined
+
 
   buildElement: ->
     @element = $('
@@ -49,9 +52,16 @@ class PPEditor extends Graphic
       .on 'requestDelete', (event) =>
         @commandManager.pushCommand new RemoveBoxesCommand this, @area.boxesContainer.getSelectedBoxes()
 
+      .on 'requestCopy', (event) =>
+        @clipboard.saveItemsStyle @area.boxesContainer.getSelectedBoxes()
+
+      .on 'requestPaste', (event) =>
+        if @clipboard.itemsStyles.length != 0
+          @commandManager.pushCommand new CreateBoxesCommand this, @clipboard.itemsStyles
+
     @element.find('.row')
       .on 'panelClickAddBtnClick', (event) =>
-        @commandManager.pushCommand new CreateBoxCommand this
+        @commandManager.pushCommand new CreateBoxesCommand this
 
       .on 'panelClickGridBtnClick', (event) =>
         @area.grid.toggleGrid()
@@ -66,7 +76,7 @@ class PPEditor extends Graphic
         @area.boxesContainer.chageBoxOpacity(boxId, opacityVal)
 
       .on 'addBoxRequested', (event, boxCssOptions) =>
-        @commandManager.pushCommand new CreateBoxCommand this, boxCssOptions
+        @commandManager.pushCommand new CreateBoxesCommand this, [boxCssOptions]
 
       .on 'fontTypeChanged', (event, newFontType) =>
         @commandManager.pushCommand new ChangeFontTypeCommand this, newFontType, @area.boxesContainer.getSelectedBoxes()

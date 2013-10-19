@@ -1,11 +1,6 @@
+#= require KeyCodes
+
 class MacController
-
-  @COMMAND_LEFT_KEY_CODE: 91 # only on WebKit
-  @COMMAND_RIGHT_KEY_CODE: 93 # only on WebKit
-
-  @Z_KEY_CODE: 90
-  @Y_KEY_CODE: 89
-  @DELETE_KEY_CODE: 8
 
   constructor: (@root) ->
     @leftCmdKeyPressed = false
@@ -15,29 +10,33 @@ class MacController
     @root
       .keydown (event) =>
 
-        if event.keyCode == MacController.COMMAND_LEFT_KEY_CODE
+        if event.keyCode == KeyCodes.MAC_CMD_LEFT
           @leftCmdKeyPressed = true
 
-        else if event.keyCode == MacController.COMMAND_RIGHT_KEY_CODE
+        else if event.keyCode == KeyCodes.MAC_CMD_RIGHT
           @rightCmdKeyPressed = true
 
-        else if event.keyCode == MacController.Z_KEY_CODE && @_cmdKeyIsPressed()
+        else if event.keyCode == KeyCodes.Z && @_cmdKeyIsPressed()
           event.preventDefault()
           @root.trigger 'requestUndo'
 
-        else if event.keyCode == MacController.Y_KEY_CODE && @_cmdKeyIsPressed()
+        else if event.keyCode == KeyCodes.Y && @_cmdKeyIsPressed()
           event.preventDefault()
           @root.trigger 'requestRedo'
 
-        else if event.keyCode == MacController.DELETE_KEY_CODE && @_cmdKeyIsPressed()
+        else if event.keyCode == KeyCodes.C && @_cmdKeyIsPressed()
           event.preventDefault()
-          @root.trigger 'requestDelete'
+          @root.trigger 'requestCopy'
+
+        else if event.keyCode == KeyCodes.P && @_cmdKeyIsPressed()
+          event.preventDefault()
+          @root.trigger 'requestPaste'
 
       .keyup (event) =>
-        if event.keyCode == MacController.COMMAND_LEFT_KEY_CODE
+        if event.keyCode == KeyCodes.MAC_CMD_LEFT
           @leftCmdKeyPressed = false
 
-        if event.keyCode == MacController.COMMAND_RIGHT_KEY_CODE
+        if event.keyCode == KeyCodes.MAC_CMD_RIGHT
           @rightCmdKeyPressed = false
 
   _cmdKeyIsPressed: ->
