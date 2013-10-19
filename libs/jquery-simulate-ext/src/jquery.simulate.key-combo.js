@@ -27,8 +27,7 @@
 		SHIFT:		16,
 		CONTROL:	17,
 		ALT:		18,
-		COMMAND:	91,
-        DELETE:     46  
+		COMMAND:	91
 	};
 
 	$.extend( $.simulate.prototype,
@@ -86,13 +85,11 @@
 					case "alt":
 					case "shift":
 					case "meta":
-                    case "del":
 						switch (keyLowered) {
 						case "ctrl":	keyCode = ModifierKeyCodes.CONTROL; break;
 						case "alt":		keyCode = ModifierKeyCodes.ALT; break;
 						case "shift":	keyCode = ModifierKeyCodes.SHIFT; break;
 						case "meta":	keyCode = ModifierKeyCodes.COMMAND; break;
-                        case "del":     keyCode = ModifierKeyCodes.DELETE; break;
 						}
 						eventOptions[keyLowered+"Key"] = true;
 						holdKeys.unshift(keyCode);
@@ -100,11 +97,11 @@
 						target.simulate("keydown", eventOptions);
 						break;
 					default:
-						if (key.length > 1) {
+						if (key.length > 1 && !key.match(/^\d+$/)) {
 							throw 'Syntax error: expecting "+" between each key';
 						}
 						else {
-							keyCode = $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(key);
+							keyCode = key.match(/^\d+$/) ? parseInt(key) : $.simulate.prototype.simulateKeySequence.prototype.charToKeyCode(key);
 							holdKeys.unshift(keyCode);
 							eventOptions.keyCode = keyCode;
 							eventOptions.which = keyCode;

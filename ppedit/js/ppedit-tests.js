@@ -263,11 +263,12 @@
     return it("deletes a box when clicking on ctrl+delete", function() {
       addBox(1);
       $('.ppedit-box').simulate('click');
-      $('.editor').simulate('key-combo', {
-        combo: 'ctrl+del'
+      expect($('.ppedit-box-selected')).toHaveLength(1);
+      $('.ppedit-box-container').simulate('key-combo', {
+        combo: 'ctrl+46'
       });
-      $('.editor').simulate('key-combo', {
-        combo: 'meta+del'
+      $('.ppedit-box-container').simulate('key-combo', {
+        combo: 'meta+8'
       });
       return expect($('.ppedit-box')).toHaveLength(0);
     });

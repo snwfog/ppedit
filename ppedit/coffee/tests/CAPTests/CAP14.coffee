@@ -27,8 +27,10 @@ ppeditDescribe "A test for issue CAP-14 : As a user, I want to reposition elemen
     addBox 1
 
     $('.ppedit-box').simulate 'click'
+    expect($('.ppedit-box-selected')).toHaveLength(1)
 
-    $('.editor').simulate 'key-combo', {combo: 'ctrl+del'}; # If windows
-    $('.editor').simulate 'key-combo', {combo: 'meta+del'}; # If mac
+    # Simulating ctrl + delete
+    $('.ppedit-box-container').simulate 'key-combo', {combo: 'ctrl+46'}; # If Windows
+    $('.ppedit-box-container').simulate 'key-combo', {combo: 'meta+8'}; # If Mac
 
     expect($('.ppedit-box')).toHaveLength(0)

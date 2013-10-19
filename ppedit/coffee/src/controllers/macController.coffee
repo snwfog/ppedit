@@ -24,6 +24,10 @@ class MacController
           event.preventDefault()
           @root.trigger 'requestRedo'
 
+        else if event.keyCode == KeyCodes.MAC_DELETE && @_cmdKeyIsPressed()
+          event.preventDefault()
+          @root.trigger 'requestDelete'
+
         else if event.keyCode == KeyCodes.C && @_cmdKeyIsPressed()
           event.preventDefault()
           @root.trigger 'requestCopy'
