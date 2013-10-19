@@ -18,16 +18,16 @@ class Box extends Graphic
     , @options);
 
     @element = $('<div></div>')
-    .addClass('ppedit-box')
-    .attr('tabindex', 0)
-    .css('font-family', 'Times New Roman')
-    .css('font-size', '100%')
-    .css('font-weight', 'normal')
-    .css('text-decoration', 'none')
-    .css('font-style', 'normal')
-    .attr('contenteditable', true)
-    .attr('id', $.now())
-    .css(settings)
+      .addClass('ppedit-box')
+      .attr('tabindex', 0)
+      .css('font-family', 'Times New Roman')
+      .css('font-size', '100%')
+      .css('font-weight', 'normal')
+      .css('text-decoration', 'none')
+      .css('font-style', 'normal')
+      .attr('contenteditable', true)
+      .attr('id', $.now())
+      .css(settings)
 
   bindEvents: ->
     @element
@@ -36,7 +36,7 @@ class Box extends Graphic
         event.preventDefault()
 
       .click (event) =>
-        # event.stopPropagation()
+        event.stopPropagation()
         event.preventDefault()
         @toggleSelect()
 

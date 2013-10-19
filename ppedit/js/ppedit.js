@@ -5,7 +5,11 @@ Abstract Class, represents an Dom node
 
 
 (function() {
+<<<<<<< HEAD
   var Box, BoxesContainer, Canvas, ChangeFontSizeCommand, ChangeFontTypeCommand, ChangeFontWeightCommand, Clipboard, CommandManager, ControllerFactory, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, ItalicFontCommand, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand, UnderlineFontCommand,
+=======
+  var Box, BoxesContainer, Canvas, ChangeFontSizeCommand, ChangeFontTypeCommand, ChangeFontWeightCommand, Clipboard, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, ItalicFontCommand, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand, UnderlineFontCommand,
+>>>>>>> 1f132217acf2a12dd87cf02f71e503df5f56aeb9
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -104,6 +108,7 @@ Abstract Class, represents an Dom node
         event.stopPropagation();
         return event.preventDefault();
       }).click(function(event) {
+        event.stopPropagation();
         event.preventDefault();
         return _this.toggleSelect();
       }).dblclick(function(event) {
@@ -111,6 +116,12 @@ Abstract Class, represents an Dom node
         event.preventDefault();
         _this.stopMoving();
         return _this.toggleFocus();
+      }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
+        if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
+          return _this.move(delta.x, delta.y);
+        }
+      }).on('containerMouseLeave', function() {
+        return _this.stopMoving();
       }).on('containerKeyDown', function(event, keyDownEvent) {
         if (_this.element.hasClass('ppedit-box-selected')) {
           return _this._processKeyDownEvent(keyDownEvent);
@@ -219,55 +230,6 @@ Abstract Class, represents an Dom node
 
   })(Graphic);
 
-  UnderlineFontCommand = (function() {
-    function UnderlineFontCommand(editor, boxesSelector) {
-      var box, boxArray;
-      this.editor = editor;
-      this.prevStatus = {};
-      boxArray = boxesSelector.toArray();
-      this.boxIds = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = boxArray.length; _i < _len; _i++) {
-          box = boxArray[_i];
-          _results.push(box.id);
-        }
-        return _results;
-      })();
-      this.boxes = this.editor.area.boxesContainer.getBoxesFromIds(this.boxIds);
-    }
-
-    UnderlineFontCommand.prototype.execute = function() {
-      var box, _i, _len, _ref, _results;
-      _ref = this.boxes;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        this.prevStatus[box] = box.element.css('text-decoration');
-        if (box.element.css('text-decoration') === 'underline') {
-          _results.push(box.element.css('text-decoration', 'none'));
-        } else {
-          _results.push(box.element.css('text-decoration', 'underline'));
-        }
-      }
-      return _results;
-    };
-
-    UnderlineFontCommand.prototype.undo = function() {
-      var box, _i, _len, _ref, _results;
-      _ref = this.boxes;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        _results.push(box.element.css('text-decoration', this.prevStatus[box]));
-      }
-      return _results;
-    };
-
-    return UnderlineFontCommand;
-
-  })();
-
   RemoveBoxesCommand = (function() {
     function RemoveBoxesCommand(editor, boxesSelector) {
       var box, boxArray;
@@ -335,55 +297,6 @@ Abstract Class, represents an Dom node
 
   })();
 
-  ItalicFontCommand = (function() {
-    function ItalicFontCommand(editor, boxesSelector) {
-      var box, boxArray;
-      this.editor = editor;
-      this.prevStatus = {};
-      boxArray = boxesSelector.toArray();
-      this.boxIds = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = boxArray.length; _i < _len; _i++) {
-          box = boxArray[_i];
-          _results.push(box.id);
-        }
-        return _results;
-      })();
-      this.boxes = this.editor.area.boxesContainer.getBoxesFromIds(this.boxIds);
-    }
-
-    ItalicFontCommand.prototype.execute = function() {
-      var box, _i, _len, _ref, _results;
-      _ref = this.boxes;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        this.prevStatus[box] = box.element.css('font-style');
-        if (box.element.css('font-style') === 'italic') {
-          _results.push(box.element.css('font-style', 'normal'));
-        } else {
-          _results.push(box.element.css('font-style', 'italic'));
-        }
-      }
-      return _results;
-    };
-
-    ItalicFontCommand.prototype.undo = function() {
-      var box, _i, _len, _ref, _results;
-      _ref = this.boxes;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        _results.push(box.element.css('font-style', this.prevStatus[box]));
-      }
-      return _results;
-    };
-
-    return ItalicFontCommand;
-
-  })();
-
   /*
   A command that creates one or more boxes with the passed options
   ands adds it to the list.
@@ -406,7 +319,6 @@ Abstract Class, represents an Dom node
 
     CreateBoxesCommand.prototype.execute = function() {
       var box, options, _i, _j, _len, _len1, _ref, _ref1, _results;
-      console.log(this.optionsList);
       if (this.optionsList != null) {
         if (this.boxes.length === 0) {
           _ref = this.optionsList;
@@ -454,6 +366,50 @@ Abstract Class, represents an Dom node
     };
 
     return CreateBoxesCommand;
+
+  })();
+
+  CopyBoxesCommand = (function() {
+    function CopyBoxesCommand(editor, boxesClones) {
+      this.editor = editor;
+      this.boxesClones = boxesClones;
+      this.newBoxes = [];
+    }
+
+    CopyBoxesCommand.prototype.execute = function() {
+      var box, i, _i, _ref, _results,
+        _this = this;
+      if (this.newBoxes.length === 0) {
+        this.boxesClones.each(function(index, boxItem) {
+          var box, boxOptions;
+          boxOptions = CSSJSON.toJSON(boxItem.style.cssText).attributes;
+          box = new Box(_this.editor.area.boxesContainer.element, boxOptions);
+          return _this.newBoxes[index] = box;
+        });
+      }
+      _results = [];
+      for (i = _i = 0, _ref = this.newBoxes.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        box = this.newBoxes[i];
+        this.editor.area.boxesContainer.addBox(box);
+        box.element.html(this.boxesClones.eq(i).html());
+        _results.push(this.editor.panel.addBoxRow(box.element.attr('id')));
+      }
+      return _results;
+    };
+
+    CopyBoxesCommand.prototype.undo = function() {
+      var box, _i, _len, _ref, _results;
+      _ref = this.newBoxes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        this.editor.area.boxesContainer.removeBoxes([box.element.attr('id')]);
+        _results.push(this.editor.panel.removeBoxRow([box.element.attr('id')]));
+      }
+      return _results;
+    };
+
+    return CopyBoxesCommand;
 
   })();
 
@@ -666,6 +622,107 @@ Abstract Class, represents an Dom node
 
   })();
 
+<<<<<<< HEAD
+=======
+  UnderlineFontCommand = (function() {
+    function UnderlineFontCommand(editor, boxesSelector) {
+      var box, boxArray;
+      this.editor = editor;
+      this.prevStatus = {};
+      boxArray = boxesSelector.toArray();
+      this.boxIds = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = boxArray.length; _i < _len; _i++) {
+          box = boxArray[_i];
+          _results.push(box.id);
+        }
+        return _results;
+      })();
+      this.boxes = this.editor.area.boxesContainer.getBoxesFromIds(this.boxIds);
+    }
+
+    UnderlineFontCommand.prototype.execute = function() {
+      var box, _i, _len, _ref, _results;
+      _ref = this.boxes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        this.prevStatus[box] = box.element.css('text-decoration');
+        if (box.element.css('text-decoration') === 'underline') {
+          _results.push(box.element.css('text-decoration', 'none'));
+        } else {
+          _results.push(box.element.css('text-decoration', 'underline'));
+        }
+      }
+      return _results;
+    };
+
+    UnderlineFontCommand.prototype.undo = function() {
+      var box, _i, _len, _ref, _results;
+      _ref = this.boxes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        _results.push(box.element.css('text-decoration', this.prevStatus[box]));
+      }
+      return _results;
+    };
+
+    return UnderlineFontCommand;
+
+  })();
+
+  ItalicFontCommand = (function() {
+    function ItalicFontCommand(editor, boxesSelector) {
+      var box, boxArray;
+      this.editor = editor;
+      this.prevStatus = {};
+      boxArray = boxesSelector.toArray();
+      this.boxIds = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = boxArray.length; _i < _len; _i++) {
+          box = boxArray[_i];
+          _results.push(box.id);
+        }
+        return _results;
+      })();
+      this.boxes = this.editor.area.boxesContainer.getBoxesFromIds(this.boxIds);
+    }
+
+    ItalicFontCommand.prototype.execute = function() {
+      var box, _i, _len, _ref, _results;
+      _ref = this.boxes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        this.prevStatus[box] = box.element.css('font-style');
+        if (box.element.css('font-style') === 'italic') {
+          _results.push(box.element.css('font-style', 'normal'));
+        } else {
+          _results.push(box.element.css('font-style', 'italic'));
+        }
+      }
+      return _results;
+    };
+
+    ItalicFontCommand.prototype.undo = function() {
+      var box, _i, _len, _ref, _results;
+      _ref = this.boxes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        _results.push(box.element.css('font-style', this.prevStatus[box]));
+      }
+      return _results;
+    };
+
+    return ItalicFontCommand;
+
+  })();
+
+>>>>>>> 1f132217acf2a12dd87cf02f71e503df5f56aeb9
   /*
   Helper Class that provides static constants to keyboard keycodes.
   */
@@ -712,7 +769,15 @@ Abstract Class, represents an Dom node
         }
         if (event.keyCode === KeyCodes.DELETE || (event.keyCode === KeyCodes.DELETE && event.ctrlKey)) {
           event.preventDefault();
-          return _this.root.trigger('requestDelete');
+          _this.root.trigger('requestDelete');
+        }
+        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+          event.preventDefault();
+          _this.root.trigger('requestCopy');
+        }
+        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+          event.preventDefault();
+          return _this.root.trigger('requestPaste');
         }
       });
     };
@@ -1337,15 +1402,11 @@ Abstract Class, represents an Dom node
 
   Clipboard = (function() {
     function Clipboard() {
-      this.itemsStyles = [];
+      this.items = void 0;
     }
 
     Clipboard.prototype.saveItemsStyle = function(newItems) {
-      var _this = this;
-      this.itemsStyles = [];
-      return newItems.each(function(index, item) {
-        return _this.itemsStyles.push(CSSJSON.toJSON(item.style.cssText).attributes);
-      });
+      return this.items = newItems.clone();
     };
 
     return Clipboard;
@@ -1393,8 +1454,8 @@ Abstract Class, represents an Dom node
       }).on('requestCopy', function(event) {
         return _this.clipboard.saveItemsStyle(_this.area.boxesContainer.getSelectedBoxes());
       }).on('requestPaste', function(event) {
-        if (_this.clipboard.itemsStyles.length !== 0) {
-          return _this.commandManager.pushCommand(new CreateBoxesCommand(_this, _this.clipboard.itemsStyles));
+        if (_this.clipboard.items.length !== 0) {
+          return _this.commandManager.pushCommand(new CopyBoxesCommand(_this, _this.clipboard.items));
         }
       });
       this.element.find('.row').on('panelClickAddBtnClick', function(event) {

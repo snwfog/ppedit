@@ -146,8 +146,6 @@ class BoxesContainer extends Graphic
       @boxes[id].element
         .css("font-size", newFontSize)
 
-
-
   getPointClicked: (mouseEvent) ->
     return {
       left:event.offsetX + @element.scrollLeft()

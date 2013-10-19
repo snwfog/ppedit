@@ -1,9 +1,7 @@
 class Clipboard
 
   constructor: ->
-    @itemsStyles = []
+    @items = undefined
 
   saveItemsStyle: (newItems) ->
-    @itemsStyles = []
-    newItems.each (index, item) =>
-      @itemsStyles.push CSSJSON.toJSON(item.style.cssText).attributes
+    @items = newItems.clone()

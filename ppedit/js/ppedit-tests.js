@@ -111,6 +111,61 @@
     });
   });
 
+  ppeditDescribe('A test for issue "CAP-48 : As a user, I want to copy and paste aggregate elements in my work area"', function() {
+    it("copies and past one box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      box.simulate('click');
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "meta+c"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "meta+v"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "ctrl+c"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "ctrl+v"
+      });
+      return expect($('.ppedit-box')).toHaveLength(2);
+    });
+    return it("copies and past multiple boxes", function() {
+      var boxes, canvas;
+      addBox(2);
+      boxes = $('.ppedit-box');
+      moveBox(boxes.eq(0), {
+        dx: 200,
+        dy: 0
+      });
+      canvas = $('.ppedit-canvas');
+      selectRectangle(canvas, {
+        topLeft: {
+          left: viewPortPosition(canvas).left + 49,
+          top: viewPortPosition(canvas).top + 49
+        },
+        size: {
+          width: 500,
+          height: 100
+        }
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "meta+c"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "meta+v"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "ctrl+c"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "ctrl+v"
+      });
+      return expect($('.ppedit-box')).toHaveLength(4);
+    });
+  });
+
   ppeditDescribe("A test for issue CAP-47 : As a user, I want to select and move aggregated elements in my workspace", function() {
     return it("can select and move elements in the workspace", function() {
       var boxes, canvas;
@@ -139,6 +194,36 @@
         }
       });
       return expect($('.ppedit-box-selected')).toHaveLength(2);
+    });
+  });
+
+  ppeditDescribe("A test for issue CAP-44 : As a user,  I want options to show or hide the grid, and snap or unsnap my elements in the work area.", function() {
+    return it("adds a box on grid button click", function() {
+      expect($(".ppedit-grid")).toHaveCss({
+        display: "block"
+      });
+      $(".gridElementBtn").click();
+      return expect($(".ppedit-grid")).toHaveCss({
+        display: "none"
+      });
+    });
+  });
+
+  ppeditDescribe("A test for issue CAP-42 : As a user, I want to change the opacity of elements in my work area.", function() {
+    return it("drag the slider button to change the box opacity", function() {});
+  });
+
+  ppeditDescribe("A test for issue CAP-25 : As a user, I want to name my document, so that I can distinguish between my documents", function() {
+    return it("can input text inside the textarea to name document", function() {
+      $('.addElementBtn').val('documentName');
+      return expect($('.addElementBtn')).toHaveValue('documentName');
+    });
+  });
+
+  ppeditDescribe("A test for issue CAP-20 : As a user, I want to clean my work area, so that I can start on a fresh new page, but I want to be able to remedy in the case of a mistake.", function() {
+    return it(" remove boxes when delete element button click", function() {
+      $(".removeElementBtn").click();
+      return expect($(".editor").find('.ppedit-box')).toHaveLength(0);
     });
   });
 
@@ -213,44 +298,6 @@
           return expect(box).toHaveHtml('Lorem ipsum dolor sin amet');
         }
       });
-    });
-  });
-
-  ppeditDescribe("A test for issue CAP-25 : As a user, I want to name my document, so that I can distinguish between my documents", function() {
-    return it("can input text inside the textarea to name document", function() {
-      $('.addElementBtn').val('documentName');
-      return expect($('.addElementBtn')).toHaveValue('documentName');
-    });
-  });
-
-  ppeditDescribe("A test for issue CAP-44 : As a user,  I want options to show or hide the grid, and snap or unsnap my elements in the work area.", function() {
-    return it("adds a box on grid button click", function() {
-      expect($(".ppedit-grid")).toHaveCss({
-        display: "block"
-      });
-      $(".gridElementBtn").click();
-      return expect($(".ppedit-grid")).toHaveCss({
-        display: "none"
-      });
-    });
-  });
-
-  ppeditDescribe("A test for issue CAP-42 : As a user, I want to change the opacity of elements in my work area.", function() {
-    return it("drag the slider button to change the box opacity", function() {
-      return expect($(".editor").find('.ppedit-box')).toHaveLength(1);
-    });
-  });
-
-  ppeditDescribe("A test for issue CAP-20 : As a user, I want to clean my work area, so that I can start on a fresh new page, but I want to be able to remedy in the case of a mistake.", function() {
-    return it(" remove boxes when delete element button click", function() {
-      $(".removeElementBtn").click();
-      return expect($(".editor").find('.ppedit-box')).toHaveLength(0);
-    });
-  });
-
-  ppeditDescribe("A test for issue CAP-15 : As a user, I want to resize the bounding box of elements on my work area.", function() {
-    return it("resize bounding boxof elements", function() {
-      return expect($(".editor").find('.ppedit-box')).toHaveLength(1);
     });
   });
 

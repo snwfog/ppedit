@@ -5,4 +5,4 @@ ppeditDescribe "A test for issue CAP-42 : As a user, I want to change the opacit
   it "drag the slider button to change the box opacity", ->
 
     # $(".ppedit-slider").click()
-    expect($(".editor").find('.ppedit-box')).toHaveLength(1)
+    # expect($(".editor").find('.ppedit-box')).toHaveLength(1)
