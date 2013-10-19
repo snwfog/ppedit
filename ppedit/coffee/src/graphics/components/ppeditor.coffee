@@ -10,6 +10,11 @@
 #= require Clipboard
 #= require CopyBoxesCommand
 #= require ChangeFontWeightCommand
+#= require ChangeFontSizeCommand
+#= require ChangeFontTypeCommand
+#= require UnderlineFontCommand
+#= require ItalicFontCommand
+#= require UnderlineFontCommand
 
 class PPEditor extends Graphic
 
@@ -81,10 +86,10 @@ class PPEditor extends Graphic
         @commandManager.pushCommand new CreateBoxesCommand this, [boxCssOptions]
 
       .on 'fontTypeChanged', (event, newFontType) =>
-        @commandManager.pushCommand new ChangeFontTypeCommand this, newFontType, @area.boxesContainer.getSelectedBoxes()
+        @commandManager.pushCommand new ChangeFontTypeCommand this, @area.boxesContainer.getSelectedBoxes(), newFontType
 
       .on 'fontSizeChanged', (event, newFontSize) =>
-        @commandManager.pushCommand new ChangeFontSizeCommand this, newFontSize, @area.boxesContainer.getSelectedBoxes()
+        @commandManager.pushCommand new ChangeFontSizeCommand this, @area.boxesContainer.getSelectedBoxes(), newFontSize
 
       .on 'fontWeightBtnEnableClick', (event) =>
         @commandManager.pushCommand new ChangeFontWeightCommand this, @area.boxesContainer.getSelectedBoxes(), true
@@ -92,11 +97,17 @@ class PPEditor extends Graphic
       .on 'fontWeightBtnDisableClick', (event) =>
         @commandManager.pushCommand new ChangeFontWeightCommand this, @area.boxesContainer.getSelectedBoxes(), false
 
-      .on 'fontUnderlined', (event) =>
-        @commandManager.pushCommand new UnderlineFontCommand this, @area.boxesContainer.getSelectedBoxes()
-    
-      .on 'fontItalic', (event) =>
-        @commandManager.pushCommand new ItalicFontCommand this, @area.boxesContainer.getSelectedBoxes()
+      .on 'fontUnderlinedBtnEnableClick', (event) =>
+        @commandManager.pushCommand new UnderlineFontCommand this, @area.boxesContainer.getSelectedBoxes(), true
+
+      .on 'fontUnderlinedBtnDisableClick', (event) =>
+        @commandManager.pushCommand new UnderlineFontCommand this, @area.boxesContainer.getSelectedBoxes(), false
+
+      .on 'fontItalicBtnEnableClick', (event) =>
+        @commandManager.pushCommand new ItalicFontCommand this, @area.boxesContainer.getSelectedBoxes(), true
+
+      .on 'fontItalicBtnDisableClick', (event) =>
+        @commandManager.pushCommand new ItalicFontCommand this, @area.boxesContainer.getSelectedBoxes(), false
 
     @area.boxesContainer.element
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
