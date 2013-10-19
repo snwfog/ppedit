@@ -5,16 +5,8 @@
 #= require Box
 #= require CommandManager
 #= require ControllerFactory
-#= require RemoveBoxesCommand
-#= require CreateBoxesCommand
 #= require Clipboard
-#= require CopyBoxesCommand
-#= require ChangeFontWeightCommand
-#= require ChangeFontSizeCommand
-#= require ChangeFontTypeCommand
-#= require UnderlineFontCommand
-#= require ItalicFontCommand
-#= require UnderlineFontCommand
+#= require CommandFactory
 
 class PPEditor extends Graphic
 
@@ -23,6 +15,8 @@ class PPEditor extends Graphic
 
     @clipboard = new Clipboard
     @commandManager = new CommandManager
+    @cmdFactory = new CommandFactory
+
     @controller = undefined
     @area = undefined
     @panel = undefined
@@ -57,61 +51,61 @@ class PPEditor extends Graphic
         @commandManager.redo()
 
       .on 'requestDelete', (event) =>
-        @commandManager.pushCommand new RemoveBoxesCommand this, @area.boxesContainer.getSelectedBoxes()
+        @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, @area.boxesContainer.getSelectedBoxes())
 
       .on 'requestCopy', (event) =>
         @clipboard.saveItemsStyle @area.boxesContainer.getSelectedBoxes()
 
       .on 'requestPaste', (event) =>
         if @clipboard.items.length != 0
-          @commandManager.pushCommand new CopyBoxesCommand this, @clipboard.items
+          @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, @clipboard.items)
 
     @element.find('.row')
       .on 'panelClickAddBtnClick', (event) =>
-        @commandManager.pushCommand new CreateBoxesCommand this
+        @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this)
 
       .on 'panelClickGridBtnClick', (event) =>
         @area.grid.toggleGrid()
     
       .on 'panelClickClearAllBtnClick', (event) =>
-        @commandManager.pushCommand new RemoveBoxesCommand this, @area.boxesContainer.getAllBoxes()
+        @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, @area.boxesContainer.getAllBoxes())
     
       .on 'onRowDeleteBtnClick', (event, boxId) =>
-        @commandManager.pushCommand new RemoveBoxesCommand this, @root.find('#' + boxId)
+        @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, @root.find('#' + boxId))
 
       .on 'onRowSliderValChanged', (event, boxId, opacityVal) =>
         @area.boxesContainer.chageBoxOpacity(boxId, opacityVal)
 
       .on 'addBoxRequested', (event, boxCssOptions) =>
-        @commandManager.pushCommand new CreateBoxesCommand this, [boxCssOptions]
+        @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, [boxCssOptions])
 
       .on 'fontTypeChanged', (event, newFontType) =>
-        @commandManager.pushCommand new ChangeFontTypeCommand this, @area.boxesContainer.getSelectedBoxes(), newFontType
+        @commandManager.pushCommand @cmdFactory.createChangeFontTypeCommand(this, @area.boxesContainer.getSelectedBoxes(), newFontType)
 
       .on 'fontSizeChanged', (event, newFontSize) =>
-        @commandManager.pushCommand new ChangeFontSizeCommand this, @area.boxesContainer.getSelectedBoxes(), newFontSize
+        @commandManager.pushCommand @cmdFactory.createChangeFontSizeCommand(this, @area.boxesContainer.getSelectedBoxes(), newFontSize)
 
       .on 'fontWeightBtnEnableClick', (event) =>
-        @commandManager.pushCommand new ChangeFontWeightCommand this, @area.boxesContainer.getSelectedBoxes(), true
+        @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, @area.boxesContainer.getSelectedBoxes(), true)
 
       .on 'fontWeightBtnDisableClick', (event) =>
-        @commandManager.pushCommand new ChangeFontWeightCommand this, @area.boxesContainer.getSelectedBoxes(), false
+        @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, @area.boxesContainer.getSelectedBoxes(), false)
 
       .on 'fontUnderlinedBtnEnableClick', (event) =>
-        @commandManager.pushCommand new UnderlineFontCommand this, @area.boxesContainer.getSelectedBoxes(), true
+        @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, @area.boxesContainer.getSelectedBoxes(), true)
 
       .on 'fontUnderlinedBtnDisableClick', (event) =>
-        @commandManager.pushCommand new UnderlineFontCommand this, @area.boxesContainer.getSelectedBoxes(), false
+        @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, @area.boxesContainer.getSelectedBoxes(), false)
 
       .on 'fontItalicBtnEnableClick', (event) =>
-        @commandManager.pushCommand new ItalicFontCommand this, @area.boxesContainer.getSelectedBoxes(), true
+        @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, @area.boxesContainer.getSelectedBoxes(), true)
 
       .on 'fontItalicBtnDisableClick', (event) =>
-        @commandManager.pushCommand new ItalicFontCommand this, @area.boxesContainer.getSelectedBoxes(), false
+        @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, @area.boxesContainer.getSelectedBoxes(), false)
 
     @area.boxesContainer.element
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
-        @commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)
+        @commandManager.pushCommand(@cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false)
 
     @area.bindEvents()
     @panel.bindEvents()
