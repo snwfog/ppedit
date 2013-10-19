@@ -159,7 +159,7 @@
       $(".ppedit-box-container").simulate('dblclick');
       return expect($('.ppedit-box')).toHaveLength(1);
     });
-    it("adds 2 box when doubleclicking the container twice", function() {
+    it("adds 2 boxes when doubleclicking the container twice", function() {
       $(".ppedit-box-container").simulate('dblclick');
       $(".ppedit-box-container").simulate('dblclick');
       return expect($('.ppedit-box')).toHaveLength(2);

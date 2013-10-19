@@ -7,16 +7,19 @@
 #= require ControllerFactory
 #= require RemoveBoxesCommand
 #= require CreateBoxesCommand
+#= require Clipboard
 
 class PPEditor extends Graphic
 
   constructor: (@root) ->
     super @root
 
-    @controller = undefined
+    @clipboard = new Clipboard
     @commandManager = new CommandManager
+    @controller = undefined
     @area = undefined
     @panel = undefined
+
 
   buildElement: ->
     @element = $('
@@ -48,6 +51,13 @@ class PPEditor extends Graphic
 
       .on 'requestDelete', (event) =>
         @commandManager.pushCommand new RemoveBoxesCommand this, @area.boxesContainer.getSelectedBoxes()
+
+      .on 'requestCopy', (event) =>
+        @clipboard.saveItemsStyle @area.boxesContainer.getSelectedBoxes()
+
+      .on 'requestPaste', (event) =>
+        if @clipboard.itemsStyles.length != 0
+          @commandManager.pushCommand new CreateBoxesCommand this, @clipboard.itemsStyles
 
     @element.find('.row')
       .on 'panelClickAddBtnClick', (event) =>

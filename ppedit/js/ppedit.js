@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, CommandManager, ControllerFactory, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+  var Box, BoxesContainer, Canvas, Clipboard, CommandManager, ControllerFactory, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -302,7 +302,7 @@ Abstract Class, represents an Dom node
   CreateBoxesCommand = (function() {
     /*
     Creates a command that, when executed, will create
-    one or more boxes with a passed list of options, one
+    one or more boxes with a passed array of options, one
     for each box to create and add it to the list of current boxes.
     If no optionsList is passed, only one box is created with the default options.
     */
@@ -315,6 +315,7 @@ Abstract Class, represents an Dom node
 
     CreateBoxesCommand.prototype.execute = function() {
       var box, options, _i, _j, _len, _len1, _ref, _ref1, _results;
+      console.log(this.optionsList);
       if (this.optionsList != null) {
         if (this.boxes.length === 0) {
           _ref = this.optionsList;
@@ -1013,14 +1014,32 @@ Abstract Class, represents an Dom node
 
   })(Graphic);
 
+  Clipboard = (function() {
+    function Clipboard() {
+      this.itemsStyles = [];
+    }
+
+    Clipboard.prototype.saveItemsStyle = function(newItems) {
+      var _this = this;
+      this.itemsStyles = [];
+      return newItems.each(function(index, item) {
+        return _this.itemsStyles.push(CSSJSON.toJSON(item.style.cssText).attributes);
+      });
+    };
+
+    return Clipboard;
+
+  })();
+
   PPEditor = (function(_super) {
     __extends(PPEditor, _super);
 
     function PPEditor(root) {
       this.root = root;
       PPEditor.__super__.constructor.call(this, this.root);
-      this.controller = void 0;
+      this.clipboard = new Clipboard;
       this.commandManager = new CommandManager;
+      this.controller = void 0;
       this.area = void 0;
       this.panel = void 0;
     }
@@ -1050,6 +1069,12 @@ Abstract Class, represents an Dom node
         return _this.commandManager.redo();
       }).on('requestDelete', function(event) {
         return _this.commandManager.pushCommand(new RemoveBoxesCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+      }).on('requestCopy', function(event) {
+        return _this.clipboard.saveItemsStyle(_this.area.boxesContainer.getSelectedBoxes());
+      }).on('requestPaste', function(event) {
+        if (_this.clipboard.itemsStyles.length !== 0) {
+          return _this.commandManager.pushCommand(new CreateBoxesCommand(_this, _this.clipboard.itemsStyles));
+        }
       });
       this.element.find('.row').on('panelClickAddBtnClick', function(event) {
         return _this.commandManager.pushCommand(new CreateBoxesCommand(_this));
