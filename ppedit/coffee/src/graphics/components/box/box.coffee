@@ -15,16 +15,16 @@ class Box extends Graphic
       top:'50px'
       width:'75px'
       height:'50px'
+      'font-family':'Times New Roman'
+      'font-size': '100%'
+      'font-weight': 'normal'
+      'text-decoration': 'none'
+      'font-style': 'normal'
     , @options);
 
     @element = $('<div></div>')
       .addClass('ppedit-box')
       .attr('tabindex', 0)
-      .css('font-family', 'Times New Roman')
-      .css('font-size', '100%')
-      .css('font-weight', 'normal')
-      .css('text-decoration', 'none')
-      .css('font-style', 'normal')
       .attr('contenteditable', true)
       .attr('id', $.now())
       .css(settings)

@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, ChangeFontSizeCommand, ChangeFontTypeCommand, ChangeFontWeightCommand, Clipboard, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, ItalicFontCommand, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand, UnderlineFontCommand,
+  var Box, BoxesContainer, Canvas, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -93,9 +93,14 @@ Abstract Class, represents an Dom node
         left: '50px',
         top: '50px',
         width: '75px',
-        height: '50px'
+        height: '50px',
+        'font-family': 'Times New Roman',
+        'font-size': '100%',
+        'font-weight': 'normal',
+        'text-decoration': 'none',
+        'font-style': 'normal'
       }, this.options);
-      return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).css('font-family', 'Times New Roman').css('font-size', '100%').css('font-weight', 'normal').css('text-decoration', 'none').css('font-style', 'normal').attr('contenteditable', true).attr('id', $.now()).css(settings);
+      return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('contenteditable', true).attr('id', $.now()).css(settings);
     };
 
     Box.prototype.bindEvents = function() {
@@ -565,55 +570,39 @@ Abstract Class, represents an Dom node
 
   })();
 
-  ChangeFontWeightCommand = (function() {
-    function ChangeFontWeightCommand(editor, boxesSelector) {
-      var box, boxArray;
+  ChangeStyleCommand = (function() {
+    function ChangeStyleCommand(editor, boxesSelector, newCssOptions) {
       this.editor = editor;
-      this.prevFontWeight = {};
-      boxArray = boxesSelector.toArray();
-      this.boxIds = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = boxArray.length; _i < _len; _i++) {
-          box = boxArray[_i];
-          _results.push(box.id);
-        }
-        return _results;
-      })();
-      this.boxes = this.editor.area.boxesContainer.getBoxesFromIds(this.boxIds);
+      this.newCssOptions = newCssOptions;
+      this.boxesToCopy = boxesSelector.clone();
+      this.boxes = this.editor.area.boxesContainer.getBoxesFromSelector(boxesSelector);
     }
 
-    ChangeFontWeightCommand.prototype.execute = function() {
-      var box, _i, _len, _ref, _results;
+    ChangeStyleCommand.prototype.execute = function() {
+      var box, id, _ref, _results;
       _ref = this.boxes;
       _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        this.prevFontWeight[box] = box.element.css('font-weight');
-        if (box.element.css('font-weight') === 400) {
-          _results.push(box.element.css('font-weight', 'bold'));
-        } else {
-          _results.push(box.element.css('font-weight', 'normal'));
-        }
+      for (id in _ref) {
+        box = _ref[id];
+        _results.push(box.element.css(this.newCssOptions));
       }
       return _results;
     };
 
-    ChangeFontWeightCommand.prototype.undo = function() {
-      var box, _i, _len, _ref, _results;
-      _ref = this.boxes;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        _results.push(box.element.css('font-weight', this.prevFontWeight[box]));
-      }
-      return _results;
+    ChangeStyleCommand.prototype.undo = function() {
+      var _this = this;
+      return this.boxesToCopy.each(function(index, item) {
+        var prevCssOptions;
+        prevCssOptions = CSSJSON.toJSON(_this.boxesToCopy.filter('#' + item.id).attr('style')).attributes;
+        return _this.boxes[item.id].element.css(prevCssOptions);
+      });
     };
 
-    return ChangeFontWeightCommand;
+    return ChangeStyleCommand;
 
   })();
 
+<<<<<<< HEAD
   /*
     @prevStatus = JSONCSS.toJSON{boxesSelector.style. ...}
     command = new changeboxesstylecommand(boxes, {font-weight: 'bold'})
@@ -627,92 +616,68 @@ Abstract Class, represents an Dom node
         box.element.css(json)
   */
 
+=======
+  CommandFactory = (function() {
+    function CommandFactory() {}
+>>>>>>> a3b09a85c8ebb90d6035857997ce0fbaac389843
 
-  ChangeFontTypeCommand = (function() {
-    function ChangeFontTypeCommand(editor, newFontType, boxesSelector) {
-      var box, boxArray;
-      this.editor = editor;
-      this.newFontType = newFontType;
-      this.prevFontType = {};
-      boxArray = boxesSelector.toArray();
-      this.boxIds = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = boxArray.length; _i < _len; _i++) {
-          box = boxArray[_i];
-          _results.push(box.id);
-        }
-        return _results;
-      })();
-      this.boxes = this.editor.area.boxesContainer.getBoxesFromIds(this.boxIds);
-    }
-
-    ChangeFontTypeCommand.prototype.execute = function() {
-      var box, _i, _len, _ref;
-      _ref = this.boxes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        this.prevFontType[box] = box.element.css("font-family");
-      }
-      return this.editor.area.boxesContainer.changeFontType(this.boxIds, this.newFontType);
+    CommandFactory.prototype.createChangeFontSizeCommand = function(editor, boxesSelector, newFontSize) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'font-size': newFontSize
+      });
     };
 
-    ChangeFontTypeCommand.prototype.undo = function() {
-      var box, _i, _len, _ref, _results;
-      _ref = this.boxes;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        _results.push(box.element.css("font-family", this.prevFontType[box]));
-      }
-      return _results;
+    CommandFactory.prototype.createChangeFontTypeCommand = function(editor, boxesSelector, newFontType) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'font-family': newFontType
+      });
     };
 
-    return ChangeFontTypeCommand;
-
-  })();
-
-  ChangeFontSizeCommand = (function() {
-    function ChangeFontSizeCommand(editor, newFontSize, boxesSelector) {
-      var box, boxArray;
-      this.editor = editor;
-      this.newFontSize = newFontSize;
-      this.prevFontSize = {};
-      boxArray = boxesSelector.toArray();
-      this.boxIds = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = boxArray.length; _i < _len; _i++) {
-          box = boxArray[_i];
-          _results.push(box.id);
-        }
-        return _results;
-      })();
-      this.boxes = this.editor.area.boxesContainer.getBoxesFromIds(this.boxIds);
-    }
-
-    ChangeFontSizeCommand.prototype.execute = function() {
-      var box, _i, _len, _ref;
-      _ref = this.boxes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        this.prevFontSize[box] = box.element.css("font-size");
-      }
-      return this.editor.area.boxesContainer.changeFontSize(this.boxIds, this.newFontSize);
+    CommandFactory.prototype.createChangeFontWeightCommand = function(editor, boxesSelector, enable) {
+      var fontWeightValue;
+      fontWeightValue = enable ? 'bold' : 'normal';
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'font-weight': fontWeightValue
+      });
     };
 
-    ChangeFontSizeCommand.prototype.undo = function() {
-      var box, _i, _len, _ref, _results;
-      _ref = this.boxes;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        _results.push(box.element.css("font-size", this.prevFontSize[box]));
-      }
-      return _results;
+    CommandFactory.prototype.createChangeItalicFontCommand = function(editor, boxesSelector, enable) {
+      var styleValue;
+      styleValue = enable ? 'italic' : 'normal';
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'font-style': styleValue
+      });
     };
 
+<<<<<<< HEAD
     return ChangeFontSizeCommand;
+=======
+    CommandFactory.prototype.createChangeUnderlineFontCommand = function(editor, boxesSelector, enable) {
+      var styleValue;
+      styleValue = enable ? 'underline' : 'none';
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'text-decoration': styleValue
+      });
+    };
+
+    CommandFactory.prototype.createMoveBoxCommand = function(box, toPosition, fromPosition) {
+      return new MoveBoxCommand(box, toPosition, fromPosition);
+    };
+
+    CommandFactory.prototype.createRemoveBoxesCommand = function(editor, boxesSelector) {
+      return new RemoveBoxesCommand(editor, boxesSelector);
+    };
+
+    CommandFactory.prototype.createCopyBoxesCommand = function(editor, boxesClones) {
+      return new CopyBoxesCommand(editor, boxesClones);
+    };
+
+    CommandFactory.prototype.createCreateBoxesCommand = function(editor, optionsList) {
+      return new CreateBoxesCommand(editor, optionsList);
+    };
+
+    return CommandFactory;
+>>>>>>> a3b09a85c8ebb90d6035857997ce0fbaac389843
 
   })();
 
@@ -963,7 +928,7 @@ Abstract Class, represents an Dom node
 
     /*
     Returns an array of Box objects corresponding to the
-    passed boxIds.
+    passed array of boxIds.
     */
 
 
@@ -980,6 +945,23 @@ Abstract Class, represents an Dom node
         }
         return _results;
       }).call(this);
+    };
+
+    /*
+    Returns an list of box objects corresponding to the
+    passed selector matching box elements.
+    */
+
+
+    BoxesContainer.prototype.getBoxesFromSelector = function(selector) {
+      var box, results, _i, _len, _ref;
+      results = {};
+      _ref = selector.toArray();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        results[box.id] = this.boxes[box.id];
+      }
+      return results;
     };
 
     /*
@@ -1065,6 +1047,16 @@ Abstract Class, represents an Dom node
         _results.push(this.boxes[id].element.css("font-size", newFontSize));
       }
       return _results;
+    };
+
+    /*
+    Given a box id and css option object,
+    apply the css onto to element of the passed box
+    */
+
+
+    BoxesContainer.prototype.setBoxCss = function(boxId, cssOptions) {
+      return this.boxes[boxId].element.css(cssOptions);
     };
 
     BoxesContainer.prototype.getPointClicked = function(mouseEvent) {
@@ -1340,14 +1332,20 @@ Abstract Class, represents an Dom node
         newFontSize = parseInt($(event.target).find("option:selected").val()) * 10 / 6.25 + "px";
         return _this.root.trigger('fontSizeChanged', [newFontSize]);
       });
-      this.element.find(".weightBtn").click(function() {
-        return _this.root.trigger('fontWeightChanged');
+      this.element.find(".weightBtn").click(function(event) {
+        var btn;
+        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
       });
-      this.element.find(".underlineBtn").click(function() {
-        return _this.root.trigger('fontUnderlined');
+      this.element.find(".underlineBtn").click(function(event) {
+        var btn;
+        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontUnderlinedBtnEnableClick' : 'fontUnderlinedBtnDisableClick');
       });
-      return this.element.find(".italicBtn").click(function() {
-        return _this.root.trigger('fontItalic');
+      return this.element.find(".italicBtn").click(function(event) {
+        var btn;
+        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');
       });
     };
 
@@ -1414,6 +1412,7 @@ Abstract Class, represents an Dom node
       PPEditor.__super__.constructor.call(this, this.root);
       this.clipboard = new Clipboard;
       this.commandManager = new CommandManager;
+      this.cmdFactory = new CommandFactory;
       this.controller = void 0;
       this.area = void 0;
       this.panel = void 0;
@@ -1443,39 +1442,45 @@ Abstract Class, represents an Dom node
       }).on('requestRedo', function(event) {
         return _this.commandManager.redo();
       }).on('requestDelete', function(event) {
-        return _this.commandManager.pushCommand(new RemoveBoxesCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+        return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
       }).on('requestCopy', function(event) {
         return _this.clipboard.saveItemsStyle(_this.area.boxesContainer.getSelectedBoxes());
       }).on('requestPaste', function(event) {
         if (_this.clipboard.items.length !== 0) {
-          return _this.commandManager.pushCommand(new CopyBoxesCommand(_this, _this.clipboard.items));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, _this.clipboard.items));
         }
       });
       this.element.find('.row').on('panelClickAddBtnClick', function(event) {
-        return _this.commandManager.pushCommand(new CreateBoxesCommand(_this));
+        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this));
       }).on('panelClickGridBtnClick', function(event) {
         return _this.area.grid.toggleGrid();
       }).on('panelClickClearAllBtnClick', function(event) {
-        return _this.commandManager.pushCommand(new RemoveBoxesCommand(_this, _this.area.boxesContainer.getAllBoxes()));
+        return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, _this.area.boxesContainer.getAllBoxes()));
       }).on('onRowDeleteBtnClick', function(event, boxId) {
-        return _this.commandManager.pushCommand(new RemoveBoxesCommand(_this, _this.root.find('#' + boxId)));
+        return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, _this.root.find('#' + boxId)));
       }).on('onRowSliderValChanged', function(event, boxId, opacityVal) {
         return _this.area.boxesContainer.chageBoxOpacity(boxId, opacityVal);
       }).on('addBoxRequested', function(event, boxCssOptions) {
-        return _this.commandManager.pushCommand(new CreateBoxesCommand(_this, [boxCssOptions]));
+        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this, [boxCssOptions]));
       }).on('fontTypeChanged', function(event, newFontType) {
-        return _this.commandManager.pushCommand(new ChangeFontTypeCommand(_this, newFontType, _this.area.boxesContainer.getSelectedBoxes()));
+        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontTypeCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), newFontType));
       }).on('fontSizeChanged', function(event, newFontSize) {
-        return _this.commandManager.pushCommand(new ChangeFontSizeCommand(_this, newFontSize, _this.area.boxesContainer.getSelectedBoxes()));
-      }).on('fontWeightChanged', function(event) {
-        return _this.commandManager.pushCommand(new ChangeFontWeightCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
-      }).on('fontUnderlined', function(event) {
-        return _this.commandManager.pushCommand(new UnderlineFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
-      }).on('fontItalic', function(event) {
-        return _this.commandManager.pushCommand(new ItalicFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontSizeCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), newFontSize));
+      }).on('fontWeightBtnEnableClick', function(event) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), true));
+      }).on('fontWeightBtnDisableClick', function(event) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), false));
+      }).on('fontUnderlinedBtnEnableClick', function(event) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), true));
+      }).on('fontUnderlinedBtnDisableClick', function(event) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), false));
+      }).on('fontItalicBtnEnableClick', function(event) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), true));
+      }).on('fontItalicBtnDisableClick', function(event) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), false));
       });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
-        return _this.commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false);
+        return _this.commandManager.pushCommand(_this.cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false);
       });
       this.area.bindEvents();
       this.panel.bindEvents();

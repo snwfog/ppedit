@@ -90,14 +90,17 @@ class Panel extends Graphic
       newFontSize = parseInt($(event.target).find("option:selected").val())*10/6.25 +"px"
       @root.trigger 'fontSizeChanged', [newFontSize]
 
-    @element.find(".weightBtn").click =>
-      @root.trigger 'fontWeightChanged'
+    @element.find(".weightBtn").click (event) =>
+      btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+      @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
 
-    @element.find(".underlineBtn").click =>
-      @root.trigger 'fontUnderlined'
+    @element.find(".underlineBtn").click (event) =>
+      btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+      @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontUnderlinedBtnEnableClick' else 'fontUnderlinedBtnDisableClick')
 
-    @element.find(".italicBtn").click =>
-      @root.trigger 'fontItalic'
+    @element.find(".italicBtn").click (event) =>
+      btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+      @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontItalicBtnEnableClick' else 'fontItalicBtnDisableClick')
 
   moveElementUp: (panelID) ->
 
