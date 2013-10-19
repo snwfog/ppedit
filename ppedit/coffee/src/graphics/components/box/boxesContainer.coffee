@@ -19,7 +19,7 @@ class BoxesContainer extends Graphic
     @element
       .mousedown (event) =>
         @lastDownEvent = event
-
+      
       .mouseup (event) =>
         # Click happened
         if @lastDownEvent? && event.timeStamp - @lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL
@@ -78,7 +78,7 @@ class BoxesContainer extends Graphic
   ###
   Given an array of box ids, deletes all box objects
   with those ids.
-  ###
+  ###   
   removeBoxes: (boxIds) ->
     for id in boxIds
       @boxes[id].element
@@ -122,6 +122,32 @@ class BoxesContainer extends Graphic
   Returns the position relative to the top left corner
   of the element from the passed mouseEvent.
   ###
+
+  @_rectContainsRect: (outerRect, innerRect) ->
+    return (innerRect.topLeft.x >= outerRect.topLeft.x &&
+    innerRect.topLeft.y >= outerRect.topLeft.y &&
+    innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width &&
+    innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height)
+
+  ###
+  Given an array of box ids, change font type of all box objects
+  with those ids.
+  ###
+  changeFontType: (boxIds, newFontType) ->
+    for id in boxIds
+      @boxes[id].element
+        .css("font-family", newFontType)
+  ###
+  Given an array of box ids, change font size of all box objects
+  with those ids.
+  ###
+  changeFontSize: (boxIds, newFontSize) ->
+    for id in boxIds
+      @boxes[id].element
+        .css("font-size", newFontSize)
+
+
+
   getPointClicked: (mouseEvent) ->
     return {
       left:event.offsetX + @element.scrollLeft()

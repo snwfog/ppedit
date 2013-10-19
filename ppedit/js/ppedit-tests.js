@@ -278,4 +278,35 @@
     });
   });
 
+  ppeditDescribe("A test for issue CAP-44 : As a user,  I want options to show or hide the grid, and snap or unsnap my elements in the work area.", function() {
+    return it("adds a box on grid button click", function() {
+      expect($(".ppedit-grid")).toHaveCss({
+        display: "block"
+      });
+      $(".gridElementBtn").click();
+      return expect($(".ppedit-grid")).toHaveCss({
+        display: "none"
+      });
+    });
+  });
+
+  ppeditDescribe("A test for issue CAP-42 : As a user, I want to change the opacity of elements in my work area.", function() {
+    return it("drag the slider button to change the box opacity", function() {
+      return expect($(".editor").find('.ppedit-box')).toHaveLength(1);
+    });
+  });
+
+  ppeditDescribe("A test for issue CAP-20 : As a user, I want to clean my work area, so that I can start on a fresh new page, but I want to be able to remedy in the case of a mistake.", function() {
+    return it(" remove boxes when delete element button click", function() {
+      $(".removeElementBtn").click();
+      return expect($(".editor").find('.ppedit-box')).toHaveLength(0);
+    });
+  });
+
+  ppeditDescribe("A test for issue CAP-15 : As a user, I want to resize the bounding box of elements on my work area.", function() {
+    return it("resize bounding boxof elements", function() {
+      return expect($(".editor").find('.ppedit-box')).toHaveLength(1);
+    });
+  });
+
 }).call(this);
