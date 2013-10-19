@@ -71,6 +71,18 @@ class PPEditor extends Graphic
       .on 'fontTypeChanged', (event, newFontType) =>
         @commandManager.pushCommand new ChangeFontTypeCommand this, newFontType, @area.boxesContainer.getSelectedBoxes()
 
+      .on 'fontSizeChanged', (event, newFontSize) =>
+        @commandManager.pushCommand new ChangeFontSizeCommand this, newFontSize, @area.boxesContainer.getSelectedBoxes()
+
+      .on 'fontWeightChanged', (event) =>
+        @commandManager.pushCommand new ChangeFontWeightCommand this, @area.boxesContainer.getSelectedBoxes()
+
+      .on 'fontUnderlined', (event) =>
+        @commandManager.pushCommand new UnderlineFontCommand this, @area.boxesContainer.getSelectedBoxes()
+    
+      .on 'fontItalic', (event) =>
+        @commandManager.pushCommand new ItalicFontCommand this, @area.boxesContainer.getSelectedBoxes()
+
     @area.boxesContainer.element
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
         @commandManager.pushCommand(new MoveBoxCommand(box, currentPosition, originalPosition), false)

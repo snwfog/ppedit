@@ -19,7 +19,7 @@ class BoxesContainer extends Graphic
     @element
       .mousedown (event) =>
         @lastDownEvent = event
-
+      
       .mouseup (event) =>
         # Click happend
         if event.timeStamp - @lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL
@@ -137,7 +137,14 @@ class BoxesContainer extends Graphic
     for id in boxIds
       @boxes[id].element
         .css("font-family", newFontType)
-
+  ###
+  Given an array of box ids, change font size of all box objects
+  with those ids.
+  ###
+  changeFontSize: (boxIds, newFontSize) ->
+    for id in boxIds
+      @boxes[id].element
+        .css("font-size", newFontSize)
 
 
 

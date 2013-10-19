@@ -175,7 +175,25 @@
     });
   });
 
-<<<<<<< HEAD
+  ppeditDescribe("A test for issue CAP-114 : As a user, I want to be able to enter text inside an element", function() {
+    return it("can enter text inside a Box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      moveBox(box, {
+        dx: 0,
+        dy: 200
+      });
+      box.simulate('dblclick', {
+        clientX: viewPortPosition(box).left,
+        clientY: viewPortPosition(box).top
+      });
+      expect(box.get(0)).toEqual(document.activeElement);
+      box.val('Lorem ipsum dolor sin amet');
+      return expect(box).toHaveValue('Lorem ipsum dolor sin amet');
+    });
+  });
+
   ppeditDescribe("A test for issue CAP-44 : As a user,  I want options to show or hide the grid, and snap or unsnap my elements in the work area.", function() {
     return it("adds a box on grid button click", function() {
       expect($(".ppedit-grid")).toHaveCss({
@@ -204,24 +222,6 @@
   ppeditDescribe("A test for issue CAP-15 : As a user, I want to resize the bounding box of elements on my work area.", function() {
     return it("resize bounding boxof elements", function() {
       return expect($(".editor").find('.ppedit-box')).toHaveLength(1);
-=======
-  ppeditDescribe("A test for issue CAP-114 : As a user, I want to be able to enter text inside an element", function() {
-    return it("can enter text inside a Box", function() {
-      var box;
-      addBox(1);
-      box = $('.ppedit-box');
-      moveBox(box, {
-        dx: 0,
-        dy: 200
-      });
-      box.simulate('dblclick', {
-        clientX: viewPortPosition(box).left,
-        clientY: viewPortPosition(box).top
-      });
-      expect(box.get(0)).toEqual(document.activeElement);
-      box.val('Lorem ipsum dolor sin amet');
-      return expect(box).toHaveValue('Lorem ipsum dolor sin amet');
->>>>>>> 0e6dd839ea46ec3d158c5e37e3559ceacbaa3c30
     });
   });
 

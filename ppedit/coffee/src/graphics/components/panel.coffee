@@ -34,6 +34,22 @@ class Panel extends Graphic
                  <option value="Inconsolata">Inconsolata</option>
                  <option value="Glyphicons Halflings">Glyphicons Halflings</option>
                </select>
+               
+               <select class="fontSizeBtn">
+                 <option value="6">6</option>
+                 <option value="8">8</option>
+                 <option value="10" selected>10</option>
+                 <option value="11">11</option>
+                 <option value="12">12</option>
+                 <option value="14">14</option>
+                 <option value="16">16</option>
+                 <option value="20">20</option>
+               </select>
+
+               <button class="weightBtn" type="button">B</button>
+               <button class="underlineBtn" type="button">U</button>
+               <button class="italicBtn" type="button">I</button>
+
               <table class="table table-hover dataPanel">
                   <thead>
                       <tr>
@@ -44,16 +60,6 @@ class Panel extends Graphic
                   </thead>
                   <tbody>
 
-
-                      <table class="table table-hover dataPanel">
-                          <thead> 
-                              <tr>
-                                <th>Remove</th>
-                                <th>Name of Element</th>
-                                <th>Opacity</th>
-                              </tr>
-                          </thead>
-                          <tbody>
 
 
 
@@ -76,10 +82,22 @@ class Panel extends Graphic
     $(".gridElementBtn").click =>
       @root.trigger 'panelClickGridBtnClick'
 
-    @element.find("select").change (event) =>
+    @element.find("select.fontTypeBtn").change (event) =>
       newFontType = $(event.target).find("option:selected").val()
       @root.trigger 'fontTypeChanged', [newFontType]
 
+    @element.find("select.fontSizeBtn").change (event) =>
+      newFontSize = $(event.target).find("option:selected").val()+"0%"
+      @root.trigger 'fontSizeChanged', [newFontSize]
+
+    @element.find(".weightBtn").click =>
+      @root.trigger 'fontWeightChanged'
+
+    @element.find(".underlineBtn").click =>
+      @root.trigger 'fontUnderlined'
+
+    @element.find(".italicBtn").click =>
+      @root.trigger 'fontItalic'
 
   moveElementUp: (panelID) ->
 

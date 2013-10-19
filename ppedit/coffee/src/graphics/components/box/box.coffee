@@ -21,6 +21,10 @@ class Box extends Graphic
     .addClass('ppedit-box')
     .attr('tabindex', 0)
     .css('font-family', 'Times New Roman')
+    .css('font-size', '100%')
+    .css('font-weight', 'normal')
+    .css('text-decoration', 'none')
+    .css('font-style', 'normal')
     .attr('contenteditable', true)
     .attr('id', $.now())
     .css(settings)
@@ -32,7 +36,7 @@ class Box extends Graphic
         event.preventDefault()
 
       .click (event) =>
-        event.stopPropagation()
+        # event.stopPropagation()
         event.preventDefault()
         @toggleSelect()
 
@@ -41,10 +45,10 @@ class Box extends Graphic
         event.preventDefault()
         @stopMoving()
         @toggleFocus()
-
+      
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
-
+         
       .on 'containerMouseLeave', () =>
         @stopMoving()
 
@@ -53,7 +57,7 @@ class Box extends Graphic
 
       .keydown (event) =>
         @_processKeyDownEvent(event) if !@isFocused()
-
+      
   ###
   Matches directional arrows event
   to pixel-by-pixel movement
