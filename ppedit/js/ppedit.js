@@ -513,7 +513,15 @@ Abstract Class, represents an Dom node
         }
         if (event.keyCode === KeyCodes.DELETE || (event.keyCode === KeyCodes.DELETE && event.ctrlKey)) {
           event.preventDefault();
-          return _this.root.trigger('requestDelete');
+          _this.root.trigger('requestDelete');
+        }
+        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+          event.preventDefault();
+          _this.root.trigger('requestCopy');
+        }
+        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+          event.preventDefault();
+          return _this.root.trigger('requestPaste');
         }
       });
     };

@@ -111,6 +111,61 @@
     });
   });
 
+  ppeditDescribe('A test for issue "CAP-48 : As a user, I want to copy and paste aggregate elements in my work area"', function() {
+    it("copies and past one box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      box.simulate('click');
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "meta+c"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "meta+v"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "ctrl+c"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "ctrl+v"
+      });
+      return expect($('.ppedit-box')).toHaveLength(2);
+    });
+    return it("copies and past multiple boxes", function() {
+      var boxes, canvas;
+      addBox(2);
+      boxes = $('.ppedit-box');
+      moveBox(boxes.eq(0), {
+        dx: 200,
+        dy: 0
+      });
+      canvas = $('.ppedit-canvas');
+      selectRectangle(canvas, {
+        topLeft: {
+          left: viewPortPosition(canvas).left + 49,
+          top: viewPortPosition(canvas).top + 49
+        },
+        size: {
+          width: 500,
+          height: 100
+        }
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "meta+c"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "meta+v"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "ctrl+c"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
+        combo: "ctrl+v"
+      });
+      return expect($('.ppedit-box')).toHaveLength(4);
+    });
+  });
+
   ppeditDescribe("A test for issue CAP-47 : As a user, I want to select and move aggregated elements in my workspace", function() {
     return it("can select and move elements in the workspace", function() {
       var boxes, canvas;

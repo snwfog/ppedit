@@ -17,3 +17,11 @@ class PCController
       if event.keyCode == KeyCodes.DELETE || (event.keyCode == KeyCodes.DELETE && event.ctrlKey)
         event.preventDefault()
         @root.trigger 'requestDelete'
+
+      if event.keyCode == KeyCodes.C && event.ctrlKey
+        event.preventDefault()
+        @root.trigger 'requestCopy'
+
+      if event.keyCode == KeyCodes.C && event.ctrlKey
+        event.preventDefault()
+        @root.trigger 'requestPaste'
