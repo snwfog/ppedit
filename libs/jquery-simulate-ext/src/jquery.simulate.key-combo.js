@@ -27,7 +27,8 @@
 		SHIFT:		16,
 		CONTROL:	17,
 		ALT:		18,
-		COMMAND:	91
+		COMMAND:	91,
+        DELETE:     46  
 	};
 
 	$.extend( $.simulate.prototype,
@@ -85,11 +86,13 @@
 					case "alt":
 					case "shift":
 					case "meta":
+                    case "del":
 						switch (keyLowered) {
 						case "ctrl":	keyCode = ModifierKeyCodes.CONTROL; break;
 						case "alt":		keyCode = ModifierKeyCodes.ALT; break;
 						case "shift":	keyCode = ModifierKeyCodes.SHIFT; break;
 						case "meta":	keyCode = ModifierKeyCodes.COMMAND; break;
+                        case "del":     keyCode = ModifierKeyCodes.DELETE; break;
 						}
 						eventOptions[keyLowered+"Key"] = true;
 						holdKeys.unshift(keyCode);

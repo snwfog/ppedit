@@ -249,7 +249,7 @@
       $(".ppedit-box-container").simulate('dblclick');
       return expect($('.ppedit-box')).toHaveLength(2);
     });
-    return it("repositions elements with the mouse", function() {
+    it("repositions elements with the mouse", function() {
       addBox(2);
       moveBox($('.ppedit-box'), {
         dx: 150,
@@ -259,6 +259,17 @@
         dx: 100,
         dy: 100
       });
+    });
+    return it("deletes a box when clicking on ctrl+delete", function() {
+      addBox(1);
+      $('.ppedit-box').simulate('click');
+      $('.editor').simulate('key-combo', {
+        combo: 'ctrl+del'
+      });
+      $('.editor').simulate('key-combo', {
+        combo: 'meta+del'
+      });
+      return expect($('.ppedit-box')).toHaveLength(0);
     });
   });
 
