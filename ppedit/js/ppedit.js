@@ -505,31 +505,51 @@ Abstract Class, represents an Dom node
     }
 
     MoveUpCommand.prototype.execute = function() {
-      var index, row, temp, upperRow, upperRowBox;
+      return this.swapRowWithUpperRow();
+    };
+
+    MoveUpCommand.prototype.undo = function() {
+      return this.swapRowWithLowerRow();
+    };
+
+    MoveUpCommand.prototype.swapRowWithUpperRow = function() {
+      var index, row, upperRow;
       row = this.editor.panel.getRowWithBoxId(this.boxSelector.attr('id'));
       index = row.index();
       if (index - 1 >= 0) {
         upperRow = this.editor.panel.getRowAtIndex(index - 1);
-        row.insertBefore(upperRow);
-        temp = this.boxSelector.css('z-index');
-        upperRowBox = this.editor.area.boxesContainer.boxes[upperRow.attr('ppedit-box-id')];
-        this.boxSelector.css('z-index', upperRowBox.element.css('z-index'));
-        return upperRowBox.element.css('z-index', temp);
+        return this.swapRows(row, upperRow);
       }
     };
 
-    MoveUpCommand.prototype.undo = function() {
-      var index, lowerRow, row, temp, upperRowBox;
+    MoveUpCommand.prototype.swapRowWithLowerRow = function() {
+      var index, lowerRow, row;
       row = this.editor.panel.getRowWithBoxId(this.boxSelector.get(0).id);
       index = row.index();
       if (index < this.editor.panel.element.find('.ppedit-panel-row').length - 1) {
         lowerRow = this.editor.panel.getRowAtIndex(index + 1);
-        row.insertAfter(lowerRow);
-        temp = this.boxSelector.css('z-index');
-        upperRowBox = this.editor.area.boxesContainer.boxes[lowerRow.attr('ppedit-box-id')];
-        this.boxSelector.css('z-index', upperRowBox.element.css('z-index'));
-        return upperRowBox.element.css('z-index', temp);
+        return this.swapRows(row, lowerRow);
       }
+    };
+
+    /*
+    Swaps RowOne with RowTwo. Also swaps the z-index of the boxes
+    associated with each row.
+    */
+
+
+    MoveUpCommand.prototype.swapRows = function(rowOne, rowTwo) {
+      var rowOneBox, rowOneBoxTempZindex, rowTwoBox;
+      if (rowOne.index() < rowTwo.index()) {
+        rowOne.insertAfter(rowTwo);
+      } else {
+        rowOne.insertBefore(rowTwo);
+      }
+      rowOneBox = this.editor.area.boxesContainer.boxes[rowOne.attr('ppedit-box-id')];
+      rowOneBoxTempZindex = rowOneBox.element.css('z-index');
+      rowTwoBox = this.editor.area.boxesContainer.boxes[rowTwo.attr('ppedit-box-id')];
+      rowOneBox.element.css('z-index', rowTwoBox.element.css('z-index'));
+      return rowTwoBox.element.css('z-index', rowOneBoxTempZindex);
     };
 
     return MoveUpCommand;

@@ -6,36 +6,42 @@ class MoveUpCommand
    
 
   execute: ->
+    @swapRowWithUpperRow()
+
+  undo: ->
+    @swapRowWithLowerRow()
+
+  swapRowWithUpperRow: ->
     row = @editor.panel.getRowWithBoxId(@boxSelector.attr('id'))
     index = row.index()
 
     if index-1 >= 0
-
-      # Swap upperRow and row
       upperRow = @editor.panel.getRowAtIndex index-1
-      row.insertBefore(upperRow)
+      @swapRows row, upperRow
 
-      #swap z-index of upperRow and row
-      temp = @boxSelector.css('z-index')
-      upperRowBox = @editor.area.boxesContainer.boxes[upperRow.attr('ppedit-box-id')]
-
-      @boxSelector.css 'z-index', upperRowBox.element.css('z-index')
-      upperRowBox.element.css 'z-index', temp
-
-  undo: ->
+  swapRowWithLowerRow: ->
     row = @editor.panel.getRowWithBoxId(@boxSelector.get(0).id)
     index = row.index()
 
     if index < @editor.panel.element.find('.ppedit-panel-row').length-1
-
-      # Swap lowerRow and row
       lowerRow = @editor.panel.getRowAtIndex index+1
-      row.insertAfter(lowerRow)
+      @swapRows row, lowerRow
 
-      #swap z-index of lowerRow and row
-      temp = @boxSelector.css('z-index')
-      upperRowBox = @editor.area.boxesContainer.boxes[lowerRow.attr('ppedit-box-id')]
+  ###
+  Swaps RowOne with RowTwo. Also swaps the z-index of the boxes
+  associated with each row.
+  ###
+  swapRows: (rowOne, rowTwo) ->
+      # Swap lowerRow and row
+      if(rowOne.index() < rowTwo.index())
+        rowOne.insertAfter(rowTwo)
+      else   
+        rowOne.insertBefore(rowTwo)
 
-      @boxSelector.css 'z-index', upperRowBox.element.css('z-index')
-      upperRowBox.element.css 'z-index', temp    
- 
+      #swap z-index of RowOne and RowTwo
+      rowOneBox = @editor.area.boxesContainer.boxes[rowOne.attr('ppedit-box-id')]
+      rowOneBoxTempZindex = rowOneBox.element.css 'z-index'
+      rowTwoBox = @editor.area.boxesContainer.boxes[rowTwo.attr('ppedit-box-id')]
+
+      rowOneBox.element.css 'z-index', rowTwoBox.element.css('z-index')
+      rowTwoBox.element.css 'z-index', rowOneBoxTempZindex
