@@ -94,6 +94,16 @@ class BoxesContainer extends Graphic
     return (@boxes[id] for id in boxIds when @boxes[id]?)
 
   ###
+  Returns an list of box objects corresponding to the
+  passed selector matching box elements.
+  ###
+  getBoxesFromSelector: (selector) ->
+    results = {}
+    for box in selector.toArray()
+      results[box.id] = @boxes[box.id]
+    return results
+
+  ###
   Returns a selector matching all boxes
   ###
   getAllBoxes: ->

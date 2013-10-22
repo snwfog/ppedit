@@ -915,6 +915,23 @@ Abstract Class, represents an Dom node
     };
 
     /*
+    Returns an list of box objects corresponding to the
+    passed selector matching box elements.
+    */
+
+
+    BoxesContainer.prototype.getBoxesFromSelector = function(selector) {
+      var box, results, _i, _len, _ref;
+      results = {};
+      _ref = selector.toArray();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        box = _ref[_i];
+        results[box.id] = this.boxes[box.id];
+      }
+      return results;
+    };
+
+    /*
     Returns a selector matching all boxes
     */
 
