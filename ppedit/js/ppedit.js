@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, FontPanel, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, MoveUpCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+  var Box, BoxesContainer, Canvas, ChangeDepthCommand, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, FontPanel, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -498,21 +498,37 @@ Abstract Class, represents an Dom node
 
   })();
 
-  MoveUpCommand = (function() {
-    function MoveUpCommand(editor, boxSelector) {
+  ChangeDepthCommand = (function() {
+    /*
+    Specify one Command for changing the depth of a box,
+    where @boxSelector refers to the box to move, and 
+    @moveUp is the parameter that specify the box to move up
+    if true, or down if false.
+    */
+
+    function ChangeDepthCommand(editor, boxSelector, moveUp) {
       this.editor = editor;
       this.boxSelector = boxSelector;
+      this.moveUp = moveUp;
     }
 
-    MoveUpCommand.prototype.execute = function() {
-      return this.swapRowWithUpperRow();
+    ChangeDepthCommand.prototype.execute = function() {
+      if (this.moveUp) {
+        return this.swapRowWithUpperRow();
+      } else {
+        return this.swapRowWithLowerRow();
+      }
     };
 
-    MoveUpCommand.prototype.undo = function() {
-      return this.swapRowWithLowerRow();
+    ChangeDepthCommand.prototype.undo = function() {
+      if (this.moveUp) {
+        return this.swapRowWithLowerRow();
+      } else {
+        return this.swapRowWithUpperRow();
+      }
     };
 
-    MoveUpCommand.prototype.swapRowWithUpperRow = function() {
+    ChangeDepthCommand.prototype.swapRowWithUpperRow = function() {
       var index, row, upperRow;
       row = this.editor.panel.getRowWithBoxId(this.boxSelector.attr('id'));
       index = row.index();
@@ -522,9 +538,9 @@ Abstract Class, represents an Dom node
       }
     };
 
-    MoveUpCommand.prototype.swapRowWithLowerRow = function() {
+    ChangeDepthCommand.prototype.swapRowWithLowerRow = function() {
       var index, lowerRow, row;
-      row = this.editor.panel.getRowWithBoxId(this.boxSelector.get(0).id);
+      row = this.editor.panel.getRowWithBoxId(this.boxSelector.attr('id'));
       index = row.index();
       if (index < this.editor.panel.element.find('.ppedit-panel-row').length - 1) {
         lowerRow = this.editor.panel.getRowAtIndex(index + 1);
@@ -538,7 +554,7 @@ Abstract Class, represents an Dom node
     */
 
 
-    MoveUpCommand.prototype.swapRows = function(rowOne, rowTwo) {
+    ChangeDepthCommand.prototype.swapRows = function(rowOne, rowTwo) {
       var rowOneBox, rowOneBoxTempZindex, rowTwoBox;
       if (rowOne.index() < rowTwo.index()) {
         rowOne.insertAfter(rowTwo);
@@ -552,7 +568,7 @@ Abstract Class, represents an Dom node
       return rowTwoBox.element.css('z-index', rowOneBoxTempZindex);
     };
 
-    return MoveUpCommand;
+    return ChangeDepthCommand;
 
   })();
 
@@ -612,7 +628,11 @@ Abstract Class, represents an Dom node
     };
 
     CommandFactory.prototype.createMoveUpCommand = function(editor, boxSelector) {
-      return new MoveUpCommand(editor, boxSelector);
+      return new ChangeDepthCommand(editor, boxSelector, true);
+    };
+
+    CommandFactory.prototype.createMoveDownCommand = function(editor, boxSelector) {
+      return new ChangeDepthCommand(editor, boxSelector, false);
     };
 
     return CommandFactory;
@@ -1182,8 +1202,11 @@ Abstract Class, represents an Dom node
       this.element.find(".gridElementBtn").click(function() {
         return _this.root.trigger('panelClickGridBtnClick');
       });
-      return this.element.find('.moveElementUpBtn').click(function() {
+      this.element.find('.moveElementUpBtn').click(function() {
         return _this.root.trigger('moveElementUpBtnClick');
+      });
+      return this.element.find('.moveElementDownBtn').click(function() {
+        return _this.root.trigger('moveElementDownBtnClick');
       });
     };
 
@@ -1297,6 +1320,8 @@ Abstract Class, represents an Dom node
       });
       this.element.find('.row').on('moveElementUpBtnClick', function(event) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createMoveUpCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+      }).on('moveElementDownBtnClick', function(event) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createMoveDownCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
       }).on('panelClickAddBtnClick', function(event) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this));
       }).on('panelClickGridBtnClick', function(event) {

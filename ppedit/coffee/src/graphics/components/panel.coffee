@@ -63,6 +63,9 @@ class Panel extends Graphic
     @element.find('.moveElementUpBtn').click =>
       @root.trigger 'moveElementUpBtnClick'
 
+    @element.find('.moveElementDownBtn').click =>
+      @root.trigger 'moveElementDownBtnClick'
+
   ###
   Adds a row to be associated with the passed box id.
   ### 

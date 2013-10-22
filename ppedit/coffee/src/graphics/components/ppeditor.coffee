@@ -65,7 +65,12 @@ class PPEditor extends Graphic
 
     @element.find('.row')
       .on 'moveElementUpBtnClick', (event) =>
-        @commandManager.pushCommand @cmdFactory.createMoveUpCommand(this, @area.boxesContainer.getSelectedBoxes())
+        boxes = @area.boxesContainer.getSelectedBoxes()
+        @commandManager.pushCommand @cmdFactory.createMoveUpCommand(this, boxes) if boxes.length > 0
+
+      .on 'moveElementDownBtnClick', (event) =>
+        boxes = @area.boxesContainer.getSelectedBoxes()
+        @commandManager.pushCommand @cmdFactory.createMoveDownCommand(this, @boxes) if boxes.length > 0
 
       .on 'panelClickAddBtnClick', (event) =>
         @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this)

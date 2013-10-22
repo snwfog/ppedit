@@ -1,15 +1,20 @@
 #= require Box
 
-class MoveUpCommand
+class ChangeDepthCommand
 
-  constructor: (@editor, @boxSelector) ->
+  ###
+  Specify one Command for changing the depth of a box,
+  where @boxSelector refers to the box to move, and 
+  @moveUp is the parameter that specify the box to move up
+  if true, or down if false.
+  ###
+  constructor: (@editor, @boxSelector, @moveUp) ->
    
-
   execute: ->
-    @swapRowWithUpperRow()
+    if @moveUp then @swapRowWithUpperRow() else @swapRowWithLowerRow()
 
   undo: ->
-    @swapRowWithLowerRow()
+    if @moveUp then @swapRowWithLowerRow() else @swapRowWithUpperRow()
 
   swapRowWithUpperRow: ->
     row = @editor.panel.getRowWithBoxId(@boxSelector.attr('id'))
@@ -20,7 +25,7 @@ class MoveUpCommand
       @swapRows row, upperRow
 
   swapRowWithLowerRow: ->
-    row = @editor.panel.getRowWithBoxId(@boxSelector.get(0).id)
+    row = @editor.panel.getRowWithBoxId(@boxSelector.attr('id'))
     index = row.index()
 
     if index < @editor.panel.element.find('.ppedit-panel-row').length-1
