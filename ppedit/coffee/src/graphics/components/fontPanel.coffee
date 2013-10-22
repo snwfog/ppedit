@@ -28,6 +28,10 @@ class FontPanel extends Graphic
                <button class="weightBtn" type="button">B</button>
                <button class="underlineBtn" type="button">U</button>
                <button class="italicBtn" type="button">I</button>
+               <br>
+               <button class="leftAlignBtn" type="button"><span class="glyphicon glyphicon-align-left"></button>
+               <button class="centerAlignBtn" type="button"><span class="glyphicon glyphicon-align-center"></button>
+               <button class="rightAlignBtn" type="button"><span class="glyphicon glyphicon-align-right"></button>
              </div>')
 
   bindEvents: ->
@@ -51,4 +55,11 @@ class FontPanel extends Graphic
       btn = $(event.target).toggleClass('.ppedit-btn-enabled');
       @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontItalicBtnEnableClick' else 'fontItalicBtnDisableClick')
 
+    @element.find(".rightAlignBtn").click (event) =>
+      @root.trigger 'rightAlignment'
 
+    @element.find(".leftAlignBtn").click (event) =>
+      @root.trigger 'leftAlignment'
+
+    @element.find(".centerAlignBtn").click (event) =>
+      @root.trigger 'centerAlignment'

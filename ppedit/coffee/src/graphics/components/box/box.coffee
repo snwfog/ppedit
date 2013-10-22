@@ -20,6 +20,8 @@ class Box extends Graphic
       'font-weight': 'normal'
       'text-decoration': 'none'
       'font-style': 'normal'
+      'text-align': 'left'
+      'vertical-align': 'bottom'
     , @options);
 
     @element = $('<div></div>')
