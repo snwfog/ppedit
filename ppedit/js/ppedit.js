@@ -117,6 +117,12 @@ Abstract Class, represents an Dom node
         event.preventDefault();
         _this.stopMoving();
         return _this.toggleFocus();
+      }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
+        if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
+          return _this.move(delta.x, delta.y);
+        }
+      }).on('containerMouseLeave', function() {
+        return _this.stopMoving();
       }).on('containerKeyDown', function(event, keyDownEvent) {
         if (_this.element.hasClass('ppedit-box-selected')) {
           return _this._processKeyDownEvent(keyDownEvent);
@@ -1319,9 +1325,17 @@ Abstract Class, represents an Dom node
         }
       });
       this.element.find('.row').on('moveElementUpBtnClick', function(event) {
-        return _this.commandManager.pushCommand(_this.cmdFactory.createMoveUpCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+        var boxes;
+        boxes = _this.area.boxesContainer.getSelectedBoxes();
+        if (boxes.length > 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveUpCommand(_this, boxes));
+        }
       }).on('moveElementDownBtnClick', function(event) {
-        return _this.commandManager.pushCommand(_this.cmdFactory.createMoveDownCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+        var boxes;
+        boxes = _this.area.boxesContainer.getSelectedBoxes();
+        if (boxes.length > 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveDownCommand(_this, _this.boxes));
+        }
       }).on('panelClickAddBtnClick', function(event) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this));
       }).on('panelClickGridBtnClick', function(event) {
