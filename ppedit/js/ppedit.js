@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, FontPanel, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+  var Box, BoxesContainer, Canvas, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, FontPanel, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, MoveUpCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -117,12 +117,6 @@ Abstract Class, represents an Dom node
         event.preventDefault();
         _this.stopMoving();
         return _this.toggleFocus();
-      }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
-        if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
-          return _this.move(delta.x, delta.y);
-        }
-      }).on('containerMouseLeave', function() {
-        return _this.stopMoving();
       }).on('containerKeyDown', function(event, keyDownEvent) {
         if (_this.element.hasClass('ppedit-box-selected')) {
           return _this._processKeyDownEvent(keyDownEvent);
@@ -504,6 +498,44 @@ Abstract Class, represents an Dom node
 
   })();
 
+  MoveUpCommand = (function() {
+    function MoveUpCommand(editor, boxSelector) {
+      this.editor = editor;
+      this.boxSelector = boxSelector;
+    }
+
+    MoveUpCommand.prototype.execute = function() {
+      var index, row, temp, upperRow, upperRowBox;
+      row = this.editor.panel.getRowWithBoxId(this.boxSelector.attr('id'));
+      index = row.index();
+      if (index - 1 >= 0) {
+        upperRow = this.editor.panel.getRowAtIndex(index - 1);
+        row.insertBefore(upperRow);
+        temp = this.boxSelector.css('z-index');
+        upperRowBox = this.editor.area.boxesContainer.boxes[upperRow.attr('ppedit-box-id')];
+        this.boxSelector.css('z-index', upperRowBox.element.css('z-index'));
+        return upperRowBox.element.css('z-index', temp);
+      }
+    };
+
+    MoveUpCommand.prototype.undo = function() {
+      var index, lowerRow, row, temp, upperRowBox;
+      row = this.editor.panel.getRowWithBoxId(this.boxSelector.get(0).id);
+      index = row.index();
+      if (index < this.editor.panel.element.find('.ppedit-panel-row').length - 1) {
+        lowerRow = this.editor.panel.getRowAtIndex(index + 1);
+        row.insertAfter(lowerRow);
+        temp = this.boxSelector.css('z-index');
+        upperRowBox = this.editor.area.boxesContainer.boxes[lowerRow.attr('ppedit-box-id')];
+        this.boxSelector.css('z-index', upperRowBox.element.css('z-index'));
+        return upperRowBox.element.css('z-index', temp);
+      }
+    };
+
+    return MoveUpCommand;
+
+  })();
+
   CommandFactory = (function() {
     function CommandFactory() {}
 
@@ -557,6 +589,10 @@ Abstract Class, represents an Dom node
 
     CommandFactory.prototype.createCreateBoxesCommand = function(editor, optionsList) {
       return new CreateBoxesCommand(editor, optionsList);
+    };
+
+    CommandFactory.prototype.createMoveUpCommand = function(editor, boxSelector) {
+      return new MoveUpCommand(editor, boxSelector);
     };
 
     return CommandFactory;
@@ -813,7 +849,7 @@ Abstract Class, represents an Dom node
 
     /*
     Returns an array of Box objects corresponding to the
-    passed array of boxIds.
+    passed boxIds.
     */
 
 
@@ -830,23 +866,6 @@ Abstract Class, represents an Dom node
         }
         return _results;
       }).call(this);
-    };
-
-    /*
-    Returns an list of box objects corresponding to the
-    passed selector matching box elements.
-    */
-
-
-    BoxesContainer.prototype.getBoxesFromSelector = function(selector) {
-      var box, results, _i, _len, _ref;
-      results = {};
-      _ref = selector.toArray();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        box = _ref[_i];
-        results[box.id] = this.boxes[box.id];
-      }
-      return results;
     };
 
     /*
@@ -900,48 +919,6 @@ Abstract Class, represents an Dom node
 
     BoxesContainer._rectContainsRect = function(outerRect, innerRect) {
       return innerRect.topLeft.x >= outerRect.topLeft.x && innerRect.topLeft.y >= outerRect.topLeft.y && innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width && innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height;
-    };
-
-    /*
-    Given an array of box ids, change font type of all box objects
-    with those ids.
-    */
-
-
-    BoxesContainer.prototype.changeFontType = function(boxIds, newFontType) {
-      var id, _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
-        id = boxIds[_i];
-        _results.push(this.boxes[id].element.css("font-family", newFontType));
-      }
-      return _results;
-    };
-
-    /*
-    Given an array of box ids, change font size of all box objects
-    with those ids.
-    */
-
-
-    BoxesContainer.prototype.changeFontSize = function(boxIds, newFontSize) {
-      var id, _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
-        id = boxIds[_i];
-        _results.push(this.boxes[id].element.css("font-size", newFontSize));
-      }
-      return _results;
-    };
-
-    /*
-    Given a box id and css option object,
-    apply the css onto to element of the passed box
-    */
-
-
-    BoxesContainer.prototype.setBoxCss = function(boxId, cssOptions) {
-      return this.boxes[boxId].element.css(cssOptions);
     };
 
     BoxesContainer.prototype.getPointClicked = function(mouseEvent) {
@@ -1131,9 +1108,9 @@ Abstract Class, represents an Dom node
       return this.element = $('\
             <div class="col-xs-5">\
 \
-               <!-- <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
+              <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
               <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> \
-                -->\
+              \
               <form class="form-inline" role="form" style="padding-top: 5px;">\
                 <div class="form-group col-lg-20">\
                   <fieldset style="padding-left: 15px;">\
@@ -1176,20 +1153,19 @@ Abstract Class, represents an Dom node
 
     Panel.prototype.bindEvents = function() {
       var _this = this;
-      $(".addElementBtn").click(function() {
+      this.element.find(".addElementBtn").click(function() {
         return _this.root.trigger('panelClickAddBtnClick');
       });
-      $(".clearAllElementBtn").click(function() {
+      this.element.find(".clearAllElementBtn").click(function() {
         return _this.root.trigger('panelClickClearAllBtnClick');
       });
-      return $(".gridElementBtn").click(function() {
+      this.element.find(".gridElementBtn").click(function() {
         return _this.root.trigger('panelClickGridBtnClick');
       });
+      return this.element.find('.moveElementUpBtn').click(function() {
+        return _this.root.trigger('moveElementUpBtnClick');
+      });
     };
-
-    Panel.prototype.moveElementUp = function(panelID) {};
-
-    Panel.prototype.moveElementUpDown = function(panelID) {};
 
     /*
     Adds a row to be associated with the passed box id.
@@ -1199,7 +1175,7 @@ Abstract Class, represents an Dom node
     Panel.prototype.addBoxRow = function(boxid) {
       var newRow,
         _this = this;
-      newRow = $("            <tr>                <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>                <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>                <td><div class=\"ppedit-slider\"></div></td>            </tr>").attr('ppedit-box-id', boxid);
+      newRow = $("            <tr class='ppedit-panel-row'>                <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>                <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>                <td><div class=\"ppedit-slider\"></div></td>            </tr>").attr('ppedit-box-id', boxid);
       this.element.find('.dataPanel tbody').append(newRow);
       newRow.find(".ppedit-slider").slider({
         min: 0,
@@ -1222,7 +1198,15 @@ Abstract Class, represents an Dom node
 
 
     Panel.prototype.removeBoxRow = function(boxId) {
-      return this.element.find("tr[ppedit-box-id=" + boxId + "]").remove();
+      return this.getRowWithBoxId(boxId).remove();
+    };
+
+    Panel.prototype.getRowWithBoxId = function(boxId) {
+      return this.element.find("tr[ppedit-box-id=" + boxId + "]").eq(0);
+    };
+
+    Panel.prototype.getRowAtIndex = function(index) {
+      return this.element.find(".ppedit-panel-row").eq(index);
     };
 
     return Panel;
@@ -1291,7 +1275,9 @@ Abstract Class, represents an Dom node
           return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, _this.clipboard.items));
         }
       });
-      this.element.find('.row').on('panelClickAddBtnClick', function(event) {
+      this.element.find('.row').on('moveElementUpBtnClick', function(event) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createMoveUpCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+      }).on('panelClickAddBtnClick', function(event) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this));
       }).on('panelClickGridBtnClick', function(event) {
         return _this.area.grid.toggleGrid();

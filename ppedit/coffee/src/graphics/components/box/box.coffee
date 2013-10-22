@@ -46,11 +46,11 @@ class Box extends Graphic
         @stopMoving()
         @toggleFocus()
       
-       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
-         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
+      #.on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
+      #  @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
          
-       .on 'containerMouseLeave', () =>
-         @stopMoving()
+      #.on 'containerMouseLeave', () =>
+      #  @stopMoving()
 
       .on 'containerKeyDown', (event, keyDownEvent) =>
         @_processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')

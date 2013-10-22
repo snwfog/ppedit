@@ -8,9 +8,9 @@ class Panel extends Graphic
     @element = $('
             <div class="col-xs-5">
 
-               <!-- <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>
+              <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>
               <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> 
-                -->
+              
               <form class="form-inline" role="form" style="padding-top: 5px;">
                 <div class="form-group col-lg-20">
                   <fieldset style="padding-left: 15px;">
@@ -51,25 +51,24 @@ class Panel extends Graphic
             </div>')
 
   bindEvents: ->
-    $(".addElementBtn").click =>
+    @element.find(".addElementBtn").click =>
       @root.trigger 'panelClickAddBtnClick'
 
-    $(".clearAllElementBtn").click =>
+    @element.find(".clearAllElementBtn").click =>
       @root.trigger 'panelClickClearAllBtnClick'
 
-    $(".gridElementBtn").click =>
+    @element.find(".gridElementBtn").click =>
       @root.trigger 'panelClickGridBtnClick'
 
-  moveElementUp: (panelID) ->
-
-  moveElementUpDown: (panelID) ->
+    @element.find('.moveElementUpBtn').click =>
+      @root.trigger 'moveElementUpBtnClick'
 
   ###
   Adds a row to be associated with the passed box id.
   ### 
   addBoxRow: (boxid) ->
     newRow = $("
-            <tr>
+            <tr class='ppedit-panel-row'>
                 <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>
                 <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>
                 <td><div class=\"ppedit-slider\"></div></td>
@@ -97,4 +96,10 @@ class Panel extends Graphic
   Removes the row associated with the passed box id.
   ###
   removeBoxRow: (boxId) ->
-    @element.find("tr[ppedit-box-id="+ boxId + "]").remove()
+    @getRowWithBoxId(boxId).remove()
+
+  getRowWithBoxId: (boxId) ->
+    @element.find("tr[ppedit-box-id="+ boxId + "]").eq(0)
+
+  getRowAtIndex: (index) ->
+    @element.find(".ppedit-panel-row").eq(index)
