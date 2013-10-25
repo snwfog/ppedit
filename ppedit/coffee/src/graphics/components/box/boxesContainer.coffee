@@ -83,12 +83,13 @@ class BoxesContainer extends Graphic
     for id in boxIds
       @boxes[id].element
         .removeClass('ppedit-box-selected')
+        .removeClass('ppedit-box-focus')
         .remove()
       delete @boxes[id]
 
   ###
   Returns an array of Box objects corresponding to the
-  passed array of boxIds.
+  passed boxIds.
   ###
   getBoxesFromIds: (boxIds) ->
     return (@boxes[id] for id in boxIds when @boxes[id]?)
@@ -113,7 +114,7 @@ class BoxesContainer extends Graphic
   Returns a selector to the currently selected boxes
   ###
   getSelectedBoxes: ->
-    return @element.find '.ppedit-box:focus, .ppedit-box-selected'
+    return @element.find '.ppedit-box:focus, .ppedit-box-selected, .ppedit-box-focus'
 
   ###
   Returns a selector to the currently selected boxes,
@@ -138,30 +139,6 @@ class BoxesContainer extends Graphic
     innerRect.topLeft.y >= outerRect.topLeft.y &&
     innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width &&
     innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height)
-
-  ###
-  Given an array of box ids, change font type of all box objects
-  with those ids.
-  ###
-  changeFontType: (boxIds, newFontType) ->
-    for id in boxIds
-      @boxes[id].element
-        .css("font-family", newFontType)
-  ###
-  Given an array of box ids, change font size of all box objects
-  with those ids.
-  ###
-  changeFontSize: (boxIds, newFontSize) ->
-    for id in boxIds
-      @boxes[id].element
-        .css("font-size", newFontSize)
-
-  ###
-  Given a box id and css option object,
-  apply the css onto to element of the passed box
-  ###
-  setBoxCss: (boxId, cssOptions) ->
-    @boxes[boxId].element.css(cssOptions)
 
   getPointClicked: (mouseEvent) ->
     return {

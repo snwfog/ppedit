@@ -10,6 +10,10 @@ class Box extends Graphic
     @prevPosition = undefined
 
   buildElement: ->
+    highestZIndex = 0
+    @root.find('.ppedit-box').each (index, nodeElement) ->
+      highestZIndex = Math.max highestZIndex, parseInt($(nodeElement).css('z-index'))
+
     settings = $.extend(
       left:'50px'
       top:'50px'
@@ -20,8 +24,9 @@ class Box extends Graphic
       'font-weight': 'normal'
       'text-decoration': 'none'
       'font-style': 'normal'
+      'z-index' : highestZIndex + 1
       'text-align': 'left'
-      # 'vertical-align': 'bottom'
+      'vertical-align': 'bottom'
     , @options);
 
     @element = $('<div></div>')
@@ -50,7 +55,7 @@ class Box extends Graphic
       
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
-         
+
       .on 'containerMouseLeave', () =>
         @stopMoving()
 
@@ -129,11 +134,35 @@ class Box extends Graphic
     if @element.hasClass('ppedit-box-selected')
       @stopMoving()
     else
-      @select()
+      @root.find('.ppedit-box').removeClass('ppedit-box-selected')
+      @select() if !@isFocused()
 
   toggleFocus: ->
-    if @isFocused()
-      @element.blur()
-    else
-      @element.focus()
+      @root.find('.ppedit-box')
+        .removeClass('ppedit-box-focus')
+        .removeClass('ppedit-box-selected')
+      @element
+        .addClass('ppedit-box-focus')
+        .focus()
+
+  addBulletPoint: ->
+    el = @element.get(0)
+    html = @element.html()
+
+    # Determining cursor Position
+    pos = if (el == window.getSelection()) then el.getRangeAt(0).startOffset else html.length;
+
+    # Adding the Bullet Point
+    @element.html html.substr(0, pos) + '<ul><li></li></ul>' + html.substr(pos, html.length)
+    @element.focus()
+
+    # Setting the cursor position to the beginning of the Bullet list
+    if (@element.setSelectionRange)
+      @element.setSelectionRange pos, pos
+    else if (@element.createTextRange)
+      range = @element.createTextRange()
+      range.collapse true
+      range.moveEnd 'character', pos
+      range.moveStart 'character', pos
+      range.select()
 

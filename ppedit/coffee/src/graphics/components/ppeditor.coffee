@@ -64,6 +64,14 @@ class PPEditor extends Graphic
           @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, @clipboard.items)
 
     @element.find('.row')
+      .on 'moveElementUpBtnClick', (event) =>
+        boxes = @area.boxesContainer.getSelectedBoxes()
+        @commandManager.pushCommand @cmdFactory.createMoveUpCommand(this, boxes) if boxes.length > 0
+
+      .on 'moveElementDownBtnClick', (event) =>
+        boxes = @area.boxesContainer.getSelectedBoxes()
+        @commandManager.pushCommand @cmdFactory.createMoveDownCommand(this, boxes) if boxes.length > 0
+
       .on 'panelClickAddBtnClick', (event) =>
         @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this)
 
@@ -82,7 +90,6 @@ class PPEditor extends Graphic
       .on 'addBoxRequested', (event, boxCssOptions) =>
         @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, [boxCssOptions])
 
-      
       .on 'fontTypeChanged', (event, newFontType) =>
         @commandManager.pushCommand @cmdFactory.createChangeFontTypeCommand(this, @area.boxesContainer.getSelectedBoxes(), newFontType)
 
@@ -115,6 +122,13 @@ class PPEditor extends Graphic
 
       .on 'centerAlignment', (event) =>
         @commandManager.pushCommand @cmdFactory.createCenterAlignmentCommand(this, @area.boxesContainer.getSelectedBoxes())
+
+      .on 'bulletPointBtnEnableClick', (event) =>
+        selectedBoxes = @area.boxesContainer.getSelectedBoxes()
+        boxes = @area.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
+        box.addBulletPoint() for id, box of boxes
+
+      .on 'bulletPointBtnDisableClick', (event) =>
 
     @area.boxesContainer.element
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>

@@ -213,39 +213,18 @@
     return it("drag the slider button to change the box opacity", function() {});
   });
 
-  ppeditDescribe("A test for issue CAP-35 : As a user,   I want to have horizontal and vertical alignment of my paragraphs.", function() {
-    it("change to left alignment by click left alignment button on the panel", function() {
-      var box, btn;
-      addBox(1);
-      box = $('.ppedit-box');
-      btn = $('.leftAlignBtn');
-      box.simulate('click');
-      btn.simulate('click');
-      return expect($(".ppedit-box")).toHaveCss({
-        'text-align': "left"
+  ppeditDescribe("A test for issue CAP-37 : As a user, I want to arrange the elements depth.", function() {
+    return it("can change the index of the element row one above the table element", function() {
+      var boxes;
+      addBox(3);
+      boxes = $('.ppedit-box');
+      expect(boxes).toHaveLength(3);
+      boxes.eq(2).simulate('click');
+      $('.moveElementDownBtn').simulate('click');
+      expect(boxes.eq(2)).toHaveCss({
+        'z-index': '2'
       });
-    });
-    it("change to right alignment by click left alignment button on the panel", function() {
-      var box, btn;
-      addBox(1);
-      box = $('.ppedit-box');
-      btn = $('.rightAlignBtn');
-      box.simulate('click');
-      btn.simulate('click');
-      return expect($(".ppedit-box")).toHaveCss({
-        'text-align': "right"
-      });
-    });
-    return it("change to center alignment by click left alignment button on the panel", function() {
-      var box, btn;
-      addBox(1);
-      box = $('.ppedit-box');
-      btn = $('.centerAlignBtn');
-      box.simulate('click');
-      btn.simulate('click');
-      return expect($(".ppedit-box")).toHaveCss({
-        'text-align': "center"
-      });
+      return expect($('.ppedit-panel-row').eq(1)).toHaveAttr('ppedit-box-id', boxes.eq(2).attr('ppedit-box-id'));
     });
   });
 
@@ -287,11 +266,11 @@
     });
     it("repositions elements with the mouse", function() {
       addBox(2);
-      moveBox($('.ppedit-box'), {
+      moveBox($('.ppedit-box').eq(0), {
         dx: 150,
         dy: 180
       });
-      return moveBox($('.ppedit-box'), {
+      return moveBox($('.ppedit-box').eq(1), {
         dx: 100,
         dy: 100
       });

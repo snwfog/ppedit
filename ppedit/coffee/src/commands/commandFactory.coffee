@@ -3,6 +3,7 @@
 #= require CreateBoxesCommand
 #= require CopyBoxesCommand
 #= require MoveBoxCommand
+#= require ChangeDepthCommand
 
 class CommandFactory
 
@@ -44,3 +45,9 @@ class CommandFactory
 
   createCreateBoxesCommand: (editor, optionsList) ->
     return new CreateBoxesCommand editor, optionsList
+
+  createMoveUpCommand: (editor, boxSelector) ->
+    return new ChangeDepthCommand editor, boxSelector, true
+
+  createMoveDownCommand: (editor, boxSelector) ->
+    return new ChangeDepthCommand editor, boxSelector, false
