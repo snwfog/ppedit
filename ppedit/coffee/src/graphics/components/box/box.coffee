@@ -21,7 +21,7 @@ class Box extends Graphic
       'text-decoration': 'none'
       'font-style': 'normal'
       'text-align': 'left'
-      'vertical-align': 'bottom'
+      # 'vertical-align': 'bottom'
     , @options);
 
     @element = $('<div></div>')
@@ -48,11 +48,11 @@ class Box extends Graphic
         @stopMoving()
         @toggleFocus()
       
-       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
-         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
+      .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
+        @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
          
-       .on 'containerMouseLeave', () =>
-         @stopMoving()
+      .on 'containerMouseLeave', () =>
+        @stopMoving()
 
       .on 'containerKeyDown', (event, keyDownEvent) =>
         @_processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')
@@ -136,3 +136,4 @@ class Box extends Graphic
       @element.blur()
     else
       @element.focus()
+

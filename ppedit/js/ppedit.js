@@ -99,8 +99,7 @@ Abstract Class, represents an Dom node
         'font-weight': 'normal',
         'text-decoration': 'none',
         'font-style': 'normal',
-        'text-align': 'left',
-        'vertical-align': 'bottom'
+        'text-align': 'left'
       }, this.options);
       return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('contenteditable', true).attr('id', $.now()).css(settings);
     };
