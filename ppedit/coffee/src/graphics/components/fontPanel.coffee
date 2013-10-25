@@ -28,7 +28,8 @@ class FontPanel extends Graphic
                <button class="weightBtn" type="button">B</button>
                <button class="underlineBtn" type="button">U</button>
                <button class="italicBtn" type="button">I</button>
-             </div>')
+               <button class="bulletPointBtn" type="button">. -</button>
+            </div>')
 
   bindEvents: ->
     @element.find("select.fontTypeBtn").change (event) =>
@@ -40,15 +41,19 @@ class FontPanel extends Graphic
       @root.trigger 'fontSizeChanged', [newFontSize]
 
     @element.find(".weightBtn").click (event) =>
-      btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+      btn = $(event.target).toggleClass('.ppedit-btn-enabled')
       @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
 
     @element.find(".underlineBtn").click (event) =>
-      btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+      btn = $(event.target).toggleClass('.ppedit-btn-enabled')
       @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontUnderlinedBtnEnableClick' else 'fontUnderlinedBtnDisableClick')
 
     @element.find(".italicBtn").click (event) =>
-      btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+      btn = $(event.target).toggleClass('.ppedit-btn-enabled')
       @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontItalicBtnEnableClick' else 'fontItalicBtnDisableClick')
 
+    @element.find(".bulletPointBtn").click (event) =>
+      #btn = $(event.target).toggleClass('.ppedit-btn-enabled')
+      #@root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'bulletPointBtnEnableClick' else 'bulletPointBtnDisableClick')
+      @root.trigger 'bulletPointBtnEnableClick'
 

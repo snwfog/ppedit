@@ -251,11 +251,11 @@
     });
     it("repositions elements with the mouse", function() {
       addBox(2);
-      moveBox($('.ppedit-box'), {
+      moveBox($('.ppedit-box').eq(0), {
         dx: 150,
         dy: 180
       });
-      return moveBox($('.ppedit-box'), {
+      return moveBox($('.ppedit-box').eq(1), {
         dx: 100,
         dy: 100
       });

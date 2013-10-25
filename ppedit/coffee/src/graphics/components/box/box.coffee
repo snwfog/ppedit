@@ -46,11 +46,11 @@ class Box extends Graphic
         @stopMoving()
         @toggleFocus()
       
-       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
-         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
-         
-       .on 'containerMouseLeave', () =>
-         @stopMoving()
+      .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
+        @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
+
+      .on 'containerMouseLeave', () =>
+        @stopMoving()
 
       .on 'containerKeyDown', (event, keyDownEvent) =>
         @_processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')
@@ -127,10 +127,35 @@ class Box extends Graphic
     if @element.hasClass('ppedit-box-selected')
       @stopMoving()
     else
-      @select()
+      @root.find('.ppedit-box').removeClass('ppedit-box-selected')
+      @select() if !@isFocused()
 
   toggleFocus: ->
-    if @isFocused()
-      @element.blur()
-    else
-      @element.focus()
+      @root.find('.ppedit-box')
+        .removeClass('ppedit-box-focus')
+        .removeClass('ppedit-box-selected')
+      @element
+        .addClass('ppedit-box-focus')
+        .focus()
+
+  addBulletPoint: ->
+    el = @element.get(0)
+    html = @element.html()
+
+    # Determining cursor Position
+    pos = if (el == window.getSelection()) then el.getRangeAt(0).startOffset else html.length;
+
+    # Adding the Bullet Point
+    @element.html html.substr(0, pos) + '<ul><li></li></ul>' + html.substr(pos, html.length)
+    @element.focus()
+
+    # Setting the cursor position to the beginning of the Bullet list
+    if (@element.setSelectionRange)
+      @element.setSelectionRange pos, pos
+    else if (@element.createTextRange)
+      range = @element.createTextRange()
+      range.collapse true
+      range.moveEnd 'character', pos
+      range.moveStart 'character', pos
+      range.select()
+

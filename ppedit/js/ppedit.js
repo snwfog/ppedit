@@ -215,15 +215,33 @@ Abstract Class, represents an Dom node
       if (this.element.hasClass('ppedit-box-selected')) {
         return this.stopMoving();
       } else {
-        return this.select();
+        this.root.find('.ppedit-box').removeClass('ppedit-box-selected');
+        if (!this.isFocused()) {
+          return this.select();
+        }
       }
     };
 
     Box.prototype.toggleFocus = function() {
-      if (this.isFocused()) {
-        return this.element.blur();
-      } else {
-        return this.element.focus();
+      this.root.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
+      return this.element.addClass('ppedit-box-focus').focus();
+    };
+
+    Box.prototype.addBulletPoint = function() {
+      var el, html, pos, range;
+      el = this.element.get(0);
+      html = this.element.html();
+      pos = el === window.getSelection() ? el.getRangeAt(0).startOffset : html.length;
+      this.element.html(html.substr(0, pos) + '<ul><li></li></ul>' + html.substr(pos, html.length));
+      this.element.focus();
+      if (this.element.setSelectionRange) {
+        return this.element.setSelectionRange(pos, pos);
+      } else if (this.element.createTextRange) {
+        range = this.element.createTextRange();
+        range.collapse(true);
+        range.moveEnd('character', pos);
+        range.moveStart('character', pos);
+        return range.select();
       }
     };
 
@@ -805,7 +823,7 @@ Abstract Class, represents an Dom node
       _results = [];
       for (_i = 0, _len = boxIds.length; _i < _len; _i++) {
         id = boxIds[_i];
-        this.boxes[id].element.removeClass('ppedit-box-selected').remove();
+        this.boxes[id].element.removeClass('ppedit-box-selected').removeClass('ppedit-box-focus').remove();
         _results.push(delete this.boxes[id]);
       }
       return _results;
@@ -864,7 +882,7 @@ Abstract Class, represents an Dom node
 
 
     BoxesContainer.prototype.getSelectedBoxes = function() {
-      return this.element.find('.ppedit-box:focus, .ppedit-box-selected');
+      return this.element.find('.ppedit-box:focus, .ppedit-box-selected, .ppedit-box-focus');
     };
 
     /*
@@ -1319,7 +1337,17 @@ Abstract Class, represents an Dom node
         return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), true));
       }).on('fontItalicBtnDisableClick', function(event) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), false));
-      });
+      }).on('bulletPointBtnEnableClick', function(event) {
+        var box, boxes, id, selectedBoxes, _results;
+        selectedBoxes = _this.area.boxesContainer.getSelectedBoxes();
+        boxes = _this.area.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0));
+        _results = [];
+        for (id in boxes) {
+          box = boxes[id];
+          _results.push(box.addBulletPoint());
+        }
+        return _results;
+      }).on('bulletPointBtnDisableClick', function(event) {});
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false);
       });
@@ -1365,7 +1393,8 @@ Abstract Class, represents an Dom node
                <button class="weightBtn" type="button">B</button>\
                <button class="underlineBtn" type="button">U</button>\
                <button class="italicBtn" type="button">I</button>\
-             </div>');
+               <button class="bulletPointBtn" type="button">. -</button>\
+            </div>');
     };
 
     FontPanel.prototype.bindEvents = function() {
@@ -1390,10 +1419,13 @@ Abstract Class, represents an Dom node
         btn = $(event.target).toggleClass('.ppedit-btn-enabled');
         return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontUnderlinedBtnEnableClick' : 'fontUnderlinedBtnDisableClick');
       });
-      return this.element.find(".italicBtn").click(function(event) {
+      this.element.find(".italicBtn").click(function(event) {
         var btn;
         btn = $(event.target).toggleClass('.ppedit-btn-enabled');
         return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');
+      });
+      return this.element.find(".bulletPointBtn").click(function(event) {
+        return _this.root.trigger('bulletPointBtnEnableClick');
       });
     };
 

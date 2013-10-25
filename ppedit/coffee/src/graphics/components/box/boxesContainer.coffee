@@ -83,6 +83,7 @@ class BoxesContainer extends Graphic
     for id in boxIds
       @boxes[id].element
         .removeClass('ppedit-box-selected')
+        .removeClass('ppedit-box-focus')
         .remove()
       delete @boxes[id]
 
@@ -113,7 +114,7 @@ class BoxesContainer extends Graphic
   Returns a selector to the currently selected boxes
   ###
   getSelectedBoxes: ->
-    return @element.find '.ppedit-box:focus, .ppedit-box-selected'
+    return @element.find '.ppedit-box:focus, .ppedit-box-selected, .ppedit-box-focus'
 
   ###
   Returns a selector to the currently selected boxes,
