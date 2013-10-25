@@ -37,17 +37,20 @@
     overflow:auto;
 
     background-color: transparent;
+    /*background-color: rgba(255, 255, 255, 1);*/
 }
 
-.ppedit-box-selected,
-.ppedit-box:focus
+.ppedit-box-selected
 {
     border-style:dashed;
 }
 
-.ppedit-box-focus
+.ppedit-box-focus,
+.ppedit-box:focus
 {
     border-color:blue;
+    border-style:dashed;
+    background-color: rgba(200, 200, 200, 0.1);
 }
 
 .ppedit-canvas

@@ -13,6 +13,14 @@ class Box extends Graphic
     @prevContent = undefined
 
   buildElement: ->
+    highestZIndex = undefined
+
+    boxs = @root.find('.ppedit-box')
+    if boxs.length > 0
+      highestZIndex = 0
+      boxs.each (index, nodeElement) ->
+        highestZIndex = Math.max highestZIndex, parseInt($(nodeElement).css('z-index'))
+
     settings = $.extend(
       left:'50px'
       top:'50px'
@@ -23,6 +31,7 @@ class Box extends Graphic
       'font-weight': 'normal'
       'text-decoration': 'none'
       'font-style': 'normal'
+      'z-index' : if highestZIndex? then (highestZIndex + 1) else 0;
       'text-align': 'left'
       'vertical-align': 'bottom'
     , @options);
@@ -64,7 +73,7 @@ class Box extends Graphic
         @prevContent = @element.html()
 
       .blur (event) =>
-        @element.trigger 'boxContentChanged', [{box:this, prevContent:@prevContent}]
+        @element.trigger 'boxContentChanged', [{box:this, prevContent:@prevContent}] if @prevContent != @element.html()
         @prevContent = undefined
 
     .keydown (event) =>

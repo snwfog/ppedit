@@ -213,6 +213,21 @@
     return it("drag the slider button to change the box opacity", function() {});
   });
 
+  ppeditDescribe("A test for issue CAP-37 : As a user, I want to arrange the elements depth.", function() {
+    return it("can change the index of the element row one above the table element", function() {
+      var boxes;
+      addBox(3);
+      boxes = $('.ppedit-box');
+      expect(boxes).toHaveLength(3);
+      boxes.eq(2).simulate('click');
+      $('.moveElementDownBtn').simulate('click');
+      expect(boxes.eq(2)).toHaveCss({
+        'z-index': '2'
+      });
+      return expect($('.ppedit-panel-row').eq(1)).toHaveAttr('ppedit-box-id', boxes.eq(2).attr('ppedit-box-id'));
+    });
+  });
+
   ppeditDescribe("A test for issue CAP-25 : As a user, I want to name my document, so that I can distinguish between my documents", function() {
     return it("can input text inside the textarea to name document", function() {
       $('.addElementBtn').val('documentName');
