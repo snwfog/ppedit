@@ -274,7 +274,7 @@
     });
   });
 
-  ppeditDescribe("A test for issue CAP-44 : As a user,   I want to change font settings of my text documents.", function() {
+  ppeditDescribe("A test for issue CAP-13 : As a user,   I want to change font settings of my text documents.", function() {
     it("change font family on select font family on the panel", function() {
       var box;
       addBox(1);

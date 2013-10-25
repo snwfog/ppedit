@@ -98,7 +98,9 @@ Abstract Class, represents an Dom node
         'font-size': '100%',
         'font-weight': 'normal',
         'text-decoration': 'none',
-        'font-style': 'normal'
+        'font-style': 'normal',
+        'text-align': 'left',
+        'vertical-align': 'bottom'
       }, this.options);
       return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('contenteditable', true).attr('id', $.now()).css(settings);
     };
@@ -558,6 +560,24 @@ Abstract Class, represents an Dom node
       styleValue = enable ? 'underline' : 'none';
       return new ChangeStyleCommand(editor, boxesSelector, {
         'text-decoration': styleValue
+      });
+    };
+
+    CommandFactory.prototype.createRightAlignmentCommand = function(editor, boxesSelector) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'text-align': 'right'
+      });
+    };
+
+    CommandFactory.prototype.createLeftAlignmentCommand = function(editor, boxesSelector) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'text-align': 'left'
+      });
+    };
+
+    CommandFactory.prototype.createCenterAlignmentCommand = function(editor, boxesSelector) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'text-align': 'center'
       });
     };
 
@@ -1337,6 +1357,12 @@ Abstract Class, represents an Dom node
         return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), true));
       }).on('fontItalicBtnDisableClick', function(event) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), false));
+      }).on('rightAlignment', function(event) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createRightAlignmentCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+      }).on('leftAlignment', function(event) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createLeftAlignmentCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+      }).on('centerAlignment', function(event) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createCenterAlignmentCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
       }).on('bulletPointBtnEnableClick', function(event) {
         var box, boxes, id, selectedBoxes, _results;
         selectedBoxes = _this.area.boxesContainer.getSelectedBoxes();
@@ -1393,6 +1419,11 @@ Abstract Class, represents an Dom node
                <button class="weightBtn" type="button">B</button>\
                <button class="underlineBtn" type="button">U</button>\
                <button class="italicBtn" type="button">I</button>\
+               <br />\
+               <button class="leftAlignBtn" type="button"><span class="glyphicon glyphicon-align-left"></button>\
+               <button class="centerAlignBtn" type="button"><span class="glyphicon glyphicon-align-center"></button>\
+               <button class="rightAlignBtn" type="button"><span class="glyphicon glyphicon-align-right"></button>\
+			   <br />\
                <button class="bulletPointBtn" type="button">. -</button>\
             </div>');
     };
@@ -1423,6 +1454,15 @@ Abstract Class, represents an Dom node
         var btn;
         btn = $(event.target).toggleClass('.ppedit-btn-enabled');
         return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');
+      });
+      this.element.find(".rightAlignBtn").click(function(event) {
+        return _this.root.trigger('rightAlignment');
+      });
+      this.element.find(".leftAlignBtn").click(function(event) {
+        return _this.root.trigger('leftAlignment');
+      });
+      this.element.find(".centerAlignBtn").click(function(event) {
+        return _this.root.trigger('centerAlignment');
       });
       return this.element.find(".bulletPointBtn").click(function(event) {
         return _this.root.trigger('bulletPointBtnEnableClick');

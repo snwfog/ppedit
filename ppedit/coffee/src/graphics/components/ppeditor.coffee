@@ -106,6 +106,15 @@ class PPEditor extends Graphic
       .on 'fontItalicBtnDisableClick', (event) =>
         @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, @area.boxesContainer.getSelectedBoxes(), false)
 
+      .on 'rightAlignment', (event) =>
+        @commandManager.pushCommand @cmdFactory.createRightAlignmentCommand(this, @area.boxesContainer.getSelectedBoxes())
+
+      .on 'leftAlignment', (event) =>
+        @commandManager.pushCommand @cmdFactory.createLeftAlignmentCommand(this, @area.boxesContainer.getSelectedBoxes())
+
+      .on 'centerAlignment', (event) =>
+        @commandManager.pushCommand @cmdFactory.createCenterAlignmentCommand(this, @area.boxesContainer.getSelectedBoxes())
+
       .on 'bulletPointBtnEnableClick', (event) =>
         selectedBoxes = @area.boxesContainer.getSelectedBoxes()
         boxes = @area.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
