@@ -10,6 +10,10 @@ class Box extends Graphic
     @prevPosition = undefined
 
   buildElement: ->
+    highestZIndex = 0
+    @root.find('.ppedit-box').each (index, nodeElement) ->
+      highestZIndex = Math.max highestZIndex, parseInt($(nodeElement).css('z-index'))
+
     settings = $.extend(
       left:'50px'
       top:'50px'
@@ -20,6 +24,7 @@ class Box extends Graphic
       'font-weight': 'normal'
       'text-decoration': 'none'
       'font-style': 'normal'
+      'z-index' : highestZIndex + 1
     , @options);
 
     @element = $('<div></div>')
@@ -46,11 +51,11 @@ class Box extends Graphic
         @stopMoving()
         @toggleFocus()
       
-      .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
-        @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
+      #.on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
+      #  @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
          
-      .on 'containerMouseLeave', () =>
-        @stopMoving()
+      #.on 'containerMouseLeave', () =>
+      #  @stopMoving()
 
       .on 'containerKeyDown', (event, keyDownEvent) =>
         @_processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')

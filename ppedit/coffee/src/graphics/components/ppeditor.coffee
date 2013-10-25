@@ -70,7 +70,7 @@ class PPEditor extends Graphic
 
       .on 'moveElementDownBtnClick', (event) =>
         boxes = @area.boxesContainer.getSelectedBoxes()
-        @commandManager.pushCommand @cmdFactory.createMoveDownCommand(this, @boxes) if boxes.length > 0
+        @commandManager.pushCommand @cmdFactory.createMoveDownCommand(this, boxes) if boxes.length > 0
 
       .on 'panelClickAddBtnClick', (event) =>
         @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this)

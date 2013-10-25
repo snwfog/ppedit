@@ -8,7 +8,8 @@ class ChangeDepthCommand
   @moveUp is the parameter that specify the box to move up
   if true, or down if false.
   ###
-  constructor: (@editor, @boxSelector, @moveUp) ->
+  constructor: (@editor, boxSelector, @moveUp) ->
+    @boxId = boxSelector.attr('id')
    
   execute: ->
     if @moveUp then @swapRowWithUpperRow() else @swapRowWithLowerRow()
@@ -17,7 +18,7 @@ class ChangeDepthCommand
     if @moveUp then @swapRowWithLowerRow() else @swapRowWithUpperRow()
 
   swapRowWithUpperRow: ->
-    row = @editor.panel.getRowWithBoxId(@boxSelector.attr('id'))
+    row = @editor.panel.getRowWithBoxId(@boxId)
     index = row.index()
 
     if index-1 >= 0
@@ -25,10 +26,10 @@ class ChangeDepthCommand
       @swapRows row, upperRow
 
   swapRowWithLowerRow: ->
-    row = @editor.panel.getRowWithBoxId(@boxSelector.attr('id'))
+    row = @editor.panel.getRowWithBoxId(@boxId)
     index = row.index()
 
-    if index < @editor.panel.element.find('.ppedit-panel-row').length-1
+    if index+1 < @editor.panel.element.find('.ppedit-panel-row').length
       lowerRow = @editor.panel.getRowAtIndex index+1
       @swapRows row, lowerRow
 

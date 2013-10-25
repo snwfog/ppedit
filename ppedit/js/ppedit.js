@@ -88,7 +88,11 @@ Abstract Class, represents an Dom node
     }
 
     Box.prototype.buildElement = function() {
-      var settings;
+      var highestZIndex, settings;
+      highestZIndex = 0;
+      this.root.find('.ppedit-box').each(function(index, nodeElement) {
+        return highestZIndex = Math.max(highestZIndex, parseInt($(nodeElement).css('z-index')));
+      });
       settings = $.extend({
         left: '50px',
         top: '50px',
@@ -98,7 +102,8 @@ Abstract Class, represents an Dom node
         'font-size': '100%',
         'font-weight': 'normal',
         'text-decoration': 'none',
-        'font-style': 'normal'
+        'font-style': 'normal',
+        'z-index': highestZIndex + 1
       }, this.options);
       return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('contenteditable', true).attr('id', $.now()).css(settings);
     };
@@ -117,12 +122,6 @@ Abstract Class, represents an Dom node
         event.preventDefault();
         _this.stopMoving();
         return _this.toggleFocus();
-      }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
-        if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
-          return _this.move(delta.x, delta.y);
-        }
-      }).on('containerMouseLeave', function() {
-        return _this.stopMoving();
       }).on('containerKeyDown', function(event, keyDownEvent) {
         if (_this.element.hasClass('ppedit-box-selected')) {
           return _this._processKeyDownEvent(keyDownEvent);
@@ -514,8 +513,8 @@ Abstract Class, represents an Dom node
 
     function ChangeDepthCommand(editor, boxSelector, moveUp) {
       this.editor = editor;
-      this.boxSelector = boxSelector;
       this.moveUp = moveUp;
+      this.boxId = boxSelector.attr('id');
     }
 
     ChangeDepthCommand.prototype.execute = function() {
@@ -536,7 +535,7 @@ Abstract Class, represents an Dom node
 
     ChangeDepthCommand.prototype.swapRowWithUpperRow = function() {
       var index, row, upperRow;
-      row = this.editor.panel.getRowWithBoxId(this.boxSelector.attr('id'));
+      row = this.editor.panel.getRowWithBoxId(this.boxId);
       index = row.index();
       if (index - 1 >= 0) {
         upperRow = this.editor.panel.getRowAtIndex(index - 1);
@@ -546,9 +545,9 @@ Abstract Class, represents an Dom node
 
     ChangeDepthCommand.prototype.swapRowWithLowerRow = function() {
       var index, lowerRow, row;
-      row = this.editor.panel.getRowWithBoxId(this.boxSelector.attr('id'));
+      row = this.editor.panel.getRowWithBoxId(this.boxId);
       index = row.index();
-      if (index < this.editor.panel.element.find('.ppedit-panel-row').length - 1) {
+      if (index + 1 < this.editor.panel.element.find('.ppedit-panel-row').length) {
         lowerRow = this.editor.panel.getRowAtIndex(index + 1);
         return this.swapRows(row, lowerRow);
       }
@@ -1171,9 +1170,6 @@ Abstract Class, represents an Dom node
       return this.element = $('\
             <div class="col-xs-5">\
 \
-              <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
-              <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> \
-              \
               <form class="form-inline" role="form" style="padding-top: 5px;">\
                 <div class="form-group col-lg-20">\
                   <fieldset style="padding-left: 15px;">\
@@ -1187,27 +1183,26 @@ Abstract Class, represents an Dom node
                       <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>\
 \
                       <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button>\
+                      \
+                      <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
+                      \
+                      <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> \
 \
                       <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>\
 \
-\
-              <table class="table table-hover dataPanel">\
-                  <thead>\
-                      <tr>\
-                        <th>Remove</th>\
-                        <th>Name of Element</th>\
-                        <th>Opacity</th>\
-                      </tr>\
-                  </thead>\
-                  <tbody>\
-\
-\
-\
+                      <table class="table table-hover dataPanel">\
+                          <thead>\
+                              <tr>\
+                                <th>Remove</th>\
+                                <th>Name of Element</th>\
+                                <th>Opacity</th>\
+                              </tr>\
+                          </thead>\
+                          <tbody>\
 \
                           </tbody>\
                       </table>\
-                    \
-                    <button type="submit" class="btn btn btn-success" style="float: right;">Save</button>\
+                      <button type="submit" class="btn btn btn-success" style="float: right;">Save</button>\
                   </fieldset>\
                 </div>\
               </form>\
@@ -1242,7 +1237,7 @@ Abstract Class, represents an Dom node
       var newRow,
         _this = this;
       newRow = $("            <tr class='ppedit-panel-row'>                <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>                <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>                <td><div class=\"ppedit-slider\"></div></td>            </tr>").attr('ppedit-box-id', boxid);
-      this.element.find('.dataPanel tbody').append(newRow);
+      this.element.find('.dataPanel tbody').prepend(newRow);
       newRow.find(".ppedit-slider").slider({
         min: 0,
         max: 100,
@@ -1351,7 +1346,7 @@ Abstract Class, represents an Dom node
         var boxes;
         boxes = _this.area.boxesContainer.getSelectedBoxes();
         if (boxes.length > 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveDownCommand(_this, _this.boxes));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveDownCommand(_this, boxes));
         }
       }).on('panelClickAddBtnClick', function(event) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this));
