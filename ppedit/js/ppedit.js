@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, FontPanel, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+  var Box, BoxesContainer, Canvas, ChangeContentCommand, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, FontPanel, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -85,6 +85,7 @@ Abstract Class, represents an Dom node
       this.options = options;
       Box.__super__.constructor.call(this, this.root);
       this.prevPosition = void 0;
+      this.prevContent = void 0;
     }
 
     Box.prototype.buildElement = function() {
@@ -129,6 +130,15 @@ Abstract Class, represents an Dom node
         if (_this.element.hasClass('ppedit-box-selected')) {
           return _this._processKeyDownEvent(keyDownEvent);
         }
+      }).focus(function(event) {
+        return _this.prevContent = _this.element.html();
+      }).blur(function(event) {
+        _this.element.trigger('boxContentChanged', [
+          _this, {
+            prevContent: _this.prevContent
+          }
+        ]);
+        return _this.prevContent = void 0;
       }).keydown(function(event) {
         if (!_this.isFocused()) {
           return _this._processKeyDownEvent(event);
@@ -598,6 +608,25 @@ Abstract Class, represents an Dom node
     };
 
     return CommandFactory;
+
+  })();
+
+  ChangeContentCommand = (function() {
+    function ChangeContentCommand(box, prevContent, newContent) {
+      this.box = box;
+      this.prevContent = prevContent;
+      this.newContent = newContent;
+    }
+
+    ChangeContentCommand.prototype.execute = function() {
+      return this.box.element.html(this.newContent);
+    };
+
+    ChangeContentCommand.prototype.undo = function() {
+      return this.box.element.html(this.prevContent);
+    };
+
+    return ChangeContentCommand;
 
   })();
 
@@ -1328,6 +1357,8 @@ Abstract Class, represents an Dom node
         if (_this.clipboard.items.length !== 0) {
           return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, _this.clipboard.items));
         }
+      }).on('boxContentChanged', function(event) {
+        return console.log('boxContentChanged');
       });
       this.element.find('.row').on('panelClickAddBtnClick', function(event) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this));

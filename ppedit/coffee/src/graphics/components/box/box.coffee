@@ -9,6 +9,9 @@ class Box extends Graphic
     # true if the user is currently leftclicking on the box.
     @prevPosition = undefined
 
+    # box previous content
+    @prevContent = undefined
+
   buildElement: ->
     settings = $.extend(
       left:'50px'
@@ -57,7 +60,14 @@ class Box extends Graphic
       .on 'containerKeyDown', (event, keyDownEvent) =>
         @_processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')
 
-      .keydown (event) =>
+      .focus (event) =>
+        @prevContent = @element.html()
+
+      .blur (event) =>
+        @element.trigger 'boxContentChanged', [{box:this, prevContent:@prevContent}]
+        @prevContent = undefined
+
+    .keydown (event) =>
         @_processKeyDownEvent(event) if !@isFocused()
       
   ###
