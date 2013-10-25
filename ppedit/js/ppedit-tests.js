@@ -220,15 +220,13 @@
       boxes = $('.ppedit-box');
       expect(boxes).toHaveLength(3);
       boxes.eq(2).simulate('click');
-      return $('.moveElementDownBtn').simulate('click');
+      $('.moveElementDownBtn').simulate('click');
+      expect(boxes.eq(2)).toHaveCss({
+        'z-index': '2'
+      });
+      return expect($('.ppedit-panel-row').eq(1)).toHaveAttr('ppedit-box-id', boxes.eq(2).attr('ppedit-box-id'));
     });
   });
-
-  expect(boxes.eq(2)).toHaveCss({
-    'z-index': 1
-  });
-
-  expect($('.ppedit-panel-row').eq(1)).toHaveAttr('ppedit-box-id', boxes.eq(2).attr('ppedit-box-id'));
 
   ppeditDescribe("A test for issue CAP-25 : As a user, I want to name my document, so that I can distinguish between my documents", function() {
     return it("can input text inside the textarea to name document", function() {
@@ -268,11 +266,11 @@
     });
     it("repositions elements with the mouse", function() {
       addBox(2);
-      moveBox($('.ppedit-box'), {
+      moveBox($('.ppedit-box').eq(0), {
         dx: 150,
         dy: 180
       });
-      return moveBox($('.ppedit-box'), {
+      return moveBox($('.ppedit-box').eq(1), {
         dx: 100,
         dy: 100
       });
@@ -291,7 +289,7 @@
     });
   });
 
-  ppeditDescribe("A test for issue CAP-44 : As a user,   I want to change font settings of my text documents.", function() {
+  ppeditDescribe("A test for issue CAP-13 : As a user,   I want to change font settings of my text documents.", function() {
     it("change font family on select font family on the panel", function() {
       var box;
       addBox(1);

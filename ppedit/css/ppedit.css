@@ -45,7 +45,7 @@
     border-style:dashed;
 }
 
-.ppedit-box:focus
+.ppedit-box-focus
 {
     border-color:blue;
 }

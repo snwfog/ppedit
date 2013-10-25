@@ -25,6 +25,15 @@ class CommandFactory
     styleValue = if enable then 'underline' else 'none'
     return new ChangeStyleCommand editor, boxesSelector, {'text-decoration': styleValue}
 
+  createRightAlignmentCommand: (editor, boxesSelector) ->
+    return new ChangeStyleCommand editor, boxesSelector, {'text-align': 'right'}
+
+  createLeftAlignmentCommand: (editor, boxesSelector) ->
+    return new ChangeStyleCommand editor, boxesSelector, {'text-align': 'left'}
+
+  createCenterAlignmentCommand: (editor, boxesSelector) ->
+    return new ChangeStyleCommand editor, boxesSelector, {'text-align': 'center'}
+
   createMoveBoxCommand: (box, toPosition, fromPosition) ->
     return new MoveBoxCommand box, toPosition, fromPosition
 

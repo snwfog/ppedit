@@ -1,6 +1,6 @@
 #= require <ppeditTest.coffee>
 
-ppeditDescribe "A test for issue CAP-44 : As a user,   I want to change font settings of my text documents.", ->
+ppeditDescribe "A test for issue CAP-13 : As a user,   I want to change font settings of my text documents.", ->
   
   it "change font family on select font family on the panel", ->
     
