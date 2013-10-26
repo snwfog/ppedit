@@ -13,15 +13,16 @@ class BoxHelper
 
   bindEvents: ->
     @controller = ControllerFactory.getController @graphic.element
-    @graphic.element.on 'requestUndo', (event) =>
-      @_checkNewContent false
-      event.stopPropagation()
+    @graphic.element
+      .on 'requestUndo', (event) =>
+        @_checkNewContent false
+        event.stopPropagation()
 
-    @graphic.element.focus (event) =>
-      @_checkNewContent true
+      .focus (event) =>
+        @_checkNewContent true
 
-    @graphic.element.blur (event) =>
-      @_checkNewContent true
+      .blur (event) =>
+        @_checkNewContent true
 
     @controller.bindEvents()
 

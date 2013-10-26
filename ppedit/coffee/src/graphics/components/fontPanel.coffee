@@ -33,7 +33,7 @@ class FontPanel extends Graphic
                <button class="centerAlignBtn" type="button"><span class="glyphicon glyphicon-align-center"></button>
                <button class="rightAlignBtn" type="button"><span class="glyphicon glyphicon-align-right"></button>
 			   <br />
-               <button class="bulletPointBtn" type="button">. -</button>
+               <!-- <button class="bulletPointBtn" type="button">. -</button> -->
             </div>')
 
   bindEvents: ->

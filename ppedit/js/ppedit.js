@@ -229,11 +229,9 @@ Abstract Class, represents an Dom node
       this.graphic.element.on('requestUndo', function(event) {
         _this._checkNewContent(false);
         return event.stopPropagation();
-      });
-      this.graphic.element.focus(function(event) {
+      }).focus(function(event) {
         return _this._checkNewContent(true);
-      });
-      this.graphic.element.blur(function(event) {
+      }).blur(function(event) {
         return _this._checkNewContent(true);
       });
       return this.controller.bindEvents();
@@ -274,7 +272,6 @@ Abstract Class, represents an Dom node
       this.options = options;
       Box.__super__.constructor.call(this, this.root);
       this.prevPosition = void 0;
-      this.prevContent = void 0;
       this.helper = new BoxHelper(this);
     }
 
@@ -329,18 +326,6 @@ Abstract Class, represents an Dom node
         if (_this.element.hasClass('ppedit-box-selected')) {
           return _this._processKeyDownEvent(keyDownEvent);
         }
-      }).focus(function(event) {
-        return _this.prevContent = _this.element.html();
-      }).blur(function(event) {
-        if (_this.prevContent !== _this.element.html()) {
-          _this.element.trigger('boxContentChanged', [
-            {
-              box: _this,
-              prevContent: _this.prevContent
-            }
-          ]);
-        }
-        return _this.prevContent = void 0;
       }).keydown(function(event) {
         if (!_this.isFocused()) {
           return _this._processKeyDownEvent(event);
@@ -443,21 +428,19 @@ Abstract Class, represents an Dom node
     };
 
     Box.prototype.addBulletPoint = function() {
-      var el, html, pos, range;
-      el = this.element.get(0);
+      return this._addHtml('<ul><li></li></ul>');
+    };
+
+    Box.prototype._addHtml = function(htmlText) {
+      var html, pos;
       html = this.element.html();
-      pos = el === window.getSelection() ? el.getRangeAt(0).startOffset : html.length;
-      this.element.html(html.substr(0, pos) + '<ul><li></li></ul>' + html.substr(pos, html.length));
-      this.element.focus();
-      if (this.element.setSelectionRange) {
-        return this.element.setSelectionRange(pos, pos);
-      } else if (this.element.createTextRange) {
-        range = this.element.createTextRange();
-        range.collapse(true);
-        range.moveEnd('character', pos);
-        range.moveStart('character', pos);
-        return range.select();
-      }
+      pos = this._getCursorPosition();
+      this.element.html(html.substr(0, pos) + htmlText + html.substr(pos, html.length));
+      return this.element.focus();
+    };
+
+    Box.prototype._getCursorPosition = function() {
+      return window.getSelection().getRangeAt(0).startOffset;
     };
 
     return Box;
@@ -1346,7 +1329,7 @@ Abstract Class, represents an Dom node
 \
                           </tbody>\
                       </table>\
-                      <button type="submit" class="btn btn btn-success" style="float: right;">Save</button>\
+                      <!-- <button type="submit" class="btn btn btn-success" style="float: right;">Save</button> -->\
                   </fieldset>\
                 </div>\
               </form>\
@@ -1493,7 +1476,6 @@ Abstract Class, represents an Dom node
           return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, items));
         }
       }).on('graphicContentChanged', function(event, params) {
-        console.log('graphicContentChanged');
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false);
       });
       this.element.find('.row').on('moveElementUpBtnClick', function(event) {
@@ -1603,7 +1585,7 @@ Abstract Class, represents an Dom node
                <button class="centerAlignBtn" type="button"><span class="glyphicon glyphicon-align-center"></button>\
                <button class="rightAlignBtn" type="button"><span class="glyphicon glyphicon-align-right"></button>\
 			   <br />\
-               <button class="bulletPointBtn" type="button">. -</button>\
+               <!-- <button class="bulletPointBtn" type="button">. -</button> -->\
             </div>');
     };
 

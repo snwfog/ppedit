@@ -64,7 +64,7 @@ class PPEditor extends Graphic
         if items.length != 0
           @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, items)
 
-      .on 'graphicContentChanged', (event, params) => 
+      .on 'graphicContentChanged', (event, params) =>
         @commandManager.pushCommand(@cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false)
 
     @element.find('.row')

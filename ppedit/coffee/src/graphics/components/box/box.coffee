@@ -9,10 +9,6 @@ class Box extends Graphic
 
     # true if the user is currently leftclicking on the box.
     @prevPosition = undefined
-
-    # Box previous content
-    @prevContent = undefined
-
     @helper = new BoxHelper this
 
   buildElement: ->
@@ -71,13 +67,6 @@ class Box extends Graphic
 
       .on 'containerKeyDown', (event, keyDownEvent) =>
         @_processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')
-
-      .focus (event) =>
-        @prevContent = @element.html()
-
-      .blur (event) =>
-        @element.trigger 'boxContentChanged', [{box:this, prevContent:@prevContent}] if @prevContent != @element.html()
-        @prevContent = undefined
 
     .keydown (event) =>
         @_processKeyDownEvent(event) if !@isFocused()
@@ -165,23 +154,18 @@ class Box extends Graphic
         .focus()
 
   addBulletPoint: ->
-    el = @element.get(0)
+    @_addHtml '<ul><li></li></ul>'
+
+  _addHtml: (htmlText) ->
     html = @element.html()
+    pos = @_getCursorPosition()
 
-    # Determining cursor Position
-    pos = if (el == window.getSelection()) then el.getRangeAt(0).startOffset else html.length;
-
-    # Adding the Bullet Point
-    @element.html html.substr(0, pos) + '<ul><li></li></ul>' + html.substr(pos, html.length)
+    # Adding the htmlElement
+    @element.html html.substr(0, pos) + htmlText + html.substr(pos, html.length)
     @element.focus()
 
-    # Setting the cursor position to the beginning of the Bullet list
-    if (@element.setSelectionRange)
-      @element.setSelectionRange pos, pos
-    else if (@element.createTextRange)
-      range = @element.createTextRange()
-      range.collapse true
-      range.moveEnd 'character', pos
-      range.moveStart 'character', pos
-      range.select()
+    # TODO: Set the cursor position to the beginning of the Bullet list
+
+  _getCursorPosition: ->
+    return window.getSelection().getRangeAt(0).startOffset
 

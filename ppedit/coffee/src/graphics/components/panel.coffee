@@ -40,7 +40,7 @@ class Panel extends Graphic
 
                           </tbody>
                       </table>
-                      <button type="submit" class="btn btn btn-success" style="float: right;">Save</button>
+                      <!-- <button type="submit" class="btn btn btn-success" style="float: right;">Save</button> -->
                   </fieldset>
                 </div>
               </form>
