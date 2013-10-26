@@ -1,5 +1,6 @@
 #= require Graphic
 #= require Geometry
+#= require BoxHelper
 
 class Box extends Graphic
 
@@ -9,8 +10,10 @@ class Box extends Graphic
     # true if the user is currently leftclicking on the box.
     @prevPosition = undefined
 
-    # box previous content
+    # Box previous content
     @prevContent = undefined
+
+    @helper = new BoxHelper this
 
   buildElement: ->
     highestZIndex = undefined
@@ -78,6 +81,8 @@ class Box extends Graphic
 
     .keydown (event) =>
         @_processKeyDownEvent(event) if !@isFocused()
+
+    @helper.bindEvents()
       
   ###
   Matches directional arrows event
@@ -112,7 +117,7 @@ class Box extends Graphic
         moved = true
         @move 0, 1
 
-      @root.trigger 'boxMoved', [@, @currentPosition(), previousPosition] if moved
+      @element.trigger 'boxMoved', [@, @currentPosition(), previousPosition] if moved
 
   stopMoving: ->
     @element.removeClass('ppedit-box-selected')

@@ -222,7 +222,7 @@
       boxes.eq(2).simulate('click');
       $('.moveElementDownBtn').simulate('click');
       expect(boxes.eq(2)).toHaveCss({
-        'z-index': '2'
+        'z-index': '1'
       });
       return expect($('.ppedit-panel-row').eq(1)).toHaveAttr('ppedit-box-id', boxes.eq(2).attr('ppedit-box-id'));
     });

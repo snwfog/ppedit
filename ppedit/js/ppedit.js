@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, ChangeBoxContentCommand, ChangeDepthCommand, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, FontPanel, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+  var Box, BoxHelper, BoxesContainer, Canvas, ChangeBoxContentCommand, ChangeDepthCommand, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, FontPanel, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -77,6 +77,195 @@ Abstract Class, represents an Dom node
 
   })();
 
+  /*
+  Helper Class that provides static constants to keyboard keycodes.
+  */
+
+
+  KeyCodes = (function() {
+    function KeyCodes() {}
+
+    KeyCodes.C = 67;
+
+    KeyCodes.P = 86;
+
+    KeyCodes.Z = 90;
+
+    KeyCodes.Y = 89;
+
+    KeyCodes.DELETE = 46;
+
+    KeyCodes.MAC_CMD_LEFT = 91;
+
+    KeyCodes.MAC_CMD_RIGHT = 93;
+
+    KeyCodes.MAC_DELETE = 8;
+
+    return KeyCodes;
+
+  })();
+
+  PCController = (function() {
+    function PCController(root) {
+      this.root = root;
+    }
+
+    PCController.prototype.bindEvents = function() {
+      var _this = this;
+      return this.root.keydown(function(event) {
+        if (event.keyCode === KeyCodes.Z && event.ctrlKey) {
+          event.preventDefault();
+          _this.root.trigger('requestUndo');
+        }
+        if (event.keyCode === KeyCodes.Y && event.ctrlKey) {
+          event.preventDefault();
+          _this.root.trigger('requestRedo');
+        }
+        if (event.keyCode === KeyCodes.DELETE || (event.keyCode === KeyCodes.DELETE && event.ctrlKey)) {
+          event.preventDefault();
+          _this.root.trigger('requestDelete');
+        }
+        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+          event.preventDefault();
+          _this.root.trigger('requestCopy');
+        }
+        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+          event.preventDefault();
+          return _this.root.trigger('requestPaste');
+        }
+      });
+    };
+
+    return PCController;
+
+  })();
+
+  MacController = (function() {
+    function MacController(root) {
+      this.root = root;
+      this.leftCmdKeyPressed = false;
+      this.rightCmdKeyPressed = false;
+    }
+
+    MacController.prototype.bindEvents = function() {
+      var _this = this;
+      return this.root.keydown(function(event) {
+        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
+          return _this.leftCmdKeyPressed = true;
+        } else if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
+          return _this.rightCmdKeyPressed = true;
+        } else if (event.keyCode === KeyCodes.Z && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestUndo');
+        } else if (event.keyCode === KeyCodes.Y && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestRedo');
+        } else if (event.keyCode === KeyCodes.MAC_DELETE && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestDelete');
+        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestCopy');
+        } else if (event.keyCode === KeyCodes.P && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestPaste');
+        }
+      }).keyup(function(event) {
+        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
+          _this.leftCmdKeyPressed = false;
+        }
+        if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
+          return _this.rightCmdKeyPressed = false;
+        }
+      });
+    };
+
+    MacController.prototype._cmdKeyIsPressed = function() {
+      return this.rightCmdKeyPressed || this.leftCmdKeyPressed;
+    };
+
+    return MacController;
+
+  })();
+
+  /*
+  the ControllerFactory determines which controller
+  to used based on the user's Operating System.
+  */
+
+
+  ControllerFactory = (function() {
+    function ControllerFactory() {}
+
+    ControllerFactory.getController = function(root) {
+      if (navigator.userAgent.match(/Macintosh/) !== null) {
+        return new MacController(root);
+      } else {
+        return new PCController(root);
+      }
+    };
+
+    return ControllerFactory;
+
+  })();
+
+  /*
+  This class is used to trigger graphicContentChanged Events
+  for a particular box. This event is fired whenever
+  the html of the corresponding graphic has changed
+  */
+
+
+  BoxHelper = (function() {
+    function BoxHelper(graphic) {
+      this.graphic = graphic;
+      this.controller = void 0;
+      this.content = void 0;
+    }
+
+    BoxHelper.prototype.bindEvents = function() {
+      var _this = this;
+      this.controller = ControllerFactory.getController(this.graphic.element);
+      this.graphic.element.on('requestUndo', function(event) {
+        _this._checkNewContent(false);
+        return event.stopPropagation();
+      });
+      this.graphic.element.focus(function(event) {
+        return _this._checkNewContent(true);
+      });
+      this.graphic.element.blur(function(event) {
+        return _this._checkNewContent(true);
+      });
+      return this.controller.bindEvents();
+    };
+
+    /*
+    Checks that the content of the graphic has changed and if it did,
+    fire the graphicContentChanged event.
+    if saveNewContent is true, the content new content will be saved
+    for the next time this function will be called.
+    */
+
+
+    BoxHelper.prototype._checkNewContent = function(saveNewContent) {
+      var graphicHtml;
+      graphicHtml = this.graphic.element.html();
+      if ((this.content != null) && this.content !== graphicHtml) {
+        this.graphic.element.trigger('graphicContentChanged', [
+          {
+            graphic: this.graphic,
+            prevContent: this.content,
+            newContent: graphicHtml
+          }
+        ]);
+      }
+      return this.content = saveNewContent ? graphicHtml : void 0;
+    };
+
+    return BoxHelper;
+
+  })();
+
   Box = (function(_super) {
     __extends(Box, _super);
 
@@ -86,6 +275,7 @@ Abstract Class, represents an Dom node
       Box.__super__.constructor.call(this, this.root);
       this.prevPosition = void 0;
       this.prevContent = void 0;
+      this.helper = new BoxHelper(this);
     }
 
     Box.prototype.buildElement = function() {
@@ -117,7 +307,7 @@ Abstract Class, represents an Dom node
 
     Box.prototype.bindEvents = function() {
       var _this = this;
-      return this.element.mousedown(function(event) {
+      this.element.mousedown(function(event) {
         event.stopPropagation();
         return event.preventDefault();
       }).click(function(event) {
@@ -156,6 +346,7 @@ Abstract Class, represents an Dom node
           return _this._processKeyDownEvent(event);
         }
       });
+      return this.helper.bindEvents();
     };
 
     /*
@@ -189,7 +380,7 @@ Abstract Class, represents an Dom node
         this.move(0, 1);
       }
       if (moved) {
-        return this.root.trigger('boxMoved', [this, this.currentPosition(), previousPosition]);
+        return this.element.trigger('boxMoved', [this, this.currentPosition(), previousPosition]);
       }
     };
 
@@ -728,138 +919,6 @@ Abstract Class, represents an Dom node
 
   })();
 
-  /*
-  Helper Class that provides static constants to keyboard keycodes.
-  */
-
-
-  KeyCodes = (function() {
-    function KeyCodes() {}
-
-    KeyCodes.C = 67;
-
-    KeyCodes.P = 86;
-
-    KeyCodes.Z = 90;
-
-    KeyCodes.Y = 89;
-
-    KeyCodes.DELETE = 46;
-
-    KeyCodes.MAC_CMD_LEFT = 91;
-
-    KeyCodes.MAC_CMD_RIGHT = 93;
-
-    KeyCodes.MAC_DELETE = 8;
-
-    return KeyCodes;
-
-  })();
-
-  PCController = (function() {
-    function PCController(root) {
-      this.root = root;
-    }
-
-    PCController.prototype.bindEvents = function() {
-      var _this = this;
-      return this.root.keydown(function(event) {
-        if (event.keyCode === KeyCodes.Z && event.ctrlKey) {
-          event.preventDefault();
-          _this.root.trigger('requestUndo');
-        }
-        if (event.keyCode === KeyCodes.Y && event.ctrlKey) {
-          event.preventDefault();
-          _this.root.trigger('requestRedo');
-        }
-        if (event.keyCode === KeyCodes.DELETE || (event.keyCode === KeyCodes.DELETE && event.ctrlKey)) {
-          event.preventDefault();
-          _this.root.trigger('requestDelete');
-        }
-        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
-          event.preventDefault();
-          _this.root.trigger('requestCopy');
-        }
-        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
-          event.preventDefault();
-          return _this.root.trigger('requestPaste');
-        }
-      });
-    };
-
-    return PCController;
-
-  })();
-
-  MacController = (function() {
-    function MacController(root) {
-      this.root = root;
-      this.leftCmdKeyPressed = false;
-      this.rightCmdKeyPressed = false;
-    }
-
-    MacController.prototype.bindEvents = function() {
-      var _this = this;
-      return this.root.keydown(function(event) {
-        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
-          return _this.leftCmdKeyPressed = true;
-        } else if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
-          return _this.rightCmdKeyPressed = true;
-        } else if (event.keyCode === KeyCodes.Z && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestUndo');
-        } else if (event.keyCode === KeyCodes.Y && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestRedo');
-        } else if (event.keyCode === KeyCodes.MAC_DELETE && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestDelete');
-        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestCopy');
-        } else if (event.keyCode === KeyCodes.P && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestPaste');
-        }
-      }).keyup(function(event) {
-        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
-          _this.leftCmdKeyPressed = false;
-        }
-        if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
-          return _this.rightCmdKeyPressed = false;
-        }
-      });
-    };
-
-    MacController.prototype._cmdKeyIsPressed = function() {
-      return this.rightCmdKeyPressed || this.leftCmdKeyPressed;
-    };
-
-    return MacController;
-
-  })();
-
-  /*
-  the ControllerFactory determines which controller
-  to used based on the user's Operating System.
-  */
-
-
-  ControllerFactory = (function() {
-    function ControllerFactory() {}
-
-    ControllerFactory.getController = function(root) {
-      if (navigator.userAgent.match(/Macintosh/) !== null) {
-        return new MacController(root);
-      } else {
-        return new PCController(root);
-      }
-    };
-
-    return ControllerFactory;
-
-  })();
-
   BoxesContainer = (function(_super) {
     __extends(BoxesContainer, _super);
 
@@ -1364,8 +1423,19 @@ Abstract Class, represents an Dom node
       this.items = void 0;
     }
 
-    Clipboard.prototype.saveItemsStyle = function(newItems) {
+    Clipboard.prototype.pushItems = function(newItems) {
       return this.items = newItems.clone();
+    };
+
+    Clipboard.prototype.popItems = function() {
+      var results;
+      results = this.items;
+      this.items = void 0;
+      if (results != null) {
+        return results;
+      } else {
+        return [];
+      }
     };
 
     return Clipboard;
@@ -1415,13 +1485,16 @@ Abstract Class, represents an Dom node
       }).on('requestDelete', function(event) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
       }).on('requestCopy', function(event) {
-        return _this.clipboard.saveItemsStyle(_this.area.boxesContainer.getSelectedBoxes());
+        return _this.clipboard.pushItems(_this.area.boxesContainer.getSelectedBoxes());
       }).on('requestPaste', function(event) {
-        if (_this.clipboard.items.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, _this.clipboard.items));
+        var items;
+        items = _this.clipboard.popItems();
+        if (items.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, items));
         }
-      }).on('boxContentChanged', function(event, params) {
-        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateChangeBoxContentCommand(params.box, params.prevContent, params.box.element.html()));
+      }).on('graphicContentChanged', function(event, params) {
+        console.log('graphicContentChanged');
+        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false);
       });
       this.element.find('.row').on('moveElementUpBtnClick', function(event) {
         var boxes;

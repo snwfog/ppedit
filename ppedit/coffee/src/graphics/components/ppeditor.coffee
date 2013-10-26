@@ -57,14 +57,15 @@ class PPEditor extends Graphic
         @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, @area.boxesContainer.getSelectedBoxes())
 
       .on 'requestCopy', (event) =>
-        @clipboard.saveItemsStyle @area.boxesContainer.getSelectedBoxes()
+        @clipboard.pushItems @area.boxesContainer.getSelectedBoxes()
 
       .on 'requestPaste', (event) =>
-        if @clipboard.items.length != 0
-          @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, @clipboard.items)
+        items = @clipboard.popItems()
+        if items.length != 0
+          @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, items)
 
-      .on 'boxContentChanged', (event, params) =>
-        @commandManager.pushCommand @cmdFactory.createCreateChangeBoxContentCommand(params.box, params.prevContent, params.box.element.html())
+      .on 'graphicContentChanged', (event, params) => 
+        @commandManager.pushCommand(@cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false)
 
     @element.find('.row')
       .on 'moveElementUpBtnClick', (event) =>
