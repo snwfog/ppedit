@@ -161,9 +161,12 @@ class Box extends Graphic
 
   _addHtml: (htmlSelector) ->
     editedElement = $(window.getSelection().getRangeAt(0).startContainer.parentNode)
+    console.log editedElement.closest('.ppedit-box')
+    editedElement = @element if editedElement.closest('.ppedit-box').length == 0
     htmlSelector.find('li').html editedElement.html()
 
     # Adding the htmlElement
+    console.log editedElement
     editedElement
       .empty()
       .append htmlSelector

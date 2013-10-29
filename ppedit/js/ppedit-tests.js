@@ -233,14 +233,16 @@
       var box;
       addBox(1);
       box = $('.ppedit-box');
-      $('.orderedPointBtn').simulate('dblclick');
+      box.simulate("dblclick");
+      $('.orderedPointBtn').simulate('click');
       return expect(box).toHaveHtml('<ol><li></li></ol>');
     });
     it("can inserts an unordered list inside an empty box", function() {
       var box;
       addBox(1);
       box = $('.ppedit-box');
-      $('.bulletPointBtn').simulate('dblclick');
+      box.simulate("dblclick");
+      $('.bulletPointBtn').simulate('click');
       return expect(box).toHaveHtml('<ul><li></li></ul>');
     });
     it("can inserts an ordered list that wraps an existing text inside a box", function() {

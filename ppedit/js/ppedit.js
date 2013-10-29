@@ -438,7 +438,12 @@ Abstract Class, represents an Dom node
     Box.prototype._addHtml = function(htmlSelector) {
       var editedElement;
       editedElement = $(window.getSelection().getRangeAt(0).startContainer.parentNode);
+      console.log(editedElement.closest('.ppedit-box'));
+      if (editedElement.closest('.ppedit-box').length === 0) {
+        editedElement = this.element;
+      }
       htmlSelector.find('li').html(editedElement.html());
+      console.log(editedElement);
       return editedElement.empty().append(htmlSelector);
     };
 
