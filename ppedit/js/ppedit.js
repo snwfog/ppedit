@@ -436,10 +436,12 @@ Abstract Class, represents an Dom node
     };
 
     Box.prototype._addHtml = function(htmlSelector) {
-      var editedElement, html;
+      var editedElement;
       editedElement = $(window.getSelection().getRangeAt(0).startContainer.parentNode);
-      html = editedElement.html();
-      return editedElement.wrap(htmlSelector).focus();
+      htmlSelector.find('li').html(editedElement.html());
+      console.log(htmlSelector);
+      editedElement.empty().append(htmlSelector);
+      return console.log(editedElement);
     };
 
     Box.prototype._getCursorPosition = function() {

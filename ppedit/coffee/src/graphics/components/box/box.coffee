@@ -161,12 +161,12 @@ class Box extends Graphic
 
   _addHtml: (htmlSelector) ->
     editedElement = $(window.getSelection().getRangeAt(0).startContainer.parentNode)
-    html = editedElement.html()
+    htmlSelector.find('li').html editedElement.html()
 
     # Adding the htmlElement
     editedElement
-      .wrap(htmlSelector)
-      .focus()
+      .empty()
+      .append htmlSelector
 
     # TODO: Set the cursor position to the beginning of the Bullet list
   _getCursorPosition: ->
