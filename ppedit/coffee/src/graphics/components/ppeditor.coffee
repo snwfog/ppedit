@@ -132,7 +132,10 @@ class PPEditor extends Graphic
         boxes = @area.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
         box.addBulletPoint() for id, box of boxes
 
-      .on 'bulletPointBtnDisableClick', (event) =>
+      .on 'orderedPointBtnEnableClick', (event) =>
+        selectedBoxes = @area.boxesContainer.getSelectedBoxes()
+        boxes = @area.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
+        box.addOrderedPointList() for id, box of boxes
 
     @area.boxesContainer.element
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>

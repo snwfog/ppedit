@@ -33,8 +33,9 @@ class FontPanel extends Graphic
                <button class="centerAlignBtn" type="button"><span class="glyphicon glyphicon-align-center"></button>
                <button class="rightAlignBtn" type="button"><span class="glyphicon glyphicon-align-right"></button>
 			   <br />
-               <!-- <button class="bulletPointBtn" type="button">. -</button> -->
-            </div>')
+               <button class="bulletPointBtn" type="button">. -</button>
+               <button class="orderedPointBtn" type="button">1.</button>
+                </div>')
 
   bindEvents: ->
     @element.find("select.fontTypeBtn").change (event) =>
@@ -70,3 +71,8 @@ class FontPanel extends Graphic
       #btn = $(event.target).toggleClass('.ppedit-btn-enabled')
       #@root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'bulletPointBtnEnableClick' else 'bulletPointBtnDisableClick')
       @root.trigger 'bulletPointBtnEnableClick'
+
+    @element.find(".orderedPointBtn").click (event) =>
+      #btn = $(event.target).toggleClass('.ppedit-btn-enabled')
+      #@root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'bulletPointBtnEnableClick' else 'bulletPointBtnDisableClick')
+      @root.trigger 'orderedPointBtnEnableClick'

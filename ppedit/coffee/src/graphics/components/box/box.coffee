@@ -154,18 +154,20 @@ class Box extends Graphic
         .focus()
 
   addBulletPoint: ->
-    @_addHtml '<ul><li></li></ul>'
+    @_addHtml $('<ul><li></li></ul>')
 
-  _addHtml: (htmlText) ->
-    html = @element.html()
-    pos = @_getCursorPosition()
+  addOrderedPointList: ->
+    @_addHtml $('<ol><li></li></ol>')
+
+  _addHtml: (htmlSelector) ->
+    editedElement = $(window.getSelection().getRangeAt(0).startContainer.parentNode)
+    html = editedElement.html()
 
     # Adding the htmlElement
-    @element.html html.substr(0, pos) + htmlText + html.substr(pos, html.length)
-    @element.focus()
+    editedElement
+      .wrap(htmlSelector)
+      .focus()
 
     # TODO: Set the cursor position to the beginning of the Bullet list
-
   _getCursorPosition: ->
     return window.getSelection().getRangeAt(0).startOffset
-

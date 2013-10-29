@@ -428,15 +428,18 @@ Abstract Class, represents an Dom node
     };
 
     Box.prototype.addBulletPoint = function() {
-      return this._addHtml('<ul><li></li></ul>');
+      return this._addHtml($('<ul><li></li></ul>'));
     };
 
-    Box.prototype._addHtml = function(htmlText) {
-      var html, pos;
-      html = this.element.html();
-      pos = this._getCursorPosition();
-      this.element.html(html.substr(0, pos) + htmlText + html.substr(pos, html.length));
-      return this.element.focus();
+    Box.prototype.addOrderedPointList = function() {
+      return this._addHtml($('<ol><li></li></ol>'));
+    };
+
+    Box.prototype._addHtml = function(htmlSelector) {
+      var editedElement, html;
+      editedElement = $(window.getSelection().getRangeAt(0).startContainer.parentNode);
+      html = editedElement.html();
+      return editedElement.wrap(htmlSelector).focus();
     };
 
     Box.prototype._getCursorPosition = function() {
@@ -1534,7 +1537,17 @@ Abstract Class, represents an Dom node
           _results.push(box.addBulletPoint());
         }
         return _results;
-      }).on('bulletPointBtnDisableClick', function(event) {});
+      }).on('orderedPointBtnEnableClick', function(event) {
+        var box, boxes, id, selectedBoxes, _results;
+        selectedBoxes = _this.area.boxesContainer.getSelectedBoxes();
+        boxes = _this.area.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0));
+        _results = [];
+        for (id in boxes) {
+          box = boxes[id];
+          _results.push(box.addOrderedPointList());
+        }
+        return _results;
+      });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false);
       });
@@ -1585,8 +1598,9 @@ Abstract Class, represents an Dom node
                <button class="centerAlignBtn" type="button"><span class="glyphicon glyphicon-align-center"></button>\
                <button class="rightAlignBtn" type="button"><span class="glyphicon glyphicon-align-right"></button>\
 			   <br />\
-               <!-- <button class="bulletPointBtn" type="button">. -</button> -->\
-            </div>');
+               <button class="bulletPointBtn" type="button">. -</button>\
+               <button class="orderedPointBtn" type="button">1.</button>\
+                </div>');
     };
 
     FontPanel.prototype.bindEvents = function() {
@@ -1625,8 +1639,11 @@ Abstract Class, represents an Dom node
       this.element.find(".centerAlignBtn").click(function(event) {
         return _this.root.trigger('centerAlignment');
       });
-      return this.element.find(".bulletPointBtn").click(function(event) {
+      this.element.find(".bulletPointBtn").click(function(event) {
         return _this.root.trigger('bulletPointBtnEnableClick');
+      });
+      return this.element.find(".orderedPointBtn").click(function(event) {
+        return _this.root.trigger('orderedPointBtnEnableClick');
       });
     };
 
