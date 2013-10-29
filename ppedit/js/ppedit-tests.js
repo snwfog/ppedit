@@ -228,6 +228,47 @@
     });
   });
 
+  ppeditDescribe('A test for issue CAP-33 : "As a user, I want to create ordered and unordered bullet points in my work area."', function() {
+    it("can inserts an ordered list inside an empty box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      $('.orderedPointBtn').simulate('dblclick');
+      return expect(box).toHaveHtml('<ol><li></li></ol>');
+    });
+    it("can inserts an unordered list inside an empty box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      $('.bulletPointBtn').simulate('dblclick');
+      return expect(box).toHaveHtml('<ul><li></li></ul>');
+    });
+    it("can inserts an ordered list that wraps an existing text inside a box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      return box.simulate("dblclick").simulate("key-sequence", {
+        sequence: "Lorem ipsum dolor sin amet",
+        callback: function() {
+          $('.orderedPointBtn').simulate('click');
+          return expect(box).toContainHtml('<ol><li>Lorem ipsum dolor sin amet</li></ol>');
+        }
+      });
+    });
+    return it("can inserts an unordered list that wraps an existing text inside a box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      return box.simulate("dblclick").simulate("key-sequence", {
+        sequence: "Lorem ipsum dolor sin amet",
+        callback: function() {
+          $('.bulletPointBtn').simulate('click');
+          return expect(box).toContainHtml('<ul><li>Lorem ipsum dolor sin amet</li></ul>');
+        }
+      });
+    });
+  });
+
   ppeditDescribe("A test for issue CAP-25 : As a user, I want to name my document, so that I can distinguish between my documents", function() {
     return it("can input text inside the textarea to name document", function() {
       $('.addElementBtn').val('documentName');

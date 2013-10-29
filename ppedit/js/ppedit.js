@@ -439,9 +439,7 @@ Abstract Class, represents an Dom node
       var editedElement;
       editedElement = $(window.getSelection().getRangeAt(0).startContainer.parentNode);
       htmlSelector.find('li').html(editedElement.html());
-      console.log(htmlSelector);
-      editedElement.empty().append(htmlSelector);
-      return console.log(editedElement);
+      return editedElement.empty().append(htmlSelector);
     };
 
     Box.prototype._getCursorPosition = function() {
