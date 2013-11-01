@@ -228,6 +228,42 @@
     });
   });
 
+  ppeditDescribe("A test for issue CAP-35 : As a user,   I want to have horizontal and vertical alignment of my paragraphs.", function() {
+    it("change to left alignment by click left alignment button on the panel", function() {
+      var box, btn;
+      addBox(1);
+      box = $('.ppedit-box');
+      btn = $('.leftAlignBtn');
+      box.simulate('click');
+      btn.simulate('click');
+      return expect($(".ppedit-box")).toHaveCss({
+        'text-align': "left"
+      });
+    });
+    it("change to right alignment by click left alignment button on the panel", function() {
+      var box, btn;
+      addBox(1);
+      box = $('.ppedit-box');
+      btn = $('.rightAlignBtn');
+      box.simulate('click');
+      btn.simulate('click');
+      return expect($(".ppedit-box")).toHaveCss({
+        'text-align': "right"
+      });
+    });
+    return it("change to center alignment by click left alignment button on the panel", function() {
+      var box, btn;
+      addBox(1);
+      box = $('.ppedit-box');
+      btn = $('.centerAlignBtn');
+      box.simulate('click');
+      btn.simulate('click');
+      return expect($(".ppedit-box")).toHaveCss({
+        'text-align': "center"
+      });
+    });
+  });
+
   ppeditDescribe("A test for issue CAP-25 : As a user, I want to name my document, so that I can distinguish between my documents", function() {
     return it("can input text inside the textarea to name document", function() {
       $('.addElementBtn').val('documentName');

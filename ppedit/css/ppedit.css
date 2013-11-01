@@ -37,17 +37,7 @@
     overflow:auto;
 
     background-color: transparent;
-    display:table;
 }
-
-.ppedit-box-child
-{
-    width:100%;
-    height:100%;
-    vertical-align: bottom;
-    display: table-cell;
-}
-
 
 .ppedit-box-selected,
 .ppedit-box:focus
