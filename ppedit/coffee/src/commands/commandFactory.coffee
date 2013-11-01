@@ -4,6 +4,7 @@
 #= require CopyBoxesCommand
 #= require MoveBoxCommand
 #= require ChangeDepthCommand
+#= require ChangeBoxContentCommand
 
 class CommandFactory
 
@@ -45,6 +46,9 @@ class CommandFactory
 
   createCreateBoxesCommand: (editor, optionsList) ->
     return new CreateBoxesCommand editor, optionsList
+
+  createCreateChangeBoxContentCommand: (box, prevContent, newContent) ->
+    return new ChangeBoxContentCommand box, prevContent, newContent
 
   createMoveUpCommand: (editor, boxSelector) ->
     return new ChangeDepthCommand editor, boxSelector, true

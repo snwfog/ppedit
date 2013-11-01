@@ -5,7 +5,7 @@ Abstract Class, represents an Dom node
 
 
 (function() {
-  var Box, BoxesContainer, Canvas, ChangeDepthCommand, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, FontPanel, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
+  var Box, BoxHelper, BoxesContainer, Canvas, ChangeBoxContentCommand, ChangeDepthCommand, ChangeStyleCommand, Clipboard, CommandFactory, CommandManager, ControllerFactory, CopyBoxesCommand, CreateBoxesCommand, EditArea, FontPanel, Geometry, Graphic, Grid, KeyCodes, MacController, MoveBoxCommand, PCController, PPEditor, Panel, RemoveBoxesCommand,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -77,6 +77,193 @@ Abstract Class, represents an Dom node
 
   })();
 
+  /*
+  Helper Class that provides static constants to keyboard keycodes.
+  */
+
+
+  KeyCodes = (function() {
+    function KeyCodes() {}
+
+    KeyCodes.C = 67;
+
+    KeyCodes.P = 86;
+
+    KeyCodes.Z = 90;
+
+    KeyCodes.Y = 89;
+
+    KeyCodes.DELETE = 46;
+
+    KeyCodes.MAC_CMD_LEFT = 91;
+
+    KeyCodes.MAC_CMD_RIGHT = 93;
+
+    KeyCodes.MAC_DELETE = 8;
+
+    return KeyCodes;
+
+  })();
+
+  PCController = (function() {
+    function PCController(root) {
+      this.root = root;
+    }
+
+    PCController.prototype.bindEvents = function() {
+      var _this = this;
+      return this.root.keydown(function(event) {
+        if (event.keyCode === KeyCodes.Z && event.ctrlKey) {
+          event.preventDefault();
+          _this.root.trigger('requestUndo');
+        }
+        if (event.keyCode === KeyCodes.Y && event.ctrlKey) {
+          event.preventDefault();
+          _this.root.trigger('requestRedo');
+        }
+        if (event.keyCode === KeyCodes.DELETE || (event.keyCode === KeyCodes.DELETE && event.ctrlKey)) {
+          event.preventDefault();
+          _this.root.trigger('requestDelete');
+        }
+        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+          event.preventDefault();
+          _this.root.trigger('requestCopy');
+        }
+        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+          event.preventDefault();
+          return _this.root.trigger('requestPaste');
+        }
+      });
+    };
+
+    return PCController;
+
+  })();
+
+  MacController = (function() {
+    function MacController(root) {
+      this.root = root;
+      this.leftCmdKeyPressed = false;
+      this.rightCmdKeyPressed = false;
+    }
+
+    MacController.prototype.bindEvents = function() {
+      var _this = this;
+      return this.root.keydown(function(event) {
+        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
+          return _this.leftCmdKeyPressed = true;
+        } else if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
+          return _this.rightCmdKeyPressed = true;
+        } else if (event.keyCode === KeyCodes.Z && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestUndo');
+        } else if (event.keyCode === KeyCodes.Y && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestRedo');
+        } else if (event.keyCode === KeyCodes.MAC_DELETE && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestDelete');
+        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestCopy');
+        } else if (event.keyCode === KeyCodes.P && _this._cmdKeyIsPressed()) {
+          event.preventDefault();
+          return _this.root.trigger('requestPaste');
+        }
+      }).keyup(function(event) {
+        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
+          _this.leftCmdKeyPressed = false;
+        }
+        if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
+          return _this.rightCmdKeyPressed = false;
+        }
+      });
+    };
+
+    MacController.prototype._cmdKeyIsPressed = function() {
+      return this.rightCmdKeyPressed || this.leftCmdKeyPressed;
+    };
+
+    return MacController;
+
+  })();
+
+  /*
+  the ControllerFactory determines which controller
+  to used based on the user's Operating System.
+  */
+
+
+  ControllerFactory = (function() {
+    function ControllerFactory() {}
+
+    ControllerFactory.getController = function(root) {
+      if (navigator.userAgent.match(/Macintosh/) !== null) {
+        return new MacController(root);
+      } else {
+        return new PCController(root);
+      }
+    };
+
+    return ControllerFactory;
+
+  })();
+
+  /*
+  This class is used to trigger graphicContentChanged Events
+  for a particular box. This event is fired whenever
+  the html of the corresponding graphic has changed
+  */
+
+
+  BoxHelper = (function() {
+    function BoxHelper(graphic) {
+      this.graphic = graphic;
+      this.controller = void 0;
+      this.content = void 0;
+    }
+
+    BoxHelper.prototype.bindEvents = function() {
+      var _this = this;
+      this.controller = ControllerFactory.getController(this.graphic.element);
+      this.graphic.element.on('requestUndo', function(event) {
+        _this._checkNewContent(false);
+        return event.stopPropagation();
+      }).focus(function(event) {
+        return _this._checkNewContent(true);
+      }).blur(function(event) {
+        return _this._checkNewContent(true);
+      });
+      return this.controller.bindEvents();
+    };
+
+    /*
+    Checks that the content of the graphic has changed and if it did,
+    fire the graphicContentChanged event.
+    if saveNewContent is true, the content new content will be saved
+    for the next time this function will be called.
+    */
+
+
+    BoxHelper.prototype._checkNewContent = function(saveNewContent) {
+      var graphicHtml;
+      graphicHtml = this.graphic.element.html();
+      if ((this.content != null) && this.content !== graphicHtml) {
+        this.graphic.element.trigger('graphicContentChanged', [
+          {
+            graphic: this.graphic,
+            prevContent: this.content,
+            newContent: graphicHtml
+          }
+        ]);
+      }
+      return this.content = saveNewContent ? graphicHtml : void 0;
+    };
+
+    return BoxHelper;
+
+  })();
+
   Box = (function(_super) {
     __extends(Box, _super);
 
@@ -85,14 +272,19 @@ Abstract Class, represents an Dom node
       this.options = options;
       Box.__super__.constructor.call(this, this.root);
       this.prevPosition = void 0;
+      this.helper = new BoxHelper(this);
     }
 
     Box.prototype.buildElement = function() {
-      var highestZIndex, settings;
-      highestZIndex = 0;
-      this.root.find('.ppedit-box').each(function(index, nodeElement) {
-        return highestZIndex = Math.max(highestZIndex, parseInt($(nodeElement).css('z-index')));
-      });
+      var boxs, highestZIndex, settings;
+      highestZIndex = void 0;
+      boxs = this.root.find('.ppedit-box');
+      if (boxs.length > 0) {
+        highestZIndex = 0;
+        boxs.each(function(index, nodeElement) {
+          return highestZIndex = Math.max(highestZIndex, parseInt($(nodeElement).css('z-index')));
+        });
+      }
       settings = $.extend({
         left: '50px',
         top: '50px',
@@ -103,7 +295,7 @@ Abstract Class, represents an Dom node
         'font-weight': 'normal',
         'text-decoration': 'none',
         'font-style': 'normal',
-        'z-index': highestZIndex + 1,
+        'z-index': highestZIndex != null ? highestZIndex + 1 : 0,
         'text-align': 'left',
         'vertical-align': 'bottom'
       }, this.options);
@@ -112,7 +304,7 @@ Abstract Class, represents an Dom node
 
     Box.prototype.bindEvents = function() {
       var _this = this;
-      return this.element.mousedown(function(event) {
+      this.element.mousedown(function(event) {
         event.stopPropagation();
         return event.preventDefault();
       }).click(function(event) {
@@ -139,6 +331,7 @@ Abstract Class, represents an Dom node
           return _this._processKeyDownEvent(event);
         }
       });
+      return this.helper.bindEvents();
     };
 
     /*
@@ -172,7 +365,7 @@ Abstract Class, represents an Dom node
         this.move(0, 1);
       }
       if (moved) {
-        return this.root.trigger('boxMoved', [this, this.currentPosition(), previousPosition]);
+        return this.element.trigger('boxMoved', [this, this.currentPosition(), previousPosition]);
       }
     };
 
@@ -235,21 +428,27 @@ Abstract Class, represents an Dom node
     };
 
     Box.prototype.addBulletPoint = function() {
-      var el, html, pos, range;
-      el = this.element.get(0);
-      html = this.element.html();
-      pos = el === window.getSelection() ? el.getRangeAt(0).startOffset : html.length;
-      this.element.html(html.substr(0, pos) + '<ul><li></li></ul>' + html.substr(pos, html.length));
-      this.element.focus();
-      if (this.element.setSelectionRange) {
-        return this.element.setSelectionRange(pos, pos);
-      } else if (this.element.createTextRange) {
-        range = this.element.createTextRange();
-        range.collapse(true);
-        range.moveEnd('character', pos);
-        range.moveStart('character', pos);
-        return range.select();
+      return this._addHtml($('<ul><li></li></ul>'));
+    };
+
+    Box.prototype.addOrderedPointList = function() {
+      return this._addHtml($('<ol><li></li></ol>'));
+    };
+
+    Box.prototype._addHtml = function(htmlSelector) {
+      var editedElement;
+      editedElement = $(window.getSelection().getRangeAt(0).startContainer.parentNode);
+      console.log(editedElement.closest('.ppedit-box'));
+      if (editedElement.closest('.ppedit-box').length === 0) {
+        editedElement = this.element;
       }
+      htmlSelector.find('li').html(editedElement.html());
+      console.log(editedElement);
+      return editedElement.empty().append(htmlSelector);
+    };
+
+    Box.prototype._getCursorPosition = function() {
+      return window.getSelection().getRangeAt(0).startOffset;
     };
 
     return Box;
@@ -603,6 +802,25 @@ Abstract Class, represents an Dom node
 
   })();
 
+  ChangeBoxContentCommand = (function() {
+    function ChangeBoxContentCommand(box, prevContent, newContent) {
+      this.box = box;
+      this.prevContent = prevContent;
+      this.newContent = newContent;
+    }
+
+    ChangeBoxContentCommand.prototype.execute = function() {
+      return this.box.element.html(this.newContent);
+    };
+
+    ChangeBoxContentCommand.prototype.undo = function() {
+      return this.box.element.html(this.prevContent);
+    };
+
+    return ChangeBoxContentCommand;
+
+  })();
+
   CommandFactory = (function() {
     function CommandFactory() {}
 
@@ -676,6 +894,10 @@ Abstract Class, represents an Dom node
       return new CreateBoxesCommand(editor, optionsList);
     };
 
+    CommandFactory.prototype.createCreateChangeBoxContentCommand = function(box, prevContent, newContent) {
+      return new ChangeBoxContentCommand(box, prevContent, newContent);
+    };
+
     CommandFactory.prototype.createMoveUpCommand = function(editor, boxSelector) {
       return new ChangeDepthCommand(editor, boxSelector, true);
     };
@@ -685,138 +907,6 @@ Abstract Class, represents an Dom node
     };
 
     return CommandFactory;
-
-  })();
-
-  /*
-  Helper Class that provides static constants to keyboard keycodes.
-  */
-
-
-  KeyCodes = (function() {
-    function KeyCodes() {}
-
-    KeyCodes.C = 67;
-
-    KeyCodes.P = 86;
-
-    KeyCodes.Z = 90;
-
-    KeyCodes.Y = 89;
-
-    KeyCodes.DELETE = 46;
-
-    KeyCodes.MAC_CMD_LEFT = 91;
-
-    KeyCodes.MAC_CMD_RIGHT = 93;
-
-    KeyCodes.MAC_DELETE = 8;
-
-    return KeyCodes;
-
-  })();
-
-  PCController = (function() {
-    function PCController(root) {
-      this.root = root;
-    }
-
-    PCController.prototype.bindEvents = function() {
-      var _this = this;
-      return this.root.keydown(function(event) {
-        if (event.keyCode === KeyCodes.Z && event.ctrlKey) {
-          event.preventDefault();
-          _this.root.trigger('requestUndo');
-        }
-        if (event.keyCode === KeyCodes.Y && event.ctrlKey) {
-          event.preventDefault();
-          _this.root.trigger('requestRedo');
-        }
-        if (event.keyCode === KeyCodes.DELETE || (event.keyCode === KeyCodes.DELETE && event.ctrlKey)) {
-          event.preventDefault();
-          _this.root.trigger('requestDelete');
-        }
-        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
-          event.preventDefault();
-          _this.root.trigger('requestCopy');
-        }
-        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
-          event.preventDefault();
-          return _this.root.trigger('requestPaste');
-        }
-      });
-    };
-
-    return PCController;
-
-  })();
-
-  MacController = (function() {
-    function MacController(root) {
-      this.root = root;
-      this.leftCmdKeyPressed = false;
-      this.rightCmdKeyPressed = false;
-    }
-
-    MacController.prototype.bindEvents = function() {
-      var _this = this;
-      return this.root.keydown(function(event) {
-        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
-          return _this.leftCmdKeyPressed = true;
-        } else if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
-          return _this.rightCmdKeyPressed = true;
-        } else if (event.keyCode === KeyCodes.Z && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestUndo');
-        } else if (event.keyCode === KeyCodes.Y && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestRedo');
-        } else if (event.keyCode === KeyCodes.MAC_DELETE && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestDelete');
-        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestCopy');
-        } else if (event.keyCode === KeyCodes.P && _this._cmdKeyIsPressed()) {
-          event.preventDefault();
-          return _this.root.trigger('requestPaste');
-        }
-      }).keyup(function(event) {
-        if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
-          _this.leftCmdKeyPressed = false;
-        }
-        if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
-          return _this.rightCmdKeyPressed = false;
-        }
-      });
-    };
-
-    MacController.prototype._cmdKeyIsPressed = function() {
-      return this.rightCmdKeyPressed || this.leftCmdKeyPressed;
-    };
-
-    return MacController;
-
-  })();
-
-  /*
-  the ControllerFactory determines which controller
-  to used based on the user's Operating System.
-  */
-
-
-  ControllerFactory = (function() {
-    function ControllerFactory() {}
-
-    ControllerFactory.getController = function(root) {
-      if (navigator.userAgent.match(/Macintosh/) !== null) {
-        return new MacController(root);
-      } else {
-        return new PCController(root);
-      }
-    };
-
-    return ControllerFactory;
 
   })();
 
@@ -849,8 +939,9 @@ Abstract Class, represents an Dom node
         event.preventDefault();
         boxCssOptions = _this.getPointClicked(event);
         if (_this.getSelectedBoxes().length === 0) {
-          return _this.root.trigger('addBoxRequested', [boxCssOptions]);
+          _this.root.trigger('addBoxRequested', [boxCssOptions]);
         }
+        return _this.element.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
       });
     };
 
@@ -1226,7 +1317,7 @@ Abstract Class, represents an Dom node
 \
                       <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>\
 \
-                      <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button>\
+                      <!-- <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button> -->\
                       \
                       <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
                       \
@@ -1246,7 +1337,7 @@ Abstract Class, represents an Dom node
 \
                           </tbody>\
                       </table>\
-                      <button type="submit" class="btn btn btn-success" style="float: right;">Save</button>\
+                      <!-- <button type="submit" class="btn btn btn-success" style="float: right;">Save</button> -->\
                   </fieldset>\
                 </div>\
               </form>\
@@ -1323,8 +1414,19 @@ Abstract Class, represents an Dom node
       this.items = void 0;
     }
 
-    Clipboard.prototype.saveItemsStyle = function(newItems) {
+    Clipboard.prototype.pushItems = function(newItems) {
       return this.items = newItems.clone();
+    };
+
+    Clipboard.prototype.popItems = function() {
+      var results;
+      results = this.items;
+      this.items = void 0;
+      if (results != null) {
+        return results;
+      } else {
+        return [];
+      }
     };
 
     return Clipboard;
@@ -1374,11 +1476,15 @@ Abstract Class, represents an Dom node
       }).on('requestDelete', function(event) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
       }).on('requestCopy', function(event) {
-        return _this.clipboard.saveItemsStyle(_this.area.boxesContainer.getSelectedBoxes());
+        return _this.clipboard.pushItems(_this.area.boxesContainer.getSelectedBoxes());
       }).on('requestPaste', function(event) {
-        if (_this.clipboard.items.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, _this.clipboard.items));
+        var items;
+        items = _this.clipboard.popItems();
+        if (items.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, items));
         }
+      }).on('graphicContentChanged', function(event, params) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false);
       });
       this.element.find('.row').on('moveElementUpBtnClick', function(event) {
         var boxes;
@@ -1436,7 +1542,17 @@ Abstract Class, represents an Dom node
           _results.push(box.addBulletPoint());
         }
         return _results;
-      }).on('bulletPointBtnDisableClick', function(event) {});
+      }).on('orderedPointBtnEnableClick', function(event) {
+        var box, boxes, id, selectedBoxes, _results;
+        selectedBoxes = _this.area.boxesContainer.getSelectedBoxes();
+        boxes = _this.area.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0));
+        _results = [];
+        for (id in boxes) {
+          box = boxes[id];
+          _results.push(box.addOrderedPointList());
+        }
+        return _results;
+      });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false);
       });
@@ -1488,7 +1604,8 @@ Abstract Class, represents an Dom node
                <button class="rightAlignBtn" type="button"><span class="glyphicon glyphicon-align-right"></button>\
 			   <br />\
                <button class="bulletPointBtn" type="button">. -</button>\
-            </div>');
+               <button class="orderedPointBtn" type="button">1.</button>\
+                </div>');
     };
 
     FontPanel.prototype.bindEvents = function() {
@@ -1527,8 +1644,11 @@ Abstract Class, represents an Dom node
       this.element.find(".centerAlignBtn").click(function(event) {
         return _this.root.trigger('centerAlignment');
       });
-      return this.element.find(".bulletPointBtn").click(function(event) {
+      this.element.find(".bulletPointBtn").click(function(event) {
         return _this.root.trigger('bulletPointBtnEnableClick');
+      });
+      return this.element.find(".orderedPointBtn").click(function(event) {
+        return _this.root.trigger('orderedPointBtnEnableClick');
       });
     };
 

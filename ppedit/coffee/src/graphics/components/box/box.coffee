@@ -1,5 +1,6 @@
 #= require Graphic
 #= require Geometry
+#= require BoxHelper
 
 class Box extends Graphic
 
@@ -8,11 +9,16 @@ class Box extends Graphic
 
     # true if the user is currently leftclicking on the box.
     @prevPosition = undefined
+    @helper = new BoxHelper this
 
   buildElement: ->
-    highestZIndex = 0
-    @root.find('.ppedit-box').each (index, nodeElement) ->
-      highestZIndex = Math.max highestZIndex, parseInt($(nodeElement).css('z-index'))
+    highestZIndex = undefined
+
+    boxs = @root.find('.ppedit-box')
+    if boxs.length > 0
+      highestZIndex = 0
+      boxs.each (index, nodeElement) ->
+        highestZIndex = Math.max highestZIndex, parseInt($(nodeElement).css('z-index'))
 
     settings = $.extend(
       left:'50px'
@@ -24,7 +30,7 @@ class Box extends Graphic
       'font-weight': 'normal'
       'text-decoration': 'none'
       'font-style': 'normal'
-      'z-index' : highestZIndex + 1
+      'z-index' : if highestZIndex? then (highestZIndex + 1) else 0;
       'text-align': 'left'
       'vertical-align': 'bottom'
     , @options);
@@ -62,8 +68,10 @@ class Box extends Graphic
       .on 'containerKeyDown', (event, keyDownEvent) =>
         @_processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')
 
-      .keydown (event) =>
+    .keydown (event) =>
         @_processKeyDownEvent(event) if !@isFocused()
+
+    @helper.bindEvents()
       
   ###
   Matches directional arrows event
@@ -98,7 +106,7 @@ class Box extends Graphic
         moved = true
         @move 0, 1
 
-      @root.trigger 'boxMoved', [@, @currentPosition(), previousPosition] if moved
+      @element.trigger 'boxMoved', [@, @currentPosition(), previousPosition] if moved
 
   stopMoving: ->
     @element.removeClass('ppedit-box-selected')
@@ -146,23 +154,21 @@ class Box extends Graphic
         .focus()
 
   addBulletPoint: ->
-    el = @element.get(0)
-    html = @element.html()
+    @_addHtml $('<ul><li></li></ul>')
 
-    # Determining cursor Position
-    pos = if (el == window.getSelection()) then el.getRangeAt(0).startOffset else html.length;
+  addOrderedPointList: ->
+    @_addHtml $('<ol><li></li></ol>')
 
-    # Adding the Bullet Point
-    @element.html html.substr(0, pos) + '<ul><li></li></ul>' + html.substr(pos, html.length)
-    @element.focus()
+  _addHtml: (htmlSelector) ->
+    editedElement = $(window.getSelection().getRangeAt(0).startContainer.parentNode)
+    editedElement = @element if editedElement.closest('.ppedit-box').length == 0
+    htmlSelector.find('li').html editedElement.html()
 
-    # Setting the cursor position to the beginning of the Bullet list
-    if (@element.setSelectionRange)
-      @element.setSelectionRange pos, pos
-    else if (@element.createTextRange)
-      range = @element.createTextRange()
-      range.collapse true
-      range.moveEnd 'character', pos
-      range.moveStart 'character', pos
-      range.select()
+    # Adding the htmlElement
+    editedElement
+      .empty()
+      .append htmlSelector
 
+    # TODO: Set the cursor position to the beginning of the Bullet list
+  _getCursorPosition: ->
+    return window.getSelection().getRangeAt(0).startOffset

@@ -222,12 +222,13 @@
       boxes.eq(2).simulate('click');
       $('.moveElementDownBtn').simulate('click');
       expect(boxes.eq(2)).toHaveCss({
-        'z-index': '2'
+        'z-index': '1'
       });
       return expect($('.ppedit-panel-row').eq(1)).toHaveAttr('ppedit-box-id', boxes.eq(2).attr('ppedit-box-id'));
     });
   });
 
+<<<<<<< HEAD
   ppeditDescribe("A test for issue CAP-35 : As a user,   I want to have horizontal and vertical alignment of my paragraphs.", function() {
     it("change to left alignment by click left alignment button on the panel", function() {
       var box, btn;
@@ -260,6 +261,47 @@
       btn.simulate('click');
       return expect($(".ppedit-box")).toHaveCss({
         'text-align': "center"
+=======
+  ppeditDescribe('A test for issue CAP-33 : "As a user, I want to create ordered and unordered bullet points in my work area."', function() {
+    it("can inserts an ordered list inside an empty box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      box.simulate("dblclick");
+      $('.orderedPointBtn').simulate('click');
+      return expect(box).toHaveHtml('<ol><li></li></ol>');
+    });
+    it("can inserts an unordered list inside an empty box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      box.simulate("dblclick");
+      $('.bulletPointBtn').simulate('click');
+      return expect(box).toHaveHtml('<ul><li></li></ul>');
+    });
+    it("can inserts an ordered list that wraps an existing text inside a box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      return box.simulate("dblclick").simulate("key-sequence", {
+        sequence: "Lorem ipsum dolor sin amet",
+        callback: function() {
+          $('.orderedPointBtn').simulate('click');
+          return expect(box).toContainHtml('<ol><li>Lorem ipsum dolor sin amet</li></ol>');
+        }
+      });
+    });
+    return it("can inserts an unordered list that wraps an existing text inside a box", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      return box.simulate("dblclick").simulate("key-sequence", {
+        sequence: "Lorem ipsum dolor sin amet",
+        callback: function() {
+          $('.bulletPointBtn').simulate('click');
+          return expect(box).toContainHtml('<ul><li>Lorem ipsum dolor sin amet</li></ul>');
+        }
+>>>>>>> b19a60334d7c3f0499d2cdf8f8efdac89e826639
       });
     });
   });

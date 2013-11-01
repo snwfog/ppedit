@@ -57,11 +57,15 @@ class PPEditor extends Graphic
         @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, @area.boxesContainer.getSelectedBoxes())
 
       .on 'requestCopy', (event) =>
-        @clipboard.saveItemsStyle @area.boxesContainer.getSelectedBoxes()
+        @clipboard.pushItems @area.boxesContainer.getSelectedBoxes()
 
       .on 'requestPaste', (event) =>
-        if @clipboard.items.length != 0
-          @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, @clipboard.items)
+        items = @clipboard.popItems()
+        if items.length != 0
+          @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, items)
+
+      .on 'graphicContentChanged', (event, params) =>
+        @commandManager.pushCommand(@cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false)
 
     @element.find('.row')
       .on 'moveElementUpBtnClick', (event) =>
@@ -128,7 +132,10 @@ class PPEditor extends Graphic
         boxes = @area.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
         box.addBulletPoint() for id, box of boxes
 
-      .on 'bulletPointBtnDisableClick', (event) =>
+      .on 'orderedPointBtnEnableClick', (event) =>
+        selectedBoxes = @area.boxesContainer.getSelectedBoxes()
+        boxes = @area.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
+        box.addOrderedPointList() for id, box of boxes
 
     @area.boxesContainer.element
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>

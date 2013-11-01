@@ -20,7 +20,7 @@ class Panel extends Graphic
 
                       <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>
 
-                      <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button>
+                      <!-- <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button> -->
                       
                       <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>
                       
@@ -40,7 +40,7 @@ class Panel extends Graphic
 
                           </tbody>
                       </table>
-                      <button type="submit" class="btn btn btn-success" style="float: right;">Save</button>
+                      <!-- <button type="submit" class="btn btn btn-success" style="float: right;">Save</button> -->
                   </fieldset>
                 </div>
               </form>

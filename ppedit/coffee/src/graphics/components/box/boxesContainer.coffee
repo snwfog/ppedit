@@ -30,6 +30,10 @@ class BoxesContainer extends Graphic
         boxCssOptions = @getPointClicked(event)
         @root.trigger 'addBoxRequested', [boxCssOptions] if @getSelectedBoxes().length == 0
 
+        @element.find('.ppedit-box')
+          .removeClass('ppedit-box-focus')
+          .removeClass('ppedit-box-selected')
+
   ###
   Selects the boxes contained in the passed rect.
   The rect position is relative to the root.

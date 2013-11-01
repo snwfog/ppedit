@@ -13,5 +13,5 @@ ppeditDescribe "A test for issue CAP-37 : As a user, I want to arrange the eleme
     boxes.eq(2).simulate 'click'
     $('.moveElementDownBtn').simulate 'click'
 
-    expect(boxes.eq(2)).toHaveCss {'z-index': '2'}
+    expect(boxes.eq(2)).toHaveCss {'z-index': '1'}
     expect($('.ppedit-panel-row').eq(1)).toHaveAttr 'ppedit-box-id', boxes.eq(2).attr('ppedit-box-id')	
