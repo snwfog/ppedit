@@ -72,3 +72,21 @@
     opacity:0.5;
     z-index: -499;
 }
+
+.ppedit-vDotLine
+{
+    border-right: 1px dotted #0099CC; 
+    height: 960px; 
+    position: absolute; 
+    left: 50px; 
+    top: 0px;
+}
+
+.ppedit-hDotLine
+{
+    border-bottom: 1px dotted #0099CC; 
+    width: 600px; 
+    position: absolute; 
+    left: 0px; 
+    top: 50px;
+}

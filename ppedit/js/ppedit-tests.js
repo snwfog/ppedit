@@ -228,7 +228,6 @@
     });
   });
 
-<<<<<<< HEAD
   ppeditDescribe("A test for issue CAP-35 : As a user,   I want to have horizontal and vertical alignment of my paragraphs.", function() {
     it("change to left alignment by click left alignment button on the panel", function() {
       var box, btn;
@@ -261,7 +260,10 @@
       btn.simulate('click');
       return expect($(".ppedit-box")).toHaveCss({
         'text-align': "center"
-=======
+      });
+    });
+  });
+
   ppeditDescribe('A test for issue CAP-33 : "As a user, I want to create ordered and unordered bullet points in my work area."', function() {
     it("can inserts an ordered list inside an empty box", function() {
       var box;
@@ -301,7 +303,6 @@
           $('.bulletPointBtn').simulate('click');
           return expect(box).toContainHtml('<ul><li>Lorem ipsum dolor sin amet</li></ul>');
         }
->>>>>>> b19a60334d7c3f0499d2cdf8f8efdac89e826639
       });
     });
   });

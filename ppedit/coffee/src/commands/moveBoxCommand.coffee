@@ -2,7 +2,7 @@
 
 class MoveBoxCommand
 
-	constructor: (@box, @toPosition, @fromPosition) ->
+  constructor: (@box, @toPosition, @fromPosition) ->
     @fromPosition = @box.currentPosition() if !fromPosition?
 
   execute: ->

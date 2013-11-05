@@ -26,7 +26,7 @@ class EditArea extends Graphic
     @boxesContainer.buildElement()
     @canvas.buildElement()
     @grid.buildElement()
-
+    
     @element.append @boxesContainer.element
     @element.append @canvas.element
     @element.append @grid.element

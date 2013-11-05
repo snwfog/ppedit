@@ -372,15 +372,25 @@ Abstract Class, represents an Dom node
     Box.prototype.stopMoving = function() {
       this.element.removeClass('ppedit-box-selected');
       if ((this.prevPosition != null) && !Geometry.pointEqualToPoint(this.currentPosition(), this.prevPosition)) {
-        this.root.trigger('boxMoved', [this, this.currentPosition(), $.extend(true, {}, this.prevPosition)]);
+        this.snap();
+        this.root.trigger('boxMoved', [this, $.extend(true, {}, this.currentPosition()), $.extend(true, {}, this.prevPosition)]);
       }
-      return this.prevPosition = void 0;
+      this.prevPosition = void 0;
+      if ($(document).find('.snapBtn').hasClass('snapBtn-selected')) {
+        this.root.find('.hDotLine').removeClass('ppedit-hDotLine');
+        return this.root.find('.vDotLine').removeClass('ppedit-vDotLine');
+      }
     };
 
     Box.prototype.move = function(deltaX, deltaY) {
-      var currentPos;
+      var currentPos, dotLinePos;
       currentPos = this.currentPosition();
-      return this.setPosition(deltaX + currentPos.left, deltaY + currentPos.top);
+      this.setPosition(deltaX + currentPos.left, deltaY + currentPos.top);
+      dotLinePos = this.getSnapPosition(this.currentPosition());
+      if ($(document).find('.snapBtn').hasClass('snapBtn-selected')) {
+        this.root.find('.hDotLine').addClass('ppedit-hDotLine').css('top', dotLinePos.top);
+        return this.root.find('.vDotLine').addClass('ppedit-vDotLine').css('left', dotLinePos.left);
+      }
     };
 
     Box.prototype.setPosition = function(x, y) {
@@ -390,6 +400,22 @@ Abstract Class, represents an Dom node
 
     Box.prototype.currentPosition = function() {
       return this.element.position();
+    };
+
+    Box.prototype.snap = function() {
+      var snappedPosition;
+      snappedPosition = this.getSnapPosition(this.currentPosition());
+      return this.setPosition(snappedPosition.left, snappedPosition.top);
+    };
+
+    Box.prototype.getSnapPosition = function(p) {
+      var snapedLeft, snapedTop;
+      snapedLeft = parseInt(p.left / 8) * 8;
+      snapedTop = parseInt(p.top / 8) * 8;
+      return {
+        left: snapedLeft,
+        top: snapedTop
+      };
     };
 
     /*
@@ -438,12 +464,10 @@ Abstract Class, represents an Dom node
     Box.prototype._addHtml = function(htmlSelector) {
       var editedElement;
       editedElement = $(window.getSelection().getRangeAt(0).startContainer.parentNode);
-      console.log(editedElement.closest('.ppedit-box'));
       if (editedElement.closest('.ppedit-box').length === 0) {
         editedElement = this.element;
       }
       htmlSelector.find('li').html(editedElement.html());
-      console.log(editedElement);
       return editedElement.empty().append(htmlSelector);
     };
 
@@ -923,7 +947,9 @@ Abstract Class, represents an Dom node
     }
 
     BoxesContainer.prototype.buildElement = function() {
-      return this.element = $('<div></div>').addClass('ppedit-box-container');
+      this.element = $('<div></div>').addClass('ppedit-box-container');
+      this.element.append('<p class="hDotLine"></p>');
+      return this.element.append('<p class="vDotLine"></p>');
     };
 
     BoxesContainer.prototype.bindEvents = function() {
@@ -1317,7 +1343,7 @@ Abstract Class, represents an Dom node
 \
                       <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>\
 \
-                      <!-- <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button> -->\
+                      <button class="btn btn-primary btn-sm snapBtn" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button>\
                       \
                       <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
                       \
@@ -1358,8 +1384,15 @@ Abstract Class, represents an Dom node
       this.element.find('.moveElementUpBtn').click(function() {
         return _this.root.trigger('moveElementUpBtnClick');
       });
-      return this.element.find('.moveElementDownBtn').click(function() {
+      this.element.find('.moveElementDownBtn').click(function() {
         return _this.root.trigger('moveElementDownBtnClick');
+      });
+      return this.element.find('.snapBtn').click(function() {
+        if (!$(event.target).hasClass("snapBtn-selected")) {
+          return $(event.target).addClass("snapBtn-selected");
+        } else {
+          return $(event.target).removeClass("snapBtn-selected");
+        }
       });
     };
 

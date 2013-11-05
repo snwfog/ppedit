@@ -20,7 +20,7 @@ class Panel extends Graphic
 
                       <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>
 
-                      <!-- <button class="btn btn-primary btn-sm" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button> -->
+                      <button class="btn btn-primary btn-sm snapBtn" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button>
                       
                       <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>
                       
@@ -61,6 +61,12 @@ class Panel extends Graphic
 
     @element.find('.moveElementDownBtn').click =>
       @root.trigger 'moveElementDownBtnClick'
+    
+    @element.find('.snapBtn').click =>
+      if !$(event.target).hasClass("snapBtn-selected") 
+        $(event.target).addClass("snapBtn-selected") 
+      else
+        $(event.target).removeClass("snapBtn-selected") 
 
   ###
   Adds a row to be associated with the passed box id.

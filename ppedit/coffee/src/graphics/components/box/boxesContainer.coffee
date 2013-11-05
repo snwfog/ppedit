@@ -14,6 +14,8 @@ class BoxesContainer extends Graphic
 
   buildElement: ->
     @element = $('<div></div>').addClass('ppedit-box-container')
+    @element.append('<p class="hDotLine"></p>')
+    @element.append('<p class="vDotLine"></p>')
 
   bindEvents: ->
     @element
