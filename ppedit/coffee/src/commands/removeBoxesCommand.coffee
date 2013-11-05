@@ -1,9 +1,11 @@
 #= require Box
+#= require Command
 
-class RemoveBoxesCommand
+class RemoveBoxesCommand extends Command
 
   constructor: (@editor, boxesSelector) ->
-
+    super()
+    
     # Getting the boxes to delete
     boxArray = boxesSelector.toArray()
     @boxIds = (box.id for box in boxArray)
@@ -17,3 +19,6 @@ class RemoveBoxesCommand
     for box in @boxes
       @editor.area.boxesContainer.addBox box
       @editor.panel.addBoxRow box.element.attr 'id'
+
+  getType: ->
+    return 'Remove'

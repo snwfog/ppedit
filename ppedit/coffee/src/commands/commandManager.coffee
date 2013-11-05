@@ -34,3 +34,36 @@ class CommandManager
       redoCommand = @redoStack.pop()
       redoCommand.execute()
       @undoStack.push redoCommand
+
+  ###
+  executing the JSON command 
+  ###
+  getUndoJSON: ->
+    modifiedBoxes = {}
+    createdBoxes = {}
+    removedBoxes = {}
+
+    for command in @undoStack
+      for id in command.boxIds             
+
+        switch command.getType()
+          when 'Create'
+            createdBoxes['' + id] = $('#' + id).clone().wrap('<div></div>').parent().html() or ''
+
+          when 'Modify'
+            if !createdBoxes['' + id]?
+              modifiedBoxes['' + id] = $('#' + id).clone().wrap('<div></div>').parent().html() or ''
+
+          when 'Remove'
+            delete modifiedBoxes['' + id]            
+
+            if createdBoxes['' + id]?
+              delete createdBoxes['' + id]
+            else 
+              removedBoxes['' + id] = ''
+
+    return JSON.stringify({
+      modified:({id:boxid, html:value} for boxid, value of modifiedBoxes)
+      created:({id:boxid, html:value} for boxid, value of createdBoxes)
+      removed:({id:boxid, html:value} for boxid, value of removedBoxes)
+      })

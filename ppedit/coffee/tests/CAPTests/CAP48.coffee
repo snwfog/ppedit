@@ -18,7 +18,7 @@ ppeditDescribe 'A test for issue "CAP-48 : As a user, I want to copy and paste a
     $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+v"}
 
     expect($('.ppedit-box')).toHaveLength(2)
-
+    
   it "copies and past multiple boxes", ->
 
     addBox 2

@@ -1,8 +1,11 @@
 #= require Box
+#= require Command
 
-class MoveBoxCommand
+class MoveBoxCommand extends Command
 
-	constructor: (@box, @toPosition, @fromPosition) ->
+  constructor: (@box, @toPosition, @fromPosition) ->
+    super()
+    @boxIds.push @box.element.attr('id')
     @fromPosition = @box.currentPosition() if !fromPosition?
 
   execute: ->
@@ -10,3 +13,6 @@ class MoveBoxCommand
 
   undo: ->
     @box.setPosition @fromPosition.left, @fromPosition.top
+
+  getType: ->
+    return 'Modify'
