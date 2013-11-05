@@ -386,7 +386,7 @@
 
     Box.prototype.stopMoving = function() {
       this.element.removeClass('ppedit-box-selected');
-      if ((this.prevPosition != null) && !Geometry.pointEqualToPoint(this.currentPosition(), this.prevPosition)) {
+      if ((this.prevPosition != null) && !Geometry.pointEqualToPoint(this.currentPosition(), this.prevPosition) && $(document).find('.snapBtn').hasClass('snapBtn-selected')) {
         this.snap();
         this.root.trigger('boxMoved', [this, $.extend(true, {}, this.currentPosition()), $.extend(true, {}, this.prevPosition)]);
       }
