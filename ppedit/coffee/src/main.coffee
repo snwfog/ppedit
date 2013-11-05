@@ -23,6 +23,7 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
   # You *may* rely on internal, private objects:
   _flag = false
   _anotherState = null
+  _editor = null
 
   # This is your public API (no leading underscore, see?)
   # All public methods must return $this so your plugin is chainable.
@@ -45,10 +46,10 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
       #  $this.each (index, el) ->
       #    # do something with el
       #
-      editor = new PPEditor $this
-      editor.buildElement()
-      $this.append editor.element
-      editor.bindEvents()
+      _editor = new PPEditor $this
+      _editor.buildElement()
+      $this.append _editor.element
+      _editor.bindEvents()
       
       return $this
 
@@ -60,6 +61,9 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
     destroy: ->
       # Do anything to clean it up (nullify references, unbind events…).
       return $this
+
+    save: ->
+      return _editor.commandManager.getUndoJSON()
 
   # This is your private API. Most of your plugin code should go there.
   # The name "_internals" is by no mean mandatory: pick something you like, don't

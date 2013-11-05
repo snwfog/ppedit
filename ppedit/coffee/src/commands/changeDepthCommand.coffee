@@ -1,6 +1,7 @@
 #= require Box
+#= require Command
 
-class ChangeDepthCommand
+class ChangeDepthCommand extends Command
 
   ###
   Specify one Command for changing the depth of a box,
@@ -9,8 +10,10 @@ class ChangeDepthCommand
   if true, or down if false.
   ###
   constructor: (@editor, boxSelector, @moveUp) ->
+    super()
     @boxId = boxSelector.attr('id')
-   
+    @boxIds.push @boxId
+
   execute: ->
     if @moveUp then @swapRowWithUpperRow() else @swapRowWithLowerRow()
 
@@ -51,3 +54,6 @@ class ChangeDepthCommand
 
       rowOneBox.element.css 'z-index', rowTwoBox.element.css('z-index')
       rowTwoBox.element.css 'z-index', rowOneBoxTempZindex
+
+  getType: ->
+    return 'Modify'

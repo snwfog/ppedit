@@ -111,6 +111,48 @@
     });
   });
 
+  ppeditDescribe('A test for issue "CAP-49 : As a backend developer, I want an API from PPEdit that provides a changeset made on a particular resume so that I can persist it on the backend"', function() {
+    it("identifies boxes that existed before current editing and that were then deleted as removed boxes when the saving API is called.", function() {
+      var result;
+      addBox(1);
+      $('.ppedit-box').simulate('click');
+      $('.ppedit-box-container').simulate('key-combo', {
+        combo: 'ctrl+46'
+      });
+      $('.ppedit-box-container').simulate('key-combo', {
+        combo: 'meta+8'
+      });
+      result = JSON.parse($('.editor').ppedit('save'));
+      expect(result.removed.length).toEqual(0);
+      expect(result.created.length).toEqual(0);
+      return expect(result.modified.length).toEqual(0);
+    });
+    it("identifies if two boxes are created and is saved when the saving API is called.", function() {
+      var result;
+      addBox(2);
+      result = JSON.parse($('.editor').ppedit('save'));
+      expect(result.removed.length).toEqual(0);
+      expect(result.created.length).toEqual(2);
+      return expect(result.modified.length).toEqual(0);
+    });
+    return it("identifies if a box created, then removed and then created when the saving API is called.", function() {
+      var result;
+      addBox(1);
+      $('.ppedit-box').simulate('click');
+      $('.ppedit-box-container').simulate('key-combo', {
+        combo: 'ctrl+46'
+      });
+      $('.ppedit-box-container').simulate('key-combo', {
+        combo: 'meta+8'
+      });
+      addBox(1);
+      result = JSON.parse($('.editor').ppedit('save'));
+      expect(result.removed.length).toEqual(0);
+      expect(result.created.length).toEqual(1);
+      return expect(result.modified.length).toEqual(0);
+    });
+  });
+
   ppeditDescribe('A test for issue "CAP-48 : As a user, I want to copy and paste aggregate elements in my work area"', function() {
     it("copies and past one box", function() {
       var box;

@@ -1,10 +1,11 @@
 #= require Box
+#= require Command
 
 ###
 A command that creates one or more boxes with the passed options
 ands adds it to the list.
 ###
-class CreateBoxesCommand
+class CreateBoxesCommand extends Command
 
   ###
   Creates a command that, when executed, will create
@@ -13,6 +14,7 @@ class CreateBoxesCommand
   If no optionsList is passed, only one box is created with the default options.
   ###
   constructor: (@editor, @optionsList) ->
+    super()
     @boxes = []
 
   execute: ->
@@ -35,4 +37,10 @@ class CreateBoxesCommand
   ###
   _addBox: (box) ->
     @editor.area.boxesContainer.addBox box
-    @editor.panel.addBoxRow box.element.attr('id')
+    
+    boxId = box.element.attr('id')
+    @editor.panel.addBoxRow boxId
+    @boxIds.push boxId if @boxIds.indexOf(boxId) == -1
+
+  getType: ->
+    return 'Create'
