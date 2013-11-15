@@ -5,6 +5,7 @@
 #= require MoveBoxCommand
 #= require ChangeDepthCommand
 #= require ChangeBoxContentCommand
+#= require LoadBoxesCommand
 
 class CommandFactory
 
@@ -55,3 +56,6 @@ class CommandFactory
 
   createMoveDownCommand: (editor, boxSelector) ->
     return new ChangeDepthCommand editor, boxSelector, false
+
+  createLoadBoxesCommand: (editor, jsonBoxes) ->
+    return new LoadBoxesCommand editor, jsonBoxes

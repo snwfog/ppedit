@@ -57,13 +57,17 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
       # Another public method that people can call and rely on to do "what".
       return $this
 
-  # This method is often overlooked.
+    # This method is often overlooked.
     destroy: ->
       # Do anything to clean it up (nullify references, unbind events…).
       return $this
 
     save: ->
       return _editor.commandManager.getUndoJSON()
+
+    load: (options) ->
+      _editor.load options.jsonBoxes
+      return $this
 
   # This is your private API. Most of your plugin code should go there.
   # The name "_internals" is by no mean mandatory: pick something you like, don't

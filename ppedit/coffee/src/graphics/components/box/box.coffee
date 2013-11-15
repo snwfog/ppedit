@@ -7,9 +7,7 @@ class Box extends Graphic
   constructor: (@root, @options)->
     super @root
 
-    # true if the user is currently leftclicking on the box.
     @prevPosition = undefined
-    # @currPosition = undefined
     @helper = new BoxHelper this
 
   buildElement: ->

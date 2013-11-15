@@ -145,3 +145,7 @@ class PPEditor extends Graphic
     @panel.bindEvents()
     @fontPanel.bindEvents()
     @controller.bindEvents()
+
+  load: (jsonBoxes) ->
+    command = @cmdFactory.createLoadBoxesCommand this, jsonBoxes
+    command.execute()

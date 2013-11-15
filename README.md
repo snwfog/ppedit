@@ -60,7 +60,7 @@ First clone this repository then follow the instructions below.
  
  - To generate the ppedit.js file, use the following commands :
 	- `cd (ppedit project root)/ppedit/                `      
-	- `coffeescript-concat -R coffee/src | coffee -s --compile > js/ppedit-tests.js`
+	- `coffeescript-concat -R coffee/src | coffee -s --compile > js/ppedit.js`
 	
  - Open the main.html file on a browser to see what the editor looks like
  
