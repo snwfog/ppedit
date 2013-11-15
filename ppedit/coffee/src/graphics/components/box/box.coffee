@@ -111,8 +111,9 @@ class Box extends Graphic
 
   stopMoving: ->
     @element.removeClass('ppedit-box-selected')
-    if @prevPosition? && !Geometry.pointEqualToPoint(@currentPosition(), @prevPosition) && $(document).find('.snapBtn').hasClass('snapBtn-selected')
-      @snap()
+    if @prevPosition? && !Geometry.pointEqualToPoint(@currentPosition(), @prevPosition) 
+      if $(document).find('.snapBtn').hasClass('snapBtn-selected')
+        @snap()
       @root.trigger 'boxMoved', [@, $.extend(true, {}, @currentPosition()), $.extend(true, {}, @prevPosition)]
     @prevPosition = undefined
     if $(document).find('.snapBtn').hasClass('snapBtn-selected')
