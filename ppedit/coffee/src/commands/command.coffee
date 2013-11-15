@@ -5,6 +5,6 @@ class Command
 
   undo: ->
 
-  redo: ->
+  execute: ->
 
   getType: ->
