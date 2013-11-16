@@ -66,7 +66,7 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
       return _editor.commandManager.getUndoJSON()
 
     load: (options) ->
-      _editor.load options.jsonBoxes
+      _editor.load options.hunks
       return $this
 
   # This is your private API. Most of your plugin code should go there.

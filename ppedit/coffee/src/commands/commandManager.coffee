@@ -62,8 +62,15 @@ class CommandManager
             else 
               removedBoxes['' + id] = ''
 
-    return JSON.stringify({
+    # building the return object value
+    result =
       modified:({id:boxid, html:value} for boxid, value of modifiedBoxes)
       created:({id:boxid, html:value} for boxid, value of createdBoxes)
       removed:({id:boxid, html:value} for boxid, value of removedBoxes)
-      })
+
+    # hashing the result changeset
+    shaObj = new jsSHA(JSON.stringify(result), "TEXT");
+    hunkId = shaObj.getHMAC("", "TEXT", "SHA-256", "HEX");
+    result.etag = hunkId
+
+    return result

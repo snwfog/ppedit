@@ -3,8 +3,7 @@
 
 ppeditDescribe 'A test for issue "CAP-49 : As a backend developer, I want an API from PPEdit that provides a changeset made on a particular resume so that I can persist it on the backend"', ->
 
-  it "identifies boxes that existed before current editing and that were then deleted as removed boxes when the saving API is called.", ->
-
+  it "identifies boxes that were created then delete during current editing as non existent.", ->
     addBox 1
 
     $('.ppedit-box').simulate 'click'
@@ -41,3 +40,18 @@ ppeditDescribe 'A test for issue "CAP-49 : As a backend developer, I want an API
     expect(result.removed.length).toEqual 0
     expect(result.created.length).toEqual 1
     expect(result.modified.length).toEqual 0
+
+  it "generates a unique hash for each different hunk.", ->
+    addBox 1
+    result = JSON.parse $('.editor').ppedit('save')
+
+    expect(result.etag).toBeDefined()
+    expect(result.etag.length).toBeGreaterThan(5)
+
+    addBox 1
+    result2 = JSON.parse $('.editor').ppedit('save')
+
+    expect(result.etag).not.toEqual(result2.etag)
+
+
+

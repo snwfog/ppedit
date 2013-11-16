@@ -16,23 +16,23 @@ ppeditDescribe 'A test for issue CAP-132 : "Add a load content API on PPedit"', 
     expect($('.ppedit-box')).toHaveLength 0
 
     # loading the box
-    $('.editor').ppedit 'load', {jsonBoxes:JSON.stringify(singleBoxObject)}
+    $('.editor').ppedit 'load', {hunks:JSON.stringify(singleBoxObject)}
     expect($('.ppedit-box')).toHaveLength 1
 
   it "can move a loaded box around", ->
-    $('.editor').ppedit 'load', {jsonBoxes:JSON.stringify(singleBoxObject)}
+    $('.editor').ppedit 'load', {hunks:JSON.stringify(singleBoxObject)}
     box = $('.ppedit-box')
 
     moveBox box, {dx:200, dy:0}
 
   it "can enter content on a loaded box", ->
-    $('.editor').ppedit 'load', {jsonBoxes:JSON.stringify(singleBoxObject)}
+    $('.editor').ppedit 'load', {hunks:JSON.stringify(singleBoxObject)}
     box = $('.ppedit-box')
 
     enterText box, "Lorem ipsum dolor sin amet"
 
   it "does not remove the box when requesting undo right after loading it.", ->
-    $('.editor').ppedit 'load', {jsonBoxes:JSON.stringify(singleBoxObject)}
+    $('.editor').ppedit 'load', {hunks:JSON.stringify(singleBoxObject)}
 
     # request undo.
     $('.ppedit-box-container').simulate "key-combo", {combo: "meta+z"} # if Mac
@@ -43,7 +43,7 @@ ppeditDescribe 'A test for issue CAP-132 : "Add a load content API on PPedit"', 
 
   it "can load 4 boxes with some contents in each", ->
     # loading the boxes
-    $('.editor').ppedit 'load', {jsonBoxes:JSON.stringify(boxObjects)}
+    $('.editor').ppedit 'load', {hunks:JSON.stringify(boxObjects)}
 
     expect($('.ppedit-box')).toHaveLength 4
     expect($('.ppedit-box-container')).toContainHtml(boxObjects['1383319393238'])
