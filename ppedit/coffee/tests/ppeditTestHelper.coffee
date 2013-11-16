@@ -82,3 +82,10 @@ enterText = (box, text) ->
     sequence: text
     callback: ->
       expect(box).toHaveHtml(text)
+
+###
+Simulates ctrl/cmd + delete
+###
+requestDelete = ->
+  $('.ppedit-box-container').simulate 'key-combo', {combo: 'ctrl+46'}; # If Windows
+  $('.ppedit-box-container').simulate 'key-combo', {combo: 'meta+8'}; # If Mac

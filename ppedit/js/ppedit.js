@@ -591,7 +591,7 @@
     Defines a command that, when executed, populates the editor with the boxes
     information defined in the passed json string.
     
-    The jsonBoxes parameter must be a json object like the following :
+    The jsonBoxes parameter must be a json string like the following :
     {
       "box-id-1":"<div class="ppedit-box">box-id-1 contents</div>",
       "box-id-2":"<div class="ppedit-box">box-id-2 contents</div>",
@@ -840,7 +840,7 @@
 
 
     CommandManager.prototype.getUndoJSON = function() {
-      var boxid, command, createdBoxes, id, modifiedBoxes, removedBoxes, value, _i, _j, _len, _len1, _ref, _ref1;
+      var boxid, command, createdBoxes, hunkId, id, modifiedBoxes, removedBoxes, result, shaObj, value, _i, _j, _len, _len1, _ref, _ref1;
       modifiedBoxes = {};
       createdBoxes = {};
       removedBoxes = {};
@@ -869,7 +869,7 @@
           }
         }
       }
-      return JSON.stringify({
+      result = {
         modified: (function() {
           var _results;
           _results = [];
@@ -906,7 +906,15 @@
           }
           return _results;
         })()
-      });
+      };
+      shaObj = new jsSHA(JSON.stringify(result), "TEXT");
+      hunkId = shaObj.getHMAC("", "TEXT", "SHA-256", "HEX");
+      result.etag = hunkId;
+      return JSON.stringify(result);
+    };
+
+    CommandManager.prototype.clearHistory = function() {
+      return this.undoStack.splice(0, this.undoStack.length);
     };
 
     return CommandManager;
@@ -1967,8 +1975,12 @@
       save: function() {
         return _editor.commandManager.getUndoJSON();
       },
+      clearHistory: function() {
+        _editor.commandManager.clearHistory();
+        return $this;
+      },
       load: function(options) {
-        _editor.load(options.jsonBoxes);
+        _editor.load(options.hunks);
         return $this;
       }
     };

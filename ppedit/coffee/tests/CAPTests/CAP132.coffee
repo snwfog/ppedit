@@ -40,7 +40,6 @@ ppeditDescribe 'A test for issue CAP-132 : "Add a load content API on PPedit"', 
 
     expect($('.ppedit-box')).toHaveLength 1
 
-
   it "can load 4 boxes with some contents in each", ->
     # loading the boxes
     $('.editor').ppedit 'load', {hunks:JSON.stringify(boxObjects)}

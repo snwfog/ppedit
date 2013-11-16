@@ -73,4 +73,7 @@ class CommandManager
     hunkId = shaObj.getHMAC("", "TEXT", "SHA-256", "HEX");
     result.etag = hunkId
 
-    return result
+    return JSON.stringify(result)
+
+  clearHistory: ->
+    @undoStack.splice 0, @undoStack.length
