@@ -63,10 +63,10 @@ class CommandManager
               removedBoxes['' + id] = ''
 
     # building the return object value
-    result =
-      modified:({id:boxid, html:value} for boxid, value of modifiedBoxes)
-      created:({id:boxid, html:value} for boxid, value of createdBoxes)
-      removed:({id:boxid, html:value} for boxid, value of removedBoxes)
+    result = {modified:{}, created:{}, removed: {}}
+    result.modified[boxid] = value for boxid, value of modifiedBoxes
+    result.created[boxid] = value for boxid, value of createdBoxes
+    result.removed[boxid] = value for boxid, value of removedBoxes
 
     # hashing the result changeset
     shaObj = new jsSHA(JSON.stringify(result), "TEXT");
