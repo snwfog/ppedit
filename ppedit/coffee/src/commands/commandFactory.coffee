@@ -35,6 +35,9 @@ class CommandFactory
   createCenterAlignmentCommand: (editor, boxesSelector) ->
     return new ChangeStyleCommand editor, boxesSelector, {'text-align': 'center'}
 
+  createChangeTextColorCommand: (editor, boxesSelector, newColor) ->
+    return new ChangeStyleCommand editor, boxesSelector, {'color': '#' + newColor}
+
   createMoveBoxCommand: (box, toPosition, fromPosition) ->
     return new MoveBoxCommand box, toPosition, fromPosition
 

@@ -24,7 +24,7 @@ class FontPanel extends Graphic
                  <option value="16">16</option>
                  <option value="20">20</option>
                </select>
-
+               <button class="colorPicker" id="picker">A</button>
                <button class="weightBtn" type="button">B</button>
                <button class="underlineBtn" type="button">U</button>
                <button class="italicBtn" type="button">I</button>
@@ -45,6 +45,16 @@ class FontPanel extends Graphic
     @element.find("select.fontSizeBtn").change (event) =>
       newFontSize = $(event.target).find("option:selected").val()+"pt"
       @root.trigger 'fontSizeChanged', [newFontSize]
+
+    @element.find(".colorPicker").click (event) =>
+      $(event.target).colpick ({
+        colorScheme:'dark',
+        layout:'rgbhex' ,
+        color:'ff8800' ,
+        onSubmit: (hsb, hex, rgb, el) =>
+          @element.trigger 'textColorChanged', [hex]
+          $(el).colpickHide()
+      })
 
     @element.find(".weightBtn").click (event) =>
       btn = $(event.target).toggleClass('.ppedit-btn-enabled')
@@ -76,3 +86,7 @@ class FontPanel extends Graphic
       #btn = $(event.target).toggleClass('.ppedit-btn-enabled')
       #@root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'bulletPointBtnEnableClick' else 'bulletPointBtnDisableClick')
       @root.trigger 'orderedPointBtnEnableClick'
+
+  changeColor: (hsb, hex, rgb, el) ->
+    $(el).css('background-color', '#'+hex)
+    $(el).colpickHide()

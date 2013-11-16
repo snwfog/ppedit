@@ -495,6 +495,9 @@
         dy: 200
       });
       $('.ppedit-box-container').simulate("key-combo", {
+        combo: "meta+z"
+      });
+      $('.ppedit-box-container').simulate("key-combo", {
         combo: "ctrl+z"
       });
       expect($('.ppedit-box')).toHaveLength(1);
