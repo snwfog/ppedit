@@ -1397,7 +1397,7 @@
         box = _ref[boxId];
         result[boxId] = box.element.wrap("<div></div>").parent().html();
       }
-      return result;
+      return JSON.stringify(result);
     };
 
     return BoxesContainer;
