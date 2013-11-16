@@ -153,6 +153,5 @@ class BoxesContainer extends Graphic
     }
 
   getAllHunks: ->
-    result = {}
-    result[boxId] = box.element.wrap("<div></div>").parent().html() for boxId, box of @boxes
+    result = ({id:boxId, html:box.element.wrap("<div></div>").parent().html()} for boxId, box of @boxes)
     return JSON.stringify result

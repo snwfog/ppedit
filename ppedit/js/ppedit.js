@@ -130,7 +130,6 @@
       return this.root.keydown(function(event) {
         if (event.keyCode === KeyCodes.Z && event.ctrlKey) {
           event.preventDefault();
-          console.log('request undo controller');
           _this.root.trigger('requestUndo');
         }
         if (event.keyCode === KeyCodes.Y && event.ctrlKey) {
@@ -244,14 +243,11 @@
       this.controller = ControllerFactory.getController(this.graphic.element);
       this.graphic.element.on('requestUndo', function(event) {
         _this._checkNewContent(false);
-        console.log('event undo');
         return event.stopPropagation();
       }).focus(function(event) {
-        _this._checkNewContent(true);
-        return console.log('element focus');
+        return _this._checkNewContent(true);
       }).blur(function(event) {
-        _this._checkNewContent(true);
-        return console.log('element blur');
+        return _this._checkNewContent(true);
       });
       return this.controller.bindEvents();
     };
@@ -818,7 +814,6 @@
 
     CommandManager.prototype.undo = function() {
       var lastCommand;
-      console.log(this.undoStack);
       if (this.undoStack.length > 0) {
         lastCommand = this.undoStack.pop();
         lastCommand.undo();
@@ -833,7 +828,6 @@
 
     CommandManager.prototype.redo = function() {
       var redoCommand;
-      console.log(this.redoStack);
       if (this.redoStack.length > 0) {
         redoCommand = this.redoStack.pop();
         redoCommand.execute();
@@ -945,7 +939,6 @@
 
     ChangeStyleCommand.prototype.execute = function() {
       var box, id, _ref, _results;
-      console.log('we are here');
       _ref = this.boxes;
       _results = [];
       for (id in _ref) {
@@ -959,7 +952,6 @@
       var _this = this;
       return this.boxesToCopy.each(function(index, item) {
         var prevCssOptions;
-        console.log('we are here');
         prevCssOptions = CSSJSON.toJSON(_this.boxesToCopy.filter('#' + item.id).attr('style')).attributes;
         return _this.boxes[item.id].element.css(prevCssOptions);
       });
@@ -1405,13 +1397,20 @@
     };
 
     BoxesContainer.prototype.getAllHunks = function() {
-      var box, boxId, result, _ref;
-      result = {};
-      _ref = this.boxes;
-      for (boxId in _ref) {
-        box = _ref[boxId];
-        result[boxId] = box.element.wrap("<div></div>").parent().html();
-      }
+      var box, boxId, result;
+      result = (function() {
+        var _ref, _results;
+        _ref = this.boxes;
+        _results = [];
+        for (boxId in _ref) {
+          box = _ref[boxId];
+          _results.push({
+            id: boxId,
+            html: box.element.wrap("<div></div>").parent().html()
+          });
+        }
+        return _results;
+      }).call(this);
       return JSON.stringify(result);
     };
 
@@ -1940,8 +1939,7 @@
           color: 'ff8800',
           onSubmit: function(hsb, hex, rgb, el) {
             _this.element.trigger('textColorChanged', [hex]);
-            $(el).colpickHide();
-            return $('.container').select();
+            return $(el).colpickHide();
           }
         });
       });
