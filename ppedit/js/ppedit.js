@@ -870,22 +870,43 @@
         }
       }
       result = {
-        modified: {},
-        created: {},
-        removed: {}
+        modified: (function() {
+          var _results;
+          _results = [];
+          for (boxid in modifiedBoxes) {
+            value = modifiedBoxes[boxid];
+            _results.push({
+              id: boxid,
+              html: value
+            });
+          }
+          return _results;
+        })(),
+        created: (function() {
+          var _results;
+          _results = [];
+          for (boxid in createdBoxes) {
+            value = createdBoxes[boxid];
+            _results.push({
+              id: boxid,
+              html: value
+            });
+          }
+          return _results;
+        })(),
+        removed: (function() {
+          var _results;
+          _results = [];
+          for (boxid in removedBoxes) {
+            value = removedBoxes[boxid];
+            _results.push({
+              id: boxid,
+              html: value
+            });
+          }
+          return _results;
+        })()
       };
-      for (boxid in modifiedBoxes) {
-        value = modifiedBoxes[boxid];
-        result.modified[boxid] = value;
-      }
-      for (boxid in createdBoxes) {
-        value = createdBoxes[boxid];
-        result.created[boxid] = value;
-      }
-      for (boxid in removedBoxes) {
-        value = removedBoxes[boxid];
-        result.removed[boxid] = value;
-      }
       shaObj = new jsSHA(JSON.stringify(result), "TEXT");
       hunkId = shaObj.getHMAC("", "TEXT", "SHA-256", "HEX");
       result.etag = hunkId;
