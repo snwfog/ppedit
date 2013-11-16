@@ -1074,6 +1074,11 @@
 
   })(Command);
 
+  /*
+  This class is responsible for creating and providing commands based.
+  */
+
+
   CommandFactory = (function() {
     function CommandFactory() {}
 
@@ -1382,6 +1387,17 @@
         left: event.offsetX + this.element.scrollLeft(),
         top: event.offsetY + this.element.scrollTop()
       };
+    };
+
+    BoxesContainer.prototype.getAllHunks = function() {
+      var box, boxId, result, _ref;
+      result = {};
+      _ref = this.boxes;
+      for (boxId in _ref) {
+        box = _ref[boxId];
+        result[boxId] = box.element.wrap("<div></div>").parent().html();
+      }
+      return result;
     };
 
     return BoxesContainer;
@@ -1974,6 +1990,9 @@
       },
       save: function() {
         return _editor.commandManager.getUndoJSON();
+      },
+      allHunks: function() {
+        return _editor.area.boxesContainer.getAllHunks();
       },
       clearHistory: function() {
         _editor.commandManager.clearHistory();

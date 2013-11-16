@@ -65,6 +65,9 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
     save: ->
       return _editor.commandManager.getUndoJSON()
 
+    allHunks: ->
+      return _editor.area.boxesContainer.getAllHunks()
+
     clearHistory: ->
       _editor.commandManager.clearHistory()
       return $this

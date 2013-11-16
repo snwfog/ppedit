@@ -7,6 +7,10 @@
 #= require ChangeBoxContentCommand
 #= require LoadBoxesCommand
 
+###
+This class is responsible for creating and providing commands based.
+
+###
 class CommandFactory
 
   createChangeFontSizeCommand: (editor, boxesSelector, newFontSize) ->
