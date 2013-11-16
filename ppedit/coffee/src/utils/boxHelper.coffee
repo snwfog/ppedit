@@ -24,6 +24,7 @@ class BoxHelper
       .blur (event) =>
         @_checkNewContent true
 
+
     @controller.bindEvents()
 
   ###

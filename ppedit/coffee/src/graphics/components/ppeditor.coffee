@@ -64,6 +64,9 @@ class PPEditor extends Graphic
         if items.length != 0
           @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, items)
 
+      .on 'textColorChanged', (event, hex) =>
+        @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, @area.boxesContainer.getSelectedBoxes(), hex)
+
       .on 'graphicContentChanged', (event, params) =>
         @commandManager.pushCommand(@cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false)
 

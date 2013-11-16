@@ -35,6 +35,7 @@ class CommandManager
       redoCommand.execute()
       @undoStack.push redoCommand
 
+
   ###
   executing the JSON command 
   ###

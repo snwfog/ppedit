@@ -130,6 +130,7 @@
       return this.root.keydown(function(event) {
         if (event.keyCode === KeyCodes.Z && event.ctrlKey) {
           event.preventDefault();
+          console.log('request undo controller');
           _this.root.trigger('requestUndo');
         }
         if (event.keyCode === KeyCodes.Y && event.ctrlKey) {
@@ -243,11 +244,14 @@
       this.controller = ControllerFactory.getController(this.graphic.element);
       this.graphic.element.on('requestUndo', function(event) {
         _this._checkNewContent(false);
+        console.log('event undo');
         return event.stopPropagation();
       }).focus(function(event) {
-        return _this._checkNewContent(true);
+        _this._checkNewContent(true);
+        return console.log('element focus');
       }).blur(function(event) {
-        return _this._checkNewContent(true);
+        _this._checkNewContent(true);
+        return console.log('element blur');
       });
       return this.controller.bindEvents();
     };
@@ -305,6 +309,7 @@
         top: '50px',
         width: '75px',
         height: '50px',
+        color: 'black',
         'font-family': 'Times New Roman',
         'font-size': '100%',
         'font-weight': 'normal',
@@ -813,6 +818,7 @@
 
     CommandManager.prototype.undo = function() {
       var lastCommand;
+      console.log(this.undoStack);
       if (this.undoStack.length > 0) {
         lastCommand = this.undoStack.pop();
         lastCommand.undo();
@@ -827,6 +833,7 @@
 
     CommandManager.prototype.redo = function() {
       var redoCommand;
+      console.log(this.redoStack);
       if (this.redoStack.length > 0) {
         redoCommand = this.redoStack.pop();
         redoCommand.execute();
@@ -938,6 +945,7 @@
 
     ChangeStyleCommand.prototype.execute = function() {
       var box, id, _ref, _results;
+      console.log('we are here');
       _ref = this.boxes;
       _results = [];
       for (id in _ref) {
@@ -951,6 +959,7 @@
       var _this = this;
       return this.boxesToCopy.each(function(index, item) {
         var prevCssOptions;
+        console.log('we are here');
         prevCssOptions = CSSJSON.toJSON(_this.boxesToCopy.filter('#' + item.id).attr('style')).attributes;
         return _this.boxes[item.id].element.css(prevCssOptions);
       });
@@ -1133,6 +1142,12 @@
     CommandFactory.prototype.createCenterAlignmentCommand = function(editor, boxesSelector) {
       return new ChangeStyleCommand(editor, boxesSelector, {
         'text-align': 'center'
+      });
+    };
+
+    CommandFactory.prototype.createChangeTextColorCommand = function(editor, boxesSelector, newColor) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'color': '#' + newColor
       });
     };
 
@@ -1773,6 +1788,8 @@
         if (items.length !== 0) {
           return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, items));
         }
+      }).on('textColorChanged', function(event, hex) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeTextColorCommand(_this, _this.area.boxesContainer.getSelectedBoxes(), hex));
       }).on('graphicContentChanged', function(event, params) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false);
       });
@@ -1890,7 +1907,7 @@
                  <option value="16">16</option>\
                  <option value="20">20</option>\
                </select>\
-\
+               <button class="colorPicker" id="picker">A</button>\
                <button class="weightBtn" type="button">B</button>\
                <button class="underlineBtn" type="button">U</button>\
                <button class="italicBtn" type="button">I</button>\
@@ -1915,6 +1932,18 @@
         var newFontSize;
         newFontSize = $(event.target).find("option:selected").val() + "pt";
         return _this.root.trigger('fontSizeChanged', [newFontSize]);
+      });
+      this.element.find(".colorPicker").click(function(event) {
+        return $(event.target).colpick({
+          colorScheme: 'dark',
+          layout: 'rgbhex',
+          color: 'ff8800',
+          onSubmit: function(hsb, hex, rgb, el) {
+            _this.element.trigger('textColorChanged', [hex]);
+            $(el).colpickHide();
+            return $('.container').select();
+          }
+        });
       });
       this.element.find(".weightBtn").click(function(event) {
         var btn;
@@ -1946,6 +1975,11 @@
       return this.element.find(".orderedPointBtn").click(function(event) {
         return _this.root.trigger('orderedPointBtnEnableClick');
       });
+    };
+
+    FontPanel.prototype.changeColor = function(hsb, hex, rgb, el) {
+      $(el).css('background-color', '#' + hex);
+      return $(el).colpickHide();
     };
 
     return FontPanel;

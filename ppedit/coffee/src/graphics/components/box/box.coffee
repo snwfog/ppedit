@@ -24,6 +24,7 @@ class Box extends Graphic
       top:'50px'
       width:'75px'
       height:'50px'
+      color : 'black'
       'font-family':'Times New Roman'
       'font-size': '100%'
       'font-weight': 'normal'
