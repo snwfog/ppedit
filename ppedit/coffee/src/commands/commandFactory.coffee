@@ -5,7 +5,12 @@
 #= require MoveBoxCommand
 #= require ChangeDepthCommand
 #= require ChangeBoxContentCommand
+#= require LoadBoxesCommand
 
+###
+This class is responsible for creating and providing commands based.
+
+###
 class CommandFactory
 
   createChangeFontSizeCommand: (editor, boxesSelector, newFontSize) ->
@@ -58,3 +63,6 @@ class CommandFactory
 
   createMoveDownCommand: (editor, boxSelector) ->
     return new ChangeDepthCommand editor, boxSelector, false
+
+  createLoadBoxesCommand: (editor, jsonBoxes) ->
+    return new LoadBoxesCommand editor, jsonBoxes

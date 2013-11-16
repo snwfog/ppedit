@@ -70,3 +70,22 @@ selectRectangle = (canvasSelector, rect) ->
     .simulate "mouseup",
       clientX:rect.topLeft.left + rect.size.width
       clientY:rect.topLeft.top + rect.size.height
+
+###
+Simulates entering the specified text into the passed box
+###
+enterText = (box, text) ->
+  box.simulate 'dblclick'
+  expect(box).toBeFocused()
+
+  box.simulate "key-sequence",
+    sequence: text
+    callback: ->
+      expect(box).toHaveHtml(text)
+
+###
+Simulates ctrl/cmd + delete
+###
+requestDelete = ->
+  $('.ppedit-box-container').simulate 'key-combo', {combo: 'ctrl+46'}; # If Windows
+  $('.ppedit-box-container').simulate 'key-combo', {combo: 'meta+8'}; # If Mac

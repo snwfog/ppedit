@@ -71,7 +71,7 @@ class Panel extends Graphic
   ###
   Adds a row to be associated with the passed box id.
   ### 
-  addBoxRow: (boxid) ->
+  addBoxRow: (boxid, index) ->
     newRow = $("
             <tr class='ppedit-panel-row'>
                 <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>
@@ -80,7 +80,10 @@ class Panel extends Graphic
             </tr>")
     .attr('ppedit-box-id', boxid)
 
-    @element.find('.dataPanel tbody').prepend newRow
+    if !index? or index == 0
+      @element.find('.dataPanel tbody').prepend newRow
+    else
+      newRow.insertBefore @element.find('tbody .ppedit-panel-rown:nth-child("' + index + '")')
 
     newRow.find(".ppedit-slider")
       .slider(
@@ -90,12 +93,12 @@ class Panel extends Graphic
           value: 100
         )
       .on 'slide', (event) =>
-          opacityVal = $(event.target).val()
-          @root.trigger 'onRowSliderValChanged', [boxid, parseInt(opacityVal)/100]
+        opacityVal = $(event.target).val()
+        @root.trigger 'onRowSliderValChanged', [boxid, parseInt(opacityVal)/100]
 
     newRow.find(".deleteElementBtn")
       .on 'click', (event) =>
-          @root.trigger 'onRowDeleteBtnClick', [boxid]
+        @root.trigger 'onRowDeleteBtnClick', [boxid]
 
   ###
   Removes the row associated with the passed box id.
@@ -108,3 +111,6 @@ class Panel extends Graphic
 
   getRowAtIndex: (index) ->
     @element.find(".ppedit-panel-row").eq(index)
+
+  getRows: ->
+    @element.find(".ppedit-panel-row")

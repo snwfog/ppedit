@@ -151,3 +151,8 @@ class BoxesContainer extends Graphic
       left:event.offsetX + @element.scrollLeft()
       top:event.offsetY + @element.scrollTop()
     }
+
+  getAllHunks: ->
+    result = {}
+    result[boxId] = box.element.wrap("<div></div>").parent().html() for boxId, box of @boxes
+    return JSON.stringify result
