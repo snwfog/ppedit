@@ -237,4 +237,3 @@ class Box extends Graphic
 
   _onDoubleClick: ->
     @toggleFocus()
-    console.log 'ondblclick called'

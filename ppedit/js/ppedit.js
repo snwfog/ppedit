@@ -177,7 +177,6 @@
           return _this.root.trigger('requestRedo');
         } else if (event.keyCode === KeyCodes.MAC_DELETE && _this._cmdKeyIsPressed()) {
           event.preventDefault();
-          console.log('deleterequested');
           return _this.root.trigger('requestDelete');
         } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed()) {
           event.preventDefault();
@@ -522,8 +521,7 @@
     Box.prototype._onClick = function() {};
 
     Box.prototype._onDoubleClick = function() {
-      this.toggleFocus();
-      return console.log('ondblclick called');
+      return this.toggleFocus();
     };
 
     return Box;

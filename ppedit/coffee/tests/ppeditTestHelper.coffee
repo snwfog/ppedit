@@ -24,7 +24,7 @@ moveBox = (boxSelector, distance) ->
   previousPosition = viewPortPosition boxSelector
 
   boxSelector
-    .simulate 'click',
+    .simulate 'mousedown',
       clientX:previousPosition.left + 1
       clientY:previousPosition.top + 1
 
@@ -33,16 +33,20 @@ moveBox = (boxSelector, distance) ->
       clientY:previousPosition.top + 1
 
     .simulate "mousemove",
-      clientX:previousPosition.left + 1 + distance.dx
-      clientY:previousPosition.top + 1 + distance.dy
+      clientX:previousPosition.left + 2
+      clientY:previousPosition.top + 2
 
-    .simulate 'click',
+    .simulate "mousemove",
+      clientX:previousPosition.left + distance.dx
+      clientY:previousPosition.top + distance.dy
+
+    .simulate "mousemove",
       clientX:previousPosition.left + 1 + distance.dx
       clientY:previousPosition.top + 1 + distance.dy
 
     .simulate 'mouseup',
-        clientX:previousPosition.left + 1 + distance.dx
-        clientY:previousPosition.top + 1 + distance.dy
+      clientX:previousPosition.left + 1 + distance.dx
+      clientY:previousPosition.top + 1 + distance.dy
 
   expect(viewPortPosition boxSelector).toBeEqualToPosition
     left:previousPosition.left + distance.dx
@@ -75,13 +79,13 @@ selectRectangle = (canvasSelector, rect) ->
 Simulates entering the specified text into the passed box
 ###
 enterText = (box, text) ->
-  box.simulate 'dblclick'
-  expect(box).toBeFocused()
+  simulateBoxDblClick box, ->
+    expect(box).toBeFocused()
 
-  box.simulate "key-sequence",
-    sequence: text
-    callback: ->
-      expect(box).toHaveHtml(text)
+    box.simulate "key-sequence",
+      sequence: text
+      callback: ->
+        expect(box).toHaveHtml(text)
 
 ###
 Simulates ctrl/cmd + delete
@@ -89,6 +93,17 @@ Simulates ctrl/cmd + delete
 requestDelete = ->
   $('.ppedit-box-container').simulate 'key-combo', {combo: 'ctrl+46'}; # If Windows
   $('.ppedit-box-container').simulate 'key-combo', {combo: 'meta+8'}; # If Mac
+
+###
+Simulates click on a box
+
+  @param selector the selector matching a set of boxes
+  @param callback the callback to be called after the click is performed
+###
+simulateBoxClick = (selector, callback) ->
+  selector.simulate 'mousedown'
+  selector.simulate 'mouseup'
+  setTimeout (=> callback()), 300
 
 ###
 Simulates doubleclick on a box

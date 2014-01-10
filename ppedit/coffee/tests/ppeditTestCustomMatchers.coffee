@@ -5,4 +5,5 @@ ppeditMatchers =
   the passed position
   ###
   toBeEqualToPosition: (expected) ->
-    return expected.top == @actual.top and expected.left == @actual.left
+    return Math.round(expected.top) == Math.round(@actual.top) and
+            Math.round(expected.left) == Math.round(@actual.left)
