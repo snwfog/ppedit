@@ -57,6 +57,8 @@ class Box extends Graphic
       .mousedown (event) =>
         event.stopPropagation()
         event.preventDefault()
+
+        @select()
         @prevMouseDownTime = event.timeStamp
 
       .mouseup (event) =>
@@ -80,6 +82,8 @@ class Box extends Graphic
               @clickCount = 0
 
             ), Box.DBLCLICK_TIME_MILLIS
+
+        @stopMoving()
 
 
       .click (event) =>
@@ -230,8 +234,7 @@ class Box extends Graphic
     return window.getSelection().getRangeAt(0).startOffset
 
   _onClick: ->
-    @toggleSelect()
 
   _onDoubleClick: ->
-    @stopMoving()
     @toggleFocus()
+    console.log 'ondblclick called'

@@ -12,8 +12,8 @@ class Canvas extends Graphic
   buildElement: ->
     @element = $('<canvas></canvas>')
       .addClass('ppedit-canvas')
-      .attr('width', '600px')
-      .attr('height', '960px')
+      .attr('width', '980px')
+      .attr('height', '1386px')
 
   bindEvents:->
     @element

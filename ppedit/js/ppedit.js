@@ -177,6 +177,7 @@
           return _this.root.trigger('requestRedo');
         } else if (event.keyCode === KeyCodes.MAC_DELETE && _this._cmdKeyIsPressed()) {
           event.preventDefault();
+          console.log('deleterequested');
           return _this.root.trigger('requestDelete');
         } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed()) {
           event.preventDefault();
@@ -331,25 +332,26 @@
       this.element.mousedown(function(event) {
         event.stopPropagation();
         event.preventDefault();
+        _this.select();
         return _this.prevMouseDownTime = event.timeStamp;
       }).mouseup(function(event) {
         event.stopPropagation();
         event.preventDefault();
         if (event.timeStamp - _this.prevMouseDownTime < Box.CLICK_TIME_MILLIS) {
-          console.log('click++');
           _this.clickCount++;
           if (_this.clickTimeoutId === 0) {
-            return _this.clickTimeoutId = setTimeout((function() {
+            _this.clickTimeoutId = setTimeout((function() {
               if (_this.clickCount === 1) {
-                console.log('click');
+                _this._onClick();
               } else if (_this.clickCount >= 2) {
-                console.log('dblclick, count=' + _this.clickCount);
+                _this._onDoubleClick();
               }
               _this.clickTimeoutId = 0;
               return _this.clickCount = 0;
             }), Box.DBLCLICK_TIME_MILLIS);
           }
         }
+        return _this.stopMoving();
       }).click(function(event) {
         event.stopPropagation();
         return event.preventDefault();
@@ -517,13 +519,11 @@
       return window.getSelection().getRangeAt(0).startOffset;
     };
 
-    Box.prototype._onClick = function() {
-      return this.toggleSelect();
-    };
+    Box.prototype._onClick = function() {};
 
     Box.prototype._onDoubleClick = function() {
-      this.stopMoving();
-      return this.toggleFocus();
+      this.toggleFocus();
+      return console.log('ondblclick called');
     };
 
     return Box;
@@ -1463,7 +1463,7 @@
     }
 
     Canvas.prototype.buildElement = function() {
-      return this.element = $('<canvas></canvas>').addClass('ppedit-canvas').attr('width', '600px').attr('height', '960px');
+      return this.element = $('<canvas></canvas>').addClass('ppedit-canvas').attr('width', '980px').attr('height', '1386px');
     };
 
     Canvas.prototype.bindEvents = function() {

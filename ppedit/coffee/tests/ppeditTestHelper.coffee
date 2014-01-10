@@ -89,3 +89,16 @@ Simulates ctrl/cmd + delete
 requestDelete = ->
   $('.ppedit-box-container').simulate 'key-combo', {combo: 'ctrl+46'}; # If Windows
   $('.ppedit-box-container').simulate 'key-combo', {combo: 'meta+8'}; # If Mac
+
+###
+Simulates doubleclick on a box
+
+  @param selector the selector matching a set of boxes
+  @param callback the callback to be called after the doubleclick is performed
+###
+simulateBoxDblClick = (selector, callback) ->
+  selector.simulate 'mousedown'
+  selector.simulate 'mouseup'
+  selector.simulate 'mousedown'
+  selector.simulate 'mouseup'
+  setTimeout (=> callback()), 300

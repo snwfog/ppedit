@@ -9,14 +9,13 @@ ppeditDescribe 'A test for issue "CAP-49 : As a backend developer, I want an API
   it "identifies boxes that were created then deleted during current editing as non existent", ->
     addBox 1
 
-    $('.ppedit-box').simulate 'click'
+    simulateBoxDblClick $('.ppedit-box'), =>
+      requestDelete()
 
-    requestDelete()
-
-    result = JSON.parse $('.editor').ppedit('save')
-    expect(result.removed.length).toEqual 0
-    expect(result.created.length).toEqual 0
-    expect(result.modified.length).toEqual 0
+      result = JSON.parse $('.editor').ppedit('save')
+      expect(result.removed.length).toEqual 0
+      expect(result.created.length).toEqual 0
+      expect(result.modified.length).toEqual 0
 
   it "identifies two boxes newly created as saved when the saving API is called", ->
     addBox 2
