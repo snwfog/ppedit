@@ -4,11 +4,21 @@
 
 class Box extends Graphic
 
+  @CLICK_TIME_MILLIS:200
+  @DBLCLICK_TIME_MILLIS:200
+
   constructor: (@root, @options)->
     super @root
 
-    @prevPosition = undefined
     @helper = new BoxHelper this
+
+    @prevPosition = undefined
+
+    @prevMouseDownTime = 0
+    @prevMouseUpTime = 0
+    @clickCount = 0
+
+    @clickTimeoutId = 0
 
   buildElement: ->
     highestZIndex = undefined
@@ -47,18 +57,39 @@ class Box extends Graphic
       .mousedown (event) =>
         event.stopPropagation()
         event.preventDefault()
+        @prevMouseDownTime = event.timeStamp
+
+      .mouseup (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+
+        if event.timeStamp - @prevMouseDownTime < Box.CLICK_TIME_MILLIS
+
+          # Click is happening
+          @clickCount++
+
+          if @clickTimeoutId == 0
+            @clickTimeoutId = setTimeout ( =>
+              if @clickCount == 1
+                @_onClick()
+
+              else if @clickCount >= 2
+                @_onDoubleClick()
+
+              @clickTimeoutId = 0
+              @clickCount = 0
+
+            ), Box.DBLCLICK_TIME_MILLIS
+
 
       .click (event) =>
         event.stopPropagation()
         event.preventDefault()
-        @toggleSelect()
 
       .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault()
-        @stopMoving()
-        @toggleFocus()
-      
+
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
 
@@ -194,5 +225,13 @@ class Box extends Graphic
       .append htmlSelector
 
     # TODO: Set the cursor position to the beginning of the Bullet list
+
   _getCursorPosition: ->
     return window.getSelection().getRangeAt(0).startOffset
+
+  _onClick: ->
+    @toggleSelect()
+
+  _onDoubleClick: ->
+    @stopMoving()
+    @toggleFocus()

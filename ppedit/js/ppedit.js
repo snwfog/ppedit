@@ -282,12 +282,20 @@
   Box = (function(_super) {
     __extends(Box, _super);
 
+    Box.CLICK_TIME_MILLIS = 200;
+
+    Box.DBLCLICK_TIME_MILLIS = 200;
+
     function Box(root, options) {
       this.root = root;
       this.options = options;
       Box.__super__.constructor.call(this, this.root);
-      this.prevPosition = void 0;
       this.helper = new BoxHelper(this);
+      this.prevPosition = void 0;
+      this.prevMouseDownTime = 0;
+      this.prevMouseUpTime = 0;
+      this.clickCount = 0;
+      this.clickTimeoutId = 0;
     }
 
     Box.prototype.buildElement = function() {
@@ -322,16 +330,32 @@
       var _this = this;
       this.element.mousedown(function(event) {
         event.stopPropagation();
-        return event.preventDefault();
+        event.preventDefault();
+        return _this.prevMouseDownTime = event.timeStamp;
+      }).mouseup(function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.timeStamp - _this.prevMouseDownTime < Box.CLICK_TIME_MILLIS) {
+          console.log('click++');
+          _this.clickCount++;
+          if (_this.clickTimeoutId === 0) {
+            return _this.clickTimeoutId = setTimeout((function() {
+              if (_this.clickCount === 1) {
+                console.log('click');
+              } else if (_this.clickCount >= 2) {
+                console.log('dblclick, count=' + _this.clickCount);
+              }
+              _this.clickTimeoutId = 0;
+              return _this.clickCount = 0;
+            }), Box.DBLCLICK_TIME_MILLIS);
+          }
+        }
       }).click(function(event) {
         event.stopPropagation();
-        event.preventDefault();
-        return _this.toggleSelect();
+        return event.preventDefault();
       }).dblclick(function(event) {
         event.stopPropagation();
-        event.preventDefault();
-        _this.stopMoving();
-        return _this.toggleFocus();
+        return event.preventDefault();
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
           return _this.move(delta.x, delta.y);
@@ -491,6 +515,15 @@
 
     Box.prototype._getCursorPosition = function() {
       return window.getSelection().getRangeAt(0).startOffset;
+    };
+
+    Box.prototype._onClick = function() {
+      return this.toggleSelect();
+    };
+
+    Box.prototype._onDoubleClick = function() {
+      this.stopMoving();
+      return this.toggleFocus();
     };
 
     return Box;
