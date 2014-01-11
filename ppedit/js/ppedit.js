@@ -363,6 +363,8 @@
         }
       }).on('containerMouseLeave', function() {
         return _this.stopMoving();
+      }).on('containerMouseUp', function(event, mouseMoveEvent) {
+        return _this.stopMoving();
       }).on('containerKeyDown', function(event, keyDownEvent) {
         if (_this.element.hasClass('ppedit-box-selected')) {
           return _this._processKeyDownEvent(keyDownEvent);

@@ -17,9 +17,10 @@ addBox = (numOfBoxes)->
 
 ###
 Simulates moving the passed box
-by the specified distance amount
+by the specified distance amount, then calls
+the callback once the operations is finished.
 ###
-moveBox = (boxSelector, distance) ->
+moveBox = (boxSelector, distance, callback) ->
 
   previousPosition = viewPortPosition boxSelector
 
@@ -33,24 +34,23 @@ moveBox = (boxSelector, distance) ->
       clientY:previousPosition.top + 1
 
     .simulate "mousemove",
-      clientX:previousPosition.left + 2
-      clientY:previousPosition.top + 2
+      clientX:previousPosition.left + distance.dx + 1
+      clientY:previousPosition.top + distance.dy + 1
 
-    .simulate "mousemove",
-      clientX:previousPosition.left + distance.dx
-      clientY:previousPosition.top + distance.dy
+#    .simulate 'mouseup',
+#      clientX:previousPosition.left + distance.dx + 1
+#      clientY:previousPosition.top + distance.dy + 1
 
-    .simulate "mousemove",
-      clientX:previousPosition.left + 1 + distance.dx
-      clientY:previousPosition.top + 1 + distance.dy
-
-    .simulate 'mouseup',
-      clientX:previousPosition.left + 1 + distance.dx
-      clientY:previousPosition.top + 1 + distance.dy
+  $('.ppedit-container').simulate 'mouseup',
+    clientX:previousPosition.left + distance.dx + 1
+    clientY:previousPosition.top + distance.dy + 1
 
   expect(viewPortPosition boxSelector).toBeEqualToPosition
     left:previousPosition.left + distance.dx
     top:previousPosition.top + distance.dy
+
+  waits 300, ->
+    callback() if callback?
 
 ###
 Simulates a rectangular selection on the passed
@@ -103,7 +103,7 @@ Simulates click on a box
 simulateBoxClick = (selector, callback) ->
   selector.simulate 'mousedown'
   selector.simulate 'mouseup'
-  setTimeout (=> callback()), 300
+  waits 300, callback
 
 ###
 Simulates doubleclick on a box
@@ -116,4 +116,25 @@ simulateBoxDblClick = (selector, callback) ->
   selector.simulate 'mouseup'
   selector.simulate 'mousedown'
   selector.simulate 'mouseup'
-  setTimeout (=> callback()), 300
+  waits 300, callback
+
+###
+Executes the passed callback after waiting for
+the passed specified amount
+###
+waits = (amount, callback) ->
+  done = false
+
+  runs ( ->
+    setTimeout ( ->
+      done = true
+    ), amount
+  )
+
+  waitsFor ( ->
+    return done
+  ), "The operation should run in under " + amount + " minutes.", amount + 500
+
+  runs ( ->
+    callback()
+  )

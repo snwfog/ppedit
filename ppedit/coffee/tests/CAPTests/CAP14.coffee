@@ -1,4 +1,4 @@
-#= require <ppeditTest.coffee>
+  #= require <ppeditTest.coffee>
 #= require <ppeditTestHelper.coffee>
 
 ppeditDescribe "A test for issue CAP-14 : As a user, I want to reposition elements visible on my work area", ->
@@ -20,8 +20,9 @@ ppeditDescribe "A test for issue CAP-14 : As a user, I want to reposition elemen
 
   it "repositions elements with the mouse", ->
     addBox 2
-    moveBox $('.ppedit-box').eq(0), {dx:150, dy:180}
-    moveBox $('.ppedit-box').eq(1), {dx:100, dy:100}
+
+    moveBox $('.ppedit-box').eq(0), {dx:150, dy:180}, ->
+      moveBox $('.ppedit-box').eq(1), {dx:100, dy:100}
 
   it "deletes a box when clicking on ctrl+delete", ->
     addBox 1

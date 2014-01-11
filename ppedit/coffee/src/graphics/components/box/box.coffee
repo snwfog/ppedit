@@ -100,6 +100,9 @@ class Box extends Graphic
       .on 'containerMouseLeave', () =>
         @stopMoving()
 
+      .on 'containerMouseUp', (event, mouseMoveEvent) =>
+        @stopMoving()
+
       .on 'containerKeyDown', (event, keyDownEvent) =>
         @_processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')
 
