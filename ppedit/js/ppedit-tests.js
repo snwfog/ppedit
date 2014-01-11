@@ -71,8 +71,7 @@
     }).simulate("mousemove", {
       clientX: previousPosition.left + distance.dx + 1,
       clientY: previousPosition.top + distance.dy + 1
-    });
-    $('.ppedit-container').simulate('mouseup', {
+    }).simulate('mouseup', {
       clientX: previousPosition.left + distance.dx + 1,
       clientY: previousPosition.top + distance.dy + 1
     });
@@ -669,7 +668,6 @@
       box = $('.ppedit-box');
       return simulateBoxDblClick(box, function() {
         $('.underlineBtn').simulate('click');
-        console.log(box.css('text-decoration'));
         return expect(box.css('text-decoration')).toMatch(/underline/);
       });
     });

@@ -62,7 +62,6 @@ class Box extends Graphic
         @prevMouseDownTime = event.timeStamp
 
       .mouseup (event) =>
-        event.stopPropagation()
         event.preventDefault()
 
         if event.timeStamp - @prevMouseDownTime < Box.CLICK_TIME_MILLIS
@@ -200,14 +199,7 @@ class Box extends Graphic
   isFocused: ->
     return @element.get(0) == document.activeElement
 
-  toggleSelect: ->
-    if @element.hasClass('ppedit-box-selected')
-      @stopMoving()
-    else
-      @root.find('.ppedit-box').removeClass('ppedit-box-selected')
-      @select() if !@isFocused()
-
-  toggleFocus: ->
+  _enableFocus: ->
       @root.find('.ppedit-box')
         .removeClass('ppedit-box-focus')
         .removeClass('ppedit-box-selected')
@@ -239,4 +231,4 @@ class Box extends Graphic
   _onClick: ->
 
   _onDoubleClick: ->
-    @toggleFocus()
+    @_enableFocus()

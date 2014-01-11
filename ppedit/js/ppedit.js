@@ -334,7 +334,6 @@
         _this.select();
         return _this.prevMouseDownTime = event.timeStamp;
       }).mouseup(function(event) {
-        event.stopPropagation();
         event.preventDefault();
         if (event.timeStamp - _this.prevMouseDownTime < Box.CLICK_TIME_MILLIS) {
           _this.clickCount++;
@@ -482,18 +481,7 @@
       return this.element.get(0) === document.activeElement;
     };
 
-    Box.prototype.toggleSelect = function() {
-      if (this.element.hasClass('ppedit-box-selected')) {
-        return this.stopMoving();
-      } else {
-        this.root.find('.ppedit-box').removeClass('ppedit-box-selected');
-        if (!this.isFocused()) {
-          return this.select();
-        }
-      }
-    };
-
-    Box.prototype.toggleFocus = function() {
+    Box.prototype._enableFocus = function() {
       this.root.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
       return this.element.addClass('ppedit-box-focus').focus();
     };
@@ -523,7 +511,7 @@
     Box.prototype._onClick = function() {};
 
     Box.prototype._onDoubleClick = function() {
-      return this.toggleFocus();
+      return this._enableFocus();
     };
 
     return Box;

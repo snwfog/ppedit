@@ -37,9 +37,9 @@ moveBox = (boxSelector, distance, callback) ->
       clientX:previousPosition.left + distance.dx + 1
       clientY:previousPosition.top + distance.dy + 1
 
-  $('.ppedit-container').simulate 'mouseup',
-    clientX:previousPosition.left + distance.dx + 1
-    clientY:previousPosition.top + distance.dy + 1
+    .simulate 'mouseup',
+      clientX:previousPosition.left + distance.dx + 1
+      clientY:previousPosition.top + distance.dy + 1
 
   expect(viewPortPosition boxSelector).toBeEqualToPosition
     left:previousPosition.left + distance.dx
