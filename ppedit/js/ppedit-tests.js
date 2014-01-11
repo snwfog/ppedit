@@ -669,9 +669,8 @@
       box = $('.ppedit-box');
       return simulateBoxDblClick(box, function() {
         $('.underlineBtn').simulate('click');
-        return expect(box).toHaveCss({
-          'text-decoration': 'underline'
-        });
+        console.log(box.css('text-decoration'));
+        return expect(box.css('text-decoration')).toMatch(/underline/);
       });
     });
     return it("change font italic on font italic on the panel", function() {

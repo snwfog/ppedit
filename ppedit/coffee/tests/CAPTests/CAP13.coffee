@@ -36,7 +36,7 @@ ppeditDescribe "A test for issue CAP-13 : As a user,   I want to change font set
 
     simulateBoxDblClick box, =>
       $('.underlineBtn').simulate 'click'
-      expect(box).toHaveCss('text-decoration':'underline')
+      expect(box.css('text-decoration')).toMatch(/underline/)
 
   it "change font italic on font italic on the panel", ->
     
