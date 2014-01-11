@@ -18,7 +18,7 @@ ppeditDescribe "A test for issue CAP-13 : As a user,   I want to change font set
 
     simulateBoxDblClick box, =>
       $('.fontSizeBtn').val('12').change()
-      expect($(".ppedit-box").css('font-size')).toEqual('16px')
+      expect(Math.round(parseInt(box.css('font-size')))).toEqual(16)
 
   it "change font weight on font bold on the panel", ->
     
@@ -36,7 +36,7 @@ ppeditDescribe "A test for issue CAP-13 : As a user,   I want to change font set
 
     simulateBoxDblClick box, =>
       $('.underlineBtn').simulate 'click'
-      expect($(".ppedit-box").css('text-decoration')).toEqual('underline')
+      expect(box).toHaveCss('text-decoration':'underline')
 
   it "change font italic on font italic on the panel", ->
     

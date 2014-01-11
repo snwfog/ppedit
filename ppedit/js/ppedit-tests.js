@@ -565,7 +565,6 @@
     return it("deletes a box when clicking on ctrl+delete", function() {
       addBox(1);
       return simulateBoxDblClick($('.ppedit-box'), function() {
-        expect($('.ppedit-box-selected')).toHaveLength(1);
         requestDelete();
         return expect($('.ppedit-box')).toHaveLength(0);
       });
@@ -650,7 +649,7 @@
       box = $('.ppedit-box');
       return simulateBoxDblClick(box, function() {
         $('.fontSizeBtn').val('12').change();
-        return expect($(".ppedit-box").css('font-size')).toEqual('16px');
+        return expect(Math.round(parseInt(box.css('font-size')))).toEqual(16);
       });
     });
     it("change font weight on font bold on the panel", function() {
@@ -670,7 +669,9 @@
       box = $('.ppedit-box');
       return simulateBoxDblClick(box, function() {
         $('.underlineBtn').simulate('click');
-        return expect($(".ppedit-box").css('text-decoration')).toEqual('underline');
+        return expect(box).toHaveCss({
+          'text-decoration': 'underline'
+        });
       });
     });
     return it("change font italic on font italic on the panel", function() {
