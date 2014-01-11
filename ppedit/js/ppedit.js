@@ -102,13 +102,15 @@
 
     KeyCodes.C = 67;
 
-    KeyCodes.P = 86;
+    KeyCodes.V = 86;
 
     KeyCodes.Z = 90;
 
     KeyCodes.Y = 89;
 
     KeyCodes.DELETE = 46;
+
+    KeyCodes.SHIFT = 16;
 
     KeyCodes.MAC_CMD_LEFT = 91;
 
@@ -140,11 +142,11 @@
           event.preventDefault();
           _this.root.trigger('requestDelete');
         }
-        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+        if (event.keyCode === KeyCodes.C && event.ctrlKey && event.shiftKey) {
           event.preventDefault();
           _this.root.trigger('requestCopy');
         }
-        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+        if (event.keyCode === KeyCodes.V && event.ctrlKey && event.shiftKey) {
           event.preventDefault();
           return _this.root.trigger('requestPaste');
         }
@@ -160,6 +162,7 @@
       this.root = root;
       this.leftCmdKeyPressed = false;
       this.rightCmdKeyPressed = false;
+      this.shiftKeyPressed = false;
     }
 
     MacController.prototype.bindEvents = function() {
@@ -169,6 +172,8 @@
           return _this.leftCmdKeyPressed = true;
         } else if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
           return _this.rightCmdKeyPressed = true;
+        } else if (event.keyCode === KeyCodes.SHIFT) {
+          return _this.shiftKeyPressed = true;
         } else if (event.keyCode === KeyCodes.Z && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestUndo');
@@ -178,10 +183,10 @@
         } else if (event.keyCode === KeyCodes.MAC_DELETE && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestDelete');
-        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed()) {
+        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed() && _this.shiftKeyPressed) {
           event.preventDefault();
           return _this.root.trigger('requestCopy');
-        } else if (event.keyCode === KeyCodes.P && _this._cmdKeyIsPressed()) {
+        } else if (event.keyCode === KeyCodes.V && _this._cmdKeyIsPressed() && _this.shiftKeyPressed) {
           event.preventDefault();
           return _this.root.trigger('requestPaste');
         }
@@ -190,7 +195,10 @@
           _this.leftCmdKeyPressed = false;
         }
         if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
-          return _this.rightCmdKeyPressed = false;
+          _this.rightCmdKeyPressed = false;
+        }
+        if (event.keyCode === KeyCodes.SHIFT) {
+          return _this.shiftKeyPressed = false;
         }
       });
     };
@@ -323,7 +331,7 @@
         'text-align': 'left',
         'vertical-align': 'bottom'
       }, this.options);
-      return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('contenteditable', true).attr('id', $.now()).css(settings);
+      return this.element = $('<div></div>').addClass('ppedit-box').attr('contenteditable', true).attr('id', $.now()).css(settings);
     };
 
     Box.prototype.bindEvents = function() {

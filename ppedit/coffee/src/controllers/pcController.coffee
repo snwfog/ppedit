@@ -18,10 +18,10 @@ class PCController
         event.preventDefault()
         @root.trigger 'requestDelete'
 
-      if event.keyCode == KeyCodes.C && event.ctrlKey
+      if event.keyCode == KeyCodes.C && event.ctrlKey && event.shiftKey
         event.preventDefault()
         @root.trigger 'requestCopy'
 
-      if event.keyCode == KeyCodes.C && event.ctrlKey
+      if event.keyCode == KeyCodes.V && event.ctrlKey && event.shiftKey
         event.preventDefault()
         @root.trigger 'requestPaste'

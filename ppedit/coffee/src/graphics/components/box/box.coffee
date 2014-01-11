@@ -47,7 +47,6 @@ class Box extends Graphic
 
     @element = $('<div></div>')
       .addClass('ppedit-box')
-      .attr('tabindex', 0)
       .attr('contenteditable', true)
       .attr('id', $.now())
       .css(settings)

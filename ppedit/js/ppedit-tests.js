@@ -279,16 +279,16 @@
       box = $('.ppedit-box');
       return simulateBoxDblClick(box, function() {
         $('.ppedit-box-container').simulate("key-combo", {
-          combo: "meta+c"
+          combo: "meta+shift+c"
         });
         $('.ppedit-box-container').simulate("key-combo", {
-          combo: "meta+v"
+          combo: "meta+shift+v"
         });
         $('.ppedit-box-container').simulate("key-combo", {
-          combo: "ctrl+c"
+          combo: "ctrl+shift+c"
         });
         $('.ppedit-box-container').simulate("key-combo", {
-          combo: "ctrl+v"
+          combo: "ctrl+shift+v"
         });
         return expect($('.ppedit-box')).toHaveLength(2);
       });
@@ -313,16 +313,16 @@
         }
       });
       $('.ppedit-box-container').simulate("key-combo", {
-        combo: "meta+c"
+        combo: "meta+shift+c"
       });
       $('.ppedit-box-container').simulate("key-combo", {
-        combo: "meta+v"
+        combo: "meta+shift+v"
       });
       $('.ppedit-box-container').simulate("key-combo", {
-        combo: "ctrl+c"
+        combo: "ctrl+shift+c"
       });
       $('.ppedit-box-container').simulate("key-combo", {
-        combo: "ctrl+v"
+        combo: "ctrl+shift+v"
       });
       return expect($('.ppedit-box')).toHaveLength(4);
     });
