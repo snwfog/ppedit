@@ -314,7 +314,7 @@
 
   ppeditDescribe("A test for issue CAP-47 : As a user, I want to select and move aggregated elements in my workspace", function() {
     return it("can select and move elements in the workspace", function() {
-      var boxes, canvas;
+      var boxes;
       $(".addElementBtn").click();
       $(".addElementBtn").click();
       $(".addElementBtn").click();
@@ -324,22 +324,25 @@
         dx: 200,
         dy: 0
       });
-      moveBox(boxes.eq(1), {
-        dx: 0,
-        dy: 200
-      });
-      canvas = $('.ppedit-canvas');
-      selectRectangle(canvas, {
-        topLeft: {
-          left: viewPortPosition(canvas).left + 49,
-          top: viewPortPosition(canvas).top + 49
-        },
-        size: {
-          width: 500,
-          height: 100
-        }
-      });
-      return expect($('.ppedit-box-selected')).toHaveLength(2);
+      return setTimeout((function() {
+        var canvas;
+        moveBox(boxes.eq(1), {
+          dx: 0,
+          dy: 200
+        });
+        canvas = $('.ppedit-canvas');
+        selectRectangle(canvas, {
+          topLeft: {
+            left: viewPortPosition(canvas).left + 49,
+            top: viewPortPosition(canvas).top + 49
+          },
+          size: {
+            width: 500,
+            height: 100
+          }
+        });
+        return expect($('.ppedit-box-selected')).toHaveLength(2);
+      }), 300);
     });
   });
 
@@ -542,7 +545,6 @@
       });
     });
     return it("deletes a box when clicking on ctrl+delete", function() {
-      var _this = this;
       addBox(1);
       return simulateBoxDblClick($('.ppedit-box'), function() {
         expect($('.ppedit-box-selected')).toHaveLength(1);
