@@ -139,7 +139,6 @@ class BoxesContainer extends Graphic
   Returns the position relative to the top left corner
   of the element from the passed mouseEvent.
   ###
-
   @_rectContainsRect: (outerRect, innerRect) ->
     return (innerRect.topLeft.x >= outerRect.topLeft.x &&
     innerRect.topLeft.y >= outerRect.topLeft.y &&
@@ -152,6 +151,10 @@ class BoxesContainer extends Graphic
       top:event.offsetY + @element.scrollTop()
     }
 
+  ###
+  Returns a JSON string containing a description of
+  all the boxes currently existing in this container.
+  ###
   getAllHunks: ->
     result = ({id:boxId, html:box.element.wrap("<div></div>").parent().html()} for boxId, box of @boxes)
     return JSON.stringify result

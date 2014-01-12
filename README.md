@@ -29,6 +29,35 @@ PPedit is a web based WYSIWYG editor written as a JQuery plugin for the PeerPen 
         </script>
       </body>
     </html>
+    
+##API Reference
+
+The PPEdit plugin exposes the following interface:
+
+ - `.ppedit()`
+   - Loads an empty instance of the editor.
+   
+ - `.ppedit('load', options)`
+   - Populates the editor with the boxes information defined in the passed options parameter.
+   - Example :         
+.    
+                    
+        .ppedit('load',{
+        	hunks:{
+			    "box-id-1":'<div class="ppedit-box">box-id-1 contents</div>',
+			    "box-id-2":'<div class="ppedit-box">box-id-2 contents</div>'
+  			}
+        });
+        
+- `.ppedit('save')`
+  - Returns a json string specifying the boxes that have been created, modified and/or removed since the editor has been loaded.
+  
+- `.ppedit('allHunks')`
+  - Returns a JSON string containing a description of
+  all the boxes currently existing in the editor.
+  
+- `.ppedit('clearHistory')`
+  - Deletes the history of the modifications of the editor contents performed since the editor has been loaded.    
 
 ##Development environment installation
 

@@ -13,8 +13,8 @@ class LoadBoxesCommand extends Command
 
   The jsonBoxes parameter must be a json string like the following :
   {
-    "box-id-1":"<div class="ppedit-box">box-id-1 contents</div>",
-    "box-id-2":"<div class="ppedit-box">box-id-2 contents</div>",
+    "box-id-1":'<div class="ppedit-box">box-id-1 contents</div>',
+    "box-id-2":'<div class="ppedit-box">box-id-2 contents</div>'
   }
   ###
   constructor: (@editor, @jsonBoxes) ->
@@ -32,7 +32,7 @@ class LoadBoxesCommand extends Command
       if rows.length == 0
         @editor.panel.addBoxRow id
       else
-        # Insert new row in panel in position
+        # Insert new row in panel at a position
         # determined by its associated box's z-index property.
         rows.each (index, rowNode) =>
           otherBoxId = $(rowNode).attr('ppedit-box-id')
