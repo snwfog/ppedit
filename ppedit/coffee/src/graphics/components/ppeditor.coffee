@@ -8,6 +8,9 @@
 #= require Clipboard
 #= require CommandFactory
 
+###
+Graphic acting a the main container of the PPEditor.
+###
 class PPEditor extends Graphic
 
   constructor: (@root) ->
@@ -92,7 +95,7 @@ class PPEditor extends Graphic
         @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, @root.find('#' + boxId))
 
       .on 'onRowSliderValChanged', (event, boxId, opacityVal) =>
-        @area.boxesContainer.chageBoxOpacity(boxId, opacityVal)
+        @area.boxesContainer.changeBoxOpacity(boxId, opacityVal)
 
       .on 'addBoxRequested', (event, boxCssOptions) =>
         @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, [boxCssOptions])

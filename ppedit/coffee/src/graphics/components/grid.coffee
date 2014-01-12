@@ -1,5 +1,8 @@
 #= require Graphic
 
+###
+Graphic containing the image of a grid to hide/display.
+###
 class Grid extends Graphic
 
   constructor: (@root) ->
@@ -23,5 +26,8 @@ class Grid extends Graphic
             </svg>
       </div>')
 
+  ###
+  Hides/show the grid.
+  ###
   toggleGrid: ->
     @element.toggle()

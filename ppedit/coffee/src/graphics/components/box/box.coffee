@@ -144,6 +144,9 @@ class Box extends Graphic
 
       @element.trigger 'boxMoved', [@, @currentPosition(), previousPosition] if moved
 
+  ###
+  Deselects the box
+  ###
   stopMoving: ->
     @element.removeClass('ppedit-box-selected')
     if @prevPosition? && !Geometry.pointEqualToPoint(@currentPosition(), @prevPosition) 
@@ -157,6 +160,9 @@ class Box extends Graphic
       @root.find('.vDotLine')
         .removeClass('ppedit-vDotLine')
 
+  ###
+  Moves the box by the passed delta amounts.
+  ###
   move: (deltaX, deltaY) ->
     currentPos = @currentPosition()
     @setPosition deltaX + currentPos.left, deltaY + currentPos.top
@@ -169,17 +175,31 @@ class Box extends Graphic
         .addClass('ppedit-vDotLine')
         .css 'left', dotLinePos.left
 
+  ###
+  Sets the position of the box to the passed coordinates
+  ###
   setPosition: (x, y) ->
     @element.css 'left', x + 'px'
     @element.css 'top', y + 'px'
 
+  ###
+  Returns the current position of the box.
+  ###
   currentPosition: ->
     @element.position()
 
+  ###
+  Sets the position of the box to the nearest snapping
+  position.
+  ###
   snap: ->
     snappedPosition = @getSnapPosition(@currentPosition())
     @setPosition snappedPosition.left, snappedPosition.top
 
+  ###
+  Returns the coordinates of the snapping position nearest
+  to the box.
+  ###
   getSnapPosition: (p) ->
     snapedLeft = parseInt(p.left/8)*8
     snapedTop = parseInt(p.top/8)*8
@@ -198,6 +218,9 @@ class Box extends Graphic
   isFocused: ->
     return @element.get(0) == document.activeElement
 
+  ###
+  Puts the box on focus.
+  ###
   _enableFocus: ->
       @root.find('.ppedit-box')
         .removeClass('ppedit-box-focus')
@@ -206,9 +229,17 @@ class Box extends Graphic
         .addClass('ppedit-box-focus')
         .focus()
 
+  ###
+  Adds an unordered point list at the current position
+  of the cursor in the box
+  ###
   addBulletPoint: ->
     @_addHtml $('<ul><li></li></ul>')
 
+  ###
+  Adds an ordered list at the current position
+  of the cursor in the box
+  ###
   addOrderedPointList: ->
     @_addHtml $('<ol><li></li></ol>')
 

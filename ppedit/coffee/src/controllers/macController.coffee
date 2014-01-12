@@ -1,5 +1,8 @@
 #= require KeyCodes
 
+###
+Keyboard Mapping Controller for clients running on Mac
+###
 class MacController
 
   constructor: (@root) ->

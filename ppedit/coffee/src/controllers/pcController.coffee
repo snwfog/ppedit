@@ -1,5 +1,8 @@
 #= require KeyCodes
 
+###
+Keyboard Mapping Controller for clients running on Windows.
+###
 class PCController
   
   constructor: (@root) ->
