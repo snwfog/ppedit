@@ -1,3 +1,6 @@
+###
+Helper class implementing geometry-related logic.
+###
 class Geometry
 
   ###

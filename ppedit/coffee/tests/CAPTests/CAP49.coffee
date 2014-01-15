@@ -9,14 +9,13 @@ ppeditDescribe 'A test for issue "CAP-49 : As a backend developer, I want an API
   it "identifies boxes that were created then deleted during current editing as non existent", ->
     addBox 1
 
-    $('.ppedit-box').simulate 'click'
+    simulateBoxDblClick $('.ppedit-box'), ->
+      requestDelete()
 
-    requestDelete()
-
-    result = JSON.parse $('.editor').ppedit('save')
-    expect(result.removed.length).toEqual 0
-    expect(result.created.length).toEqual 0
-    expect(result.modified.length).toEqual 0
+      result = JSON.parse $('.editor').ppedit('save')
+      expect(result.removed.length).toEqual 0
+      expect(result.created.length).toEqual 0
+      expect(result.modified.length).toEqual 0
 
   it "identifies two boxes newly created as saved when the saving API is called", ->
     addBox 2
@@ -29,18 +28,15 @@ ppeditDescribe 'A test for issue "CAP-49 : As a backend developer, I want an API
   it "identifies a new box as created when the saving API is called", ->
     addBox 1
 
-    $('.ppedit-box').simulate 'click'
+    simulateBoxDblClick $('.ppedit-box'), ->
+      requestDelete()
 
-    # Simulating ctrl + delete
-    $('.ppedit-box-container').simulate 'key-combo', {combo: 'ctrl+46'}; # If Windows
-    $('.ppedit-box-container').simulate 'key-combo', {combo: 'meta+8'}; # If Mac
+      addBox 1
 
-    addBox 1
-
-    result = JSON.parse $('.editor').ppedit('save')
-    expect(result.removed.length).toEqual 0
-    expect(result.created.length).toEqual 1
-    expect(result.modified.length).toEqual 0
+      result = JSON.parse $('.editor').ppedit('save')
+      expect(result.removed.length).toEqual 0
+      expect(result.created.length).toEqual 1
+      expect(result.modified.length).toEqual 0
 
   it "generates a unique hash for each different hunk", ->
     addBox 1
@@ -58,13 +54,13 @@ ppeditDescribe 'A test for issue "CAP-49 : As a backend developer, I want an API
   it "identifies a box which is first loaded and then deleted as removed", ->
     $('.editor').ppedit 'load', {hunks:JSON.stringify(boxObject)}
 
-    $('.ppedit-box').simulate 'click'
-    requestDelete()
+    simulateBoxDblClick $('.ppedit-box'), ->
+      requestDelete()
 
-    result = JSON.parse $('.editor').ppedit('save')
-    expect(result.removed.length).toEqual 1
-    expect(result.created.length).toEqual 0
-    expect(result.modified.length).toEqual 0
+      result = JSON.parse $('.editor').ppedit('save')
+      expect(result.removed.length).toEqual 1
+      expect(result.created.length).toEqual 0
+      expect(result.modified.length).toEqual 0
 
   it "identifies a box which is first loaded and then moved as modified", ->
     $('.editor').ppedit 'load', {hunks:JSON.stringify(boxObject)}
@@ -75,5 +71,3 @@ ppeditDescribe 'A test for issue "CAP-49 : As a backend developer, I want an API
     expect(result.removed.length).toEqual 0
     expect(result.created.length).toEqual 0
     expect(result.modified.length).toEqual 1
-
-

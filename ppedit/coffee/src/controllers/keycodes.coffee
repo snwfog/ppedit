@@ -5,12 +5,13 @@ class KeyCodes
 
   # Alphabetic keys
   @C: 67
-  @P: 86
+  @V: 86
   @Z: 90
   @Y: 89
 
   # Other keys
   @DELETE: 46
+  @SHIFT: 16
 
   # Mac-Specific keys
   @MAC_CMD_LEFT: 91 # only on WebKit

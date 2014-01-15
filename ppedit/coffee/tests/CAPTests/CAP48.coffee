@@ -6,18 +6,18 @@ ppeditDescribe 'A test for issue "CAP-48 : As a user, I want to copy and paste a
   it "copies and past one box", ->
     addBox 1
 
-    box = $('.ppedit-box');
-    box.simulate 'click'
+    box = $('.ppedit-box')
+    simulateBoxDblClick box, ->
 
-    # If Mac
-    $('.ppedit-box-container').simulate "key-combo", {combo: "meta+c"}
-    $('.ppedit-box-container').simulate "key-combo", {combo: "meta+v"}
+      # If Mac
+      $('.ppedit-box-container').simulate "key-combo", {combo: "meta+shift+c"}
+      $('.ppedit-box-container').simulate "key-combo", {combo: "meta+shift+v"}
 
-    # If Windows
-    $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+c"}
-    $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+v"}
+      # If Windows
+      $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+shift+c"}
+      $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+shift+v"}
 
-    expect($('.ppedit-box')).toHaveLength(2)
+      expect($('.ppedit-box')).toHaveLength(2)
     
   it "copies and past multiple boxes", ->
 
@@ -38,11 +38,11 @@ ppeditDescribe 'A test for issue "CAP-48 : As a user, I want to copy and paste a
         height:100
 
     # If Mac
-    $('.ppedit-box-container').simulate "key-combo", {combo: "meta+c"} # if Mac
-    $('.ppedit-box-container').simulate "key-combo", {combo: "meta+v"} # if Windows
+    $('.ppedit-box-container').simulate "key-combo", {combo: "meta+shift+c"} # if Mac
+    $('.ppedit-box-container').simulate "key-combo", {combo: "meta+shift+v"} # if Windows
 
     # If Windows
-    $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+c"} # if Mac
-    $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+v"} # if Windows
+    $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+shift+c"} # if Mac
+    $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+shift+v"} # if Windows
 
     expect($('.ppedit-box')).toHaveLength(4)

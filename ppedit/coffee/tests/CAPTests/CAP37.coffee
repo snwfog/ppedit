@@ -7,11 +7,9 @@ ppeditDescribe "A test for issue CAP-37 : As a user, I want to arrange the eleme
     addBox 3
 
     boxes = $('.ppedit-box')
-
     expect(boxes).toHaveLength(3)
 
-    boxes.eq(2).simulate 'click'
-    $('.moveElementDownBtn').simulate 'click'
-
-    expect(boxes.eq(2)).toHaveCss {'z-index': '1'}
-    expect($('.ppedit-panel-row').eq(1)).toHaveAttr 'ppedit-box-id', boxes.eq(2).attr('ppedit-box-id')	
+    simulateBoxDblClick boxes.eq(2), =>
+      $('.moveElementDownBtn').simulate 'click'
+      expect(boxes.eq(2)).toHaveCss {'z-index': '1'}
+      expect($('.ppedit-panel-row').eq(1)).toHaveAttr 'ppedit-box-id', boxes.eq(2).attr('ppedit-box-id')

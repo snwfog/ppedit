@@ -1,10 +1,14 @@
 #= require KeyCodes
 
+###
+Keyboard Mapping Controller for clients running on Mac
+###
 class MacController
 
   constructor: (@root) ->
     @leftCmdKeyPressed = false
     @rightCmdKeyPressed = false
+    @shiftKeyPressed = false
 
   bindEvents: ->
     @root
@@ -15,6 +19,9 @@ class MacController
 
         else if event.keyCode == KeyCodes.MAC_CMD_RIGHT
           @rightCmdKeyPressed = true
+
+        else if event.keyCode == KeyCodes.SHIFT
+          @shiftKeyPressed = true
 
         else if event.keyCode == KeyCodes.Z && @_cmdKeyIsPressed()
           event.preventDefault()
@@ -28,11 +35,15 @@ class MacController
           event.preventDefault()
           @root.trigger 'requestDelete'
 
-        else if event.keyCode == KeyCodes.C && @_cmdKeyIsPressed()
+        else if event.keyCode == KeyCodes.C &&
+                  @_cmdKeyIsPressed() &&
+                  @shiftKeyPressed
           event.preventDefault()
           @root.trigger 'requestCopy'
 
-        else if event.keyCode == KeyCodes.P && @_cmdKeyIsPressed()
+        else if event.keyCode == KeyCodes.V &&
+                  @_cmdKeyIsPressed() &&
+                  @shiftKeyPressed
           event.preventDefault()
           @root.trigger 'requestPaste'
 
@@ -42,6 +53,9 @@ class MacController
 
         if event.keyCode == KeyCodes.MAC_CMD_RIGHT
           @rightCmdKeyPressed = false
+
+        if event.keyCode == KeyCodes.SHIFT
+          @shiftKeyPressed = false
 
   _cmdKeyIsPressed: ->
     return @rightCmdKeyPressed or @leftCmdKeyPressed

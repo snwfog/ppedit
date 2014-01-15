@@ -17,14 +17,15 @@ addBox = (numOfBoxes)->
 
 ###
 Simulates moving the passed box
-by the specified distance amount
+by the specified distance amount, then calls
+the callback once the operations is finished.
 ###
-moveBox = (boxSelector, distance) ->
+moveBox = (boxSelector, distance, callback) ->
 
   previousPosition = viewPortPosition boxSelector
 
   boxSelector
-    .simulate 'click',
+    .simulate 'mousedown',
       clientX:previousPosition.left + 1
       clientY:previousPosition.top + 1
 
@@ -33,20 +34,19 @@ moveBox = (boxSelector, distance) ->
       clientY:previousPosition.top + 1
 
     .simulate "mousemove",
-      clientX:previousPosition.left + 1 + distance.dx
-      clientY:previousPosition.top + 1 + distance.dy
-
-    .simulate 'click',
-      clientX:previousPosition.left + 1 + distance.dx
-      clientY:previousPosition.top + 1 + distance.dy
+      clientX:previousPosition.left + distance.dx + 1
+      clientY:previousPosition.top + distance.dy + 1
 
     .simulate 'mouseup',
-        clientX:previousPosition.left + 1 + distance.dx
-        clientY:previousPosition.top + 1 + distance.dy
+      clientX:previousPosition.left + distance.dx + 1
+      clientY:previousPosition.top + distance.dy + 1
 
   expect(viewPortPosition boxSelector).toBeEqualToPosition
     left:previousPosition.left + distance.dx
     top:previousPosition.top + distance.dy
+
+  waits 300, ->
+    callback() if callback?
 
 ###
 Simulates a rectangular selection on the passed
@@ -75,13 +75,13 @@ selectRectangle = (canvasSelector, rect) ->
 Simulates entering the specified text into the passed box
 ###
 enterText = (box, text) ->
-  box.simulate 'dblclick'
-  expect(box).toBeFocused()
+  simulateBoxDblClick box, ->
+    expect(box).toBeFocused()
 
-  box.simulate "key-sequence",
-    sequence: text
-    callback: ->
-      expect(box).toHaveHtml(text)
+    box.simulate "key-sequence",
+      sequence: text
+      callback: ->
+        expect(box).toHaveHtml(text)
 
 ###
 Simulates ctrl/cmd + delete
@@ -89,3 +89,48 @@ Simulates ctrl/cmd + delete
 requestDelete = ->
   $('.ppedit-box-container').simulate 'key-combo', {combo: 'ctrl+46'}; # If Windows
   $('.ppedit-box-container').simulate 'key-combo', {combo: 'meta+8'}; # If Mac
+
+###
+Simulates click on a box
+
+  @param selector the selector matching a set of boxes
+  @param callback the callback to be called after the click is performed
+###
+simulateBoxClick = (selector, callback) ->
+  selector.simulate 'mousedown'
+  selector.simulate 'mouseup'
+  waits 300, callback
+
+###
+Simulates doubleclick on a box
+
+  @param selector the selector matching a set of boxes
+  @param callback the callback to be called after the doubleclick is performed
+###
+simulateBoxDblClick = (selector, callback) ->
+  selector.simulate 'mousedown'
+  selector.simulate 'mouseup'
+  selector.simulate 'mousedown'
+  selector.simulate 'mouseup'
+  waits 300, callback
+
+###
+Executes the passed callback after waiting for
+the passed specified amount
+###
+waits = (amount, callback) ->
+  done = false
+
+  runs ( ->
+    setTimeout ( ->
+      done = true
+    ), amount
+  )
+
+  waitsFor ( ->
+    return done
+  ), "The operation should run in under " + amount + " minutes.", amount + 500
+
+  runs ( ->
+    callback()
+  )

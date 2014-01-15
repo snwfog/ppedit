@@ -1,5 +1,9 @@
 #= require Graphic
 
+###
+This graphic contains a canvas element used for drawing
+figures dynamically on the browser.
+###
 class Canvas extends Graphic
 
   constructor: (@root) ->
@@ -12,8 +16,8 @@ class Canvas extends Graphic
   buildElement: ->
     @element = $('<canvas></canvas>')
       .addClass('ppedit-canvas')
-      .attr('width', '600px')
-      .attr('height', '960px')
+      .attr('width', '980px')
+      .attr('height', '1386px')
 
   bindEvents:->
     @element
@@ -42,6 +46,9 @@ class Canvas extends Graphic
 
     @_context = @element.get(0).getContext('2d')
 
+  ###
+  Draws a rectangle at the passed coordinate
+  ###
   drawRect: (topLeft, size) ->
     @_context.clearRect(0, 0, @element.width(), @element.height())
     @_context.globalAlpha = 0.2
@@ -50,10 +57,10 @@ class Canvas extends Graphic
     @_context.fillStyle = 'blue'
     @_context.fill()
 
+  ###
+  Clears the canvas of any drawn figures.
+  ###
   clear: ->
     @_context.clearRect(0, 0, @element.width(), @element.height())
     @downPosition = undefined
     @rectSize = undefined
-
-
-

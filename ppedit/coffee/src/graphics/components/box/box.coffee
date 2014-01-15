@@ -4,11 +4,21 @@
 
 class Box extends Graphic
 
+  @CLICK_TIME_MILLIS:200
+  @DBLCLICK_TIME_MILLIS:200
+
   constructor: (@root, @options)->
     super @root
 
-    @prevPosition = undefined
     @helper = new BoxHelper this
+
+    @prevPosition = undefined
+
+    @prevMouseDownTime = 0
+    @prevMouseUpTime = 0
+    @clickCount = 0
+
+    @clickTimeoutId = 0
 
   buildElement: ->
     highestZIndex = undefined
@@ -37,7 +47,6 @@ class Box extends Graphic
 
     @element = $('<div></div>')
       .addClass('ppedit-box')
-      .attr('tabindex', 0)
       .attr('contenteditable', true)
       .attr('id', $.now())
       .css(settings)
@@ -48,6 +57,33 @@ class Box extends Graphic
         event.stopPropagation()
         event.preventDefault()
 
+        @select()
+        @prevMouseDownTime = event.timeStamp
+
+      .mouseup (event) =>
+        event.preventDefault()
+
+        if event.timeStamp - @prevMouseDownTime < Box.CLICK_TIME_MILLIS
+
+          # Click is happening
+          @clickCount++
+
+          if @clickTimeoutId == 0
+            @clickTimeoutId = setTimeout ( =>
+              if @clickCount == 1
+                @_onClick()
+
+              else if @clickCount >= 2
+                @_onDoubleClick()
+
+              @clickTimeoutId = 0
+              @clickCount = 0
+
+            ), Box.DBLCLICK_TIME_MILLIS
+
+        @stopMoving()
+
+
       .click (event) =>
         event.stopPropagation()
         event.preventDefault()
@@ -57,16 +93,18 @@ class Box extends Graphic
         sizeValue = $(event.target).css('font-size')
         fontElement.trigger 'fontSettings', [fontValue, sizeValue]
 
+
       .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault()
-        @stopMoving()
-        @toggleFocus()
-      
+
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
 
       .on 'containerMouseLeave', () =>
+        @stopMoving()
+
+      .on 'containerMouseUp', (event, mouseMoveEvent) =>
         @stopMoving()
 
       .on 'containerKeyDown', (event, keyDownEvent) =>
@@ -112,6 +150,9 @@ class Box extends Graphic
 
       @element.trigger 'boxMoved', [@, @currentPosition(), previousPosition] if moved
 
+  ###
+  Deselects the box
+  ###
   stopMoving: ->
     @element.removeClass('ppedit-box-selected')
     if @prevPosition? && !Geometry.pointEqualToPoint(@currentPosition(), @prevPosition) 
@@ -125,6 +166,9 @@ class Box extends Graphic
       @root.find('.vDotLine')
         .removeClass('ppedit-vDotLine')
 
+  ###
+  Moves the box by the passed delta amounts.
+  ###
   move: (deltaX, deltaY) ->
     currentPos = @currentPosition()
     @setPosition deltaX + currentPos.left, deltaY + currentPos.top
@@ -137,17 +181,31 @@ class Box extends Graphic
         .addClass('ppedit-vDotLine')
         .css 'left', dotLinePos.left
 
+  ###
+  Sets the position of the box to the passed coordinates
+  ###
   setPosition: (x, y) ->
     @element.css 'left', x + 'px'
     @element.css 'top', y + 'px'
 
+  ###
+  Returns the current position of the box.
+  ###
   currentPosition: ->
     @element.position()
 
+  ###
+  Sets the position of the box to the nearest snapping
+  position.
+  ###
   snap: ->
     snappedPosition = @getSnapPosition(@currentPosition())
     @setPosition snappedPosition.left, snappedPosition.top
 
+  ###
+  Returns the coordinates of the snapping position nearest
+  to the box.
+  ###
   getSnapPosition: (p) ->
     snapedLeft = parseInt(p.left/8)*8
     snapedTop = parseInt(p.top/8)*8
@@ -166,14 +224,10 @@ class Box extends Graphic
   isFocused: ->
     return @element.get(0) == document.activeElement
 
-  toggleSelect: ->
-    if @element.hasClass('ppedit-box-selected')
-      @stopMoving()
-    else
-      @root.find('.ppedit-box').removeClass('ppedit-box-selected')
-      @select() if !@isFocused()
-
-  toggleFocus: ->
+  ###
+  Puts the box on focus.
+  ###
+  _enableFocus: ->
       @root.find('.ppedit-box')
         .removeClass('ppedit-box-focus')
         .removeClass('ppedit-box-selected')
@@ -181,9 +235,17 @@ class Box extends Graphic
         .addClass('ppedit-box-focus')
         .focus()
 
+  ###
+  Adds an unordered point list at the current position
+  of the cursor in the box
+  ###
   addBulletPoint: ->
     @_addHtml $('<ul><li></li></ul>')
 
+  ###
+  Adds an ordered list at the current position
+  of the cursor in the box
+  ###
   addOrderedPointList: ->
     @_addHtml $('<ol><li></li></ol>')
 
@@ -198,5 +260,11 @@ class Box extends Graphic
       .append htmlSelector
 
     # TODO: Set the cursor position to the beginning of the Bullet list
+
   _getCursorPosition: ->
     return window.getSelection().getRangeAt(0).startOffset
+
+  _onClick: ->
+
+  _onDoubleClick: ->
+    @_enableFocus()

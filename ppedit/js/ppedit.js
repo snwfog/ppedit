@@ -102,13 +102,15 @@
 
     KeyCodes.C = 67;
 
-    KeyCodes.P = 86;
+    KeyCodes.V = 86;
 
     KeyCodes.Z = 90;
 
     KeyCodes.Y = 89;
 
     KeyCodes.DELETE = 46;
+
+    KeyCodes.SHIFT = 16;
 
     KeyCodes.MAC_CMD_LEFT = 91;
 
@@ -140,11 +142,11 @@
           event.preventDefault();
           _this.root.trigger('requestDelete');
         }
-        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+        if (event.keyCode === KeyCodes.C && event.ctrlKey && event.shiftKey) {
           event.preventDefault();
           _this.root.trigger('requestCopy');
         }
-        if (event.keyCode === KeyCodes.C && event.ctrlKey) {
+        if (event.keyCode === KeyCodes.V && event.ctrlKey && event.shiftKey) {
           event.preventDefault();
           return _this.root.trigger('requestPaste');
         }
@@ -160,6 +162,7 @@
       this.root = root;
       this.leftCmdKeyPressed = false;
       this.rightCmdKeyPressed = false;
+      this.shiftKeyPressed = false;
     }
 
     MacController.prototype.bindEvents = function() {
@@ -169,6 +172,8 @@
           return _this.leftCmdKeyPressed = true;
         } else if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
           return _this.rightCmdKeyPressed = true;
+        } else if (event.keyCode === KeyCodes.SHIFT) {
+          return _this.shiftKeyPressed = true;
         } else if (event.keyCode === KeyCodes.Z && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestUndo');
@@ -178,10 +183,10 @@
         } else if (event.keyCode === KeyCodes.MAC_DELETE && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestDelete');
-        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed()) {
+        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed() && _this.shiftKeyPressed) {
           event.preventDefault();
           return _this.root.trigger('requestCopy');
-        } else if (event.keyCode === KeyCodes.P && _this._cmdKeyIsPressed()) {
+        } else if (event.keyCode === KeyCodes.V && _this._cmdKeyIsPressed() && _this.shiftKeyPressed) {
           event.preventDefault();
           return _this.root.trigger('requestPaste');
         }
@@ -190,7 +195,10 @@
           _this.leftCmdKeyPressed = false;
         }
         if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
-          return _this.rightCmdKeyPressed = false;
+          _this.rightCmdKeyPressed = false;
+        }
+        if (event.keyCode === KeyCodes.SHIFT) {
+          return _this.shiftKeyPressed = false;
         }
       });
     };
@@ -282,12 +290,20 @@
   Box = (function(_super) {
     __extends(Box, _super);
 
+    Box.CLICK_TIME_MILLIS = 200;
+
+    Box.DBLCLICK_TIME_MILLIS = 200;
+
     function Box(root, options) {
       this.root = root;
       this.options = options;
       Box.__super__.constructor.call(this, this.root);
-      this.prevPosition = void 0;
       this.helper = new BoxHelper(this);
+      this.prevPosition = void 0;
+      this.prevMouseDownTime = 0;
+      this.prevMouseUpTime = 0;
+      this.clickCount = 0;
+      this.clickTimeoutId = 0;
     }
 
     Box.prototype.buildElement = function() {
@@ -315,14 +331,33 @@
         'text-align': 'left',
         'vertical-align': 'bottom'
       }, this.options);
-      return this.element = $('<div></div>').addClass('ppedit-box').attr('tabindex', 0).attr('contenteditable', true).attr('id', $.now()).css(settings);
+      return this.element = $('<div></div>').addClass('ppedit-box').attr('contenteditable', true).attr('id', $.now()).css(settings);
     };
 
     Box.prototype.bindEvents = function() {
       var _this = this;
       this.element.mousedown(function(event) {
         event.stopPropagation();
-        return event.preventDefault();
+        event.preventDefault();
+        _this.select();
+        return _this.prevMouseDownTime = event.timeStamp;
+      }).mouseup(function(event) {
+        event.preventDefault();
+        if (event.timeStamp - _this.prevMouseDownTime < Box.CLICK_TIME_MILLIS) {
+          _this.clickCount++;
+          if (_this.clickTimeoutId === 0) {
+            _this.clickTimeoutId = setTimeout((function() {
+              if (_this.clickCount === 1) {
+                _this._onClick();
+              } else if (_this.clickCount >= 2) {
+                _this._onDoubleClick();
+              }
+              _this.clickTimeoutId = 0;
+              return _this.clickCount = 0;
+            }), Box.DBLCLICK_TIME_MILLIS);
+          }
+        }
+        return _this.stopMoving();
       }).click(function(event) {
         var fontElement, fontValue, sizeValue;
         event.stopPropagation();
@@ -332,16 +367,17 @@
         fontValue = $(event.target).css('font-family');
         sizeValue = $(event.target).css('font-size');
         return fontElement.trigger('fontSettings', [fontValue, sizeValue]);
+        return event.preventDefault();
       }).dblclick(function(event) {
         event.stopPropagation();
-        event.preventDefault();
-        _this.stopMoving();
-        return _this.toggleFocus();
+        return event.preventDefault();
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
           return _this.move(delta.x, delta.y);
         }
       }).on('containerMouseLeave', function() {
+        return _this.stopMoving();
+      }).on('containerMouseUp', function(event, mouseMoveEvent) {
         return _this.stopMoving();
       }).on('containerKeyDown', function(event, keyDownEvent) {
         if (_this.element.hasClass('ppedit-box-selected')) {
@@ -460,18 +496,7 @@
       return this.element.get(0) === document.activeElement;
     };
 
-    Box.prototype.toggleSelect = function() {
-      if (this.element.hasClass('ppedit-box-selected')) {
-        return this.stopMoving();
-      } else {
-        this.root.find('.ppedit-box').removeClass('ppedit-box-selected');
-        if (!this.isFocused()) {
-          return this.select();
-        }
-      }
-    };
-
-    Box.prototype.toggleFocus = function() {
+    Box.prototype._enableFocus = function() {
       this.root.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
       return this.element.addClass('ppedit-box-focus').focus();
     };
@@ -496,6 +521,12 @@
 
     Box.prototype._getCursorPosition = function() {
       return window.getSelection().getRangeAt(0).startOffset;
+    };
+
+    Box.prototype._onClick = function() {};
+
+    Box.prototype._onDoubleClick = function() {
+      return this._enableFocus();
     };
 
     return Box;
@@ -1402,13 +1433,20 @@
     };
 
     BoxesContainer.prototype.getAllHunks = function() {
-      var box, boxId, result, _ref;
-      result = {};
-      _ref = this.boxes;
-      for (boxId in _ref) {
-        box = _ref[boxId];
-        result[boxId] = box.element.wrap("<div></div>").parent().html();
-      }
+      var box, boxId, result;
+      result = (function() {
+        var _ref, _results;
+        _ref = this.boxes;
+        _results = [];
+        for (boxId in _ref) {
+          box = _ref[boxId];
+          _results.push({
+            id: boxId,
+            html: box.element.wrap("<div></div>").parent().html()
+          });
+        }
+        return _results;
+      }).call(this);
       return JSON.stringify(result);
     };
 
@@ -1428,7 +1466,7 @@
     }
 
     Canvas.prototype.buildElement = function() {
-      return this.element = $('<canvas></canvas>').addClass('ppedit-canvas').attr('width', '600px').attr('height', '960px');
+      return this.element = $('<canvas></canvas>').addClass('ppedit-canvas').attr('width', '980px').attr('height', '1386px');
     };
 
     Canvas.prototype.bindEvents = function() {

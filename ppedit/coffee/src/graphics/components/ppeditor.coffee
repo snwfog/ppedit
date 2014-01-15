@@ -8,6 +8,9 @@
 #= require Clipboard
 #= require CommandFactory
 
+###
+Graphic acting a the main container of the PPEditor.
+###
 class PPEditor extends Graphic
 
   constructor: (@root) ->
@@ -92,7 +95,7 @@ class PPEditor extends Graphic
         @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, @root.find('#' + boxId))
 
       .on 'onRowSliderValChanged', (event, boxId, opacityVal) =>
-        @area.boxesContainer.chageBoxOpacity(boxId, opacityVal)
+        @area.boxesContainer.changeBoxOpacity(boxId, opacityVal)
 
       .on 'addBoxRequested', (event, boxCssOptions) =>
         @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, [boxCssOptions])
@@ -182,6 +185,17 @@ class PPEditor extends Graphic
     @fontPanel.bindEvents()
     @controller.bindEvents()
 
+  ###
+  Populates the editor with the boxes
+  information defined in the passed json string.
+
+  @param [String] jsonBoxes the JSON-formatted string containing
+  the boxes information, this parameter look like the following :
+  {
+    "box-id-1":'<div class="ppedit-box">box-id-1 contents</div>',
+    "box-id-2":'<div class="ppedit-box">box-id-2 contents</div>'
+  }
+  ###
   load: (jsonBoxes) ->
     command = @cmdFactory.createLoadBoxesCommand this, jsonBoxes
     command.execute()

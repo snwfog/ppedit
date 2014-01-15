@@ -7,32 +7,26 @@ ppeditDescribe 'A test for issue CAP-40 : "As a user, I want my elements in my w
 
     addBox 1
 
+    $('.snapBtn').simulate 'click'
+
     box = $('.ppedit-box')
-    snapBtn = $('.snapBtn')
-
-    snapBtn.simulate 'click'
-    
     box
-      .simulate 'click',
-        clientX:box.position().left
-        clientY:box.position().top
+      .simulate 'mousedown',
+        clientX:box.position().left + 1
+        clientY:box.position().top + 1
 
       .simulate "mousemove",
-        clientX:box.position().left
-        clientY:box.position().top
+        clientX:box.position().left + 1
+        clientY:box.position().top + 1
 
       .simulate "mousemove",
-        clientX:box.position().left + 81
-        clientY:box.position().top + 81
-
-      .simulate 'click',
-        clientX:box.position().left + 81
-        clientY:box.position().top + 81
+        clientX:box.position().left + 83
+        clientY:box.position().top + 83
 
       .simulate 'mouseup',
-        clientX:box.position().left + 81
-        clientY:box.position().top + 81
-    
+        clientX:box.position().left + 83
+        clientY:box.position().top + 83
+
     expect(box.position()).toBeEqualToPosition
       top: 128
       left: 128

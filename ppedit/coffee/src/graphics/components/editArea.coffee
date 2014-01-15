@@ -3,6 +3,9 @@
 #= require BoxesContainer
 #= require Grid
 
+###
+A graphic acting as a container of a boxesContainer, a canvas and a grid.
+###
 class EditArea extends Graphic
 
   constructor: (@root) ->

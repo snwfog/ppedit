@@ -37,7 +37,7 @@ class CommandManager
 
 
   ###
-  executing the JSON command 
+  Returns a json string specifying the boxes that have been created, modified and/or removed.
   ###
   getUndoJSON: ->
     modifiedBoxes = {}
@@ -76,5 +76,8 @@ class CommandManager
 
     return JSON.stringify(result)
 
+  ###
+  Deletes the history of commands issued since the editor has been loaded.
+  ###
   clearHistory: ->
     @undoStack.splice 0, @undoStack.length

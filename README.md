@@ -29,6 +29,34 @@ PPedit is a web based WYSIWYG editor written as a JQuery plugin for the PeerPen 
         </script>
       </body>
     </html>
+    
+##API Reference
+
+The PPEdit plugin exposes the following interface:
+
+ - `.ppedit()`
+   - Loads an empty instance of the editor.
+   
+ - `.ppedit('load', options)`
+   - Populates the editor with the boxes information defined in the passed options parameter.
+   - Example :
+   
+        .ppedit('load',{
+             hunks:{
+                 "box-id-1":'<div class="ppedit-box">box-id-1 contents</div>',
+                 "box-id-2":'<div class="ppedit-box">box-id-2 contents</div>'
+             }
+         });
+        
+- `.ppedit('save')`
+  - Returns a json string specifying the boxes that have been created, modified and/or removed since the editor has been loaded.
+  
+- `.ppedit('allHunks')`
+  - Returns a JSON string containing a description of
+  all the boxes currently existing in the editor.
+  
+- `.ppedit('clearHistory')`
+  - Deletes the history of the modifications of the editor contents performed since the editor has been loaded, this method should be called every time after a 'save' opertation succeeded.    
 
 ##Development environment installation
 
@@ -74,7 +102,7 @@ First clone this repository then follow the instructions below.
     - `cd (ppedit project root)/ppedit/                `      
 	- `coffeescript-concat -R coffee/tests | coffee -s --compile > js/ppedit-tests.js`
 	
- - Open the tests.html file on a browser to run and see the results of the tests. Clear your browser cache and refresh your page to run the tests again.
+ - Open the tests.html file on a browser to run and see the results of the tests. Clear your browser cache and refresh your page to run the tests again. *NOTE: never move the mouse while the tests are running, as it can falsify some of the tests.*.
  
   - You can also run the `compileCoffee.sh` file to generate the ppedit.js and the ppedit-test.js in one command.
   		    

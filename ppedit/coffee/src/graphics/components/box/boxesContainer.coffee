@@ -2,6 +2,9 @@
 #= require Box
 #= require Geometry
 
+###
+Graphic acting as a container of boxes.
+###
 class BoxesContainer extends Graphic
 
   @CLICK_TIME_INTERVAL: 200
@@ -129,9 +132,18 @@ class BoxesContainer extends Graphic
   getNotFocusedSelectedBoxes: ->
     return @element.find '.ppedit-box-selected'
 
-  chageBoxOpacity: (boxid, opacityVal) ->
+  ###
+  Changes the opacity of one box
+
+  @param boxid [Int] the id of the box to change
+  @param opacityVal [Int] the value of the opacity to change the box to.
+  ###
+  changeBoxOpacity: (boxid, opacityVal) ->
     @boxes[boxid].element.css("opacity", opacityVal)
 
+  ###
+  Unselects all boxes.
+  ###
   unSelectAllBoxes: ->
     box.stopMoving() for id, box of @boxes
 
@@ -139,20 +151,26 @@ class BoxesContainer extends Graphic
   Returns the position relative to the top left corner
   of the element from the passed mouseEvent.
   ###
-
   @_rectContainsRect: (outerRect, innerRect) ->
     return (innerRect.topLeft.x >= outerRect.topLeft.x &&
     innerRect.topLeft.y >= outerRect.topLeft.y &&
     innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width &&
     innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height)
 
+  ###
+  Returns the mouse coordinates of the passed mouseEvent
+  relative to the boxes Container position.
+  ###
   getPointClicked: (mouseEvent) ->
     return {
       left:event.offsetX + @element.scrollLeft()
       top:event.offsetY + @element.scrollTop()
     }
 
+  ###
+  Returns a JSON string containing a description of
+  all the boxes currently existing in this container.
+  ###
   getAllHunks: ->
-    result = {}
-    result[boxId] = box.element.wrap("<div></div>").parent().html() for boxId, box of @boxes
+    result = ({id:boxId, html:box.element.wrap("<div></div>").parent().html()} for boxId, box of @boxes)
     return JSON.stringify result

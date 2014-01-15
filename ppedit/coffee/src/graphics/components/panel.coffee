@@ -1,5 +1,8 @@
 #= require Graphic
 
+###
+Graphic containing the settings to apply to boxes.
+###
 class Panel extends Graphic
   constructor: (@root) ->
     super @root
@@ -106,11 +109,22 @@ class Panel extends Graphic
   removeBoxRow: (boxId) ->
     @getRowWithBoxId(boxId).remove()
 
+  ###
+  Returns a selector matching the row associated with
+  the passed box Id.
+  ###
   getRowWithBoxId: (boxId) ->
     @element.find("tr[ppedit-box-id="+ boxId + "]").eq(0)
 
+  ###
+  Returns a selector matching the row at the specified index.
+  ###
   getRowAtIndex: (index) ->
     @element.find(".ppedit-panel-row").eq(index)
 
+
+  ###
+  Returns a selector matching with all rows.
+  ###
   getRows: ->
     @element.find(".ppedit-panel-row")
