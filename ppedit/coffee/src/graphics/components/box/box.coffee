@@ -83,20 +83,18 @@ class Box extends Graphic
 
         @stopMoving()
 
-
       .click (event) =>
         event.stopPropagation()
         event.preventDefault()
         @toggleSelect()
-        fontElement = $(document).find('.row')
-        fontValue = $(event.target).css('font-family')
-        sizeValue = $(event.target).css('font-size')
-        fontElement.trigger 'fontSettings', [fontValue, sizeValue]
-
 
       .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault()
+        fontElement = $(document).find('.row')
+        fontValue = $(event.target).css('font-family')
+        sizeValue = $(event.target).css('font-size')
+        fontElement.trigger 'fontSettings', [fontValue, sizeValue]
 
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?

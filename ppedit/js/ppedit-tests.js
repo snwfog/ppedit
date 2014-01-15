@@ -411,12 +411,6 @@
       addBox(3);
       boxes = $('.ppedit-box');
       expect(boxes).toHaveLength(3);
-      boxes.eq(2).simulate('click');
-      $('.moveElementDownBtn').simulate('click');
-      expect(boxes.eq(2)).toHaveCss({
-        'z-index': "1"
-      });
-      return expect($('.ppedit-panel-row').eq(2)).toHaveAttr('ppedit-box-id', boxes.eq(3).attr('ppedit-box-id'));
       return simulateBoxDblClick(boxes.eq(2), function() {
         $('.moveElementDownBtn').simulate('click');
         expect(boxes.eq(2)).toHaveCss({
@@ -634,7 +628,7 @@
     });
   });
 
-  ppeditDescribe("A test for issue CAP-13 : As a user, I want to change font settings of my text documents.", function() {
+  ppeditDescribe("A test for issue CAP-13 : As a user,   I want to change font settings of my text documents.", function() {
     it("change font family on select font family on the panel", function() {
       var box,
         _this = this;
@@ -672,16 +666,10 @@
         _this = this;
       addBox(1);
       box = $('.ppedit-box');
-<<<<<<< HEAD
-      box.simulate('click');
-      $('.underlineBtn').simulate('click');
-      return expect($(".ppedit-box").css('text-decoration')).toEqual('underline solid rgb(0, 0, 0)');
-=======
       return simulateBoxDblClick(box, function() {
         $('.underlineBtn').simulate('click');
         return expect(box.css('text-decoration')).toMatch(/underline/);
       });
->>>>>>> ce272e888ef904a1f0a08ee38462008aadab788b
     });
     return it("change font italic on font italic on the panel", function() {
       var box,

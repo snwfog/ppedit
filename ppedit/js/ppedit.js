@@ -55,6 +55,11 @@
 
   })();
 
+  /*
+  Helper class implementing geometry-related logic.
+  */
+
+
   Geometry = (function() {
     function Geometry() {}
 
@@ -122,6 +127,11 @@
 
   })();
 
+  /*
+  Keyboard Mapping Controller for clients running on Windows.
+  */
+
+
   PCController = (function() {
     function PCController(root) {
       this.root = root;
@@ -156,6 +166,11 @@
     return PCController;
 
   })();
+
+  /*
+  Keyboard Mapping Controller for clients running on Mac
+  */
+
 
   MacController = (function() {
     function MacController(root) {
@@ -359,18 +374,17 @@
         }
         return _this.stopMoving();
       }).click(function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        return _this.toggleSelect();
+      }).dblclick(function(event) {
         var fontElement, fontValue, sizeValue;
         event.stopPropagation();
         event.preventDefault();
-        _this.toggleSelect();
         fontElement = $(document).find('.row');
         fontValue = $(event.target).css('font-family');
         sizeValue = $(event.target).css('font-size');
         return fontElement.trigger('fontSettings', [fontValue, sizeValue]);
-        return event.preventDefault();
-      }).dblclick(function(event) {
-        event.stopPropagation();
-        return event.preventDefault();
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
           return _this.move(delta.x, delta.y);
@@ -426,6 +440,11 @@
       }
     };
 
+    /*
+    Deselects the box
+    */
+
+
     Box.prototype.stopMoving = function() {
       this.element.removeClass('ppedit-box-selected');
       if ((this.prevPosition != null) && !Geometry.pointEqualToPoint(this.currentPosition(), this.prevPosition)) {
@@ -441,6 +460,11 @@
       }
     };
 
+    /*
+    Moves the box by the passed delta amounts.
+    */
+
+
     Box.prototype.move = function(deltaX, deltaY) {
       var currentPos, dotLinePos;
       currentPos = this.currentPosition();
@@ -452,20 +476,42 @@
       }
     };
 
+    /*
+    Sets the position of the box to the passed coordinates
+    */
+
+
     Box.prototype.setPosition = function(x, y) {
       this.element.css('left', x + 'px');
       return this.element.css('top', y + 'px');
     };
 
+    /*
+    Returns the current position of the box.
+    */
+
+
     Box.prototype.currentPosition = function() {
       return this.element.position();
     };
+
+    /*
+    Sets the position of the box to the nearest snapping
+    position.
+    */
+
 
     Box.prototype.snap = function() {
       var snappedPosition;
       snappedPosition = this.getSnapPosition(this.currentPosition());
       return this.setPosition(snappedPosition.left, snappedPosition.top);
     };
+
+    /*
+    Returns the coordinates of the snapping position nearest
+    to the box.
+    */
+
 
     Box.prototype.getSnapPosition = function(p) {
       var snapedLeft, snapedTop;
@@ -496,14 +542,31 @@
       return this.element.get(0) === document.activeElement;
     };
 
+    /*
+    Puts the box on focus.
+    */
+
+
     Box.prototype._enableFocus = function() {
       this.root.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
       return this.element.addClass('ppedit-box-focus').focus();
     };
 
+    /*
+    Adds an unordered point list at the current position
+    of the cursor in the box
+    */
+
+
     Box.prototype.addBulletPoint = function() {
       return this._addHtml($('<ul><li></li></ul>'));
     };
+
+    /*
+    Adds an ordered list at the current position
+    of the cursor in the box
+    */
+
 
     Box.prototype.addOrderedPointList = function() {
       return this._addHtml($('<ol><li></li></ol>'));
@@ -630,8 +693,8 @@
     
     The jsonBoxes parameter must be a json string like the following :
     {
-      "box-id-1":"<div class="ppedit-box">box-id-1 contents</div>",
-      "box-id-2":"<div class="ppedit-box">box-id-2 contents</div>",
+      "box-id-1":'<div class="ppedit-box">box-id-1 contents</div>',
+      "box-id-2":'<div class="ppedit-box">box-id-2 contents</div>'
     }
     */
 
@@ -872,7 +935,7 @@
     };
 
     /*
-    executing the JSON command
+    Returns a json string specifying the boxes that have been created, modified and/or removed.
     */
 
 
@@ -949,6 +1012,11 @@
       result.etag = hunkId;
       return JSON.stringify(result);
     };
+
+    /*
+    Deletes the history of commands issued since the editor has been loaded.
+    */
+
 
     CommandManager.prototype.clearHistory = function() {
       return this.undoStack.splice(0, this.undoStack.length);
@@ -1215,6 +1283,11 @@
 
   })();
 
+  /*
+  Graphic acting as a container of boxes.
+  */
+
+
   BoxesContainer = (function(_super) {
     __extends(BoxesContainer, _super);
 
@@ -1400,9 +1473,22 @@
       return this.element.find('.ppedit-box-selected');
     };
 
-    BoxesContainer.prototype.chageBoxOpacity = function(boxid, opacityVal) {
+    /*
+    Changes the opacity of one box
+    
+    @param boxid [Int] the id of the box to change
+    @param opacityVal [Int] the value of the opacity to change the box to.
+    */
+
+
+    BoxesContainer.prototype.changeBoxOpacity = function(boxid, opacityVal) {
       return this.boxes[boxid].element.css("opacity", opacityVal);
     };
+
+    /*
+    Unselects all boxes.
+    */
+
 
     BoxesContainer.prototype.unSelectAllBoxes = function() {
       var box, id, _ref, _results;
@@ -1425,12 +1511,24 @@
       return innerRect.topLeft.x >= outerRect.topLeft.x && innerRect.topLeft.y >= outerRect.topLeft.y && innerRect.topLeft.x + innerRect.size.width <= outerRect.topLeft.x + outerRect.size.width && innerRect.topLeft.y + innerRect.size.height <= outerRect.topLeft.y + outerRect.size.height;
     };
 
+    /*
+    Returns the mouse coordinates of the passed mouseEvent
+    relative to the boxes Container position.
+    */
+
+
     BoxesContainer.prototype.getPointClicked = function(mouseEvent) {
       return {
         left: event.offsetX + this.element.scrollLeft(),
         top: event.offsetY + this.element.scrollTop()
       };
     };
+
+    /*
+    Returns a JSON string containing a description of
+    all the boxes currently existing in this container.
+    */
+
 
     BoxesContainer.prototype.getAllHunks = function() {
       var box, boxId, result;
@@ -1453,6 +1551,12 @@
     return BoxesContainer;
 
   })(Graphic);
+
+  /*
+  This graphic contains a canvas element used for drawing
+  figures dynamically on the browser.
+  */
+
 
   Canvas = (function(_super) {
     __extends(Canvas, _super);
@@ -1502,6 +1606,11 @@
       return this._context = this.element.get(0).getContext('2d');
     };
 
+    /*
+    Draws a rectangle at the passed coordinate
+    */
+
+
     Canvas.prototype.drawRect = function(topLeft, size) {
       this._context.clearRect(0, 0, this.element.width(), this.element.height());
       this._context.globalAlpha = 0.2;
@@ -1510,6 +1619,11 @@
       this._context.fillStyle = 'blue';
       return this._context.fill();
     };
+
+    /*
+    Clears the canvas of any drawn figures.
+    */
+
 
     Canvas.prototype.clear = function() {
       this._context.clearRect(0, 0, this.element.width(), this.element.height());
@@ -1520,6 +1634,11 @@
     return Canvas;
 
   })(Graphic);
+
+  /*
+  Graphic containing the image of a grid to hide/display.
+  */
+
 
   Grid = (function(_super) {
     __extends(Grid, _super);
@@ -1548,6 +1667,11 @@
       </div>');
     };
 
+    /*
+    Hides/show the grid.
+    */
+
+
     Grid.prototype.toggleGrid = function() {
       return this.element.toggle();
     };
@@ -1555,6 +1679,11 @@
     return Grid;
 
   })(Graphic);
+
+  /*
+  A graphic acting as a container of a boxesContainer, a canvas and a grid.
+  */
+
 
   EditArea = (function(_super) {
     __extends(EditArea, _super);
@@ -1617,6 +1746,11 @@
     return EditArea;
 
   })(Graphic);
+
+  /*
+  Graphic containing the settings to apply to boxes.
+  */
+
 
   Panel = (function(_super) {
     __extends(Panel, _super);
@@ -1733,13 +1867,29 @@
       return this.getRowWithBoxId(boxId).remove();
     };
 
+    /*
+    Returns a selector matching the row associated with
+    the passed box Id.
+    */
+
+
     Panel.prototype.getRowWithBoxId = function(boxId) {
       return this.element.find("tr[ppedit-box-id=" + boxId + "]").eq(0);
     };
 
+    /*
+    Returns a selector matching the row at the specified index.
+    */
+
+
     Panel.prototype.getRowAtIndex = function(index) {
       return this.element.find(".ppedit-panel-row").eq(index);
     };
+
+    /*
+    Returns a selector matching with all rows.
+    */
+
 
     Panel.prototype.getRows = function() {
       return this.element.find(".ppedit-panel-row");
@@ -1749,14 +1899,29 @@
 
   })(Graphic);
 
+  /*
+  Helper class used to temporarily save DOM nodes.
+  */
+
+
   Clipboard = (function() {
     function Clipboard() {
       this.items = void 0;
     }
 
+    /*
+    Saves the passed newItems jQuery selector
+    */
+
+
     Clipboard.prototype.pushItems = function(newItems) {
       return this.items = newItems.clone();
     };
+
+    /*
+    Returns the saved jQuery selector and removes it from the save.
+    */
+
 
     Clipboard.prototype.popItems = function() {
       var results;
@@ -1772,6 +1937,11 @@
     return Clipboard;
 
   })();
+
+  /*
+  Graphic acting a the main container of the PPEditor.
+  */
+
 
   PPEditor = (function(_super) {
     __extends(PPEditor, _super);
@@ -1849,7 +2019,7 @@
       }).on('onRowDeleteBtnClick', function(event, boxId) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, _this.root.find('#' + boxId)));
       }).on('onRowSliderValChanged', function(event, boxId, opacityVal) {
-        return _this.area.boxesContainer.chageBoxOpacity(boxId, opacityVal);
+        return _this.area.boxesContainer.changeBoxOpacity(boxId, opacityVal);
       }).on('addBoxRequested', function(event, boxCssOptions) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this, [boxCssOptions]));
       }).on('fontTypeChanged', function(event, newFontType) {
@@ -1899,7 +2069,6 @@
         $('option[value=' + fontValue + ']').attr('selected', 'selected');
         if (sizeValue !== "14px") {
           _this.fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected');
-          console.log(sizeValue);
           switch (sizeValue) {
             case "8px":
               if (sizeValue = 8) {
@@ -1951,6 +2120,19 @@
       return this.controller.bindEvents();
     };
 
+    /*
+    Populates the editor with the boxes
+    information defined in the passed json string.
+    
+    @param [String] jsonBoxes the JSON-formatted string containing
+    the boxes information, this parameter look like the following :
+    {
+      "box-id-1":'<div class="ppedit-box">box-id-1 contents</div>',
+      "box-id-2":'<div class="ppedit-box">box-id-2 contents</div>'
+    }
+    */
+
+
     PPEditor.prototype.load = function(jsonBoxes) {
       var command;
       command = this.cmdFactory.createLoadBoxesCommand(this, jsonBoxes);
@@ -1960,6 +2142,11 @@
     return PPEditor;
 
   })(Graphic);
+
+  /*
+  Graphic containing the font settings to apply to boxes.
+  */
+
 
   FontPanel = (function(_super) {
     __extends(FontPanel, _super);
