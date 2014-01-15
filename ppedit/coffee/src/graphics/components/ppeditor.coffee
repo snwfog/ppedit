@@ -140,6 +140,39 @@ class PPEditor extends Graphic
         boxes = @area.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
         box.addOrderedPointList() for id, box of boxes
 
+      .on 'fontSettings', (event, fontValue, sizeValue) =>
+        @fontPanel.element.find(".fontTypeBtn option:selected").removeAttr('selected')
+        $('option[value=' + fontValue + ']').attr('selected','selected')
+        if sizeValue != "14px"
+          @fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected')
+          switch sizeValue
+            when "8px" 
+              if sizeValue = 8 
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected')
+            when "11px" 
+              if sizeValue = 11 
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected')
+            when "15px" 
+              if sizeValue = 15 
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected')
+            when "16px" 
+              if sizeValue = 16 
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected')
+            when "19px" 
+              if sizeValue = 19 
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected')
+            when "21px" 
+              if sizeValue = 21 
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected')
+            when "27px" 
+              if sizeValue = 27 
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected')        
+        else
+          sizeValue = 13
+          @fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected')
+          $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected')
+              
+
     @area.boxesContainer.element
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
         @commandManager.pushCommand(@cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false)

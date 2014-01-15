@@ -130,7 +130,6 @@
       return this.root.keydown(function(event) {
         if (event.keyCode === KeyCodes.Z && event.ctrlKey) {
           event.preventDefault();
-          console.log('request undo controller');
           _this.root.trigger('requestUndo');
         }
         if (event.keyCode === KeyCodes.Y && event.ctrlKey) {
@@ -244,14 +243,11 @@
       this.controller = ControllerFactory.getController(this.graphic.element);
       this.graphic.element.on('requestUndo', function(event) {
         _this._checkNewContent(false);
-        console.log('event undo');
         return event.stopPropagation();
       }).focus(function(event) {
-        _this._checkNewContent(true);
-        return console.log('element focus');
+        return _this._checkNewContent(true);
       }).blur(function(event) {
-        _this._checkNewContent(true);
-        return console.log('element blur');
+        return _this._checkNewContent(true);
       });
       return this.controller.bindEvents();
     };
@@ -328,9 +324,14 @@
         event.stopPropagation();
         return event.preventDefault();
       }).click(function(event) {
+        var fontElement, fontValue, sizeValue;
         event.stopPropagation();
         event.preventDefault();
-        return _this.toggleSelect();
+        _this.toggleSelect();
+        fontElement = $(document).find('.row');
+        fontValue = $(event.target).css('font-family');
+        sizeValue = $(event.target).css('font-size');
+        return fontElement.trigger('fontSettings', [fontValue, sizeValue]);
       }).dblclick(function(event) {
         event.stopPropagation();
         event.preventDefault();
@@ -818,7 +819,6 @@
 
     CommandManager.prototype.undo = function() {
       var lastCommand;
-      console.log(this.undoStack);
       if (this.undoStack.length > 0) {
         lastCommand = this.undoStack.pop();
         lastCommand.undo();
@@ -833,7 +833,6 @@
 
     CommandManager.prototype.redo = function() {
       var redoCommand;
-      console.log(this.redoStack);
       if (this.redoStack.length > 0) {
         redoCommand = this.redoStack.pop();
         redoCommand.execute();
@@ -945,7 +944,6 @@
 
     ChangeStyleCommand.prototype.execute = function() {
       var box, id, _ref, _results;
-      console.log('we are here');
       _ref = this.boxes;
       _results = [];
       for (id in _ref) {
@@ -959,7 +957,6 @@
       var _this = this;
       return this.boxesToCopy.each(function(index, item) {
         var prevCssOptions;
-        console.log('we are here');
         prevCssOptions = CSSJSON.toJSON(_this.boxesToCopy.filter('#' + item.id).attr('style')).attributes;
         return _this.boxes[item.id].element.css(prevCssOptions);
       });
@@ -1859,6 +1856,53 @@
           _results.push(box.addOrderedPointList());
         }
         return _results;
+      }).on('fontSettings', function(event, fontValue, sizeValue) {
+        _this.fontPanel.element.find(".fontTypeBtn option:selected").removeAttr('selected');
+        $('option[value=' + fontValue + ']').attr('selected', 'selected');
+        if (sizeValue !== "14px") {
+          _this.fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected');
+          console.log(sizeValue);
+          switch (sizeValue) {
+            case "8px":
+              if (sizeValue = 8) {
+                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+              }
+              break;
+            case "11px":
+              if (sizeValue = 11) {
+                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+              }
+              break;
+            case "15px":
+              if (sizeValue = 15) {
+                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+              }
+              break;
+            case "16px":
+              if (sizeValue = 16) {
+                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+              }
+              break;
+            case "19px":
+              if (sizeValue = 19) {
+                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+              }
+              break;
+            case "21px":
+              if (sizeValue = 21) {
+                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+              }
+              break;
+            case "27px":
+              if (sizeValue = 27) {
+                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+              }
+          }
+        } else {
+          sizeValue = 13;
+          _this.fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected');
+          return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+        }
       });
       this.area.boxesContainer.element.on('boxMoved', function(event, box, currentPosition, originalPosition) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false);
@@ -1898,14 +1942,14 @@
                </select>\
                \
                <select class="fontSizeBtn">\
-                 <option value="6">6</option>\
-                 <option value="8">8</option>\
-                 <option value="10" selected>10</option>\
-                 <option value="11">11</option>\
-                 <option value="12">12</option>\
-                 <option value="14">14</option>\
-                 <option value="16">16</option>\
-                 <option value="20">20</option>\
+                 <option id="8px" value="6">6</option>\
+                 <option id="11px" value="8">8</option>\
+                 <option id="13px" value="10" selected>10</option>\
+                 <option id="15px" value="11">11</option>\
+                 <option id="16px" value="12">12</option>\
+                 <option id="19px" value="14">14</option>\
+                 <option id="21px" value="16">16</option>\
+                 <option id="27px" value="20">20</option>\
                </select>\
                <button class="colorPicker" id="picker">A</button>\
                <button class="weightBtn" type="button">B</button>\
@@ -1940,8 +1984,7 @@
           color: 'ff8800',
           onSubmit: function(hsb, hex, rgb, el) {
             _this.element.trigger('textColorChanged', [hex]);
-            $(el).colpickHide();
-            return $('.container').select();
+            return $(el).colpickHide();
           }
         });
       });

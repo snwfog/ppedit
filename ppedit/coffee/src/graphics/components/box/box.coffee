@@ -52,6 +52,10 @@ class Box extends Graphic
         event.stopPropagation()
         event.preventDefault()
         @toggleSelect()
+        fontElement = $(document).find('.row')
+        fontValue = $(event.target).css('font-family')
+        sizeValue = $(event.target).css('font-size')
+        fontElement.trigger 'fontSettings', [fontValue, sizeValue]
 
       .dblclick (event) =>
         event.stopPropagation()

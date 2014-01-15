@@ -359,9 +359,9 @@
       boxes.eq(2).simulate('click');
       $('.moveElementDownBtn').simulate('click');
       expect(boxes.eq(2)).toHaveCss({
-        'z-index': '1'
+        'z-index': "1"
       });
-      return expect($('.ppedit-panel-row').eq(1)).toHaveAttr('ppedit-box-id', boxes.eq(2).attr('ppedit-box-id'));
+      return expect($('.ppedit-panel-row').eq(2)).toHaveAttr('ppedit-box-id', boxes.eq(3).attr('ppedit-box-id'));
     });
   });
 
@@ -563,7 +563,7 @@
     });
   });
 
-  ppeditDescribe("A test for issue CAP-13 : As a user,   I want to change font settings of my text documents.", function() {
+  ppeditDescribe("A test for issue CAP-13 : As a user, I want to change font settings of my text documents.", function() {
     it("change font family on select font family on the panel", function() {
       var box;
       addBox(1);
@@ -596,7 +596,7 @@
       box = $('.ppedit-box');
       box.simulate('click');
       $('.underlineBtn').simulate('click');
-      return expect($(".ppedit-box").css('text-decoration')).toEqual('underline');
+      return expect($(".ppedit-box").css('text-decoration')).toEqual('underline solid rgb(0, 0, 0)');
     });
     return it("change font italic on font italic on the panel", function() {
       var box;

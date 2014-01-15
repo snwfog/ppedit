@@ -15,14 +15,14 @@ class FontPanel extends Graphic
                </select>
                
                <select class="fontSizeBtn">
-                 <option value="6">6</option>
-                 <option value="8">8</option>
-                 <option value="10" selected>10</option>
-                 <option value="11">11</option>
-                 <option value="12">12</option>
-                 <option value="14">14</option>
-                 <option value="16">16</option>
-                 <option value="20">20</option>
+                 <option id="8px" value="6">6</option>
+                 <option id="11px" value="8">8</option>
+                 <option id="13px" value="10" selected>10</option>
+                 <option id="15px" value="11">11</option>
+                 <option id="16px" value="12">12</option>
+                 <option id="19px" value="14">14</option>
+                 <option id="21px" value="16">16</option>
+                 <option id="27px" value="20">20</option>
                </select>
                <button class="colorPicker" id="picker">A</button>
                <button class="weightBtn" type="button">B</button>
