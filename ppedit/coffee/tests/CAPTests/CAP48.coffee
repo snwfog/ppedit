@@ -46,3 +46,19 @@ ppeditDescribe 'A test for issue "CAP-48 : As a user, I want to copy and paste a
     $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+shift+v"} # if Windows
 
     expect($('.ppedit-box')).toHaveLength(4)
+
+  it "does not copy and past one box if not pressing the shift button", ->
+    addBox 1
+
+    box = $('.ppedit-box')
+    simulateBoxDblClick box, ->
+
+      # If Mac
+      $('.ppedit-box-container').simulate "key-combo", {combo: "meta+c"}
+      $('.ppedit-box-container').simulate "key-combo", {combo: "meta+v"}
+
+      # If Windows
+      $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+c"}
+      $('.ppedit-box-container').simulate "key-combo", {combo: "ctrl+v"}
+
+      expect($('.ppedit-box')).toHaveLength(1)
