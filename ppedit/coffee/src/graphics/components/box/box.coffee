@@ -36,14 +36,13 @@ class Box extends Graphic
       height:'50px'
       color : 'black'
       'font-family':'Times New Roman'
-      'font-size': '100%'
+      'font-size': '12pt'
       'font-weight': 'normal'
       'text-decoration': 'none'
       'font-style': 'normal'
       'z-index' : if highestZIndex? then (highestZIndex + 1) else 0;
       'text-align': 'left'
       'vertical-align': 'bottom'
-      'list-style-type':'none'
     , @options);
 
     @element = $('<div></div>')

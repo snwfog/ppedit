@@ -137,12 +137,35 @@ class FontPanel extends Graphic
       .find('.fontTypeBtn')
       .children()
       .removeAttr('selected')
-      .filter('option[value= ' + style['font-family'] + ']')
+      .filter('option[value=' + style['font-family'] + ']')
       .attr('selected', 'selected')
 
     @element
       .find('.fontSizeBtn')
       .children()
       .removeAttr('selected')
-      .filter('option[value= "' + parseInt(style['font-size']) + '"]')
+      .filter('option[value="' + parseInt(style['font-size']) + '"]')
       .attr('selected', 'selected')
+
+    @_switchBtn '.wbtn', style['font-weight'] == 'bold'
+    @_switchBtn '.ubtn', style['text-decoration'].indexOf('underline') != -1
+    @_switchBtn '.ibtn', style['font-style'] == 'italic'
+
+    @element.find(".centerAlignBtn").removeClass("active")
+    @element.find(".leftAlignBtn").removeClass("active")
+    @element.find(".rightAlignBtn").removeClass("active")
+
+    if style['text-align'] == "left"
+      @element.find(".leftAlignBtn").addClass("active")
+    else if style['text-align'] == "center"
+      @element.find(".centerAlignBtn").addClass("active")
+    else if style['text-align'] == "right"
+      @element.find(".rightAlignBtn").addClass("active")
+
+  _switchBtn: (selector, switchOn) ->
+    if switchOn
+      @element.find(selector).addClass 'ppedit-btn-enabled active'
+    else
+      @element.find(selector).removeClass 'ppedit-btn-enabled active'
+
+

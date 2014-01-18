@@ -311,6 +311,7 @@
       this.helper = new BoxHelper(this);
       this.prevPosition = void 0;
       this.prevMouseDownTime = 0;
+      this.clickCount = 0;
       this.prevMouseUpTime = 0;
       this.clickTimeoutId = 0;
     }
@@ -332,14 +333,13 @@
         height: '50px',
         color: 'black',
         'font-family': 'Times New Roman',
-        'font-size': '100%',
+        'font-size': '12pt',
         'font-weight': 'normal',
         'text-decoration': 'none',
         'font-style': 'normal',
         'z-index': highestZIndex != null ? highestZIndex + 1 : 0,
         'text-align': 'left',
-        'vertical-align': 'bottom',
-        'list-style-type': 'none'
+        'vertical-align': 'bottom'
       }, this.options);
       return this.element = $('<div></div>').addClass('ppedit-box').attr('contenteditable', true).attr('id', $.now()).css(settings);
     };
@@ -2365,11 +2365,44 @@
         }
       }).on('boxSelected', function(event, box) {
         return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
-      }).on('fontSettings', function(event, fontValue, sizeValue) {
-        _this.fontPanel.element.find(".fontTypeBtn option:selected").removeAttr('selected');
-        _this.fontPanel.element.find('option[value=' + fontValue + ']').attr('selected', 'selected');
-        _this.fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected');
-        return _this.fontPanel.element.find('select.fontSizeBtn > option[id=' + sizeValue + ']').attr('selected', 'selected');
+      }).on('fontSettings', function(event, fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign, listStyleType) {
+        if (fontWeight !== "bold") {
+          _this.fontPanel.element.find(".wbtn").removeClass(' .ppedit-btn-enabled active');
+        } else {
+          _this.fontPanel.element.find(".wbtn").addClass(' .ppedit-btn-enabled active');
+        }
+        if (textDecor !== "underline solid rgb(0, 0, 0)") {
+          _this.fontPanel.element.find(".ubtn").removeClass(' .ppedit-btn-enabled active');
+        } else {
+          _this.fontPanel.element.find(".ubtn").addClass(" .ppedit-btn-enabled active");
+        }
+        if (fontStyle !== "italic") {
+          _this.fontPanel.element.find(".ibtn").removeClass(" .ppedit-btn-enabled active");
+        } else {
+          _this.fontPanel.element.find(".ibtn").addClass(" .ppedit-btn-enabled active");
+        }
+        if (textAlign === "left") {
+          _this.fontPanel.element.find(".centerAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".rightAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".leftAlignBtn").addClass("active");
+        } else if (textAlign === "center") {
+          _this.fontPanel.element.find(".rightAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".leftAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".centerAlignBtn").addClass("active");
+        } else {
+          _this.fontPanel.element.find(".centerAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".leftAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".rightAlignBtn").addClass("active");
+        }
+        if (listStyleType === "decimal") {
+          _this.fontPanel.element.find(".bulletPointBtn").removeClass("active");
+          return _this.fontPanel.element.find(".orderedPointBtn").addClass("active");
+        } else if (listStyleType === "square" || listStyleType === "disc" || listStyleType === "circle") {
+          _this.fontPanel.element.find(".orderedPointBtn").removeClass("active");
+          return _this.fontPanel.element.find(".bulletPointBtn").addClass("active");
+        } else if (listStyleType === "none") {
+          return listStyleType = "none";
+        }
       });
       this.area1.bindEvents();
       this.area2.bindEvents();
@@ -2547,8 +2580,29 @@
     };
 
     FontPanel.prototype.setSettingsFromStyle = function(style) {
-      this.element.find('.fontTypeBtn').children().removeAttr('selected').filter('option[value= ' + style['font-family'] + ']').attr('selected', 'selected');
-      return this.element.find('.fontSizeBtn').children().removeAttr('selected').filter('option[value= "' + parseInt(style['font-size']) + '"]').attr('selected', 'selected');
+      this.element.find('.fontTypeBtn').children().removeAttr('selected').filter('option[value=' + style['font-family'] + ']').attr('selected', 'selected');
+      this.element.find('.fontSizeBtn').children().removeAttr('selected').filter('option[value="' + parseInt(style['font-size']) + '"]').attr('selected', 'selected');
+      this._switchBtn('.wbtn', style['font-weight'] === 'bold');
+      this._switchBtn('.ubtn', style['text-decoration'].indexOf('underline') !== -1);
+      this._switchBtn('.ibtn', style['font-style'] === 'italic');
+      this.element.find(".centerAlignBtn").removeClass("active");
+      this.element.find(".leftAlignBtn").removeClass("active");
+      this.element.find(".rightAlignBtn").removeClass("active");
+      if (style['text-align'] === "left") {
+        return this.element.find(".leftAlignBtn").addClass("active");
+      } else if (style['text-align'] === "center") {
+        return this.element.find(".centerAlignBtn").addClass("active");
+      } else if (style['text-align'] === "right") {
+        return this.element.find(".rightAlignBtn").addClass("active");
+      }
+    };
+
+    FontPanel.prototype._switchBtn = function(selector, switchOn) {
+      if (switchOn) {
+        return this.element.find(selector).addClass('ppedit-btn-enabled active');
+      } else {
+        return this.element.find(selector).removeClass('ppedit-btn-enabled active');
+      }
     };
 
     return FontPanel;
