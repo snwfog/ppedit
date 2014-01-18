@@ -2162,12 +2162,15 @@
         if (_this.area1.boxesContainer.getSelectedBoxes().length !== 0) {
           editPage = true;
           items = _this.clipboard1.popItems();
+          if (items.length !== 0) {
+            _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, editPage, items));
+          }
         }
         if (_this.area2.boxesContainer.getSelectedBoxes().length !== 0) {
           items = _this.clipboard2.popItems();
-        }
-        if (items.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, editPage, items));
+          if (items.length !== 0) {
+            return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, editPage, items));
+          }
         }
       }).on('textColorChanged', function(event, hex) {
         var boxSelected, editPage;

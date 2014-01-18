@@ -119,10 +119,12 @@ class PPEditor extends Graphic
         if @area1.boxesContainer.getSelectedBoxes().length != 0
           editPage = true
           items = @clipboard1.popItems()
+          if items.length != 0
+            @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, editPage, items)
         if @area2.boxesContainer.getSelectedBoxes().length != 0
           items = @clipboard2.popItems()
-        if items.length != 0
-          @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, editPage, items)
+          if items.length != 0
+            @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, editPage, items)
 
       .on 'textColorChanged', (event, hex) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()

@@ -47,7 +47,7 @@
   addBox = function(numOfBoxes) {
     var i, _i, _ref;
     for (i = _i = 0, _ref = numOfBoxes - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-      $(".addElementBtn").click();
+      $(".panelContainer1 .addElementBtn").click();
     }
     return expect($('.ppedit-box')).toHaveLength(numOfBoxes);
   };
@@ -351,9 +351,9 @@
   ppeditDescribe("A test for issue CAP-47 : As a user, I want to select and move aggregated elements in my workspace", function() {
     return it("can select and move elements in the workspace", function() {
       var boxes;
-      $(".addElementBtn").click();
-      $(".addElementBtn").click();
-      $(".addElementBtn").click();
+      $(".panelContainer1 .addElementBtn").simulate('click');
+      $(".panelContainer1 .addElementBtn").simulate('click');
+      $(".panelContainer1 .addElementBtn").simulate('click');
       boxes = $('.ppedit-box');
       expect(boxes).toHaveLength(3);
       moveBox(boxes.eq(0), {
@@ -561,12 +561,12 @@
       return addBox(10);
     });
     it("adds a box when doubleclicking the container", function() {
-      $(".ppedit-box-container").simulate('dblclick');
+      $('.editContainer1 .ppedit-box-container').simulate('dblclick');
       return expect($('.ppedit-box')).toHaveLength(1);
     });
     it("adds 2 boxes when doubleclicking the container twice", function() {
-      $(".ppedit-box-container").simulate('dblclick');
-      $(".ppedit-box-container").simulate('dblclick');
+      $(".editContainer1 .ppedit-box-container").simulate('dblclick');
+      $(".editContainer1 .ppedit-box-container").simulate('dblclick');
       return expect($('.ppedit-box')).toHaveLength(2);
     });
     it("repositions elements with the mouse", function() {
@@ -724,10 +724,10 @@
         dx: 0,
         dy: 200
       });
-      $('.ppedit-box-container').simulate("key-combo", {
+      $('.editContainer1 .ppedit-box-container').simulate("key-combo", {
         combo: "meta+z"
       });
-      $('.ppedit-box-container').simulate("key-combo", {
+      $('.editContainer1 .ppedit-box-container').simulate("key-combo", {
         combo: "ctrl+z"
       });
       expect($('.ppedit-box')).toHaveLength(1);

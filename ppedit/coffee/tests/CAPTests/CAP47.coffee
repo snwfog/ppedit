@@ -5,9 +5,9 @@ ppeditDescribe "A test for issue CAP-47 : As a user, I want to select and move a
 
   it "can select and move elements in the workspace", ->
 
-    $(".addElementBtn").click()
-    $(".addElementBtn").click()
-    $(".addElementBtn").click()
+    $(".panelContainer1 .addElementBtn").simulate 'click'
+    $(".panelContainer1 .addElementBtn").simulate 'click'
+    $(".panelContainer1 .addElementBtn").simulate 'click'
 
     boxes = $('.ppedit-box')
     expect(boxes).toHaveLength(3)

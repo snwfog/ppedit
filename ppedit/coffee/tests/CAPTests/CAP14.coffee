@@ -10,12 +10,12 @@ ppeditDescribe "A test for issue CAP-14 : As a user, I want to reposition elemen
     addBox 10
 
   it "adds a box when doubleclicking the container", ->
-    $(".ppedit-box-container").simulate 'dblclick'
+    $('.editContainer1 .ppedit-box-container').simulate 'dblclick'
     expect($ '.ppedit-box').toHaveLength 1
 
   it "adds 2 boxes when doubleclicking the container twice", ->
-    $(".ppedit-box-container").simulate 'dblclick'
-    $(".ppedit-box-container").simulate 'dblclick'
+    $(".editContainer1 .ppedit-box-container").simulate 'dblclick'
+    $(".editContainer1 .ppedit-box-container").simulate 'dblclick'
     expect($ '.ppedit-box').toHaveLength 2
 
   it "repositions elements with the mouse", ->
