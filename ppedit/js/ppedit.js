@@ -311,8 +311,8 @@
       this.helper = new BoxHelper(this);
       this.prevPosition = void 0;
       this.prevMouseDownTime = 0;
-      this.prevMouseUpTime = 0;
       this.clickCount = 0;
+      this.prevMouseUpTime = 0;
       this.clickTimeoutId = 0;
     }
 
@@ -339,7 +339,8 @@
         'font-style': 'normal',
         'z-index': highestZIndex != null ? highestZIndex + 1 : 0,
         'text-align': 'left',
-        'vertical-align': 'bottom'
+        'vertical-align': 'bottom',
+        'list-style-type': 'none'
       }, this.options);
       return this.element = $('<div></div>').addClass('ppedit-box').attr('contenteditable', true).attr('id', $.now()).css(settings);
     };
@@ -372,7 +373,7 @@
         event.stopPropagation();
         return event.preventDefault();
       }).dblclick(function(event) {
-        var fontElement, fontStyle, fontValue, fontWeight, sizeValue, textAlign, textDecor;
+        var fontElement, fontStyle, fontValue, fontWeight, listStyleType, sizeValue, textAlign, textDecor;
         event.stopPropagation();
         event.preventDefault();
         fontElement = $(document).find('.row');
@@ -382,7 +383,8 @@
         textDecor = $(event.target).css('text-decoration');
         fontStyle = $(event.target).css('font-style');
         textAlign = $(event.target).css('text-align');
-        return fontElement.trigger('fontSettings', [fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign]);
+        listStyleType = $(event.target).css('list-style-type');
+        return fontElement.trigger('fontSettings', [fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign, listStyleType]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (event.target === _this.element.get(0)) {
           if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
@@ -2396,12 +2398,7 @@
             return _this.area1.boxesContainer.element.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
           }
         }
-<<<<<<< HEAD
-        return _results;
-      }).on('fontSettings', function(event, fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign) {
-=======
-      }).on('fontSettings', function(event, fontValue, sizeValue) {
->>>>>>> eb75c7301fe12bc5423836e700d580ef838d13aa
+      }).on('fontSettings', function(event, fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign, listStyleType) {
         _this.fontPanel.element.find(".fontTypeBtn option:selected").removeAttr('selected');
         $('option[value=' + fontValue + ']').attr('selected', 'selected');
         if (sizeValue !== "14px") {
@@ -2462,9 +2459,27 @@
         } else {
           _this.fontPanel.element.find(".ibtn").addClass(" .ppedit-btn-enabled active");
         }
-        _this.fontPanel.element.find(".leftAlignBtn").addClass(" .active");
-        if (_this.fontPanel.element.find(".leftAlignBtn").hasClass(" .active") === true) {
-          return console.log(textAlign);
+        if (textAlign === "left") {
+          _this.fontPanel.element.find(".centerAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".rightAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".leftAlignBtn").addClass("active");
+        } else if (textAlign === "center") {
+          _this.fontPanel.element.find(".rightAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".leftAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".centerAlignBtn").addClass("active");
+        } else {
+          _this.fontPanel.element.find(".centerAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".leftAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".rightAlignBtn").addClass("active");
+        }
+        if (listStyleType === "decimal") {
+          _this.fontPanel.element.find(".bulletPointBtn").removeClass("active");
+          return _this.fontPanel.element.find(".orderedPointBtn").addClass("active");
+        } else if (listStyleType === "square" || listStyleType === "disc" || listStyleType === "circle") {
+          _this.fontPanel.element.find(".orderedPointBtn").removeClass("active");
+          return _this.fontPanel.element.find(".bulletPointBtn").addClass("active");
+        } else if (listStyleType === "none") {
+          return listStyleType = "none";
         }
       });
       this.area1.bindEvents();
@@ -2545,7 +2560,6 @@
                </div>\
 \
                <br />\
-<<<<<<< HEAD
                \
                <div class="btn-group" data-toggle="buttons">\
                 <label class="leftAlignBtn btn btn-default">\
@@ -2562,23 +2576,15 @@
 			   <br />\
                <div class="btn-group" data-toggle="buttons">\
                 <label class="bulletPointBtn btn btn-default">\
-                  <input type="radio" name="" id="option1"><span class="glyphicon glyphicon-list">\
+                  <input type="radio" id="option1"><span class="glyphicon glyphicon-list">\
                 </label>\
                 <label class="orderedPointBtn btn btn-default">\
-                  <input type="radio" name="options" id="option2"><span class="glyphicon glyphicon-list-alt">\
+                  <input type="radio" id="option2"><span class="glyphicon glyphicon-list-alt">\
                 </label>\
                </div>\
+               <button class="gridElementBtn btn btn-default" type="button"><span class="glyphicon glyphicon-th-large"></button>\
+               <button class="snapBtn btn btn-default" type="button"><span class="glyphicon glyphicon-magnet"></button>\
               </div>');
-=======
-               <button class="leftAlignBtn" type="button"><span class="glyphicon glyphicon-align-left"></button>\
-               <button class="centerAlignBtn" type="button"><span class="glyphicon glyphicon-align-center"></button>\
-               <button class="rightAlignBtn" type="button"><span class="glyphicon glyphicon-align-right"></button>\
-               <button class="bulletPointBtn" type="button">. -</button>\
-               <button class="orderedPointBtn" type="button">1.</button>\
-               <button class="gridElementBtn" type="button">Grid</button>\
-               <button class="snapBtn" type="button">Snap</button>\
-                </div>');
->>>>>>> eb75c7301fe12bc5423836e700d580ef838d13aa
     };
 
     FontPanel.prototype.bindEvents = function() {

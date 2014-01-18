@@ -43,6 +43,7 @@ class Box extends Graphic
       'z-index' : if highestZIndex? then (highestZIndex + 1) else 0;
       'text-align': 'left'
       'vertical-align': 'bottom'
+      'list-style-type':'none'
     , @options);
 
     @element = $('<div></div>')
@@ -97,7 +98,8 @@ class Box extends Graphic
         textDecor = $(event.target).css('text-decoration')
         fontStyle = $(event.target).css('font-style')
         textAlign = $(event.target).css('text-align')
-        fontElement.trigger 'fontSettings', [fontValue, sizeValue,fontWeight,textDecor,fontStyle,textAlign]
+        listStyleType = $(event.target).css('list-style-type')
+        fontElement.trigger 'fontSettings', [fontValue, sizeValue,fontWeight,textDecor,fontStyle,textAlign,listStyleType]
 
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         if event.target == @element.get(0)

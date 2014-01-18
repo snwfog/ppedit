@@ -57,14 +57,14 @@ class FontPanel extends Graphic
 			   <br />
                <div class="btn-group" data-toggle="buttons">
                 <label class="bulletPointBtn btn btn-default">
-                  <input type="radio" name="" id="option1"><span class="glyphicon glyphicon-list">
+                  <input type="radio" id="option1"><span class="glyphicon glyphicon-list">
                 </label>
                 <label class="orderedPointBtn btn btn-default">
-                  <input type="radio" name="options" id="option2"><span class="glyphicon glyphicon-list-alt">
+                  <input type="radio" id="option2"><span class="glyphicon glyphicon-list-alt">
                 </label>
                </div>
-               <button class="gridElementBtn" type="button">Grid</button>
-               <button class="snapBtn" type="button">Snap</button>
+               <button class="gridElementBtn btn btn-default" type="button"><span class="glyphicon glyphicon-th-large"></button>
+               <button class="snapBtn btn btn-default" type="button"><span class="glyphicon glyphicon-magnet"></button>
               </div>')
 
 
