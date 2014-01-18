@@ -49,8 +49,8 @@ class CommandFactory
   createRemoveBoxesCommand: (editor, editContainer, boxesSelector) ->
     return new RemoveBoxesCommand editor, editContainer, boxesSelector
 
-  createCopyBoxesCommand: (editor, boxesClones) ->
-    return new CopyBoxesCommand editor, boxesClones
+  createCopyBoxesCommand: (editor, editPage, boxesClones) ->
+    return new CopyBoxesCommand editor, editPage, boxesClones
 
   createCreateBoxesCommand: (editor, editContainer,optionsList) ->
     return new CreateBoxesCommand editor, editContainer, optionsList

@@ -16,7 +16,8 @@ class PPEditor extends Graphic
   constructor: (@root) ->
     super @root
 
-    @clipboard = new Clipboard
+    @clipboard1 = new Clipboard
+    @clipboard2 = new Clipboard
     @commandManager = new CommandManager
     @cmdFactory = new CommandFactory
 
@@ -108,12 +109,20 @@ class PPEditor extends Graphic
           @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, false, @area2.boxesContainer.getSelectedBoxes())
 
       .on 'requestCopy', (event) =>
-        @clipboard.pushItems @area.boxesContainer.getSelectedBoxes()
+        if @area1.boxesContainer.getSelectedBoxes().length != 0
+          @clipboard1.pushItems @area1.boxesContainer.getSelectedBoxes()
+        if @area2.boxesContainer.getSelectedBoxes().length != 0
+          @clipboard2.pushItems @area2.boxesContainer.getSelectedBoxes()
 
       .on 'requestPaste', (event) =>
-        items = @clipboard.popItems()
+        editPage = false
+        if @area1.boxesContainer.getSelectedBoxes().length != 0
+          editPage = true
+          items = @clipboard1.popItems()
+        if @area2.boxesContainer.getSelectedBoxes().length != 0
+          items = @clipboard2.popItems()
         if items.length != 0
-          @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, items)
+          @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, editPage, items)
 
       .on 'textColorChanged', (event, hex) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()

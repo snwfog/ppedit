@@ -877,8 +877,9 @@
   CopyBoxesCommand = (function(_super) {
     __extends(CopyBoxesCommand, _super);
 
-    function CopyBoxesCommand(editor, boxesClones) {
+    function CopyBoxesCommand(editor, editPage, boxesClones) {
       this.editor = editor;
+      this.editPage = editPage;
       this.boxesClones = boxesClones;
       CopyBoxesCommand.__super__.constructor.call(this);
       this.newBoxes = [];
@@ -891,17 +892,28 @@
         this.boxesClones.each(function(index, boxItem) {
           var box, boxOptions;
           boxOptions = CSSJSON.toJSON(boxItem.style.cssText).attributes;
-          box = new Box(_this.editor.area.boxesContainer.element, boxOptions);
+          if (_this.editPage) {
+            box = new Box(_this.editor.area1.boxesContainer.element, boxOptions);
+          } else {
+            box = new Box(_this.editor.area2.boxesContainer.element, boxOptions);
+          }
           return _this.newBoxes[index] = box;
         });
       }
       _results = [];
       for (i = _i = 0, _ref = this.newBoxes.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         box = this.newBoxes[i];
-        this.editor.area.boxesContainer.addBox(box);
-        box.element.html(this.boxesClones.eq(i).html());
-        this.editor.panel.addBoxRow(box.element.attr('id'));
-        _results.push(this.boxIds[i] = box.element.attr('id'));
+        if (this.editPage) {
+          this.editor.area1.boxesContainer.addBox(box);
+          box.element.html(this.boxesClones.eq(i).html());
+          this.editor.panel1.addBoxRow(box.element.attr('id'));
+          _results.push(this.boxIds[i] = box.element.attr('id'));
+        } else {
+          this.editor.area2.boxesContainer.addBox(box);
+          box.element.html(this.boxesClones.eq(i).html());
+          this.editor.panel2.addBoxRow(box.element.attr('id'));
+          _results.push(this.boxIds[i] = box.element.attr('id'));
+        }
       }
       return _results;
     };
@@ -912,8 +924,13 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
-        this.editor.area.boxesContainer.removeBoxes([box.element.attr('id')]);
-        _results.push(this.editor.panel.removeBoxRow([box.element.attr('id')]));
+        if (this.editPage) {
+          this.editor.area1.boxesContainer.removeBoxes([box.element.attr('id')]);
+          _results.push(this.editor.panel1.removeBoxRow([box.element.attr('id')]));
+        } else {
+          this.editor.area2.boxesContainer.removeBoxes([box.element.attr('id')]);
+          _results.push(this.editor.panel2.removeBoxRow([box.element.attr('id')]));
+        }
       }
       return _results;
     };
@@ -1332,8 +1349,8 @@
       return new RemoveBoxesCommand(editor, editContainer, boxesSelector);
     };
 
-    CommandFactory.prototype.createCopyBoxesCommand = function(editor, boxesClones) {
-      return new CopyBoxesCommand(editor, boxesClones);
+    CommandFactory.prototype.createCopyBoxesCommand = function(editor, editPage, boxesClones) {
+      return new CopyBoxesCommand(editor, editPage, boxesClones);
     };
 
     CommandFactory.prototype.createCreateBoxesCommand = function(editor, editContainer, optionsList) {
@@ -2054,7 +2071,8 @@
     function PPEditor(root) {
       this.root = root;
       PPEditor.__super__.constructor.call(this, this.root);
-      this.clipboard = new Clipboard;
+      this.clipboard1 = new Clipboard;
+      this.clipboard2 = new Clipboard;
       this.commandManager = new CommandManager;
       this.cmdFactory = new CommandFactory;
       this.controller = void 0;
@@ -2133,12 +2151,24 @@
           return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes()));
         }
       }).on('requestCopy', function(event) {
-        return _this.clipboard.pushItems(_this.area.boxesContainer.getSelectedBoxes());
+        if (_this.area1.boxesContainer.getSelectedBoxes().length !== 0) {
+          _this.clipboard1.pushItems(_this.area1.boxesContainer.getSelectedBoxes());
+        }
+        if (_this.area2.boxesContainer.getSelectedBoxes().length !== 0) {
+          return _this.clipboard2.pushItems(_this.area2.boxesContainer.getSelectedBoxes());
+        }
       }).on('requestPaste', function(event) {
-        var items;
-        items = _this.clipboard.popItems();
+        var editPage, items;
+        editPage = false;
+        if (_this.area1.boxesContainer.getSelectedBoxes().length !== 0) {
+          editPage = true;
+          items = _this.clipboard1.popItems();
+        }
+        if (_this.area2.boxesContainer.getSelectedBoxes().length !== 0) {
+          items = _this.clipboard2.popItems();
+        }
         if (items.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, items));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, editPage, items));
         }
       }).on('textColorChanged', function(event, hex) {
         var boxSelected, editPage;
