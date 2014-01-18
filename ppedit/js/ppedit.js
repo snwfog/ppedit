@@ -370,8 +370,7 @@
         return _this.stopMoving();
       }).click(function(event) {
         event.stopPropagation();
-        event.preventDefault();
-        return _this.toggleSelect();
+        return event.preventDefault();
       }).dblclick(function(event) {
         var fontElement, fontValue, sizeValue;
         event.stopPropagation();

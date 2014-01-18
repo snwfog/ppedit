@@ -86,7 +86,6 @@ class Box extends Graphic
       .click (event) =>
         event.stopPropagation()
         event.preventDefault()
-        @toggleSelect()
 
       .dblclick (event) =>
         event.stopPropagation()
