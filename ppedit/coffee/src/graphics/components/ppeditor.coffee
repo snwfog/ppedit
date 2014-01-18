@@ -316,7 +316,7 @@ class PPEditor extends Graphic
               .removeClass('ppedit-box-focus')
               .removeClass('ppedit-box-selected')
 
-      .on 'fontSettings', (event, fontValue, sizeValue) =>
+      .on 'fontSettings', (event, fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign, listStyleType) =>
         @fontPanel.element.find(".fontTypeBtn option:selected").removeAttr('selected')
         $('option[value=' + fontValue + ']').attr('selected','selected')
         if sizeValue != "14px"
@@ -347,8 +347,38 @@ class PPEditor extends Graphic
           sizeValue = 13
           @fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected')
           $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected')
-              
-
+        if fontWeight != "bold"
+          @fontPanel.element.find(".wbtn").removeClass(' .ppedit-btn-enabled active')
+        else
+          @fontPanel.element.find(".wbtn").addClass(' .ppedit-btn-enabled active')
+        if textDecor != "underline solid rgb(0, 0, 0)"
+          @fontPanel.element.find(".ubtn").removeClass(' .ppedit-btn-enabled active')
+        else
+          @fontPanel.element.find(".ubtn").addClass(" .ppedit-btn-enabled active")
+        if fontStyle != "italic"
+          @fontPanel.element.find(".ibtn").removeClass(" .ppedit-btn-enabled active")
+        else
+          @fontPanel.element.find(".ibtn").addClass(" .ppedit-btn-enabled active")
+        if textAlign == "left"
+          @fontPanel.element.find(".centerAlignBtn").removeClass("active")
+          @fontPanel.element.find(".rightAlignBtn").removeClass("active")
+          @fontPanel.element.find(".leftAlignBtn").addClass("active")
+        else if textAlign == "center"
+          @fontPanel.element.find(".rightAlignBtn").removeClass("active")
+          @fontPanel.element.find(".leftAlignBtn").removeClass("active")
+          @fontPanel.element.find(".centerAlignBtn").addClass("active")
+        else
+          @fontPanel.element.find(".centerAlignBtn").removeClass("active")
+          @fontPanel.element.find(".leftAlignBtn").removeClass("active")
+          @fontPanel.element.find(".rightAlignBtn").addClass("active")
+        if listStyleType == "decimal"
+          @fontPanel.element.find(".bulletPointBtn").removeClass("active")
+          @fontPanel.element.find(".orderedPointBtn").addClass("active")
+        else if listStyleType == "square" || listStyleType == "disc" || listStyleType == "circle"
+          @fontPanel.element.find(".orderedPointBtn").removeClass("active")
+          @fontPanel.element.find(".bulletPointBtn").addClass("active")      
+        else if listStyleType == "none"
+          listStyleType = "none"
 
     @area1.bindEvents()
     @area2.bindEvents()

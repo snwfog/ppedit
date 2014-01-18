@@ -311,8 +311,8 @@
       this.helper = new BoxHelper(this);
       this.prevPosition = void 0;
       this.prevMouseDownTime = 0;
-      this.prevMouseUpTime = 0;
       this.clickCount = 0;
+      this.prevMouseUpTime = 0;
       this.clickTimeoutId = 0;
     }
 
@@ -339,7 +339,8 @@
         'font-style': 'normal',
         'z-index': highestZIndex != null ? highestZIndex + 1 : 0,
         'text-align': 'left',
-        'vertical-align': 'bottom'
+        'vertical-align': 'bottom',
+        'list-style-type': 'none'
       }, this.options);
       return this.element = $('<div></div>').addClass('ppedit-box').attr('contenteditable', true).attr('id', $.now()).css(settings);
     };
@@ -372,13 +373,18 @@
         event.stopPropagation();
         return event.preventDefault();
       }).dblclick(function(event) {
-        var fontElement, fontValue, sizeValue;
+        var fontElement, fontStyle, fontValue, fontWeight, listStyleType, sizeValue, textAlign, textDecor;
         event.stopPropagation();
         event.preventDefault();
         fontElement = $(document).find('.row');
         fontValue = $(event.target).css('font-family');
         sizeValue = $(event.target).css('font-size');
-        return fontElement.trigger('fontSettings', [fontValue, sizeValue]);
+        fontWeight = $(event.target).css('font-weight');
+        textDecor = $(event.target).css('text-decoration');
+        fontStyle = $(event.target).css('font-style');
+        textAlign = $(event.target).css('text-align');
+        listStyleType = $(event.target).css('list-style-type');
+        return fontElement.trigger('fontSettings', [fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign, listStyleType]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (event.target === _this.element.get(0)) {
           if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
@@ -2395,7 +2401,7 @@
             return _this.area1.boxesContainer.element.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
           }
         }
-      }).on('fontSettings', function(event, fontValue, sizeValue) {
+      }).on('fontSettings', function(event, fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign, listStyleType) {
         _this.fontPanel.element.find(".fontTypeBtn option:selected").removeAttr('selected');
         $('option[value=' + fontValue + ']').attr('selected', 'selected');
         if (sizeValue !== "14px") {
@@ -2403,43 +2409,80 @@
           switch (sizeValue) {
             case "8px":
               if (sizeValue = 8) {
-                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
               }
               break;
             case "11px":
               if (sizeValue = 11) {
-                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
               }
               break;
             case "15px":
               if (sizeValue = 15) {
-                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
               }
               break;
             case "16px":
               if (sizeValue = 16) {
-                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
               }
               break;
             case "19px":
               if (sizeValue = 19) {
-                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
               }
               break;
             case "21px":
               if (sizeValue = 21) {
-                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
               }
               break;
             case "27px":
               if (sizeValue = 27) {
-                return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
               }
           }
         } else {
           sizeValue = 13;
           _this.fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected');
-          return $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+          $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
+        }
+        if (fontWeight !== "bold") {
+          _this.fontPanel.element.find(".wbtn").removeClass(' .ppedit-btn-enabled active');
+        } else {
+          _this.fontPanel.element.find(".wbtn").addClass(' .ppedit-btn-enabled active');
+        }
+        if (textDecor !== "underline solid rgb(0, 0, 0)") {
+          _this.fontPanel.element.find(".ubtn").removeClass(' .ppedit-btn-enabled active');
+        } else {
+          _this.fontPanel.element.find(".ubtn").addClass(" .ppedit-btn-enabled active");
+        }
+        if (fontStyle !== "italic") {
+          _this.fontPanel.element.find(".ibtn").removeClass(" .ppedit-btn-enabled active");
+        } else {
+          _this.fontPanel.element.find(".ibtn").addClass(" .ppedit-btn-enabled active");
+        }
+        if (textAlign === "left") {
+          _this.fontPanel.element.find(".centerAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".rightAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".leftAlignBtn").addClass("active");
+        } else if (textAlign === "center") {
+          _this.fontPanel.element.find(".rightAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".leftAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".centerAlignBtn").addClass("active");
+        } else {
+          _this.fontPanel.element.find(".centerAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".leftAlignBtn").removeClass("active");
+          _this.fontPanel.element.find(".rightAlignBtn").addClass("active");
+        }
+        if (listStyleType === "decimal") {
+          _this.fontPanel.element.find(".bulletPointBtn").removeClass("active");
+          return _this.fontPanel.element.find(".orderedPointBtn").addClass("active");
+        } else if (listStyleType === "square" || listStyleType === "disc" || listStyleType === "circle") {
+          _this.fontPanel.element.find(".orderedPointBtn").removeClass("active");
+          return _this.fontPanel.element.find(".bulletPointBtn").addClass("active");
+        } else if (listStyleType === "none") {
+          return listStyleType = "none";
         }
       });
       this.area1.bindEvents();
@@ -2506,19 +2549,45 @@
                  <option id="21px" value="16">16</option>\
                  <option id="27px" value="20">20</option>\
                </select>\
-               <button class="colorPicker" id="picker">A</button>\
-               <button class="weightBtn" type="button">B</button>\
-               <button class="underlineBtn" type="button">U</button>\
-               <button class="italicBtn" type="button">I</button>\
+               <button class="colorPicker btn btn-default" id="picker"><span class="glyphicon glyphicon-font"></button>\
+               <div class="btn-group" data-toggle="buttons">\
+                <label class="wbtn btn btn-default">\
+                  <input type="checkbox"><span class="weightBtn glyphicon glyphicon-bold"></span>\
+                </label>\
+                <label class="ubtn btn btn-default">\
+                  <input type="checkbox"><span class="underlineBtn glyphicon glyphicon-text-width"></span>\
+                </label>\
+                <label class="ibtn btn btn-default">\
+                  <input type="checkbox"><span class="italicBtn glyphicon glyphicon-italic"></span>\
+                </label>\
+               </div>\
+\
                <br />\
-               <button class="leftAlignBtn" type="button"><span class="glyphicon glyphicon-align-left"></button>\
-               <button class="centerAlignBtn" type="button"><span class="glyphicon glyphicon-align-center"></button>\
-               <button class="rightAlignBtn" type="button"><span class="glyphicon glyphicon-align-right"></button>\
-               <button class="bulletPointBtn" type="button">. -</button>\
-               <button class="orderedPointBtn" type="button">1.</button>\
-               <button class="gridElementBtn" type="button">Grid</button>\
-               <button class="snapBtn" type="button">Snap</button>\
-                </div>');
+               \
+               <div class="btn-group" data-toggle="buttons">\
+                <label class="leftAlignBtn btn btn-default">\
+                  <input type="radio" id="option1"><span class="glyphicon glyphicon-align-left">\
+                </label>\
+                <label class="centerAlignBtn btn btn-default">\
+                  <input type="radio" id="option2"><span class="glyphicon glyphicon-align-center">\
+                </label>\
+                <label class="rightAlignBtn btn btn-default">\
+                  <input type="radio" id="option3"><span class="glyphicon glyphicon-align-right">\
+                </label>\
+               </div>\
+               \
+			   <br />\
+               <div class="btn-group" data-toggle="buttons">\
+                <label class="bulletPointBtn btn btn-default">\
+                  <input type="radio" id="option1"><span class="glyphicon glyphicon-list">\
+                </label>\
+                <label class="orderedPointBtn btn btn-default">\
+                  <input type="radio" id="option2"><span class="glyphicon glyphicon-list-alt">\
+                </label>\
+               </div>\
+               <button class="gridElementBtn btn btn-default" type="button"><span class="glyphicon glyphicon-th-large"></button>\
+               <button class="snapBtn btn btn-default" type="button"><span class="glyphicon glyphicon-magnet"></button>\
+              </div>');
     };
 
     FontPanel.prototype.bindEvents = function() {
@@ -2544,17 +2613,17 @@
           }
         });
       });
-      this.element.find(".weightBtn").click(function(event) {
+      this.element.find(".wbtn").click(function(event) {
         var btn;
         btn = $(event.target).toggleClass('.ppedit-btn-enabled');
         return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
       });
-      this.element.find(".underlineBtn").click(function(event) {
+      this.element.find(".ubtn").click(function(event) {
         var btn;
         btn = $(event.target).toggleClass('.ppedit-btn-enabled');
         return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontUnderlinedBtnEnableClick' : 'fontUnderlinedBtnDisableClick');
       });
-      this.element.find(".italicBtn").click(function(event) {
+      this.element.find(".ibtn").click(function(event) {
         var btn;
         btn = $(event.target).toggleClass('.ppedit-btn-enabled');
         return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');

@@ -15,8 +15,8 @@ class Box extends Graphic
     @prevPosition = undefined
 
     @prevMouseDownTime = 0
-    @prevMouseUpTime = 0
     @clickCount = 0
+    @prevMouseUpTime = 0
 
     @clickTimeoutId = 0
 
@@ -43,6 +43,7 @@ class Box extends Graphic
       'z-index' : if highestZIndex? then (highestZIndex + 1) else 0;
       'text-align': 'left'
       'vertical-align': 'bottom'
+      'list-style-type':'none'
     , @options);
 
     @element = $('<div></div>')
@@ -93,7 +94,12 @@ class Box extends Graphic
         fontElement = $(document).find('.row')
         fontValue = $(event.target).css('font-family')
         sizeValue = $(event.target).css('font-size')
-        fontElement.trigger 'fontSettings', [fontValue, sizeValue]
+        fontWeight = $(event.target).css('font-weight')
+        textDecor = $(event.target).css('text-decoration')
+        fontStyle = $(event.target).css('font-style')
+        textAlign = $(event.target).css('text-align')
+        listStyleType = $(event.target).css('list-style-type')
+        fontElement.trigger 'fontSettings', [fontValue, sizeValue,fontWeight,textDecor,fontStyle,textAlign,listStyleType]
 
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         if event.target == @element.get(0)
