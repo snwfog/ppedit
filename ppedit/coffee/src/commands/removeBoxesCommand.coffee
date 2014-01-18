@@ -3,22 +3,31 @@
 
 class RemoveBoxesCommand extends Command
 
-  constructor: (@editor, boxesSelector) ->
+  constructor: (@editor, @editContainer, boxesSelector) ->
     super()
     
     # Getting the boxes to delete
     boxArray = boxesSelector.toArray()
     @boxIds = (box.id for box in boxArray)
-    @boxes = @editor.area.boxesContainer.getBoxesFromIds @boxIds
+    if @editContainer
+      @boxes = @editor.area1.boxesContainer.getBoxesFromIds @boxIds
+    else
+      @boxes = @editor.area2.boxesContainer.getBoxesFromIds @boxIds
 
   execute: ->
-    @editor.area.boxesContainer.removeBoxes @boxIds
-    @editor.panel.removeBoxRow boxId for boxId in @boxIds
-
+    if @editContainer
+      @editor.area1.boxesContainer.removeBoxes @boxIds
+      @editor.panel1.removeBoxRow boxId for boxId in @boxIds
+    else
+      @editor.area2.boxesContainer.removeBoxes @boxIds
+      @editor.panel2.removeBoxRow boxId for boxId in @boxIds
   undo: ->
     for box in @boxes
-      @editor.area.boxesContainer.addBox box
-      @editor.panel.addBoxRow box.element.attr 'id'
-
+      if @editContainer
+        @editor.area1.boxesContainer.addBox box
+        @editor.panel1.addBoxRow box.element.attr 'id'
+      else
+        @editor.area2.boxesContainer.addBox box
+        @editor.panel2.addBoxRow box.element.attr 'id'
   getType: ->
     return 'Remove'

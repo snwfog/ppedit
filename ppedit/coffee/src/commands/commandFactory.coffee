@@ -13,56 +13,56 @@ This class is responsible for creating and providing commands based.
 ###
 class CommandFactory
 
-  createChangeFontSizeCommand: (editor, boxesSelector, newFontSize) ->
-    return new ChangeStyleCommand editor, boxesSelector, {'font-size': newFontSize}
+  createChangeFontSizeCommand: (editor, editPage, boxesSelector, newFontSize) ->
+    return new ChangeStyleCommand editor, editPage, boxesSelector, {'font-size': newFontSize}
 
-  createChangeFontTypeCommand: (editor, boxesSelector, newFontType) ->
-    return new ChangeStyleCommand editor, boxesSelector, {'font-family': newFontType}
+  createChangeFontTypeCommand: (editor, editPage, boxesSelector, newFontType) ->
+    return new ChangeStyleCommand editor, editPage, boxesSelector, {'font-family': newFontType}
 
-  createChangeFontWeightCommand: (editor, boxesSelector, enable) ->
+  createChangeFontWeightCommand: (editor, editPage, boxesSelector, enable) ->
     fontWeightValue = if enable then 'bold' else 'normal'
-    return new ChangeStyleCommand editor, boxesSelector, {'font-weight': fontWeightValue}
+    return new ChangeStyleCommand editor, editPage, boxesSelector, {'font-weight': fontWeightValue}
 
-  createChangeItalicFontCommand: (editor, boxesSelector, enable) ->
+  createChangeItalicFontCommand: (editor, editPage, boxesSelector, enable) ->
     styleValue = if enable then 'italic' else 'normal'
-    return new ChangeStyleCommand editor, boxesSelector, {'font-style': styleValue}
+    return new ChangeStyleCommand editor, editPage, boxesSelector, {'font-style': styleValue}
 
-  createChangeUnderlineFontCommand: (editor, boxesSelector, enable) ->
+  createChangeUnderlineFontCommand: (editor, editPage, boxesSelector, enable) ->
     styleValue = if enable then 'underline' else 'none'
-    return new ChangeStyleCommand editor, boxesSelector, {'text-decoration': styleValue}
+    return new ChangeStyleCommand editor, editPage, boxesSelector, {'text-decoration': styleValue}
 
-  createRightAlignmentCommand: (editor, boxesSelector) ->
-    return new ChangeStyleCommand editor, boxesSelector, {'text-align': 'right'}
+  createRightAlignmentCommand: (editor, editPage, boxesSelector) ->
+    return new ChangeStyleCommand editor, editPage, boxesSelector, {'text-align': 'right'}
 
-  createLeftAlignmentCommand: (editor, boxesSelector) ->
-    return new ChangeStyleCommand editor, boxesSelector, {'text-align': 'left'}
+  createLeftAlignmentCommand: (editor, editPage, boxesSelector) ->
+    return new ChangeStyleCommand editor, editPage, boxesSelector, {'text-align': 'left'}
 
-  createCenterAlignmentCommand: (editor, boxesSelector) ->
-    return new ChangeStyleCommand editor, boxesSelector, {'text-align': 'center'}
+  createCenterAlignmentCommand: (editor, editPage, boxesSelector) ->
+    return new ChangeStyleCommand editor, editPage, boxesSelector, {'text-align': 'center'}
 
-  createChangeTextColorCommand: (editor, boxesSelector, newColor) ->
-    return new ChangeStyleCommand editor, boxesSelector, {'color': '#' + newColor}
+  createChangeTextColorCommand: (editor, editPage, boxesSelector, newColor) ->
+    return new ChangeStyleCommand editor, editPage, boxesSelector, {'color': '#' + newColor}
 
   createMoveBoxCommand: (box, toPosition, fromPosition) ->
     return new MoveBoxCommand box, toPosition, fromPosition
 
-  createRemoveBoxesCommand: (editor, boxesSelector) ->
-    return new RemoveBoxesCommand editor, boxesSelector
+  createRemoveBoxesCommand: (editor, editContainer, boxesSelector) ->
+    return new RemoveBoxesCommand editor, editContainer, boxesSelector
 
   createCopyBoxesCommand: (editor, boxesClones) ->
     return new CopyBoxesCommand editor, boxesClones
 
-  createCreateBoxesCommand: (editor, optionsList) ->
-    return new CreateBoxesCommand editor, optionsList
+  createCreateBoxesCommand: (editor, editContainer,optionsList) ->
+    return new CreateBoxesCommand editor, editContainer, optionsList
 
   createCreateChangeBoxContentCommand: (box, prevContent, newContent) ->
     return new ChangeBoxContentCommand box, prevContent, newContent
 
-  createMoveUpCommand: (editor, boxSelector) ->
-    return new ChangeDepthCommand editor, boxSelector, true
+  createMoveUpCommand: (editor, editContainer, boxSelector) ->
+    return new ChangeDepthCommand editor, editContainer, boxSelector, true
 
-  createMoveDownCommand: (editor, boxSelector) ->
-    return new ChangeDepthCommand editor, boxSelector, false
+  createMoveDownCommand: (editor, editContainer, boxSelector) ->
+    return new ChangeDepthCommand editor, editContainer, boxSelector, false
 
   createLoadBoxesCommand: (editor, jsonBoxes) ->
     return new LoadBoxesCommand editor, jsonBoxes

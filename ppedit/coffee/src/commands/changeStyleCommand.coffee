@@ -3,12 +3,15 @@
 
 class ChangeStyleCommand extends Command
 
-  constructor: (@editor, boxesSelector, @newCssOptions) ->
+  constructor: (@editor, editPage, boxesSelector, @newCssOptions) ->
     super()
     boxesSelector.each (index, item) =>
       @boxIds.push item.id
     @boxesToCopy = boxesSelector.clone()
-    @boxes = @editor.area.boxesContainer.getBoxesFromSelector boxesSelector
+    if editPage
+      @boxes = @editor.area1.boxesContainer.getBoxesFromSelector boxesSelector
+    else
+      @boxes = @editor.area2.boxesContainer.getBoxesFromSelector boxesSelector
 
   execute: ->
     box.element.css(@newCssOptions) for id, box of @boxes

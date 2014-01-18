@@ -9,7 +9,7 @@ class FontPanel extends Graphic
 
   buildElement: ->
     @element =$('
-            <div class="col-xs-5" style ="padding-left: 30px">
+            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px">
             <select class="fontTypeBtn">
                  <option value="Times New Roman" selected>Times New Roman</option>
                  <option value="Arial">Arial</option>
@@ -35,9 +35,10 @@ class FontPanel extends Graphic
                <button class="leftAlignBtn" type="button"><span class="glyphicon glyphicon-align-left"></button>
                <button class="centerAlignBtn" type="button"><span class="glyphicon glyphicon-align-center"></button>
                <button class="rightAlignBtn" type="button"><span class="glyphicon glyphicon-align-right"></button>
-			   <br />
                <button class="bulletPointBtn" type="button">. -</button>
                <button class="orderedPointBtn" type="button">1.</button>
+               <button class="gridElementBtn" type="button">Grid</button>
+               <button class="snapBtn" type="button">Snap</button>
                 </div>')
 
   bindEvents: ->
@@ -90,6 +91,15 @@ class FontPanel extends Graphic
       #@root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'bulletPointBtnEnableClick' else 'bulletPointBtnDisableClick')
       @root.trigger 'orderedPointBtnEnableClick'
 
+    @element.find(".gridElementBtn").click =>
+      @root.trigger 'panelClickGridBtnClick'
+
+    @element.find('.snapBtn').click =>
+      if !$(event.target).hasClass("snapBtn-selected") 
+        $(event.target).addClass("snapBtn-selected") 
+      else
+        $(event.target).removeClass("snapBtn-selected") 
+      
   changeColor: (hsb, hex, rgb, el) ->
     $(el).css('background-color', '#'+hex)
     $(el).colpickHide()

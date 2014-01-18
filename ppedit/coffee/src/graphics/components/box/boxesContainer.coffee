@@ -21,6 +21,7 @@ class BoxesContainer extends Graphic
     @element.append('<p class="vDotLine"></p>')
 
   bindEvents: ->
+    editContainer = false
     @element
       .mousedown (event) =>
         @lastDownEvent = event
@@ -33,11 +34,18 @@ class BoxesContainer extends Graphic
       .dblclick (event) =>
         event.preventDefault()
         boxCssOptions = @getPointClicked(event)
-        @root.trigger 'addBoxRequested', [boxCssOptions] if @getSelectedBoxes().length == 0
+        if @element.parent().parent().hasClass('editContainer1')
+          editContainer = true
+        @root.trigger 'addBoxRequested', [editContainer, boxCssOptions] if @getSelectedBoxes().length == 0
 
         @element.find('.ppedit-box')
           .removeClass('ppedit-box-focus')
           .removeClass('ppedit-box-selected')
+
+      .click (event) =>
+        if @element.parent().parent().hasClass('editContainer1')
+          editContainer = true
+        @root.trigger 'unSelectBoxes', [editContainer]
 
   ###
   Selects the boxes contained in the passed rect.
