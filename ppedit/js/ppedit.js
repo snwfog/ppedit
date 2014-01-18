@@ -177,7 +177,6 @@
       this.root = root;
       this.leftCmdKeyPressed = false;
       this.rightCmdKeyPressed = false;
-      this.shiftKeyPressed = false;
     }
 
     MacController.prototype.bindEvents = function() {
@@ -185,10 +184,6 @@
       return this.root.keydown(function(event) {
         if (event.keyCode === KeyCodes.MAC_CMD_LEFT) {
           return _this.leftCmdKeyPressed = true;
-        } else if (event.keyCode === KeyCodes.MAC_CMD_RIGHT) {
-          return _this.rightCmdKeyPressed = true;
-        } else if (event.keyCode === KeyCodes.SHIFT) {
-          return _this.shiftKeyPressed = true;
         } else if (event.keyCode === KeyCodes.Z && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestUndo');
@@ -198,10 +193,10 @@
         } else if (event.keyCode === KeyCodes.MAC_DELETE && _this._cmdKeyIsPressed()) {
           event.preventDefault();
           return _this.root.trigger('requestDelete');
-        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed() && _this.shiftKeyPressed) {
+        } else if (event.keyCode === KeyCodes.C && _this._cmdKeyIsPressed() && event.shiftKey) {
           event.preventDefault();
           return _this.root.trigger('requestCopy');
-        } else if (event.keyCode === KeyCodes.V && _this._cmdKeyIsPressed() && _this.shiftKeyPressed) {
+        } else if (event.keyCode === KeyCodes.V && _this._cmdKeyIsPressed() && event.shiftKey) {
           event.preventDefault();
           return _this.root.trigger('requestPaste');
         }
@@ -386,8 +381,10 @@
         sizeValue = $(event.target).css('font-size');
         return fontElement.trigger('fontSettings', [fontValue, sizeValue]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
-        if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
-          return _this.move(delta.x, delta.y);
+        if (event.target === _this.element.get(0)) {
+          if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
+            return _this.move(delta.x, delta.y);
+          }
         }
       }).on('containerMouseLeave', function() {
         return _this.stopMoving();

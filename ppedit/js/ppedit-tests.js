@@ -293,7 +293,7 @@
         return expect($('.ppedit-box')).toHaveLength(2);
       });
     });
-    return it("copies and past multiple boxes", function() {
+    it("copies and past multiple boxes", function() {
       var boxes, canvas;
       addBox(2);
       boxes = $('.ppedit-box');
@@ -325,6 +325,26 @@
         combo: "ctrl+shift+v"
       });
       return expect($('.ppedit-box')).toHaveLength(4);
+    });
+    return it("does not copy and past one box if not pressing the shift button", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box');
+      return simulateBoxDblClick(box, function() {
+        $('.ppedit-box-container').simulate("key-combo", {
+          combo: "meta+c"
+        });
+        $('.ppedit-box-container').simulate("key-combo", {
+          combo: "meta+v"
+        });
+        $('.ppedit-box-container').simulate("key-combo", {
+          combo: "ctrl+c"
+        });
+        $('.ppedit-box-container').simulate("key-combo", {
+          combo: "ctrl+v"
+        });
+        return expect($('.ppedit-box')).toHaveLength(1);
+      });
     });
   });
 
@@ -679,6 +699,18 @@
       return simulateBoxDblClick(box, function() {
         $('.italicBtn').simulate('click');
         return expect($(".ppedit-box").css('font-style')).toEqual('italic');
+      });
+    });
+  });
+
+  ppeditDescribe('A test for issue CAP-118 : "Moving a box containing new lines moves it too far away" bug.', function() {
+    return it("can move a box containing a new line by the right amount", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box').html("<br/><br/>");
+      return moveBox(box, {
+        dx: 0,
+        dy: 200
       });
     });
   });
