@@ -86,7 +86,6 @@ class Box extends Graphic
       .click (event) =>
         event.stopPropagation()
         event.preventDefault()
-        @toggleSelect()
 
       .dblclick (event) =>
         event.stopPropagation()
@@ -94,7 +93,11 @@ class Box extends Graphic
         fontElement = $(document).find('.row')
         fontValue = $(event.target).css('font-family')
         sizeValue = $(event.target).css('font-size')
-        fontElement.trigger 'fontSettings', [fontValue, sizeValue]
+        fontWeight = $(event.target).css('font-weight')
+        textDecor = $(event.target).css('text-decoration')
+        fontStyle = $(event.target).css('font-style')
+        textAlign = $(event.target).css('text-align')
+        fontElement.trigger 'fontSettings', [fontValue, sizeValue,fontWeight,textDecor,fontStyle,textAlign]
 
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?

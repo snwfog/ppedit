@@ -143,7 +143,7 @@ class PPEditor extends Graphic
         boxes = @area.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
         box.addOrderedPointList() for id, box of boxes
 
-      .on 'fontSettings', (event, fontValue, sizeValue) =>
+      .on 'fontSettings', (event, fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign) =>
         @fontPanel.element.find(".fontTypeBtn option:selected").removeAttr('selected')
         $('option[value=' + fontValue + ']').attr('selected','selected')
         if sizeValue != "14px"
@@ -174,8 +174,22 @@ class PPEditor extends Graphic
           sizeValue = 13
           @fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected')
           $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected')
-              
-
+        if fontWeight != "bold"
+          @fontPanel.element.find(".wbtn").removeClass(' .ppedit-btn-enabled active')
+        else
+          @fontPanel.element.find(".wbtn").addClass(' .ppedit-btn-enabled active')
+        if textDecor != "underline solid rgb(0, 0, 0)"
+          @fontPanel.element.find(".ubtn").removeClass(' .ppedit-btn-enabled active')
+        else
+          @fontPanel.element.find(".ubtn").addClass(" .ppedit-btn-enabled active")
+        if fontStyle != "italic"
+          @fontPanel.element.find(".ibtn").removeClass(" .ppedit-btn-enabled active")
+        else
+          @fontPanel.element.find(".ibtn").addClass(" .ppedit-btn-enabled active")
+        @fontPanel.element.find(".leftAlignBtn").addClass(" .active")
+        if @fontPanel.element.find(".leftAlignBtn").hasClass(" .active") == true
+          console.log(textAlign)
+    
     @area.boxesContainer.element
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
         @commandManager.pushCommand(@cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false)
