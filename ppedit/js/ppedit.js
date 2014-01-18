@@ -381,8 +381,10 @@
         sizeValue = $(event.target).css('font-size');
         return fontElement.trigger('fontSettings', [fontValue, sizeValue]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
-        if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
-          return _this.move(delta.x, delta.y);
+        if (event.target === _this.element.get(0)) {
+          if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
+            return _this.move(delta.x, delta.y);
+          }
         }
       }).on('containerMouseLeave', function() {
         return _this.stopMoving();

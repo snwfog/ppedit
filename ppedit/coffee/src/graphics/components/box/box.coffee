@@ -97,7 +97,8 @@ class Box extends Graphic
         fontElement.trigger 'fontSettings', [fontValue, sizeValue]
 
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
-        @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
+        if event.target == @element.get(0)
+          @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
 
       .on 'containerMouseLeave', () =>
         @stopMoving()

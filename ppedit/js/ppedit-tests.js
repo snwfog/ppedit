@@ -326,7 +326,7 @@
       });
       return expect($('.ppedit-box')).toHaveLength(4);
     });
-    return it("does not copies and past one box if not pressing the shift button", function() {
+    return it("does not copy and past one box if not pressing the shift button", function() {
       var box;
       addBox(1);
       box = $('.ppedit-box');
@@ -699,6 +699,18 @@
       return simulateBoxDblClick(box, function() {
         $('.italicBtn').simulate('click');
         return expect($(".ppedit-box").css('font-style')).toEqual('italic');
+      });
+    });
+  });
+
+  ppeditDescribe('A test for issue CAP-118 : "Moving a box containing new lines moves it too far away" bug.', function() {
+    return it("can move a box containing a new line by the right amount", function() {
+      var box;
+      addBox(1);
+      box = $('.ppedit-box').html("<br/><br/>");
+      return moveBox(box, {
+        dx: 0,
+        dy: 200
       });
     });
   });
