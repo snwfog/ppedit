@@ -102,7 +102,10 @@ class PPEditor extends Graphic
         @commandManager.redo()
 
       .on 'requestDelete', (event) =>
-        @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, @area.boxesContainer.getSelectedBoxes())
+        if @area1.boxesContainer.getSelectedBoxes().length != 0
+          @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, true, @area1.boxesContainer.getSelectedBoxes())
+        if @area2.boxesContainer.getSelectedBoxes().length != 0
+          @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, false, @area2.boxesContainer.getSelectedBoxes())
 
       .on 'requestCopy', (event) =>
         @clipboard.pushItems @area.boxesContainer.getSelectedBoxes()

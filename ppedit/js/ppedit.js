@@ -2126,7 +2126,12 @@
       }).on('requestRedo', function(event) {
         return _this.commandManager.redo();
       }).on('requestDelete', function(event) {
-        return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, _this.area.boxesContainer.getSelectedBoxes()));
+        if (_this.area1.boxesContainer.getSelectedBoxes().length !== 0) {
+          _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes()));
+        }
+        if (_this.area2.boxesContainer.getSelectedBoxes().length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes()));
+        }
       }).on('requestCopy', function(event) {
         return _this.clipboard.pushItems(_this.area.boxesContainer.getSelectedBoxes());
       }).on('requestPaste', function(event) {
