@@ -15,8 +15,8 @@ class Box extends Graphic
     @prevPosition = undefined
 
     @prevMouseDownTime = 0
-    @prevMouseUpTime = 0
     @clickCount = 0
+    @prevMouseUpTime = 0
 
     @clickTimeoutId = 0
 

@@ -345,7 +345,6 @@ class PPEditor extends Graphic
           sizeValue = 13
           @fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected')
           $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected')
-<<<<<<< HEAD
         if fontWeight != "bold"
           @fontPanel.element.find(".wbtn").removeClass(' .ppedit-btn-enabled active')
         else
@@ -365,10 +364,6 @@ class PPEditor extends Graphic
     @area.boxesContainer.element
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
         @commandManager.pushCommand(@cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false)
-=======
-              
-
->>>>>>> eb75c7301fe12bc5423836e700d580ef838d13aa
 
     @area1.bindEvents()
     @area2.bindEvents()
