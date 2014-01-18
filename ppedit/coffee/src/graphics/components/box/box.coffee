@@ -91,15 +91,9 @@ class Box extends Graphic
       .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault()
-        fontElement = $(document).find('.row')
-        fontValue = $(event.target).css('font-family')
-        sizeValue = $(event.target).css('font-size')
-        fontWeight = $(event.target).css('font-weight')
-        textDecor = $(event.target).css('text-decoration')
-        fontStyle = $(event.target).css('font-style')
-        textAlign = $(event.target).css('text-align')
-        listStyleType = $(event.target).css('list-style-type')
-        fontElement.trigger 'fontSettings', [fontValue, sizeValue,fontWeight,textDecor,fontStyle,textAlign,listStyleType]
+
+      .focus (event) =>
+        @element.trigger 'boxSelected', [this]
 
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         if event.target == @element.get(0)

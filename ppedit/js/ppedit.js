@@ -311,7 +311,6 @@
       this.helper = new BoxHelper(this);
       this.prevPosition = void 0;
       this.prevMouseDownTime = 0;
-      this.clickCount = 0;
       this.prevMouseUpTime = 0;
       this.clickTimeoutId = 0;
     }
@@ -373,18 +372,10 @@
         event.stopPropagation();
         return event.preventDefault();
       }).dblclick(function(event) {
-        var fontElement, fontStyle, fontValue, fontWeight, listStyleType, sizeValue, textAlign, textDecor;
         event.stopPropagation();
-        event.preventDefault();
-        fontElement = $(document).find('.row');
-        fontValue = $(event.target).css('font-family');
-        sizeValue = $(event.target).css('font-size');
-        fontWeight = $(event.target).css('font-weight');
-        textDecor = $(event.target).css('text-decoration');
-        fontStyle = $(event.target).css('font-style');
-        textAlign = $(event.target).css('text-align');
-        listStyleType = $(event.target).css('list-style-type');
-        return fontElement.trigger('fontSettings', [fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign, listStyleType]);
+        return event.preventDefault();
+      }).focus(function(event) {
+        return _this.element.trigger('boxSelected', [_this]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (event.target === _this.element.get(0)) {
           if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
@@ -1396,7 +1387,6 @@
       this.root = root;
       BoxesContainer.__super__.constructor.call(this, this.root);
       this.boxes = {};
-      this.lastDownEvent = void 0;
     }
 
     BoxesContainer.prototype.buildElement = function() {
@@ -1410,22 +1400,17 @@
         _this = this;
       editContainer = false;
       return this.element.mousedown(function(event) {
-        return _this.lastDownEvent = event;
-      }).mouseup(function(event) {
-        if ((_this.lastDownEvent != null) && event.timeStamp - _this.lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL) {
-          return _this.unSelectAllBoxes();
-        }
+        event.preventDefault();
+        return _this.unSelectAllBoxes();
       }).dblclick(function(event) {
         var boxCssOptions;
-        event.preventDefault();
         boxCssOptions = _this.getPointClicked(event);
         if (_this.element.parent().parent().hasClass('editContainer1')) {
           editContainer = true;
         }
         if (_this.getSelectedBoxes().length === 0) {
-          _this.root.trigger('addBoxRequested', [editContainer, boxCssOptions]);
+          return _this.root.trigger('addBoxRequested', [editContainer, boxCssOptions]);
         }
-        return _this.element.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
       }).click(function(event) {
         if (_this.element.parent().parent().hasClass('editContainer1')) {
           editContainer = true;
@@ -1605,7 +1590,8 @@
       _results = [];
       for (id in _ref) {
         box = _ref[id];
-        _results.push(box.stopMoving());
+        box.stopMoving();
+        _results.push(box.element.removeClass('ppedit-box-focus').blur());
       }
       return _results;
     };
@@ -2179,14 +2165,12 @@
           }
         }
       }).on('textColorChanged', function(event, hex) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeTextColorCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes(), hex));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeTextColorCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), hex));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeTextColorCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes(), hex));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeTextColorCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), hex));
         }
       }).on('graphicContentChanged', function(event, params) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false);
@@ -2235,114 +2219,92 @@
       }).on('addBoxRequested', function(event, editContainer, boxCssOptions) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this, editContainer, [boxCssOptions]));
       }).on('fontTypeChanged', function(event, newFontType) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontTypeCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes(), newFontType));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontTypeCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), newFontType));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontTypeCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes(), newFontType));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontTypeCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), newFontType));
         }
       }).on('fontSizeChanged', function(event, newFontSize) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontSizeCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes(), newFontSize));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontSizeCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), newFontSize));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontSizeCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes(), newFontSize));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontSizeCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), newFontSize));
         }
       }).on('fontWeightBtnEnableClick', function(event) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes(), true));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), true));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes(), true));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), true));
         }
       }).on('fontWeightBtnDisableClick', function(event) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes(), false));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), false));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes(), false));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), false));
         }
       }).on('fontUnderlinedBtnEnableClick', function(event) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes(), true));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), true));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes(), true));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), true));
         }
       }).on('fontUnderlinedBtnDisableClick', function(event) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes(), false));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), false));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes(), false));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), false));
         }
       }).on('fontItalicBtnEnableClick', function(event) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes(), true));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), true));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes(), true));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), true));
         }
       }).on('fontItalicBtnDisableClick', function(event) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes(), false));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), false));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes(), false));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), false));
         }
       }).on('rightAlignment', function(event) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createRightAlignmentCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes()));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createRightAlignmentCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes()));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createRightAlignmentCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes()));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createRightAlignmentCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes()));
         }
       }).on('leftAlignment', function(event) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createLeftAlignmentCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes()));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createLeftAlignmentCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes()));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createLeftAlignmentCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes()));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createLeftAlignmentCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes()));
         }
       }).on('centerAlignment', function(event) {
-        var boxSelected, editPage;
+        var boxSelected;
         boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        editPage = false;
         if (boxSelected.length !== 0) {
-          editPage = true;
-          return _this.commandManager.pushCommand(_this.cmdFactory.createCenterAlignmentCommand(_this, editPage, _this.area1.boxesContainer.getSelectedBoxes()));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createCenterAlignmentCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes()));
         } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createCenterAlignmentCommand(_this, editPage, _this.area2.boxesContainer.getSelectedBoxes()));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createCenterAlignmentCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes()));
         }
       }).on('bulletPointBtnEnableClick', function(event) {
         var box, boxSelected, boxes, id, selectedBoxes, _results, _results1;
@@ -2401,89 +2363,13 @@
             return _this.area1.boxesContainer.element.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
           }
         }
-      }).on('fontSettings', function(event, fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign, listStyleType) {
+      }).on('boxSelected', function(event, box) {
+        return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
+      }).on('fontSettings', function(event, fontValue, sizeValue) {
         _this.fontPanel.element.find(".fontTypeBtn option:selected").removeAttr('selected');
-        $('option[value=' + fontValue + ']').attr('selected', 'selected');
-        if (sizeValue !== "14px") {
-          _this.fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected');
-          switch (sizeValue) {
-            case "8px":
-              if (sizeValue = 8) {
-                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
-              }
-              break;
-            case "11px":
-              if (sizeValue = 11) {
-                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
-              }
-              break;
-            case "15px":
-              if (sizeValue = 15) {
-                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
-              }
-              break;
-            case "16px":
-              if (sizeValue = 16) {
-                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
-              }
-              break;
-            case "19px":
-              if (sizeValue = 19) {
-                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
-              }
-              break;
-            case "21px":
-              if (sizeValue = 21) {
-                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
-              }
-              break;
-            case "27px":
-              if (sizeValue = 27) {
-                $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
-              }
-          }
-        } else {
-          sizeValue = 13;
-          _this.fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected');
-          $('select.fontSizeBtn > option[id=' + sizeValue + 'px]').attr('selected', 'selected');
-        }
-        if (fontWeight !== "bold") {
-          _this.fontPanel.element.find(".wbtn").removeClass(' .ppedit-btn-enabled active');
-        } else {
-          _this.fontPanel.element.find(".wbtn").addClass(' .ppedit-btn-enabled active');
-        }
-        if (textDecor !== "underline solid rgb(0, 0, 0)") {
-          _this.fontPanel.element.find(".ubtn").removeClass(' .ppedit-btn-enabled active');
-        } else {
-          _this.fontPanel.element.find(".ubtn").addClass(" .ppedit-btn-enabled active");
-        }
-        if (fontStyle !== "italic") {
-          _this.fontPanel.element.find(".ibtn").removeClass(" .ppedit-btn-enabled active");
-        } else {
-          _this.fontPanel.element.find(".ibtn").addClass(" .ppedit-btn-enabled active");
-        }
-        if (textAlign === "left") {
-          _this.fontPanel.element.find(".centerAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".rightAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".leftAlignBtn").addClass("active");
-        } else if (textAlign === "center") {
-          _this.fontPanel.element.find(".rightAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".leftAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".centerAlignBtn").addClass("active");
-        } else {
-          _this.fontPanel.element.find(".centerAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".leftAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".rightAlignBtn").addClass("active");
-        }
-        if (listStyleType === "decimal") {
-          _this.fontPanel.element.find(".bulletPointBtn").removeClass("active");
-          return _this.fontPanel.element.find(".orderedPointBtn").addClass("active");
-        } else if (listStyleType === "square" || listStyleType === "disc" || listStyleType === "circle") {
-          _this.fontPanel.element.find(".orderedPointBtn").removeClass("active");
-          return _this.fontPanel.element.find(".bulletPointBtn").addClass("active");
-        } else if (listStyleType === "none") {
-          return listStyleType = "none";
-        }
+        _this.fontPanel.element.find('option[value=' + fontValue + ']').attr('selected', 'selected');
+        _this.fontPanel.element.find(".fontSizeBtn option:selected").removeAttr('selected');
+        return _this.fontPanel.element.find('select.fontSizeBtn > option[id=' + sizeValue + ']').attr('selected', 'selected');
       });
       this.area1.bindEvents();
       this.area2.bindEvents();
@@ -2540,14 +2426,14 @@
                </select>\
                \
                <select class="fontSizeBtn">\
-                 <option id="8px" value="6">6</option>\
-                 <option id="11px" value="8">8</option>\
-                 <option id="13px" value="10" selected>10</option>\
-                 <option id="15px" value="11">11</option>\
-                 <option id="16px" value="12">12</option>\
-                 <option id="19px" value="14">14</option>\
-                 <option id="21px" value="16">16</option>\
-                 <option id="27px" value="20">20</option>\
+                 <option value="6">6</option>\
+                 <option value="8">8</option>\
+                 <option value="10" selected>10</option>\
+                 <option value="11">11</option>\
+                 <option value="12">12</option>\
+                 <option value="14">14</option>\
+                 <option value="16">16</option>\
+                 <option value="20">20</option>\
                </select>\
                <button class="colorPicker btn btn-default" id="picker"><span class="glyphicon glyphicon-font"></button>\
                <div class="btn-group" data-toggle="buttons">\
@@ -2658,6 +2544,11 @@
     FontPanel.prototype.changeColor = function(hsb, hex, rgb, el) {
       $(el).css('background-color', '#' + hex);
       return $(el).colpickHide();
+    };
+
+    FontPanel.prototype.setSettingsFromStyle = function(style) {
+      this.element.find('.fontTypeBtn').children().removeAttr('selected').filter('option[value= ' + style['font-family'] + ']').attr('selected', 'selected');
+      return this.element.find('.fontSizeBtn').children().removeAttr('selected').filter('option[value= "' + parseInt(style['font-size']) + '"]').attr('selected', 'selected');
     };
 
     return FontPanel;

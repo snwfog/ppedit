@@ -128,12 +128,10 @@ class PPEditor extends Graphic
 
       .on 'textColorChanged', (event, hex) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes(), hex)
+          @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), hex)
         else
-          @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes(), hex)
+          @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), hex)
 
       .on 'graphicContentChanged', (event, params) =>
         @commandManager.pushCommand(@cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false)
@@ -183,102 +181,80 @@ class PPEditor extends Graphic
 
       .on 'fontTypeChanged', (event, newFontType) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createChangeFontTypeCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes(), newFontType)
+          @commandManager.pushCommand @cmdFactory.createChangeFontTypeCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), newFontType)
         else
-          @commandManager.pushCommand @cmdFactory.createChangeFontTypeCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes(), newFontType)
+          @commandManager.pushCommand @cmdFactory.createChangeFontTypeCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), newFontType)
 
       .on 'fontSizeChanged', (event, newFontSize) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createChangeFontSizeCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes(), newFontSize)
+          @commandManager.pushCommand @cmdFactory.createChangeFontSizeCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), newFontSize)
         else
-          @commandManager.pushCommand @cmdFactory.createChangeFontSizeCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes(), newFontSize)
+          @commandManager.pushCommand @cmdFactory.createChangeFontSizeCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), newFontSize)
 
       .on 'fontWeightBtnEnableClick', (event) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes(), true)
+          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), true)
         else
-          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes(), true)
+          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), true)
 
       .on 'fontWeightBtnDisableClick', (event) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes(), false)
+          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), false)
         else
-          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes(), false)
+          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), false)
 
       .on 'fontUnderlinedBtnEnableClick', (event) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes(), true)
+          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), true)
         else
-          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes(), true)
+          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), true)
 
       .on 'fontUnderlinedBtnDisableClick', (event) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes(), false)
+          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), false)
         else
-          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes(), false)
+          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), false)
 
       .on 'fontItalicBtnEnableClick', (event) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes(), true)
+          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), true)
         else
-          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes(), true)
+          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), true)
 
       .on 'fontItalicBtnDisableClick', (event) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes(), false)
+          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), false)
         else
-          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes(), false)
+          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), false)
 
       .on 'rightAlignment', (event) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createRightAlignmentCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes())
+          @commandManager.pushCommand @cmdFactory.createRightAlignmentCommand(this, true, @area1.boxesContainer.getSelectedBoxes())
         else
-          @commandManager.pushCommand @cmdFactory.createRightAlignmentCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes())
+          @commandManager.pushCommand @cmdFactory.createRightAlignmentCommand(this, false, @area2.boxesContainer.getSelectedBoxes())
 
       .on 'leftAlignment', (event) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createLeftAlignmentCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes())
+          @commandManager.pushCommand @cmdFactory.createLeftAlignmentCommand(this, true, @area1.boxesContainer.getSelectedBoxes())
         else
-          @commandManager.pushCommand @cmdFactory.createLeftAlignmentCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes())
+          @commandManager.pushCommand @cmdFactory.createLeftAlignmentCommand(this, false, @area2.boxesContainer.getSelectedBoxes())
 
       .on 'centerAlignment', (event) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        editPage = false
         if boxSelected.length != 0
-          editPage = true
-          @commandManager.pushCommand @cmdFactory.createCenterAlignmentCommand(this, editPage, @area1.boxesContainer.getSelectedBoxes())
+          @commandManager.pushCommand @cmdFactory.createCenterAlignmentCommand(this, true, @area1.boxesContainer.getSelectedBoxes())
         else
-          @commandManager.pushCommand @cmdFactory.createCenterAlignmentCommand(this, editPage, @area2.boxesContainer.getSelectedBoxes())
+          @commandManager.pushCommand @cmdFactory.createCenterAlignmentCommand(this, false, @area2.boxesContainer.getSelectedBoxes())
 
       .on 'bulletPointBtnEnableClick', (event) =>
         boxSelected = @area1.boxesContainer.getSelectedBoxes()
@@ -315,6 +291,9 @@ class PPEditor extends Graphic
             @area1.boxesContainer.element.find('.ppedit-box')
               .removeClass('ppedit-box-focus')
               .removeClass('ppedit-box-selected')
+
+      .on 'boxSelected', (event, box) =>
+        @fontPanel.setSettingsFromStyle box.element.get(0).style
 
       .on 'fontSettings', (event, fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign, listStyleType) =>
         @fontPanel.element.find(".fontTypeBtn option:selected").removeAttr('selected')

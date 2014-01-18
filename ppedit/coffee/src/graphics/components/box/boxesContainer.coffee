@@ -11,9 +11,7 @@ class BoxesContainer extends Graphic
 
   constructor: (@root) ->
     super @root
-
     @boxes = {}
-    @lastDownEvent = undefined
 
   buildElement: ->
     @element = $('<div></div>').addClass('ppedit-box-container')
@@ -24,23 +22,14 @@ class BoxesContainer extends Graphic
     editContainer = false
     @element
       .mousedown (event) =>
-        @lastDownEvent = event
-      
-      .mouseup (event) =>
-        # Click happened
-        if @lastDownEvent? && event.timeStamp - @lastDownEvent.timeStamp < BoxesContainer.CLICK_TIME_INTERVAL
-          @unSelectAllBoxes()
+        event.preventDefault()
+        @unSelectAllBoxes()
 
       .dblclick (event) =>
-        event.preventDefault()
         boxCssOptions = @getPointClicked(event)
         if @element.parent().parent().hasClass('editContainer1')
           editContainer = true
         @root.trigger 'addBoxRequested', [editContainer, boxCssOptions] if @getSelectedBoxes().length == 0
-
-        @element.find('.ppedit-box')
-          .removeClass('ppedit-box-focus')
-          .removeClass('ppedit-box-selected')
 
       .click (event) =>
         if @element.parent().parent().hasClass('editContainer1')
@@ -153,7 +142,11 @@ class BoxesContainer extends Graphic
   Unselects all boxes.
   ###
   unSelectAllBoxes: ->
-    box.stopMoving() for id, box of @boxes
+    for id, box of @boxes
+      box.stopMoving()
+      box.element
+        .removeClass('ppedit-box-focus')
+        .blur()
 
   ###
   Returns the position relative to the top left corner

@@ -18,14 +18,14 @@ class FontPanel extends Graphic
                </select>
                
                <select class="fontSizeBtn">
-                 <option id="8px" value="6">6</option>
-                 <option id="11px" value="8">8</option>
-                 <option id="13px" value="10" selected>10</option>
-                 <option id="15px" value="11">11</option>
-                 <option id="16px" value="12">12</option>
-                 <option id="19px" value="14">14</option>
-                 <option id="21px" value="16">16</option>
-                 <option id="27px" value="20">20</option>
+                 <option value="6">6</option>
+                 <option value="8">8</option>
+                 <option value="10" selected>10</option>
+                 <option value="11">11</option>
+                 <option value="12">12</option>
+                 <option value="14">14</option>
+                 <option value="16">16</option>
+                 <option value="20">20</option>
                </select>
                <button class="colorPicker btn btn-default" id="picker"><span class="glyphicon glyphicon-font"></button>
                <div class="btn-group" data-toggle="buttons">
@@ -131,3 +131,18 @@ class FontPanel extends Graphic
   changeColor: (hsb, hex, rgb, el) ->
     $(el).css('background-color', '#'+hex)
     $(el).colpickHide()
+
+  setSettingsFromStyle: (style) ->
+    @element
+      .find('.fontTypeBtn')
+      .children()
+      .removeAttr('selected')
+      .filter('option[value= ' + style['font-family'] + ']')
+      .attr('selected', 'selected')
+
+    @element
+      .find('.fontSizeBtn')
+      .children()
+      .removeAttr('selected')
+      .filter('option[value= "' + parseInt(style['font-size']) + '"]')
+      .attr('selected', 'selected')
