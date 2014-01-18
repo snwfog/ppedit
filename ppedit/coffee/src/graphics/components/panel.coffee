@@ -14,22 +14,14 @@ class Panel extends Graphic
               <form class="form-inline" role="form" style="padding-top: 5px;">
                 <div class="form-group col-lg-20">
                   <fieldset style="padding-left: 15px;">
-                    <input class="form-control form-control input-lg" id="focusedInput" type="text" placeholder="Name of document">
-                      <span class="help-block">Example: My Resume</span>
 
-                      <hr>
+                      <button class="btn btn-sm btn-primary addElementBtn" type="button" style="width: 150px;"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>
 
-                      <button class="btn btn-sm btn-primary addElementBtn" type="button"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>
-
-                      <button class="btn btn-primary btn-sm gridElementBtn" type="button"><span class="glyphicon glyphicon-th-large"></span> Grid</button>
-
-                      <button class="btn btn-primary btn-sm snapBtn" type="button"><span class="glyphicon glyphicon-magnet"></span> Snap</button>
-                      
                       <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>
                       
                       <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> 
 
-                      <button class="btn btn-warning btn-sm clearAllElementBtn" type="button"><span class="glyphicon glyphicon-trash"></span> Clear All</button>
+                      <button class="btn btn-warning btn-sm clearAllElementBtn" type="button" style="width: 130px;"><span class="glyphicon glyphicon-trash"></span> Clear All</button>
 
                       <table class="table table-hover dataPanel">
                           <thead>
@@ -50,31 +42,28 @@ class Panel extends Graphic
             </div>')
 
   bindEvents: ->
+    editContainer = false
+    if @element.parent().hasClass('panelContainer1')
+      editContainer = true
     @element.find(".addElementBtn").click =>
-      @root.trigger 'panelClickAddBtnClick'
+      @root.trigger 'panelClickAddBtnClick', [editContainer]
 
     @element.find(".clearAllElementBtn").click =>
-      @root.trigger 'panelClickClearAllBtnClick'
-
-    @element.find(".gridElementBtn").click =>
-      @root.trigger 'panelClickGridBtnClick'
+      @root.trigger 'panelClickClearAllBtnClick', [editContainer]
 
     @element.find('.moveElementUpBtn').click =>
-      @root.trigger 'moveElementUpBtnClick'
+      @root.trigger 'moveElementUpBtnClick', [editContainer]
 
     @element.find('.moveElementDownBtn').click =>
-      @root.trigger 'moveElementDownBtnClick'
-    
-    @element.find('.snapBtn').click =>
-      if !$(event.target).hasClass("snapBtn-selected") 
-        $(event.target).addClass("snapBtn-selected") 
-      else
-        $(event.target).removeClass("snapBtn-selected") 
+      @root.trigger 'moveElementDownBtnClick', [editContainer]
 
   ###
   Adds a row to be associated with the passed box id.
   ### 
   addBoxRow: (boxid, index) ->
+    editContainer = false
+    if @element.parent().hasClass('panelContainer1')
+      editContainer = true
     newRow = $("
             <tr class='ppedit-panel-row'>
                 <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>
@@ -97,11 +86,11 @@ class Panel extends Graphic
         )
       .on 'slide', (event) =>
         opacityVal = $(event.target).val()
-        @root.trigger 'onRowSliderValChanged', [boxid, parseInt(opacityVal)/100]
+        @root.trigger 'onRowSliderValChanged', [editContainer, boxid, parseInt(opacityVal)/100]
 
     newRow.find(".deleteElementBtn")
       .on 'click', (event) =>
-        @root.trigger 'onRowDeleteBtnClick', [boxid]
+        @root.trigger 'onRowDeleteBtnClick', [editContainer, boxid]
 
   ###
   Removes the row associated with the passed box id.

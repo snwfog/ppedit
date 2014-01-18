@@ -9,7 +9,7 @@ class FontPanel extends Graphic
 
   buildElement: ->
     @element =$('
-            <div class="col-xs-5" style ="padding-left: 30px">
+            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px">
             <select class="fontTypeBtn">
                  <option value="Times New Roman" selected>Times New Roman</option>
                  <option value="Arial">Arial</option>
@@ -63,7 +63,11 @@ class FontPanel extends Graphic
                   <input type="radio" name="options" id="option2"><span class="glyphicon glyphicon-list-alt">
                 </label>
                </div>
+               <button class="gridElementBtn" type="button">Grid</button>
+               <button class="snapBtn" type="button">Snap</button>
               </div>')
+
+
 
   bindEvents: ->
     @element.find("select.fontTypeBtn").change (event) =>
@@ -115,6 +119,15 @@ class FontPanel extends Graphic
       #@root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'bulletPointBtnEnableClick' else 'bulletPointBtnDisableClick')
       @root.trigger 'orderedPointBtnEnableClick'
 
+    @element.find(".gridElementBtn").click =>
+      @root.trigger 'panelClickGridBtnClick'
+
+    @element.find('.snapBtn').click =>
+      if !$(event.target).hasClass("snapBtn-selected") 
+        $(event.target).addClass("snapBtn-selected") 
+      else
+        $(event.target).removeClass("snapBtn-selected") 
+      
   changeColor: (hsb, hex, rgb, el) ->
     $(el).css('background-color', '#'+hex)
     $(el).colpickHide()

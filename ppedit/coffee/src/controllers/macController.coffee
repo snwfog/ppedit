@@ -8,7 +8,6 @@ class MacController
   constructor: (@root) ->
     @leftCmdKeyPressed = false
     @rightCmdKeyPressed = false
-    @shiftKeyPressed = false
 
   bindEvents: ->
     @root
@@ -16,12 +15,6 @@ class MacController
 
         if event.keyCode == KeyCodes.MAC_CMD_LEFT
           @leftCmdKeyPressed = true
-
-        else if event.keyCode == KeyCodes.MAC_CMD_RIGHT
-          @rightCmdKeyPressed = true
-
-        else if event.keyCode == KeyCodes.SHIFT
-          @shiftKeyPressed = true
 
         else if event.keyCode == KeyCodes.Z && @_cmdKeyIsPressed()
           event.preventDefault()
@@ -37,13 +30,13 @@ class MacController
 
         else if event.keyCode == KeyCodes.C &&
                   @_cmdKeyIsPressed() &&
-                  @shiftKeyPressed
+                  event.shiftKey
           event.preventDefault()
           @root.trigger 'requestCopy'
 
         else if event.keyCode == KeyCodes.V &&
                   @_cmdKeyIsPressed() &&
-                  @shiftKeyPressed
+                  event.shiftKey
           event.preventDefault()
           @root.trigger 'requestPaste'
 
