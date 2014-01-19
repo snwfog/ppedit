@@ -198,10 +198,12 @@
   });
 
   ppeditDescribe('A test for issue "CAP-49 : As a backend developer, I want an API from PPEdit that provides a changeset made on a particular resume so that I can persist it on the backend"', function() {
-    var boxObject;
-    boxObject = {
-      1234: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1234" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"></div>'
-    };
+    var boxObjects;
+    boxObjects = [
+      {
+        1234: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1234" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"></div>'
+      }
+    ];
     it("identifies boxes that were created then deleted during current editing as non existent", function() {
       addBox(1);
       return simulateBoxDblClick($('.ppedit-box'), function() {
@@ -209,7 +211,8 @@
         requestDelete();
         result = JSON.parse($('.editor').ppedit('save'));
         expect(result.removed.length).toEqual(0);
-        expect(result.created.length).toEqual(0);
+        expect(result.created[0].length).toEqual(0);
+        expect(result.created[1].length).toEqual(0);
         return expect(result.modified.length).toEqual(0);
       });
     });
@@ -218,7 +221,7 @@
       addBox(2);
       result = JSON.parse($('.editor').ppedit('save'));
       expect(result.removed.length).toEqual(0);
-      expect(result.created.length).toEqual(2);
+      expect(result.created[0].length).toEqual(2);
       return expect(result.modified.length).toEqual(0);
     });
     it("identifies a new box as created when the saving API is called", function() {
@@ -229,7 +232,7 @@
         addBox(1);
         result = JSON.parse($('.editor').ppedit('save'));
         expect(result.removed.length).toEqual(0);
-        expect(result.created.length).toEqual(1);
+        expect(result.created[0].length).toEqual(1);
         return expect(result.modified.length).toEqual(0);
       });
     });
@@ -245,21 +248,22 @@
     });
     it("identifies a box which is first loaded and then deleted as removed", function() {
       $('.editor').ppedit('load', {
-        hunks: JSON.stringify(boxObject)
+        hunks: JSON.stringify(boxObjects)
       });
       return simulateBoxDblClick($('.ppedit-box'), function() {
         var result;
         requestDelete();
         result = JSON.parse($('.editor').ppedit('save'));
         expect(result.removed.length).toEqual(1);
-        expect(result.created.length).toEqual(0);
+        expect(result.created[0].length).toEqual(0);
+        expect(result.created[1].length).toEqual(0);
         return expect(result.modified.length).toEqual(0);
       });
     });
     return it("identifies a box which is first loaded and then moved as modified", function() {
       var result;
       $('.editor').ppedit('load', {
-        hunks: JSON.stringify(boxObject)
+        hunks: JSON.stringify(boxObjects)
       });
       moveBox($('.ppedit-box'), {
         dx: 100,
@@ -267,7 +271,8 @@
       });
       result = JSON.parse($('.editor').ppedit('save'));
       expect(result.removed.length).toEqual(0);
-      expect(result.created.length).toEqual(0);
+      expect(result.created[0].length).toEqual(0);
+      expect(result.created[1].length).toEqual(0);
       return expect(result.modified.length).toEqual(1);
     });
   });
@@ -592,16 +597,22 @@
 
   ppeditDescribe('A test for issue CAP-132 : "Add a load content API on PPedit"', function() {
     var boxObjects, singleBoxObject;
-    singleBoxObject = {
-      1234: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1234" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"></div>'
-    };
-    boxObjects = {
-      1383319360353: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319360353" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"><div>Hello world.</div></div>',
-      1383319393238: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319393238" style="left: 852px; top: 83px; width: 125px; height: 50px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: bold; text-decoration: none; font-style: normal; z-index: 1; text-align: left; vertical-align: bottom;">This is a bold text at the right of the page</div>',
-      1383319427231: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319427231" style="left: 294px; top: 233px; width: 202px; height: 50px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: underline; font-style: italic; z-index: 2; text-align: left; vertical-align: bottom;">This is a Italic and underline text</div>',
-      1383319782815: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319782815" style="left: 56px; top: 350px; width: 199px; height: 64px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 3; text-align: center; vertical-align: bottom;">This is a center-aligned text</div>'
-    };
+    singleBoxObject = [
+      {
+        1234: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1234" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"></div>'
+      }
+    ];
+    boxObjects = [
+      {
+        1383319360353: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319360353" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"><div>Hello world.</div></div>',
+        1383319393238: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319393238" style="left: 852px; top: 83px; width: 125px; height: 50px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: bold; text-decoration: none; font-style: normal; z-index: 1; text-align: left; vertical-align: bottom;">This is a bold text at the right of the page</div>'
+      }, {
+        1383319427231: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319427231" style="left: 294px; top: 233px; width: 202px; height: 50px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: underline; font-style: italic; z-index: 2; text-align: left; vertical-align: bottom;">This is a Italic and underline text</div>',
+        1383319782815: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319782815" style="left: 56px; top: 350px; width: 199px; height: 64px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 3; text-align: center; vertical-align: bottom;">This is a center-aligned text</div>'
+      }
+    ];
     it("can load 1 box", function() {
+      console.log(JSON.stringify(boxObjects));
       expect($('.ppedit-box')).toHaveLength(0);
       $('.editor').ppedit('load', {
         hunks: JSON.stringify(singleBoxObject)

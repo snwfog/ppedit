@@ -49,14 +49,16 @@ class CommandManager
 
         switch command.getType()
           when 'Create'
-            createdBoxes['' + id] = $('#' + id).clone().wrap('<div></div>').parent().html() or ''
+            createdBoxes['' + id] =
+              html:$('#' + id).clone().wrap('<div></div>').parent().html() or ''
+              pageNum:command.getPageNum()
 
           when 'Modify'
             if !createdBoxes['' + id]?
               modifiedBoxes['' + id] = $('#' + id).clone().wrap('<div></div>').parent().html() or ''
 
           when 'Remove'
-            delete modifiedBoxes['' + id]            
+            delete modifiedBoxes['' + id]
 
             if createdBoxes['' + id]?
               delete createdBoxes['' + id]
@@ -66,8 +68,13 @@ class CommandManager
     # building the return object value
     result =
       modified:({id:boxid, html:value} for boxid, value of modifiedBoxes)
-      created:({id:boxid, html:value} for boxid, value of createdBoxes)
       removed:({id:boxid, html:value} for boxid, value of removedBoxes)
+      created:[[], []]
+
+    for boxid, value of createdBoxes
+      result.created[value.pageNum].push
+        id: boxid
+        html: value.html
 
     # hashing the result changeset
     shaObj = new jsSHA(JSON.stringify(result), "TEXT");

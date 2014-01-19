@@ -15,6 +15,8 @@
 
     Command.prototype.getType = function() {};
 
+    Command.prototype.getPageNum = function() {};
+
     return Command;
 
   })();
@@ -706,10 +708,16 @@
     information defined in the passed json string.
     
     The jsonBoxes parameter must be a json string like the following :
-    {
-      "box-id-1":'<div class="ppedit-box">box-id-1 contents</div>',
-      "box-id-2":'<div class="ppedit-box">box-id-2 contents</div>'
-    }
+    [
+      {
+        "box-id-1":'<div class="ppedit-box">box-id-1 contents in page 1</div>',
+        "box-id-2":'<div class="ppedit-box">box-id-2 contents in page 1</div>'
+      },
+      {
+        "box-id-3":'<div class="ppedit-box">box-id-3 contents in page 2</div>',
+        "box-id-4":'<div class="ppedit-box">box-id-4 contents in page 2</div>'
+      }
+    ]
     */
 
 
@@ -720,29 +728,39 @@
     }
 
     LoadBoxesCommand.prototype.execute = function() {
-      var box, boxElement, boxes, id, rows, _results,
-        _this = this;
-      boxes = JSON.parse(this.jsonBoxes);
+      var area, box, boxElement, i, id, pages, panel, rows, _i, _ref, _results;
+      pages = JSON.parse(this.jsonBoxes);
       _results = [];
-      for (id in boxes) {
-        boxElement = boxes[id];
-        box = new Box(this.editor.area.boxesContainer.element);
-        box.element = $(boxElement);
-        this.editor.area.boxesContainer.addBox(box);
-        rows = this.editor.panel.getRows();
-        if (rows.length === 0) {
-          _results.push(this.editor.panel.addBoxRow(id));
-        } else {
-          _results.push(rows.each(function(index, rowNode) {
-            var otherBoxId, otherBoxZIndex;
-            otherBoxId = $(rowNode).attr('ppedit-box-id');
-            otherBoxZIndex = _this.editor.area.boxesContainer.boxes[otherBoxId].element.css('z-index');
-            if (parseInt(otherBoxZIndex) < parseInt(box.element.css('z-index')) || index === rows.length - 1) {
-              _this.editor.panel.addBoxRow(id, index);
-              return false;
+      for (i = _i = 0, _ref = pages.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        _results.push((function() {
+          var _ref1, _results1,
+            _this = this;
+          _ref1 = pages[i];
+          _results1 = [];
+          for (id in _ref1) {
+            boxElement = _ref1[id];
+            area = i === 0 ? this.editor.area1 : this.editor.area2;
+            panel = i === 0 ? this.editor.panel1 : this.editor.panel2;
+            box = new Box(area.boxesContainer.element);
+            box.element = $(boxElement);
+            area.boxesContainer.addBox(box);
+            rows = panel.getRows();
+            if (rows.length === 0) {
+              _results1.push(panel.addBoxRow(id));
+            } else {
+              _results1.push(rows.each(function(index, rowNode) {
+                var otherBoxId, otherBoxZIndex;
+                otherBoxId = $(rowNode).attr('ppedit-box-id');
+                otherBoxZIndex = area.boxesContainer.boxes[otherBoxId].element.css('z-index');
+                if (parseInt(otherBoxZIndex) < parseInt(box.element.css('z-index')) || index === rows.length - 1) {
+                  panel.addBoxRow(id, index);
+                  return false;
+                }
+              }));
             }
-          }));
-        }
+          }
+          return _results1;
+        }).call(this));
       }
       return _results;
     };
@@ -752,6 +770,8 @@
     LoadBoxesCommand.prototype.getType = function() {
       return 'Create';
     };
+
+    LoadBoxesCommand.prototype.getPageNum = function() {};
 
     return LoadBoxesCommand;
 
@@ -866,6 +886,14 @@
       return 'Create';
     };
 
+    CreateBoxesCommand.prototype.getPageNum = function() {
+      if (this.editContainer) {
+        return 0;
+      } else {
+        return 1;
+      }
+    };
+
     return CreateBoxesCommand;
 
   })(Command);
@@ -933,6 +961,14 @@
 
     CopyBoxesCommand.prototype.getType = function() {
       return 'Create';
+    };
+
+    CopyBoxesCommand.prototype.getPageNum = function() {
+      if (this.editPage) {
+        return 0;
+      } else {
+        return 1;
+      }
     };
 
     return CopyBoxesCommand;
@@ -1011,7 +1047,10 @@
           id = _ref1[_j];
           switch (command.getType()) {
             case 'Create':
-              createdBoxes['' + id] = $('#' + id).clone().wrap('<div></div>').parent().html() || '';
+              createdBoxes['' + id] = {
+                html: $('#' + id).clone().wrap('<div></div>').parent().html() || '',
+                pageNum: command.getPageNum()
+              };
               break;
             case 'Modify':
               if (createdBoxes['' + id] == null) {
@@ -1041,18 +1080,6 @@
           }
           return _results;
         })(),
-        created: (function() {
-          var _results;
-          _results = [];
-          for (boxid in createdBoxes) {
-            value = createdBoxes[boxid];
-            _results.push({
-              id: boxid,
-              html: value
-            });
-          }
-          return _results;
-        })(),
         removed: (function() {
           var _results;
           _results = [];
@@ -1064,8 +1091,16 @@
             });
           }
           return _results;
-        })()
+        })(),
+        created: [[], []]
       };
+      for (boxid in createdBoxes) {
+        value = createdBoxes[boxid];
+        result.created[value.pageNum].push({
+          id: boxid,
+          html: value.html
+        });
+      }
       shaObj = new jsSHA(JSON.stringify(result), "TEXT");
       hunkId = shaObj.getHMAC("", "TEXT", "SHA-256", "HEX");
       result.etag = hunkId;
@@ -1620,14 +1655,14 @@
     };
 
     /*
-    Returns a JSON string containing a description of
+    Returns a JSON object containing a description of
     all the boxes currently existing in this container.
     */
 
 
     BoxesContainer.prototype.getAllHunks = function() {
-      var box, boxId, result;
-      result = (function() {
+      var box, boxId;
+      return (function() {
         var _ref, _results;
         _ref = this.boxes;
         _results = [];
@@ -1640,7 +1675,6 @@
         }
         return _results;
       }).call(this);
-      return JSON.stringify(result);
     };
 
     return BoxesContainer;
@@ -2365,44 +2399,6 @@
         }
       }).on('boxSelected', function(event, box) {
         return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
-      }).on('fontSettings', function(event, fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign, listStyleType) {
-        if (fontWeight !== "bold") {
-          _this.fontPanel.element.find(".wbtn").removeClass(' .ppedit-btn-enabled active');
-        } else {
-          _this.fontPanel.element.find(".wbtn").addClass(' .ppedit-btn-enabled active');
-        }
-        if (textDecor !== "underline solid rgb(0, 0, 0)") {
-          _this.fontPanel.element.find(".ubtn").removeClass(' .ppedit-btn-enabled active');
-        } else {
-          _this.fontPanel.element.find(".ubtn").addClass(" .ppedit-btn-enabled active");
-        }
-        if (fontStyle !== "italic") {
-          _this.fontPanel.element.find(".ibtn").removeClass(" .ppedit-btn-enabled active");
-        } else {
-          _this.fontPanel.element.find(".ibtn").addClass(" .ppedit-btn-enabled active");
-        }
-        if (textAlign === "left") {
-          _this.fontPanel.element.find(".centerAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".rightAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".leftAlignBtn").addClass("active");
-        } else if (textAlign === "center") {
-          _this.fontPanel.element.find(".rightAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".leftAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".centerAlignBtn").addClass("active");
-        } else {
-          _this.fontPanel.element.find(".centerAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".leftAlignBtn").removeClass("active");
-          _this.fontPanel.element.find(".rightAlignBtn").addClass("active");
-        }
-        if (listStyleType === "decimal") {
-          _this.fontPanel.element.find(".bulletPointBtn").removeClass("active");
-          return _this.fontPanel.element.find(".orderedPointBtn").addClass("active");
-        } else if (listStyleType === "square" || listStyleType === "disc" || listStyleType === "circle") {
-          _this.fontPanel.element.find(".orderedPointBtn").removeClass("active");
-          return _this.fontPanel.element.find(".bulletPointBtn").addClass("active");
-        } else if (listStyleType === "none") {
-          return listStyleType = "none";
-        }
       });
       this.area1.bindEvents();
       this.area2.bindEvents();
@@ -2418,10 +2414,16 @@
     
     @param [String] jsonBoxes the JSON-formatted string containing
     the boxes information, this parameter look like the following :
-    {
-      "box-id-1":'<div class="ppedit-box">box-id-1 contents</div>',
-      "box-id-2":'<div class="ppedit-box">box-id-2 contents</div>'
-    }
+    [
+      {
+        "box-id-1":'<div class="ppedit-box">box-id-1 contents in page 1</div>',
+        "box-id-2":'<div class="ppedit-box">box-id-2 contents in page 1</div>'
+      },
+      {
+        "box-id-3":'<div class="ppedit-box">box-id-1 contents in page 2</div>',
+        "box-id-4":'<div class="ppedit-box">box-id-2 contents in page 2</div>'
+      }
+    ]
     */
 
 
@@ -2429,6 +2431,16 @@
       var command;
       command = this.cmdFactory.createLoadBoxesCommand(this, jsonBoxes);
       return command.execute();
+    };
+
+    /*
+    Returns a JSON string containing a description of
+    all the boxes currently existing in the editor.
+    */
+
+
+    PPEditor.prototype.getAllHunks = function() {
+      return JSON.stringify([this.area1.boxesContainer.getAllHunks(), this.area2.boxesContainer.getAllHunks()]);
     };
 
     return PPEditor;

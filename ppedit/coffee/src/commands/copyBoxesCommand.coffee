@@ -42,3 +42,6 @@ class CopyBoxesCommand extends Command
 
   getType: ->
     return 'Create'
+
+  getPageNum: ->
+    return if @editPage then 0 else 1

@@ -295,40 +295,6 @@ class PPEditor extends Graphic
       .on 'boxSelected', (event, box) =>
         @fontPanel.setSettingsFromStyle box.element.get(0).style
 
-      .on 'fontSettings', (event, fontValue, sizeValue, fontWeight, textDecor, fontStyle, textAlign, listStyleType) =>
-        if fontWeight != "bold"
-          @fontPanel.element.find(".wbtn").removeClass(' .ppedit-btn-enabled active')
-        else
-          @fontPanel.element.find(".wbtn").addClass(' .ppedit-btn-enabled active')
-        if textDecor != "underline solid rgb(0, 0, 0)"
-          @fontPanel.element.find(".ubtn").removeClass(' .ppedit-btn-enabled active')
-        else
-          @fontPanel.element.find(".ubtn").addClass(" .ppedit-btn-enabled active")
-        if fontStyle != "italic"
-          @fontPanel.element.find(".ibtn").removeClass(" .ppedit-btn-enabled active")
-        else
-          @fontPanel.element.find(".ibtn").addClass(" .ppedit-btn-enabled active")
-        if textAlign == "left"
-          @fontPanel.element.find(".centerAlignBtn").removeClass("active")
-          @fontPanel.element.find(".rightAlignBtn").removeClass("active")
-          @fontPanel.element.find(".leftAlignBtn").addClass("active")
-        else if textAlign == "center"
-          @fontPanel.element.find(".rightAlignBtn").removeClass("active")
-          @fontPanel.element.find(".leftAlignBtn").removeClass("active")
-          @fontPanel.element.find(".centerAlignBtn").addClass("active")
-        else
-          @fontPanel.element.find(".centerAlignBtn").removeClass("active")
-          @fontPanel.element.find(".leftAlignBtn").removeClass("active")
-          @fontPanel.element.find(".rightAlignBtn").addClass("active")
-        if listStyleType == "decimal"
-          @fontPanel.element.find(".bulletPointBtn").removeClass("active")
-          @fontPanel.element.find(".orderedPointBtn").addClass("active")
-        else if listStyleType == "square" || listStyleType == "disc" || listStyleType == "circle"
-          @fontPanel.element.find(".orderedPointBtn").removeClass("active")
-          @fontPanel.element.find(".bulletPointBtn").addClass("active")      
-        else if listStyleType == "none"
-          listStyleType = "none"
-
     @area1.bindEvents()
     @area2.bindEvents()
     @panel1.bindEvents()
@@ -342,11 +308,24 @@ class PPEditor extends Graphic
 
   @param [String] jsonBoxes the JSON-formatted string containing
   the boxes information, this parameter look like the following :
-  {
-    "box-id-1":'<div class="ppedit-box">box-id-1 contents</div>',
-    "box-id-2":'<div class="ppedit-box">box-id-2 contents</div>'
-  }
+  [
+    {
+      "box-id-1":'<div class="ppedit-box">box-id-1 contents in page 1</div>',
+      "box-id-2":'<div class="ppedit-box">box-id-2 contents in page 1</div>'
+    },
+    {
+      "box-id-3":'<div class="ppedit-box">box-id-1 contents in page 2</div>',
+      "box-id-4":'<div class="ppedit-box">box-id-2 contents in page 2</div>'
+    }
+  ]
   ###
   load: (jsonBoxes) ->
     command = @cmdFactory.createLoadBoxesCommand this, jsonBoxes
     command.execute()
+
+  ###
+  Returns a JSON string containing a description of
+  all the boxes currently existing in the editor.
+  ###
+  getAllHunks: ->
+    return JSON.stringify [@area1.boxesContainer.getAllHunks(), @area2.boxesContainer.getAllHunks()]

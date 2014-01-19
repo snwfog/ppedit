@@ -169,9 +169,8 @@ class BoxesContainer extends Graphic
     }
 
   ###
-  Returns a JSON string containing a description of
+  Returns a JSON object containing a description of
   all the boxes currently existing in this container.
   ###
   getAllHunks: ->
-    result = ({id:boxId, html:box.element.wrap("<div></div>").parent().html()} for boxId, box of @boxes)
-    return JSON.stringify result
+    return ({id:boxId, html:box.element.wrap("<div></div>").parent().html()} for boxId, box of @boxes)

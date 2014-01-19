@@ -8,3 +8,5 @@ class Command
   execute: ->
 
   getType: ->
+
+  getPageNum: ->

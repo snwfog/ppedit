@@ -60,3 +60,6 @@ class CreateBoxesCommand extends Command
 
   getType: ->
     return 'Create'
+
+  getPageNum: ->
+    return if @editContainer then 0 else 1
