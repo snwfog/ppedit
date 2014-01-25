@@ -6,10 +6,10 @@
 #= require ChangeDepthCommand
 #= require ChangeBoxContentCommand
 #= require LoadBoxesCommand
+#= require ChangeBoxOpacityCommand
 
 ###
-This class is responsible for creating and providing commands based.
-
+This class is responsible for creating and providing commands on the fly.
 ###
 class CommandFactory
 
@@ -42,6 +42,9 @@ class CommandFactory
 
   createChangeTextColorCommand: (editor, editPage, boxesSelector, newColor) ->
     return new ChangeStyleCommand editor, editPage, boxesSelector, {'color': '#' + newColor}
+
+  createChangeOpacityCommand: (editor, editPage, boxId, prevVal, newVal) ->
+    return new ChangeBoxOpacityCommand editor, editPage, boxId, prevVal, newVal
 
   createMoveBoxCommand: (box, toPosition, fromPosition) ->
     return new MoveBoxCommand box, toPosition, fromPosition

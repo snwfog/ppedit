@@ -28,7 +28,7 @@ class PPEditor extends Graphic
 
   buildElement: ->
     @element = $('
-      <div class="container">
+      <div class="container" tabindex="0">
         <div class="row"></div>
       </div>
     ')
@@ -97,9 +97,11 @@ class PPEditor extends Graphic
 
     @element
       .on 'requestUndo', (event) =>
+        console.log 'requestUndo'
         @commandManager.undo()
 
       .on 'requestRedo', (event) =>
+        console.log 'requestRedo'
         @commandManager.redo()
 
       .on 'requestDelete', (event) =>
@@ -170,11 +172,17 @@ class PPEditor extends Graphic
       .on 'onRowDeleteBtnClick', (event, editContainer, boxId) =>
         @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, editContainer, @root.find('#' + boxId))
 
-      .on 'onRowSliderValChanged', (event, editContainer, boxId, opacityVal) =>
+     .on 'onRowSliderValChanged', (event, editContainer, boxId, opacityVal) =>
+       if editContainer
+         @area1.boxesContainer.changeBoxOpacity(boxId, opacityVal)
+       else
+         @area2.boxesContainer.changeBoxOpacity(boxId, opacityVal)
+
+      .on 'onRowSliderStopValChanged', (event, editContainer, boxId, prevVal, newVal) =>
         if editContainer
-          @area1.boxesContainer.changeBoxOpacity(boxId, opacityVal)
+          @commandManager.pushCommand @cmdFactory.createChangeOpacityCommand(this, true, boxId, prevVal, newVal)
         else
-          @area2.boxesContainer.changeBoxOpacity(boxId, opacityVal)
+          @commandManager.pushCommand @cmdFactory.createChangeOpacityCommand(this, false, boxId, prevVal, newVal)
 
       .on 'addBoxRequested', (event, editContainer, boxCssOptions) =>
         @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, editContainer, [boxCssOptions])

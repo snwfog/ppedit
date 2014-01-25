@@ -5,6 +5,7 @@ Graphic containing the settings to apply to boxes.
 ###
 class Panel extends Graphic
   constructor: (@root) ->
+    @prevOpacityVal = undefined
     super @root
 
   buildElement: ->
@@ -84,9 +85,16 @@ class Panel extends Graphic
           step: 1
           value: 100
         )
+      .on 'slideStart', (event) =>
+        @prevOpacityVal = $(event.target).val() or 100
       .on 'slide', (event) =>
         opacityVal = $(event.target).val()
         @root.trigger 'onRowSliderValChanged', [editContainer, boxid, parseInt(opacityVal)/100]
+      .on 'slideStop', (event) =>
+        opacityStopVal = $(event.target).val()
+        if @prevOpacityVal != opacityStopVal
+          @root.trigger 'onRowSliderStopValChanged', [editContainer, boxid, parseInt(@prevOpacityVal)/100, parseInt(opacityStopVal)/100]
+        @prevOpacityVal = undefined
 
     newRow.find(".deleteElementBtn")
       .on 'click', (event) =>
