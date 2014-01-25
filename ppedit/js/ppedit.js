@@ -1328,10 +1328,11 @@
     ChangeBoxOpacityCommand.prototype.changeOpacityToVal = function(value) {
       if (this.editPage) {
         this.editor.area1.boxesContainer.changeBoxOpacity(this.boxId, value);
-        return this.editor.panel1.element.find("tr[ppedit-box-id=" + this.boxId + "]").find('.ppedit-slider').slider('setValue', value * 100);
+        this.editor.panel1.element.find("tr[ppedit-box-id=" + this.boxId + "]").find('.ppedit-slider').slider('setValue', parseInt(value * 100));
+        return console.log(parseInt(value * 100));
       } else {
         this.editor.area2.boxesContainer.changeBoxOpacity(this.boxId, value);
-        return this.editor.panel2.element.find("tr[ppedit-box-id=" + this.boxId + "]").find('.ppedit-slider').slider('setValue', value * 100);
+        return this.editor.panel2.element.find("tr[ppedit-box-id=" + this.boxId + "]").find('.ppedit-slider').slider('setValue', parseInt(value * 100));
       }
     };
 
