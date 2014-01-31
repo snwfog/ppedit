@@ -66,7 +66,7 @@ class PPEditor extends Graphic
 
     @panel1 = new Panel row
     @panel2 = new Panel row
-    @titlePanel = new TitlePanel row
+    @mainPanel = new MainPanel @element
     @fontPanel = new FontPanel row
 
     @area1.buildElement()
@@ -74,7 +74,7 @@ class PPEditor extends Graphic
 
     @panel1.buildElement()
     @panel2.buildElement()
-    @titlePanel.buildElement()
+    @mainPanel.buildElement()
     @fontPanel.buildElement()
 
     @editContainer1.append @area1.element
@@ -88,7 +88,7 @@ class PPEditor extends Graphic
     @superPanel.append @panelContainer2
 
     row.append @superContainer
-    row.append @titlePanel.element
+    row.append @mainPanel.element
     row.append @fontPanel.element
     row.append @superPanel
 
@@ -309,6 +309,7 @@ class PPEditor extends Graphic
     @panel2.bindEvents()
     @fontPanel.bindEvents()
     @controller.bindEvents()
+    @mainPanel.bindEvents()
 
   ###
   Populates the editor with the boxes
