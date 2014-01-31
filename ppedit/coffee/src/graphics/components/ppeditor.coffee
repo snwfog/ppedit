@@ -162,12 +162,6 @@ class PPEditor extends Graphic
       .on 'panelClickGridBtnClick', (event) =>
         @area1.grid.toggleGrid()
         @area2.grid.toggleGrid()
-    
-      .on 'panelClickClearAllBtnClick', (event, editContainer) =>
-        if editContainer
-          @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, editContainer, @area1.boxesContainer.getAllBoxes())
-        else
-          @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, editContainer, @area2.boxesContainer.getAllBoxes())
 
       .on 'onRowDeleteBtnClick', (event, editContainer, boxId) =>
         @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, editContainer, @root.find('#' + boxId))

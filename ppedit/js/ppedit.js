@@ -1975,8 +1975,6 @@
                       \
                       <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> \
 \
-                      <button class="btn btn-warning btn-sm clearAllElementBtn" type="button" style="width: 130px;"><span class="glyphicon glyphicon-trash"></span> Clear All</button>\
-\
                       <table class="table table-hover dataPanel">\
                           <thead>\
                               <tr>\
@@ -2005,9 +2003,6 @@
       }
       this.element.find(".addElementBtn").click(function() {
         return _this.root.trigger('panelClickAddBtnClick', [editContainer]);
-      });
-      this.element.find(".clearAllElementBtn").click(function() {
-        return _this.root.trigger('panelClickClearAllBtnClick', [editContainer]);
       });
       this.element.find('.moveElementUpBtn').click(function() {
         return _this.root.trigger('moveElementUpBtnClick', [editContainer]);
@@ -2292,12 +2287,6 @@
       }).on('panelClickGridBtnClick', function(event) {
         _this.area1.grid.toggleGrid();
         return _this.area2.grid.toggleGrid();
-      }).on('panelClickClearAllBtnClick', function(event, editContainer) {
-        if (editContainer) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, editContainer, _this.area1.boxesContainer.getAllBoxes()));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, editContainer, _this.area2.boxesContainer.getAllBoxes()));
-        }
       }).on('onRowDeleteBtnClick', function(event, editContainer, boxId) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, editContainer, _this.root.find('#' + boxId)));
       }).on('onRowSliderValChanged', function(event, editContainer, boxId, opacityVal) {

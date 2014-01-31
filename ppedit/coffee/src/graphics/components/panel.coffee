@@ -22,8 +22,6 @@ class Panel extends Graphic
                       
                       <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> 
 
-                      <button class="btn btn-warning btn-sm clearAllElementBtn" type="button" style="width: 130px;"><span class="glyphicon glyphicon-trash"></span> Clear All</button>
-
                       <table class="table table-hover dataPanel">
                           <thead>
                               <tr>
@@ -48,9 +46,6 @@ class Panel extends Graphic
       editContainer = true
     @element.find(".addElementBtn").click =>
       @root.trigger 'panelClickAddBtnClick', [editContainer]
-
-    @element.find(".clearAllElementBtn").click =>
-      @root.trigger 'panelClickClearAllBtnClick', [editContainer]
 
     @element.find('.moveElementUpBtn').click =>
       @root.trigger 'moveElementUpBtnClick', [editContainer]
