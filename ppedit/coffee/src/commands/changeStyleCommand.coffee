@@ -3,23 +3,18 @@
 
 class ChangeStyleCommand extends Command
 
-  constructor: (@editor, editPage, boxesSelector, @newCssOptions) ->
+  constructor: (@editor, @boxesSelector, @newCssOptions) ->
     super()
-    boxesSelector.each (index, item) =>
-      @boxIds.push item.id
-    @boxesToCopy = boxesSelector.clone()
-    if editPage
-      @boxes = @editor.area1.boxesContainer.getBoxesFromSelector boxesSelector
-    else
-      @boxes = @editor.area2.boxesContainer.getBoxesFromSelector boxesSelector
+    @boxesToCopy = @boxesSelector.clone()
 
   execute: ->
-    box.element.css(@newCssOptions) for id, box of @boxes
+    @boxesSelector.each (index, item) =>
+      $(item).css(@newCssOptions)
 
   undo: ->
     @boxesToCopy.each (index, item) =>
       prevCssOptions = CSSJSON.toJSON(@boxesToCopy.filter('#' + item.id).attr('style')).attributes
-      @boxes[item.id].element.css prevCssOptions
+      @boxesSelector.filter('#' + item.id).css prevCssOptions
 
   getType: ->
     return 'Modify'

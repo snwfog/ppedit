@@ -22,8 +22,6 @@ class Panel extends Graphic
                       
                       <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> 
 
-                      <button class="btn btn-warning btn-sm clearAllElementBtn" type="button" style="width: 130px;"><span class="glyphicon glyphicon-trash"></span> Clear All</button>
-
                       <table class="table table-hover dataPanel">
                           <thead>
                               <tr>
@@ -43,32 +41,24 @@ class Panel extends Graphic
             </div>')
 
   bindEvents: ->
-    editContainer = false
-    if @element.parent().hasClass('panelContainer1')
-      editContainer = true
-    @element.find(".addElementBtn").click =>
-      @root.trigger 'panelClickAddBtnClick', [editContainer]
 
-    @element.find(".clearAllElementBtn").click =>
-      @root.trigger 'panelClickClearAllBtnClick', [editContainer]
+    @element.find(".addElementBtn").click =>
+      @element.trigger 'panelClickAddBtnClick'
 
     @element.find('.moveElementUpBtn').click =>
-      @root.trigger 'moveElementUpBtnClick', [editContainer]
+      @element.trigger 'moveElementUpBtnClick'
 
     @element.find('.moveElementDownBtn').click =>
-      @root.trigger 'moveElementDownBtnClick', [editContainer]
+      @element.trigger 'moveElementDownBtnClick'
 
   ###
   Adds a row to be associated with the passed box id.
   ### 
   addBoxRow: (boxid, index) ->
-    editContainer = false
-    if @element.parent().hasClass('panelContainer1')
-      editContainer = true
     newRow = $("
             <tr class='ppedit-panel-row'>
                 <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>
-                <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>
+                <td><p class='ppedit-rowName'></p>
                 <td><div class=\"ppedit-slider\"></div></td>
             </tr>")
     .attr('ppedit-box-id', boxid)
@@ -89,16 +79,16 @@ class Panel extends Graphic
         @prevOpacityVal = $(event.target).val() or 100
       .on 'slide', (event) =>
         opacityVal = $(event.target).val()
-        @root.trigger 'onRowSliderValChanged', [editContainer, boxid, parseInt(opacityVal)/100]
+        $(event.target).trigger 'onRowSliderValChanged', [boxid, parseInt(opacityVal)/100]
       .on 'slideStop', (event) =>
         opacityStopVal = $(event.target).val()
         if @prevOpacityVal != opacityStopVal
-          @root.trigger 'onRowSliderStopValChanged', [editContainer, boxid, parseInt(@prevOpacityVal)/100, parseInt(opacityStopVal)/100]
+          $(event.target).trigger 'onRowSliderStopValChanged', [boxid, parseInt(@prevOpacityVal)/100, parseInt(opacityStopVal)/100]
         @prevOpacityVal = undefined
 
     newRow.find(".deleteElementBtn")
       .on 'click', (event) =>
-        @root.trigger 'onRowDeleteBtnClick', [editContainer, boxid]
+        $(event.target).trigger 'onRowDeleteBtnClick', [boxid]
 
   ###
   Removes the row associated with the passed box id.
@@ -119,6 +109,11 @@ class Panel extends Graphic
   getRowAtIndex: (index) ->
     @element.find(".ppedit-panel-row").eq(index)
 
+  ###
+  Sets the name of the row.
+  ###
+  setRowName: (boxId, name) ->
+    @getRowWithBoxId(boxId).find('ppedit-rowName').val(name)
 
   ###
   Returns a selector matching with all rows.

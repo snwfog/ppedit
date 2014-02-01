@@ -13,53 +13,37 @@ class CreateBoxesCommand extends Command
   for each box to create and add it to the list of current boxes.
   If no optionsList is passed, only one box is created with the default options.
   ###
-  constructor: (@editor, @editContainer, @optionsList) ->
+  constructor: (@editor, @pageNum, @optionsList) ->
     super()
     @boxes = []
 
   execute: ->
     if @optionsList?
       if @boxes.length == 0
-        if @editContainer == true
-          @boxes.push new Box @editor.area1.boxesContainer.element, options for options in @optionsList
-        else
-          @boxes.push new Box @editor.area2.boxesContainer.element, options for options in @optionsList
+        @boxes.push new Box @editor.areas[@pageNum].boxesContainer.element, options for options in @optionsList
       @_addBox box for box in @boxes
     else
-      if @editContainer == true
-        @boxes.push new Box @editor.area1.boxesContainer.element if @boxes.length == 0
-      else
-        @boxes.push new Box @editor.area2.boxesContainer.element if @boxes.length == 0
+      @boxes.push new Box @editor.areas[@pageNum].boxesContainer.element if @boxes.length == 0
       @_addBox @boxes[0]
 
   undo: ->
     for box in @boxes
       if @editContainer == true
-        @editor.area1.boxesContainer.removeBoxes [box.element.attr('id')]
-        @editor.panel1.removeBoxRow [box.element.attr('id')]
-      else
-        @editor.area2.boxesContainer.removeBoxes [box.element.attr('id')]
-        @editor.panel2.removeBoxRow [box.element.attr('id')]
-
+        @editor.areas[@pageNum].boxesContainer.removeBoxes [box.element.attr('id')]
+        @editor.panels[@pageNum].removeBoxRow [box.element.attr('id')]
 
   ###
   Adds the passed box to the boxcontainer and
   create a corresponding row in the panel
   ###
   _addBox: (box) ->
-    if @editContainer == true
-      @editor.area1.boxesContainer.addBox box
-    else
-      @editor.area2.boxesContainer.addBox box
+    @editor.areas[@pageNum].boxesContainer.addBox box
     boxId = box.element.attr('id')
-    if @editContainer == true
-      @editor.panel1.addBoxRow boxId
-    else
-      @editor.panel2.addBoxRow boxId
+    @editor.panels[@pageNum].addBoxRow boxId
     @boxIds.push boxId if @boxIds.indexOf(boxId) == -1
 
   getType: ->
     return 'Create'
 
   getPageNum: ->
-    return if @editContainer then 0 else 1
+    return @pageNum

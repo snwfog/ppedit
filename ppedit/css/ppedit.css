@@ -28,14 +28,15 @@
     margin-right: auto;
 }
 
-.editContainer1
+.editContainer
 {
-    top: 20px;
-    left: 20px;
-    width: 980px;
-    height: 1386px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 20px;
+    margin-left: 20px;
+    width: inherit;
+    height: inherit;
     border-color: #909090;
-    position: absolute;
 }
 
 .editContainer2

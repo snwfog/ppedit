@@ -10,8 +10,8 @@ ppeditDescribe 'A test for issue CAP-116 : "Cannot Undo Box moved" bug.', ->
     box = $('.ppedit-box')
     moveBox box, {dx:0, dy:200}
 
-    $('.editContainer1 .ppedit-box-container').simulate "key-combo", {combo: "meta+z"} # if Mac
-    $('.editContainer1 .ppedit-box-container').simulate "key-combo", {combo: "ctrl+z"} # if Windows
+    $('.ppedit-box-container').eq(0).simulate "key-combo", {combo: "meta+z"} # if Mac
+    $('.ppedit-box-container').eq(0).simulate "key-combo", {combo: "ctrl+z"} # if Windows
 
     expect($('.ppedit-box')).toHaveLength 1
     expect(box.position()).toBeEqualToPosition

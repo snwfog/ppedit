@@ -24,7 +24,6 @@ class CommandManager
     if @undoStack.length > 0
       lastCommand = @undoStack.pop()
       lastCommand.undo()
-      console.log lastCommand
       @redoStack.push lastCommand
 
   ###

@@ -13,11 +13,12 @@ Graphic acting a the main container of the PPEditor.
 ###
 class PPEditor extends Graphic
 
+  @NUMBER_OF_PAGES: 2
+
   constructor: (@root) ->
     super @root
 
-    @clipboard1 = new Clipboard
-    @clipboard2 = new Clipboard
+    @clipboard = new Clipboard
     @commandManager = new CommandManager
     @cmdFactory = new CommandFactory
 
@@ -40,27 +41,13 @@ class PPEditor extends Graphic
       <div class="superContainer">
       </div>
     ')
-    @editContainer1 = $('
-      <div class="editContainer1">
-      </div>
-    ')
-    @editContainer2 = $('
-      <div class="editContainer2">
-      </div>
-    ')
+
     @superPanel = $('
       <div class="superPanel" style="clear:both;">
       </div>
     ')
-    @panelContainer1 = $('
-      <div class="panelContainer1" style="clear:both;">
-      </div>
-    ')
-    @panelContainer2 = $('
-      <div class="panelContainer2" style="clear:both;">
-      </div>
-    ')
 
+<<<<<<< HEAD
     @area1 = new EditArea row
     @area2 = new EditArea row
 
@@ -69,10 +56,18 @@ class PPEditor extends Graphic
     @titlePanel = new TitlePanel row
     @fontPanel1 = new FontPanel row
     @fontPanel2 = new FontPanel row
+=======
+    @areas = []
+    @panels = []
+    @mainPanel = new MainPanel @element
+    @fontPanel = new FontPanel row
+>>>>>>> 2a295dfecb4ec7a0ace2f50ff94030b8309df9e2
 
-    @area1.buildElement()
-    @area2.buildElement()
+    for i in [0..PPEditor.NUMBER_OF_PAGES-1]
+      @areas.push new EditArea row
+      @panels.push new Panel row
 
+<<<<<<< HEAD
     @panel1.buildElement()
     @panel2.buildElement()
     @titlePanel.buildElement()
@@ -85,58 +80,59 @@ class PPEditor extends Graphic
     @editContainer2.append @area2.element
     @superContainer.append @editContainer1
     @superContainer.append @editContainer2
+=======
+    for i in [0..PPEditor.NUMBER_OF_PAGES-1]
+      @areas[i].buildElement()
+      @panels[i].buildElement()
 
-    @panelContainer1.append @panel1.element
-    @panelContainer2.append @panel2.element
-    @superPanel.append @panelContainer1
-    @superPanel.append @panelContainer2
+    @mainPanel.buildElement()
+    @fontPanel.buildElement()
+>>>>>>> 2a295dfecb4ec7a0ace2f50ff94030b8309df9e2
+
+    for i in [0..PPEditor.NUMBER_OF_PAGES-1]
+      @superContainer.append $('<div class="editContainer"></div>').append @areas[i].element
+      @superPanel.append $('<div class="panelContainer" style="clear:both;"></div>').append @panels[i].element
 
     row.append @superContainer
+<<<<<<< HEAD
     row.append @titlePanel.element
+=======
+    row.append @mainPanel.element
+    row.append @fontPanel.element
+>>>>>>> 2a295dfecb4ec7a0ace2f50ff94030b8309df9e2
     row.append @superPanel
-
 
   bindEvents: ->
 
     @element
       .on 'requestUndo', (event) =>
-        console.log 'requestUndo'
         @commandManager.undo()
 
       .on 'requestRedo', (event) =>
-        console.log 'requestRedo'
         @commandManager.redo()
 
       .on 'requestDelete', (event) =>
-        if @area1.boxesContainer.getSelectedBoxes().length != 0
-          @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, true, @area1.boxesContainer.getSelectedBoxes())
-        if @area2.boxesContainer.getSelectedBoxes().length != 0
-          @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, false, @area2.boxesContainer.getSelectedBoxes())
+        for i in [0..PPEditor.NUMBER_OF_PAGES-1]
+          if @areas[i].boxesContainer.getSelectedBoxes().length != 0
+            @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, i, @areas[0].boxesContainer.getSelectedBoxes())
 
       .on 'requestCopy', (event) =>
-        if @area1.boxesContainer.getSelectedBoxes().length != 0
-          @clipboard1.pushItems @area1.boxesContainer.getSelectedBoxes()
-        if @area2.boxesContainer.getSelectedBoxes().length != 0
-          @clipboard2.pushItems @area2.boxesContainer.getSelectedBoxes()
+        for i in [0..PPEditor.NUMBER_OF_PAGES-1]
+          if @areas[i].boxesContainer.getSelectedBoxes().length != 0
+            @clipboard.pushItems
+              pageNum:i
+              boxes:@areas[i].boxesContainer.getSelectedBoxes()
+            break
 
       .on 'requestPaste', (event) =>
-        editPage = false
-        if @area1.boxesContainer.getSelectedBoxes().length != 0
-          editPage = true
-          items = @clipboard1.popItems()
-          if items.length != 0
-            @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, editPage, items)
-        if @area2.boxesContainer.getSelectedBoxes().length != 0
-          items = @clipboard2.popItems()
-          if items.length != 0
-            @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, editPage, items)
+        items = @clipboard.popItems()
+        if items.boxes? and items.boxes.length > 0
+          @commandManager.pushCommand @cmdFactory.createCopyBoxesCommand(this, items.pageNum, items.boxes)
 
       .on 'textColorChanged', (event, hex) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
+        boxSelected = @getSelectedBoxes()
         if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), hex)
-        else
-          @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), hex)
+          @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, @getPageNum(boxSelected), @areas[0].boxesContainer.getSelectedBoxes(), hex)
 
       .on 'graphicContentChanged', (event, params) =>
         @commandManager.pushCommand(@cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false)
@@ -145,163 +141,110 @@ class PPEditor extends Graphic
         @commandManager.pushCommand(@cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false) 
 
     @element.find('.row')
-      .on 'moveElementUpBtnClick', (event, editContainer) =>
-        if editContainer
-          boxes = @area1.boxesContainer.getSelectedBoxes()
-        else
-          boxes = @area2.boxesContainer.getSelectedBoxes()
-        @commandManager.pushCommand @cmdFactory.createMoveUpCommand(this, editContainer, boxes) if boxes.length > 0
+      .on 'moveElementUpBtnClick', (event) =>
+        boxes = @getSelectedBoxes()
+        pageNum = @getPanelNum $(event.target)
+        @commandManager.pushCommand @cmdFactory.createMoveUpCommand(this, pageNum, boxes) if boxes.length > 0
 
-      .on 'moveElementDownBtnClick', (event, editContainer) =>
-        if editContainer
-          boxes = @area1.boxesContainer.getSelectedBoxes()
-        else
-          boxes = @area2.boxesContainer.getSelectedBoxes()
-        @commandManager.pushCommand @cmdFactory.createMoveDownCommand(this, editContainer, boxes) if boxes.length > 0
+      .on 'moveElementDownBtnClick', (event) =>
+        boxes = @getSelectedBoxes()
+        pageNum = @getPanelNum $(event.target)
+        @commandManager.pushCommand @cmdFactory.createMoveDownCommand(this, pageNum, boxes) if boxes.length > 0
 
-      .on 'panelClickAddBtnClick', (event, editContainer) =>
-        @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, editContainer)
+      .on 'panelClickAddBtnClick', (event) =>
+        pageNum = @getPanelNum $(event.target)
+        @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, pageNum)
 
       .on 'panelClickGridBtnClick', (event) =>
-        @area1.grid.toggleGrid()
-        @area2.grid.toggleGrid()
-    
-      .on 'panelClickClearAllBtnClick', (event, editContainer) =>
-        if editContainer
-          @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, editContainer, @area1.boxesContainer.getAllBoxes())
-        else
-          @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, editContainer, @area2.boxesContainer.getAllBoxes())
+        area.grid.toggleGrid() for area in @areas
 
-      .on 'onRowDeleteBtnClick', (event, editContainer, boxId) =>
-        @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, editContainer, @root.find('#' + boxId))
+      .on 'onRowDeleteBtnClick', (event, boxId) =>
+        pageNum = @getPanelNum $(event.target)
+        @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, pageNum, @root.find('#' + boxId))
 
-     .on 'onRowSliderValChanged', (event, editContainer, boxId, opacityVal) =>
-       if editContainer
-         @area1.boxesContainer.changeBoxOpacity(boxId, opacityVal)
-       else
-         @area2.boxesContainer.changeBoxOpacity(boxId, opacityVal)
+     .on 'onRowSliderValChanged', (event, boxId, opacityVal) =>
+       pageNum = @getPanelNum $(event.target)
+       @areas[pageNum].boxesContainer.changeBoxOpacity(boxId, opacityVal)
 
-      .on 'onRowSliderStopValChanged', (event, editContainer, boxId, prevVal, newVal) =>
-        if editContainer
-          @commandManager.pushCommand @cmdFactory.createChangeOpacityCommand(this, true, boxId, prevVal, newVal)
-        else
-          @commandManager.pushCommand @cmdFactory.createChangeOpacityCommand(this, false, boxId, prevVal, newVal)
+      .on 'onRowSliderStopValChanged', (event, boxId, prevVal, newVal) =>
+        pageNum = @getPanelNum $(event.target)
+        @commandManager.pushCommand @cmdFactory.createChangeOpacityCommand(this, pageNum, boxId, prevVal, newVal)
 
-      .on 'addBoxRequested', (event, editContainer, boxCssOptions) =>
-        @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, editContainer, [boxCssOptions])
+      .on 'addBoxRequested', (event, boxCssOptions) =>
+        pageNum = @getPageNum $(event.target)
+        @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, pageNum, [boxCssOptions])
 
       .on 'fontTypeChanged', (event, newFontType) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createChangeFontTypeCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), newFontType)
-        else
-          @commandManager.pushCommand @cmdFactory.createChangeFontTypeCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), newFontType)
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createChangeFontTypeCommand(this, boxesSelected, newFontType)
 
       .on 'fontSizeChanged', (event, newFontSize) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createChangeFontSizeCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), newFontSize)
-        else
-          @commandManager.pushCommand @cmdFactory.createChangeFontSizeCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), newFontSize)
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createChangeFontSizeCommand(this, boxesSelected, newFontSize)
 
       .on 'fontWeightBtnEnableClick', (event) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), true)
-        else
-          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), true)
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, boxesSelected, true)
 
       .on 'fontWeightBtnDisableClick', (event) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), false)
-        else
-          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), false)
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createChangeFontWeightCommand(this, boxesSelected, false)
 
       .on 'fontUnderlinedBtnEnableClick', (event) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), true)
-        else
-          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), true)
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, boxesSelected, true)
 
       .on 'fontUnderlinedBtnDisableClick', (event) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), false)
-        else
-          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), false)
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createChangeUnderlineFontCommand(this, boxesSelected, false)
 
       .on 'fontItalicBtnEnableClick', (event) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), true)
-        else
-          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), true)
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, boxesSelected, true)
 
       .on 'fontItalicBtnDisableClick', (event) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, true, @area1.boxesContainer.getSelectedBoxes(), false)
-        else
-          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, false, @area2.boxesContainer.getSelectedBoxes(), false)
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createChangeItalicFontCommand(this, boxesSelected, false)
 
       .on 'rightAlignment', (event) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createRightAlignmentCommand(this, true, @area1.boxesContainer.getSelectedBoxes())
-        else
-          @commandManager.pushCommand @cmdFactory.createRightAlignmentCommand(this, false, @area2.boxesContainer.getSelectedBoxes())
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createRightAlignmentCommand(this, boxesSelected)
 
       .on 'leftAlignment', (event) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createLeftAlignmentCommand(this, true, @area1.boxesContainer.getSelectedBoxes())
-        else
-          @commandManager.pushCommand @cmdFactory.createLeftAlignmentCommand(this, false, @area2.boxesContainer.getSelectedBoxes())
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createLeftAlignmentCommand(this, boxesSelected)
 
       .on 'centerAlignment', (event) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createCenterAlignmentCommand(this, true, @area1.boxesContainer.getSelectedBoxes())
-        else
-          @commandManager.pushCommand @cmdFactory.createCenterAlignmentCommand(this, false, @area2.boxesContainer.getSelectedBoxes())
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createCenterAlignmentCommand(this, boxesSelected)
 
       .on 'bulletPointBtnEnableClick', (event) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          selectedBoxes = @area1.boxesContainer.getSelectedBoxes()
-          boxes = @area1.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
-          box.addBulletPoint() for id, box of boxes
-        else
-          selectedBoxes = @area2.boxesContainer.getSelectedBoxes()
-          boxes = @area2.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
-          box.addBulletPoint() for id, box of boxes
+        boxesSelected = @getSelectedBoxes()
+        pageNum = @getPageNum(boxesSelected)
+        boxes = @areas[pageNum].boxesContainer.getBoxesFromSelector(boxesSelected.eq(0))
+        box.addBulletPoint() for id, box of boxes
 
       .on 'orderedPointBtnEnableClick', (event) =>
-        boxSelected = @area1.boxesContainer.getSelectedBoxes()
-        if boxSelected.length != 0
-          selectedBoxes = @area1.boxesContainer.getSelectedBoxes()
-          boxes = @area1.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
-          box.addOrderedPointList() for id, box of boxes
-        else
-          selectedBoxes = @area2.boxesContainer.getSelectedBoxes()
-          boxes = @area2.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0))
-          box.addOrderedPointList() for id, box of boxes
+        boxesSelected = @getSelectedBoxes()
+        pageNum = @getPageNum(boxesSelected)
+        boxes = @areas[pageNum].boxesContainer.getBoxesFromSelector(boxesSelected.eq(0))
+        box.addOrderedPointList() for id, box of boxes
 
-      .on 'unSelectBoxes', (event, editContainer) =>
-        if editContainer
-          allSelectedBoxes = @area2.boxesContainer.getSelectedBoxes()
-          if allSelectedBoxes.length !=0
-            @area2.boxesContainer.element.find('.ppedit-box')
-              .removeClass('ppedit-box-focus')
-              .removeClass('ppedit-box-selected')
-        else
-          allSelectedBoxes = @area1.boxesContainer.getSelectedBoxes()
-          if allSelectedBoxes.length !=0
-            @area1.boxesContainer.element.find('.ppedit-box')
-              .removeClass('ppedit-box-focus')
-              .removeClass('ppedit-box-selected')
+#      .on 'unSelectBoxes', (event) =>
+#        @element.find('.ppedit-box')
+#          .removeClass('ppedit-box-focus')
+#          .removeClass('ppedit-box-selected')
 
       .on 'boxSelected', (event, box) =>
         @fontPanel1.setSettingsFromStyle box.element.get(0).style
@@ -313,7 +256,26 @@ class PPEditor extends Graphic
     @panel2.bindEvents()
     @fontPanel1.bindEvents()
     @fontPanel2.bindEvents()
+
+    for i in [0..PPEditor.NUMBER_OF_PAGES-1]
+      @areas[i].bindEvents()
+      @panels[i].bindEvents()
+
+    @fontPanel.bindEvents()
     @controller.bindEvents()
+    @mainPanel.bindEvents()
+
+  ###
+  Returns a selector to the currently selected boxes
+  ###
+  getSelectedBoxes: ->
+    return @element.find '.ppedit-box:focus, .ppedit-box-selected, .ppedit-box-focus'
+
+  getPageNum:(boxSelector) ->
+    return boxSelector.parents('.editContainer').index()
+
+  getPanelNum:(panelElement) ->
+    return panelElement.parents('.panelContainer').index()
 
   ###
   Populates the editor with the boxes
@@ -341,4 +303,4 @@ class PPEditor extends Graphic
   all the boxes currently existing in the editor.
   ###
   getAllHunks: ->
-    return JSON.stringify [@area1.boxesContainer.getAllHunks(), @area2.boxesContainer.getAllHunks()]
+    return JSON.stringify (@area.boxesContainer.getAllHunks() for area in @areas)

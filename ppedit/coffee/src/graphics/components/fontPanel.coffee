@@ -72,9 +72,6 @@ class FontPanel extends Graphic
                <button class="snapBtn btn btn-default" type="button"><span class="glyphicon glyphicon-magnet"></button>
               </div>').addClass("FontPanel")
 
-
-
-
   bindEvents: ->
     @element.find("select.zoomUpDwnBtn").change (event) =>
       newFontType = $(event.target).find("option:selected").val()
@@ -120,13 +117,9 @@ class FontPanel extends Graphic
       @root.trigger 'centerAlignment'
 
     @element.find(".bulletPointBtn").click (event) =>
-      #btn = $(event.target).toggleClass('.ppedit-btn-enabled')
-      #@root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'bulletPointBtnEnableClick' else 'bulletPointBtnDisableClick')
       @root.trigger 'bulletPointBtnEnableClick'
 
     @element.find(".orderedPointBtn").click (event) =>
-      #btn = $(event.target).toggleClass('.ppedit-btn-enabled')
-      #@root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'bulletPointBtnEnableClick' else 'bulletPointBtnDisableClick')
       @root.trigger 'orderedPointBtnEnableClick'
 
     @element.find(".gridElementBtn").click =>
