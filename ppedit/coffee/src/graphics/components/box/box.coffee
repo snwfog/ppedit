@@ -151,7 +151,7 @@ class Box extends Graphic
   Deselects the box
   ###
   stopMoving: ->
-    @element.removeClass('ppedit-box-selected')
+    @element.removeClass('ppedit-box-selected')   
     if @prevPosition? && !Geometry.pointEqualToPoint(@currentPosition(), @prevPosition) 
       if $(document).find('.snapBtn').hasClass('snapBtn-selected')
         @snap()

@@ -5,7 +5,6 @@ class ChangeStyleCommand extends Command
 
   constructor: (@editor, @boxesSelector, @newCssOptions) ->
     super()
-    console.log @boxesSelector
     @boxesToCopy = @boxesSelector.clone()
 
   execute: ->

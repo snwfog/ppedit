@@ -63,8 +63,6 @@ class FontPanel extends Graphic
                   <input type="radio" id="option2"><span class="glyphicon glyphicon-list-alt">
                 </label>
                </div>
-               <button class="gridElementBtn btn btn-default" type="button"><span class="glyphicon glyphicon-th-large"></button>
-               <button class="snapBtn btn btn-default" type="button"><span class="glyphicon glyphicon-magnet"></button>
               </div>')
 
 

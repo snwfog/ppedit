@@ -19,7 +19,6 @@ ppeditDescribe 'A test for issue CAP-132 : "Add a load content API on PPedit"', 
     ]
 
   it "can load 1 box", ->
-    console.log JSON.stringify boxObjects
     expect($('.ppedit-box')).toHaveLength 0
 
     # loading the box

@@ -49,7 +49,7 @@ class PPEditor extends Graphic
 
     @areas = []
     @panels = []
-    @titlePanel = new TitlePanel row
+    @mainPanel = new MainPanel @element
     @fontPanel = new FontPanel row
 
     for i in [0..PPEditor.NUMBER_OF_PAGES-1]
@@ -60,7 +60,7 @@ class PPEditor extends Graphic
       @areas[i].buildElement()
       @panels[i].buildElement()
 
-    @titlePanel.buildElement()
+    @mainPanel.buildElement()
     @fontPanel.buildElement()
 
     for i in [0..PPEditor.NUMBER_OF_PAGES-1]
@@ -68,7 +68,7 @@ class PPEditor extends Graphic
       @superPanel.append $('<div class="panelContainer" style="clear:both;"></div>').append @panels[i].element
 
     row.append @superContainer
-    row.append @titlePanel.element
+    row.append @mainPanel.element
     row.append @fontPanel.element
     row.append @superPanel
 
@@ -133,7 +133,6 @@ class PPEditor extends Graphic
         @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, pageNum, @root.find('#' + boxId))
 
      .on 'onRowSliderValChanged', (event, boxId, opacityVal) =>
-       console.log event
        pageNum = @getPanelNum $(event.target)
        @areas[pageNum].boxesContainer.changeBoxOpacity(boxId, opacityVal)
 
@@ -226,6 +225,7 @@ class PPEditor extends Graphic
 
     @fontPanel.bindEvents()
     @controller.bindEvents()
+    @mainPanel.bindEvents()
 
   ###
   Returns a selector to the currently selected boxes
@@ -234,11 +234,9 @@ class PPEditor extends Graphic
     return @element.find '.ppedit-box:focus, .ppedit-box-selected, .ppedit-box-focus'
 
   getPageNum:(boxSelector) ->
-    console.log ("page index: " + boxSelector.parents('.editContainer').index())
     return boxSelector.parents('.editContainer').index()
 
   getPanelNum:(panelElement) ->
-    console.log ("panel index: " + panelElement.parents('.panelContainer').index())
     return panelElement.parents('.panelContainer').index()
 
   ###
