@@ -2168,13 +2168,11 @@
       this.panel1 = new Panel(row);
       this.panel2 = new Panel(row);
       this.mainPanel = new MainPanel(this.element);
-      this.fontPanel = new FontPanel(row);
       this.area1.buildElement();
       this.area2.buildElement();
       this.panel1.buildElement();
       this.panel2.buildElement();
       this.mainPanel.buildElement();
-      this.fontPanel.buildElement();
       this.editContainer1.append(this.area1.element);
       this.editContainer2.append(this.area2.element);
       this.superContainer.append(this.editContainer1);
@@ -2185,7 +2183,6 @@
       this.superPanel.append(this.panelContainer2);
       row.append(this.superContainer);
       row.append(this.mainPanel.element);
-      row.append(this.fontPanel.element);
       return row.append(this.superPanel);
     };
 
@@ -2439,7 +2436,6 @@
       this.area2.bindEvents();
       this.panel1.bindEvents();
       this.panel2.bindEvents();
-      this.fontPanel.bindEvents();
       this.controller.bindEvents();
       return this.mainPanel.bindEvents();
     };
