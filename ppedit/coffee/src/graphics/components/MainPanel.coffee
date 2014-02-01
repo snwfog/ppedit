@@ -6,11 +6,11 @@ class MainPanel extends Graphic
 
   buildElement: ->
     @element = $('
-            <div class="col-xs-5">
-              <button class="undoBtn btn btn-default" type="button"><span class="glyphicon glyphicon-arrow-left"></button>
-              <button class="redoBtn btn btn-default" type="button"><span class="glyphicon glyphicon-arrow-right"></button>
-              <button class="gridElementBtn btn btn-default" type="button"><span class="glyphicon glyphicon-th-large"></button>
-              <button class="snapBtn btn btn-default" type="button"><span class="glyphicon glyphicon-magnet"></button>
+            <div class="left-sidebar">
+              <button class="undoBtn btn btn-default icon-set" type="button"></button>
+              <button class="redoBtn btn btn-default icon-set" type="button"></button>
+              <button class="gridElementBtn btn btn-default icon-set" type="button"></button>
+              <button class="snapBtn btn btn-default icon-set" type="button"></button>
             </div>')
 
   bindEvents: ->

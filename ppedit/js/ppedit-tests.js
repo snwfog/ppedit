@@ -609,7 +609,6 @@
       }
     ];
     it("can load 1 box", function() {
-      console.log(JSON.stringify(boxObjects));
       expect($('.ppedit-box')).toHaveLength(0);
       $('.editor').ppedit('load', {
         hunks: JSON.stringify(singleBoxObject)

@@ -1,0 +1,127 @@
+.ppedit-container
+{
+    position:relative;
+    width:980px;
+    height:1386px;
+    border-style:solid;
+    border-width:2px;
+    border-color:#909090;
+    
+    padding: 0px 0px 0px 0px;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.superContainer
+{
+    float: left;
+    position:relative;
+    width:1040px;
+    height:1426px;
+    border-style:solid;
+    border-width:2px;
+    border-color:black;
+    overflow: scroll;
+    padding: 0px 0px 0px 0px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.editContainer
+{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 20px;
+    margin-left: 20px;
+    width: inherit;
+    height: inherit;
+    border-color: #909090;
+}
+
+.editContainer2
+{
+    top: 1446px;
+    left: 20px;
+    width: 980px;
+    height: 1386px;
+    border-color: #909090;
+    position: absolute;
+}
+.ppedit-box-container
+{
+    position:absolute;
+    width:inherit;
+    height:inherit;
+
+    padding: 0px 0px 0px 0px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.ppedit-box
+{
+    position:absolute;
+    
+    border-style:solid;
+    border-width:1px;
+    border-color:orange; 
+    
+    resize:both;
+    overflow:auto;
+
+    background-color: transparent;
+    /*background-color: rgba(255, 255, 255, 1);*/
+}
+
+.ppedit-box-selected
+{
+    border-style:dashed;
+}
+
+.ppedit-box-focus,
+.ppedit-box:focus
+{
+    border-color:blue;
+    border-style:dashed;
+    background-color: rgba(200, 200, 200, 0.1);
+}
+
+.ppedit-canvas
+{
+    position: absolute;
+    z-index: -500;
+}
+
+.ppedit-slider
+{
+    width:100px;
+}
+
+.ppedit-grid
+{
+    position: absolute;
+    width:inherit;
+    height:inherit;
+    opacity:0.5;
+    z-index: -499;
+}
+
+.ppedit-vDotLine
+{
+    border-right: 1px dotted #0099CC; 
+    height: inherit;
+    position: absolute; 
+    left: 50px; 
+    top: 0px;
+}
+
+.ppedit-hDotLine
+{
+    border-bottom: 1px dotted #0099CC;
+    width:inherit;
+    position: absolute; 
+    left: 0px; 
+    top: 50px;
+}

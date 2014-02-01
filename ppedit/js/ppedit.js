@@ -1061,7 +1061,6 @@
       this.boxesSelector = boxesSelector;
       this.newCssOptions = newCssOptions;
       ChangeStyleCommand.__super__.constructor.call(this);
-      console.log(this.boxesSelector);
       this.boxesToCopy = this.boxesSelector.clone();
     }
 
@@ -1791,8 +1790,6 @@
       }).keydown(function(event) {
         return _this.element.find('*').trigger('containerKeyDown', [event]);
       }).on('canvasRectSelect', function(event, rect) {
-        console.log('canvasRectSelect');
-        console.log(rect);
         return _this.boxesContainer.selectBoxesInRect(rect);
       });
       this.boxesContainer.bindEvents();
@@ -2030,21 +2027,6 @@
       this.areas = [];
       this.panels = [];
       this.mainPanel = new MainPanel(this.element);
-<<<<<<< HEAD
-      this.area1.buildElement();
-      this.area2.buildElement();
-      this.panel1.buildElement();
-      this.panel2.buildElement();
-      this.mainPanel.buildElement();
-      this.editContainer1.append(this.area1.element);
-      this.editContainer2.append(this.area2.element);
-      this.superContainer.append(this.editContainer1);
-      this.superContainer.append(this.editContainer2);
-      this.panelContainer1.append(this.panel1.element);
-      this.panelContainer2.append(this.panel2.element);
-      this.superPanel.append(this.panelContainer1);
-      this.superPanel.append(this.panelContainer2);
-=======
       this.fontPanel = new FontPanel(row);
       for (i = _i = 0, _ref = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         this.areas.push(new EditArea(row));
@@ -2060,9 +2042,9 @@
         this.superContainer.append($('<div class="editContainer"></div>').append(this.areas[i].element));
         this.superPanel.append($('<div class="panelContainer" style="clear:both;"></div>').append(this.panels[i].element));
       }
->>>>>>> 2a295dfecb4ec7a0ace2f50ff94030b8309df9e2
       row.append(this.superContainer);
       row.append(this.mainPanel.element);
+      row.append(this.fontPanel.element);
       return row.append(this.superPanel);
     };
 
@@ -2149,7 +2131,6 @@
         return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, pageNum, _this.root.find('#' + boxId)));
       }).on('onRowSliderValChanged', function(event, boxId, opacityVal) {
         var pageNum;
-        console.log(event);
         pageNum = _this.getPanelNum($(event.target));
         return _this.areas[pageNum].boxesContainer.changeBoxOpacity(boxId, opacityVal);
       }).on('onRowSliderStopValChanged', function(event, boxId, prevVal, newVal) {
@@ -2251,18 +2232,11 @@
       }).on('boxSelected', function(event, box) {
         return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
       });
-<<<<<<< HEAD
-      this.area1.bindEvents();
-      this.area2.bindEvents();
-      this.panel1.bindEvents();
-      this.panel2.bindEvents();
-=======
       for (i = _i = 0, _ref = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         this.areas[i].bindEvents();
         this.panels[i].bindEvents();
       }
       this.fontPanel.bindEvents();
->>>>>>> 2a295dfecb4ec7a0ace2f50ff94030b8309df9e2
       this.controller.bindEvents();
       return this.mainPanel.bindEvents();
     };
@@ -2277,12 +2251,10 @@
     };
 
     PPEditor.prototype.getPageNum = function(boxSelector) {
-      console.log("page index: " + boxSelector.parents('.editContainer').index());
       return boxSelector.parents('.editContainer').index();
     };
 
     PPEditor.prototype.getPanelNum = function(panelElement) {
-      console.log("panel index: " + panelElement.parents('.panelContainer').index());
       return panelElement.parents('.panelContainer').index();
     };
 
@@ -2332,6 +2304,55 @@
     };
 
     return PPEditor;
+
+  })(Graphic);
+
+  MainPanel = (function(_super) {
+    __extends(MainPanel, _super);
+
+    function MainPanel(root) {
+      this.root = root;
+      MainPanel.__super__.constructor.call(this, this.root);
+    }
+
+    MainPanel.prototype.buildElement = function() {
+      return this.element = $('\
+            <div class="left-sidebar">\
+              <button class="undoBtn btn btn-default icon-set" type="button"></button>\
+              <button class="redoBtn btn btn-default icon-set" type="button"></button>\
+              <button class="gridElementBtn btn btn-default icon-set" type="button"></button>\
+              <button class="snapBtn btn btn-default icon-set" type="button"></button>\
+            </div>');
+    };
+
+    MainPanel.prototype.bindEvents = function() {
+      var _this = this;
+      this.element.find('.snapBtn.btn.btn-default').click(function() {
+        if (!$(event.target).hasClass("snapBtn-selected")) {
+          return $(event.target).addClass("snapBtn-selected");
+        } else {
+          return $(event.target).removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find('.glyphicon.glyphicon-magnet').click(function() {
+        if (!$(event.target).parent().hasClass("snapBtn-selected")) {
+          return $(event.target).parent().addClass("snapBtn-selected");
+        } else {
+          return $(event.target).parent().removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find(".gridElementBtn").click(function() {
+        return _this.root.find('.row').trigger('panelClickGridBtnClick');
+      });
+      this.element.find(".undoBtn").click(function() {
+        return _this.root.find('.row').trigger('requestUndo');
+      });
+      return this.element.find(".redoBtn").click(function() {
+        return _this.root.find('.row').trigger('requestRedo');
+      });
+    };
+
+    return MainPanel;
 
   })(Graphic);
 
@@ -2504,55 +2525,6 @@
     };
 
     return FontPanel;
-
-  })(Graphic);
-
-  MainPanel = (function(_super) {
-    __extends(MainPanel, _super);
-
-    function MainPanel(root) {
-      this.root = root;
-      MainPanel.__super__.constructor.call(this, this.root);
-    }
-
-    MainPanel.prototype.buildElement = function() {
-      return this.element = $('\
-            <div class="col-xs-5">\
-              <button class="undoBtn btn btn-default" type="button"><span class="glyphicon glyphicon-arrow-left"></button>\
-              <button class="redoBtn btn btn-default" type="button"><span class="glyphicon glyphicon-arrow-right"></button>\
-              <button class="gridElementBtn btn btn-default" type="button"><span class="glyphicon glyphicon-th-large"></button>\
-              <button class="snapBtn btn btn-default" type="button"><span class="glyphicon glyphicon-magnet"></button>\
-            </div>');
-    };
-
-    MainPanel.prototype.bindEvents = function() {
-      var _this = this;
-      this.element.find('.snapBtn.btn.btn-default').click(function() {
-        if (!$(event.target).hasClass("snapBtn-selected")) {
-          return $(event.target).addClass("snapBtn-selected");
-        } else {
-          return $(event.target).removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find('.glyphicon.glyphicon-magnet').click(function() {
-        if (!$(event.target).parent().hasClass("snapBtn-selected")) {
-          return $(event.target).parent().addClass("snapBtn-selected");
-        } else {
-          return $(event.target).parent().removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find(".gridElementBtn").click(function() {
-        return _this.root.find('.row').trigger('panelClickGridBtnClick');
-      });
-      this.element.find(".undoBtn").click(function() {
-        return _this.root.find('.row').trigger('requestUndo');
-      });
-      return this.element.find(".redoBtn").click(function() {
-        return _this.root.find('.row').trigger('requestRedo');
-      });
-    };
-
-    return MainPanel;
 
   })(Graphic);
 
