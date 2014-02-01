@@ -27,7 +27,7 @@ class BoxesContainer extends Graphic
 
       .dblclick (event) =>
         boxCssOptions = @getPointClicked(event)
-        @root.trigger 'addBoxRequested', [boxCssOptions] if @getSelectedBoxes().length == 0
+        @element.trigger 'addBoxRequested', [boxCssOptions] if @getSelectedBoxes().length == 0
 
       .click (event) =>
         @root.trigger 'unSelectBoxes'

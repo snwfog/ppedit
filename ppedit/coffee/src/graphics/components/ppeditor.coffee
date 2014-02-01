@@ -212,10 +212,10 @@ class PPEditor extends Graphic
         boxes = @areas[pageNum].boxesContainer.getBoxesFromSelector(boxesSelected.eq(0))
         box.addOrderedPointList() for id, box of boxes
 
-      .on 'unSelectBoxes', (event) =>
-        @element.find('.ppedit-box')
-          .removeClass('ppedit-box-focus')
-          .removeClass('ppedit-box-selected')
+#      .on 'unSelectBoxes', (event) =>
+#        @element.find('.ppedit-box')
+#          .removeClass('ppedit-box-focus')
+#          .removeClass('ppedit-box-selected')
 
       .on 'boxSelected', (event, box) =>
         @fontPanel.setSettingsFromStyle box.element.get(0).style

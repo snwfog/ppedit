@@ -1373,7 +1373,7 @@
         var boxCssOptions;
         boxCssOptions = _this.getPointClicked(event);
         if (_this.getSelectedBoxes().length === 0) {
-          return _this.root.trigger('addBoxRequested', [boxCssOptions]);
+          return _this.element.trigger('addBoxRequested', [boxCssOptions]);
         }
       }).click(function(event) {
         return _this.root.trigger('unSelectBoxes');
@@ -2260,8 +2260,6 @@
           _results.push(box.addOrderedPointList());
         }
         return _results;
-      }).on('unSelectBoxes', function(event) {
-        return _this.element.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
       }).on('boxSelected', function(event, box) {
         return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
       });
