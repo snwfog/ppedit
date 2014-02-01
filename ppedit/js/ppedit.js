@@ -594,10 +594,10 @@
   RemoveBoxesCommand = (function(_super) {
     __extends(RemoveBoxesCommand, _super);
 
-    function RemoveBoxesCommand(editor, editContainer, boxesSelector) {
+    function RemoveBoxesCommand(editor, pageNum, boxesSelector) {
       var box, boxArray;
       this.editor = editor;
-      this.editContainer = editContainer;
+      this.pageNum = pageNum;
       RemoveBoxesCommand.__super__.constructor.call(this);
       boxArray = boxesSelector.toArray();
       this.boxIds = (function() {
@@ -609,34 +609,19 @@
         }
         return _results;
       })();
-      if (this.editContainer) {
-        this.boxes = this.editor.area1.boxesContainer.getBoxesFromIds(this.boxIds);
-      } else {
-        this.boxes = this.editor.area2.boxesContainer.getBoxesFromIds(this.boxIds);
-      }
+      this.boxes = this.editor.areas[this.pageNum].boxesContainer.getBoxesFromIds(this.boxIds);
     }
 
     RemoveBoxesCommand.prototype.execute = function() {
-      var boxId, _i, _j, _len, _len1, _ref, _ref1, _results, _results1;
-      if (this.editContainer) {
-        this.editor.area1.boxesContainer.removeBoxes(this.boxIds);
-        _ref = this.boxIds;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          boxId = _ref[_i];
-          _results.push(this.editor.panel1.removeBoxRow(boxId));
-        }
-        return _results;
-      } else {
-        this.editor.area2.boxesContainer.removeBoxes(this.boxIds);
-        _ref1 = this.boxIds;
-        _results1 = [];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          boxId = _ref1[_j];
-          _results1.push(this.editor.panel2.removeBoxRow(boxId));
-        }
-        return _results1;
+      var boxId, _i, _len, _ref, _results;
+      this.editor.areas[this.pageNum].boxesContainer.removeBoxes(this.boxIds);
+      _ref = this.boxIds;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        boxId = _ref[_i];
+        _results.push(this.editor.panels[this.pageNum].removeBoxRow(boxId));
       }
+      return _results;
     };
 
     RemoveBoxesCommand.prototype.undo = function() {
@@ -645,13 +630,8 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
-        if (this.editContainer) {
-          this.editor.area1.boxesContainer.addBox(box);
-          _results.push(this.editor.panel1.addBoxRow(box.element.attr('id')));
-        } else {
-          this.editor.area2.boxesContainer.addBox(box);
-          _results.push(this.editor.panel2.addBoxRow(box.element.attr('id')));
-        }
+        this.editor.areas[this.pageNum].boxesContainer.addBox(box);
+        _results.push(this.editor.panel[this.pageNum].addBoxRow(box.element.attr('id')));
       }
       return _results;
     };
@@ -739,8 +719,8 @@
           _results1 = [];
           for (id in _ref1) {
             boxElement = _ref1[id];
-            area = i === 0 ? this.editor.area1 : this.editor.area2;
-            panel = i === 0 ? this.editor.panel1 : this.editor.panel2;
+            area = this.editor.areas[i];
+            panel = this.editor.panels[i];
             box = new Box(area.boxesContainer.element);
             box.element = $(boxElement);
             area.boxesContainer.addBox(box);
@@ -794,48 +774,34 @@
     */
 
 
-    function CreateBoxesCommand(editor, editContainer, optionsList) {
+    function CreateBoxesCommand(editor, pageNum, optionsList) {
       this.editor = editor;
-      this.editContainer = editContainer;
+      this.pageNum = pageNum;
       this.optionsList = optionsList;
       CreateBoxesCommand.__super__.constructor.call(this);
       this.boxes = [];
     }
 
     CreateBoxesCommand.prototype.execute = function() {
-      var box, options, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
+      var box, options, _i, _j, _len, _len1, _ref, _ref1, _results;
       if (this.optionsList != null) {
         if (this.boxes.length === 0) {
-          if (this.editContainer === true) {
-            _ref = this.optionsList;
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              options = _ref[_i];
-              this.boxes.push(new Box(this.editor.area1.boxesContainer.element, options));
-            }
-          } else {
-            _ref1 = this.optionsList;
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              options = _ref1[_j];
-              this.boxes.push(new Box(this.editor.area2.boxesContainer.element, options));
-            }
+          _ref = this.optionsList;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            options = _ref[_i];
+            this.boxes.push(new Box(this.editor.areas[this.pageNum].boxesContainer.element, options));
           }
         }
-        _ref2 = this.boxes;
+        _ref1 = this.boxes;
         _results = [];
-        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-          box = _ref2[_k];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          box = _ref1[_j];
           _results.push(this._addBox(box));
         }
         return _results;
       } else {
-        if (this.editContainer === true) {
-          if (this.boxes.length === 0) {
-            this.boxes.push(new Box(this.editor.area1.boxesContainer.element));
-          }
-        } else {
-          if (this.boxes.length === 0) {
-            this.boxes.push(new Box(this.editor.area2.boxesContainer.element));
-          }
+        if (this.boxes.length === 0) {
+          this.boxes.push(new Box(this.editor.areas[this.pageNum].boxesContainer.element));
         }
         return this._addBox(this.boxes[0]);
       }
@@ -848,11 +814,10 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
         if (this.editContainer === true) {
-          this.editor.area1.boxesContainer.removeBoxes([box.element.attr('id')]);
-          _results.push(this.editor.panel1.removeBoxRow([box.element.attr('id')]));
+          this.editor.areas[this.pageNum].boxesContainer.removeBoxes([box.element.attr('id')]);
+          _results.push(this.editor.panels[this.pageNum].removeBoxRow([box.element.attr('id')]));
         } else {
-          this.editor.area2.boxesContainer.removeBoxes([box.element.attr('id')]);
-          _results.push(this.editor.panel2.removeBoxRow([box.element.attr('id')]));
+          _results.push(void 0);
         }
       }
       return _results;
@@ -866,17 +831,9 @@
 
     CreateBoxesCommand.prototype._addBox = function(box) {
       var boxId;
-      if (this.editContainer === true) {
-        this.editor.area1.boxesContainer.addBox(box);
-      } else {
-        this.editor.area2.boxesContainer.addBox(box);
-      }
+      this.editor.areas[this.pageNum].boxesContainer.addBox(box);
       boxId = box.element.attr('id');
-      if (this.editContainer === true) {
-        this.editor.panel1.addBoxRow(boxId);
-      } else {
-        this.editor.panel2.addBoxRow(boxId);
-      }
+      this.editor.panels[this.pageNum].addBoxRow(boxId);
       if (this.boxIds.indexOf(boxId) === -1) {
         return this.boxIds.push(boxId);
       }
@@ -887,11 +844,7 @@
     };
 
     CreateBoxesCommand.prototype.getPageNum = function() {
-      if (this.editContainer) {
-        return 0;
-      } else {
-        return 1;
-      }
+      return this.pageNum;
     };
 
     return CreateBoxesCommand;
@@ -901,9 +854,9 @@
   CopyBoxesCommand = (function(_super) {
     __extends(CopyBoxesCommand, _super);
 
-    function CopyBoxesCommand(editor, editPage, boxesClones) {
+    function CopyBoxesCommand(editor, pageNum, boxesClones) {
       this.editor = editor;
-      this.editPage = editPage;
+      this.pageNum = pageNum;
       this.boxesClones = boxesClones;
       CopyBoxesCommand.__super__.constructor.call(this);
       this.newBoxes = [];
@@ -916,28 +869,17 @@
         this.boxesClones.each(function(index, boxItem) {
           var box, boxOptions;
           boxOptions = CSSJSON.toJSON(boxItem.style.cssText).attributes;
-          if (_this.editPage) {
-            box = new Box(_this.editor.area1.boxesContainer.element, boxOptions);
-          } else {
-            box = new Box(_this.editor.area2.boxesContainer.element, boxOptions);
-          }
+          box = new Box(_this.editor.areas[_this.pageNum].boxesContainer.element, boxOptions);
           return _this.newBoxes[index] = box;
         });
       }
       _results = [];
       for (i = _i = 0, _ref = this.newBoxes.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         box = this.newBoxes[i];
-        if (this.editPage) {
-          this.editor.area1.boxesContainer.addBox(box);
-          box.element.html(this.boxesClones.eq(i).html());
-          this.editor.panel1.addBoxRow(box.element.attr('id'));
-          _results.push(this.boxIds[i] = box.element.attr('id'));
-        } else {
-          this.editor.area2.boxesContainer.addBox(box);
-          box.element.html(this.boxesClones.eq(i).html());
-          this.editor.panel2.addBoxRow(box.element.attr('id'));
-          _results.push(this.boxIds[i] = box.element.attr('id'));
-        }
+        this.editor.areas[this.pageNum].boxesContainer.addBox(box);
+        box.element.html(this.boxesClones.eq(i).html());
+        this.editor.panels[this.pageNum].addBoxRow(box.element.attr('id'));
+        _results.push(this.boxIds[i] = box.element.attr('id'));
       }
       return _results;
     };
@@ -948,13 +890,8 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
-        if (this.editPage) {
-          this.editor.area1.boxesContainer.removeBoxes([box.element.attr('id')]);
-          _results.push(this.editor.panel1.removeBoxRow([box.element.attr('id')]));
-        } else {
-          this.editor.area2.boxesContainer.removeBoxes([box.element.attr('id')]);
-          _results.push(this.editor.panel2.removeBoxRow([box.element.attr('id')]));
-        }
+        this.editor.areas[this.pageNum].boxesContainer.removeBoxes([box.element.attr('id')]);
+        _results.push(this.editor.panels[this.pageNum].removeBoxRow([box.element.attr('id')]));
       }
       return _results;
     };
@@ -964,11 +901,7 @@
     };
 
     CopyBoxesCommand.prototype.getPageNum = function() {
-      if (this.editPage) {
-        return 0;
-      } else {
-        return 1;
-      }
+      return this.pageNum;
     };
 
     return CopyBoxesCommand;
@@ -1011,7 +944,6 @@
       if (this.undoStack.length > 0) {
         lastCommand = this.undoStack.pop();
         lastCommand.undo();
-        console.log(lastCommand);
         return this.redoStack.push(lastCommand);
       }
     };
@@ -1124,31 +1056,20 @@
   ChangeStyleCommand = (function(_super) {
     __extends(ChangeStyleCommand, _super);
 
-    function ChangeStyleCommand(editor, editPage, boxesSelector, newCssOptions) {
-      var _this = this;
+    function ChangeStyleCommand(editor, boxesSelector, newCssOptions) {
       this.editor = editor;
+      this.boxesSelector = boxesSelector;
       this.newCssOptions = newCssOptions;
       ChangeStyleCommand.__super__.constructor.call(this);
-      boxesSelector.each(function(index, item) {
-        return _this.boxIds.push(item.id);
-      });
-      this.boxesToCopy = boxesSelector.clone();
-      if (editPage) {
-        this.boxes = this.editor.area1.boxesContainer.getBoxesFromSelector(boxesSelector);
-      } else {
-        this.boxes = this.editor.area2.boxesContainer.getBoxesFromSelector(boxesSelector);
-      }
+      console.log(this.boxesSelector);
+      this.boxesToCopy = this.boxesSelector.clone();
     }
 
     ChangeStyleCommand.prototype.execute = function() {
-      var box, id, _ref, _results;
-      _ref = this.boxes;
-      _results = [];
-      for (id in _ref) {
-        box = _ref[id];
-        _results.push(box.element.css(this.newCssOptions));
-      }
-      return _results;
+      var _this = this;
+      return this.boxesSelector.each(function(index, item) {
+        return $(item).css(_this.newCssOptions);
+      });
     };
 
     ChangeStyleCommand.prototype.undo = function() {
@@ -1156,7 +1077,7 @@
       return this.boxesToCopy.each(function(index, item) {
         var prevCssOptions;
         prevCssOptions = CSSJSON.toJSON(_this.boxesToCopy.filter('#' + item.id).attr('style')).attributes;
-        return _this.boxes[item.id].element.css(prevCssOptions);
+        return _this.boxesSelector.filter('#' + item.id).css(prevCssOptions);
       });
     };
 
@@ -1179,13 +1100,12 @@
     */
 
 
-    function ChangeDepthCommand(editor, editContainer, boxSelector, moveUp) {
+    function ChangeDepthCommand(editor, pageNum, boxSelector, moveUp) {
       this.editor = editor;
-      this.editContainer = editContainer;
+      this.pageNum = pageNum;
       this.moveUp = moveUp;
       ChangeDepthCommand.__super__.constructor.call(this);
       this.boxId = boxSelector.attr('id');
-      this.boxIds.push(this.boxId);
     }
 
     ChangeDepthCommand.prototype.execute = function() {
@@ -1206,39 +1126,21 @@
 
     ChangeDepthCommand.prototype.swapRowWithUpperRow = function() {
       var index, row, upperRow;
-      if (this.editContainer) {
-        row = this.editor.panel1.getRowWithBoxId(this.boxId);
-        index = row.index();
-        if (index - 1 >= 0) {
-          upperRow = this.editor.panel1.getRowAtIndex(index - 1);
-          return this.swapRows(row, upperRow);
-        }
-      } else {
-        row = this.editor.panel2.getRowWithBoxId(this.boxId);
-        index = row.index();
-        if (index - 1 >= 0) {
-          upperRow = this.editor.panel2.getRowAtIndex(index - 1);
-          return this.swapRows(row, upperRow);
-        }
+      row = this.editor.panels[this.pageNum].getRowWithBoxId(this.boxId);
+      index = row.index();
+      if (index - 1 >= 0) {
+        upperRow = this.editor.panels[this.pageNum].getRowAtIndex(index - 1);
+        return this.swapRows(row, upperRow);
       }
     };
 
     ChangeDepthCommand.prototype.swapRowWithLowerRow = function() {
       var index, lowerRow, row;
-      if (this.editContainer) {
-        row = this.editor.panel1.getRowWithBoxId(this.boxId);
-        index = row.index();
-        if (index + 1 < this.editor.panel1.element.find('.ppedit-panel-row').length) {
-          lowerRow = this.editor.panel1.getRowAtIndex(index + 1);
-          return this.swapRows(row, lowerRow);
-        }
-      } else {
-        row = this.editor.panel2.getRowWithBoxId(this.boxId);
-        index = row.index();
-        if (index + 1 < this.editor.panel2.element.find('.ppedit-panel-row').length) {
-          lowerRow = this.editor.panel2.getRowAtIndex(index + 1);
-          return this.swapRows(row, lowerRow);
-        }
+      row = this.editor.panels[this.pageNum].getRowWithBoxId(this.boxId);
+      index = row.index();
+      if (index + 1 < this.editor.panels[this.pageNum].element.find('.ppedit-panel-row').length) {
+        lowerRow = this.editor.panels[this.pageNum].getRowAtIndex(index + 1);
+        return this.swapRows(row, lowerRow);
       }
     };
 
@@ -1255,19 +1157,11 @@
       } else {
         rowOne.insertBefore(rowTwo);
       }
-      if (this.editContainer) {
-        rowOneBox = this.editor.area1.boxesContainer.boxes[rowOne.attr('ppedit-box-id')];
-        rowOneBoxTempZindex = rowOneBox.element.css('z-index');
-        rowTwoBox = this.editor.area1.boxesContainer.boxes[rowTwo.attr('ppedit-box-id')];
-        rowOneBox.element.css('z-index', rowTwoBox.element.css('z-index'));
-        return rowTwoBox.element.css('z-index', rowOneBoxTempZindex);
-      } else {
-        rowOneBox = this.editor.area2.boxesContainer.boxes[rowOne.attr('ppedit-box-id')];
-        rowOneBoxTempZindex = rowOneBox.element.css('z-index');
-        rowTwoBox = this.editor.area2.boxesContainer.boxes[rowTwo.attr('ppedit-box-id')];
-        rowOneBox.element.css('z-index', rowTwoBox.element.css('z-index'));
-        return rowTwoBox.element.css('z-index', rowOneBoxTempZindex);
-      }
+      rowOneBox = this.editor.areas[this.pageNum].boxesContainer.boxes[rowOne.attr('ppedit-box-id')];
+      rowOneBoxTempZindex = rowOneBox.element.css('z-index');
+      rowTwoBox = this.editor.areas[this.pageNum].boxesContainer.boxes[rowTwo.attr('ppedit-box-id')];
+      rowOneBox.element.css('z-index', rowTwoBox.element.css('z-index'));
+      return rowTwoBox.element.css('z-index', rowOneBoxTempZindex);
     };
 
     ChangeDepthCommand.prototype.getType = function() {
@@ -1308,9 +1202,9 @@
   ChangeBoxOpacityCommand = (function(_super) {
     __extends(ChangeBoxOpacityCommand, _super);
 
-    function ChangeBoxOpacityCommand(editor, editPage, boxId, prevVal, newVal) {
+    function ChangeBoxOpacityCommand(editor, pageNum, boxId, prevVal, newVal) {
       this.editor = editor;
-      this.editPage = editPage;
+      this.pageNum = pageNum;
       this.boxId = boxId;
       this.prevVal = prevVal;
       this.newVal = newVal;
@@ -1326,14 +1220,8 @@
     };
 
     ChangeBoxOpacityCommand.prototype.changeOpacityToVal = function(value) {
-      if (this.editPage) {
-        this.editor.area1.boxesContainer.changeBoxOpacity(this.boxId, value);
-        this.editor.panel1.element.find("tr[ppedit-box-id=" + this.boxId + "]").find('.ppedit-slider').slider('setValue', parseInt(value * 100));
-        return console.log(parseInt(value * 100));
-      } else {
-        this.editor.area2.boxesContainer.changeBoxOpacity(this.boxId, value);
-        return this.editor.panel2.element.find("tr[ppedit-box-id=" + this.boxId + "]").find('.ppedit-slider').slider('setValue', parseInt(value * 100));
-      }
+      this.editor.areas[this.pageNum].boxesContainer.changeBoxOpacity(this.boxId, value);
+      return this.editor.panels[this.pageNum].element.find("tr[ppedit-box-id=" + this.boxId + "]").find('.ppedit-slider').slider('setValue', parseInt(value * 100));
     };
 
     ChangeBoxOpacityCommand.prototype.getType = function() {
@@ -1352,62 +1240,62 @@
   CommandFactory = (function() {
     function CommandFactory() {}
 
-    CommandFactory.prototype.createChangeFontSizeCommand = function(editor, editPage, boxesSelector, newFontSize) {
-      return new ChangeStyleCommand(editor, editPage, boxesSelector, {
+    CommandFactory.prototype.createChangeFontSizeCommand = function(editor, boxesSelector, newFontSize) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
         'font-size': newFontSize
       });
     };
 
-    CommandFactory.prototype.createChangeFontTypeCommand = function(editor, editPage, boxesSelector, newFontType) {
-      return new ChangeStyleCommand(editor, editPage, boxesSelector, {
+    CommandFactory.prototype.createChangeFontTypeCommand = function(editor, boxesSelector, newFontType) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
         'font-family': newFontType
       });
     };
 
-    CommandFactory.prototype.createChangeFontWeightCommand = function(editor, editPage, boxesSelector, enable) {
+    CommandFactory.prototype.createChangeFontWeightCommand = function(editor, boxesSelector, enable) {
       var fontWeightValue;
       fontWeightValue = enable ? 'bold' : 'normal';
-      return new ChangeStyleCommand(editor, editPage, boxesSelector, {
+      return new ChangeStyleCommand(editor, boxesSelector, {
         'font-weight': fontWeightValue
       });
     };
 
-    CommandFactory.prototype.createChangeItalicFontCommand = function(editor, editPage, boxesSelector, enable) {
+    CommandFactory.prototype.createChangeItalicFontCommand = function(editor, boxesSelector, enable) {
       var styleValue;
       styleValue = enable ? 'italic' : 'normal';
-      return new ChangeStyleCommand(editor, editPage, boxesSelector, {
+      return new ChangeStyleCommand(editor, boxesSelector, {
         'font-style': styleValue
       });
     };
 
-    CommandFactory.prototype.createChangeUnderlineFontCommand = function(editor, editPage, boxesSelector, enable) {
+    CommandFactory.prototype.createChangeUnderlineFontCommand = function(editor, boxesSelector, enable) {
       var styleValue;
       styleValue = enable ? 'underline' : 'none';
-      return new ChangeStyleCommand(editor, editPage, boxesSelector, {
+      return new ChangeStyleCommand(editor, boxesSelector, {
         'text-decoration': styleValue
       });
     };
 
-    CommandFactory.prototype.createRightAlignmentCommand = function(editor, editPage, boxesSelector) {
-      return new ChangeStyleCommand(editor, editPage, boxesSelector, {
+    CommandFactory.prototype.createRightAlignmentCommand = function(editor, boxesSelector) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
         'text-align': 'right'
       });
     };
 
-    CommandFactory.prototype.createLeftAlignmentCommand = function(editor, editPage, boxesSelector) {
-      return new ChangeStyleCommand(editor, editPage, boxesSelector, {
+    CommandFactory.prototype.createLeftAlignmentCommand = function(editor, boxesSelector) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
         'text-align': 'left'
       });
     };
 
-    CommandFactory.prototype.createCenterAlignmentCommand = function(editor, editPage, boxesSelector) {
-      return new ChangeStyleCommand(editor, editPage, boxesSelector, {
+    CommandFactory.prototype.createCenterAlignmentCommand = function(editor, boxesSelector) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
         'text-align': 'center'
       });
     };
 
-    CommandFactory.prototype.createChangeTextColorCommand = function(editor, editPage, boxesSelector, newColor) {
-      return new ChangeStyleCommand(editor, editPage, boxesSelector, {
+    CommandFactory.prototype.createChangeTextColorCommand = function(editor, boxesSelector, newColor) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
         'color': '#' + newColor
       });
     };
@@ -1420,8 +1308,8 @@
       return new MoveBoxCommand(box, toPosition, fromPosition);
     };
 
-    CommandFactory.prototype.createRemoveBoxesCommand = function(editor, editContainer, boxesSelector) {
-      return new RemoveBoxesCommand(editor, editContainer, boxesSelector);
+    CommandFactory.prototype.createRemoveBoxesCommand = function(editor, pageNum, boxesSelector) {
+      return new RemoveBoxesCommand(editor, pageNum, boxesSelector);
     };
 
     CommandFactory.prototype.createCopyBoxesCommand = function(editor, editPage, boxesClones) {
@@ -1436,12 +1324,12 @@
       return new ChangeBoxContentCommand(box, prevContent, newContent);
     };
 
-    CommandFactory.prototype.createMoveUpCommand = function(editor, editContainer, boxSelector) {
-      return new ChangeDepthCommand(editor, editContainer, boxSelector, true);
+    CommandFactory.prototype.createMoveUpCommand = function(editor, pageNum, boxSelector) {
+      return new ChangeDepthCommand(editor, pageNum, boxSelector, true);
     };
 
-    CommandFactory.prototype.createMoveDownCommand = function(editor, editContainer, boxSelector) {
-      return new ChangeDepthCommand(editor, editContainer, boxSelector, false);
+    CommandFactory.prototype.createMoveDownCommand = function(editor, pageNum, boxSelector) {
+      return new ChangeDepthCommand(editor, pageNum, boxSelector, false);
     };
 
     CommandFactory.prototype.createLoadBoxesCommand = function(editor, jsonBoxes) {
@@ -1484,17 +1372,11 @@
       }).dblclick(function(event) {
         var boxCssOptions;
         boxCssOptions = _this.getPointClicked(event);
-        if (_this.element.parent().parent().hasClass('editContainer1')) {
-          editContainer = true;
-        }
         if (_this.getSelectedBoxes().length === 0) {
-          return _this.root.trigger('addBoxRequested', [editContainer, boxCssOptions]);
+          return _this.root.trigger('addBoxRequested', [boxCssOptions]);
         }
       }).click(function(event) {
-        if (_this.element.parent().parent().hasClass('editContainer1')) {
-          editContainer = true;
-        }
-        return _this.root.trigger('unSelectBoxes', [editContainer]);
+        return _this.root.trigger('unSelectBoxes');
       });
     };
 
@@ -1936,6 +1818,8 @@
       }).keydown(function(event) {
         return _this.element.find('*').trigger('containerKeyDown', [event]);
       }).on('canvasRectSelect', function(event, rect) {
+        console.log('canvasRectSelect');
+        console.log(rect);
         return _this.boxesContainer.selectBoxesInRect(rect);
       });
       this.boxesContainer.bindEvents();
@@ -1995,20 +1879,15 @@
     };
 
     Panel.prototype.bindEvents = function() {
-      var editContainer,
-        _this = this;
-      editContainer = false;
-      if (this.element.parent().hasClass('panelContainer1')) {
-        editContainer = true;
-      }
+      var _this = this;
       this.element.find(".addElementBtn").click(function() {
-        return _this.root.trigger('panelClickAddBtnClick', [editContainer]);
+        return _this.element.trigger('panelClickAddBtnClick');
       });
       this.element.find('.moveElementUpBtn').click(function() {
-        return _this.root.trigger('moveElementUpBtnClick', [editContainer]);
+        return _this.element.trigger('moveElementUpBtnClick');
       });
       return this.element.find('.moveElementDownBtn').click(function() {
-        return _this.root.trigger('moveElementDownBtnClick', [editContainer]);
+        return _this.element.trigger('moveElementDownBtnClick');
       });
     };
 
@@ -2018,13 +1897,9 @@
 
 
     Panel.prototype.addBoxRow = function(boxid, index) {
-      var editContainer, newRow,
+      var newRow,
         _this = this;
-      editContainer = false;
-      if (this.element.parent().hasClass('panelContainer1')) {
-        editContainer = true;
-      }
-      newRow = $("            <tr class='ppedit-panel-row'>                <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>                <td><input type=\"text\" class=\"input-block-level\" placeholder=\"Enter name\"></input></td>                <td><div class=\"ppedit-slider\"></div></td>            </tr>").attr('ppedit-box-id', boxid);
+      newRow = $("            <tr class='ppedit-panel-row'>                <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>                <td><p class='ppedit-rowName'></p>                <td><div class=\"ppedit-slider\"></div></td>            </tr>").attr('ppedit-box-id', boxid);
       if ((index == null) || index === 0) {
         this.element.find('.dataPanel tbody').prepend(newRow);
       } else {
@@ -2040,17 +1915,17 @@
       }).on('slide', function(event) {
         var opacityVal;
         opacityVal = $(event.target).val();
-        return _this.root.trigger('onRowSliderValChanged', [editContainer, boxid, parseInt(opacityVal) / 100]);
+        return $(event.target).trigger('onRowSliderValChanged', [boxid, parseInt(opacityVal) / 100]);
       }).on('slideStop', function(event) {
         var opacityStopVal;
         opacityStopVal = $(event.target).val();
         if (_this.prevOpacityVal !== opacityStopVal) {
-          _this.root.trigger('onRowSliderStopValChanged', [editContainer, boxid, parseInt(_this.prevOpacityVal) / 100, parseInt(opacityStopVal) / 100]);
+          $(event.target).trigger('onRowSliderStopValChanged', [boxid, parseInt(_this.prevOpacityVal) / 100, parseInt(opacityStopVal) / 100]);
         }
         return _this.prevOpacityVal = void 0;
       });
       return newRow.find(".deleteElementBtn").on('click', function(event) {
-        return _this.root.trigger('onRowDeleteBtnClick', [editContainer, boxid]);
+        return $(event.target).trigger('onRowDeleteBtnClick', [boxid]);
       });
     };
 
@@ -2083,6 +1958,15 @@
     };
 
     /*
+    Sets the name of the row.
+    */
+
+
+    Panel.prototype.setRowName = function(boxId, name) {
+      return this.getRowWithBoxId(boxId).find('ppedit-rowName').val(name);
+    };
+
+    /*
     Returns a selector matching with all rows.
     */
 
@@ -2111,7 +1995,7 @@
 
 
     Clipboard.prototype.pushItems = function(newItems) {
-      return this.items = newItems.clone();
+      return this.items = $.extend(true, {}, newItems);
     };
 
     /*
@@ -2142,18 +2026,19 @@
   PPEditor = (function(_super) {
     __extends(PPEditor, _super);
 
+    PPEditor.NUMBER_OF_PAGES = 2;
+
     function PPEditor(root) {
       this.root = root;
       PPEditor.__super__.constructor.call(this, this.root);
-      this.clipboard1 = new Clipboard;
-      this.clipboard2 = new Clipboard;
+      this.clipboard = new Clipboard;
       this.commandManager = new CommandManager;
       this.cmdFactory = new CommandFactory;
       this.controller = void 0;
     }
 
     PPEditor.prototype.buildElement = function() {
-      var row;
+      var i, row, _i, _j, _k, _ref, _ref1, _ref2;
       this.element = $('\
       <div class="container" tabindex="0">\
         <div class="row"></div>\
@@ -2165,46 +2050,28 @@
       <div class="superContainer">\
       </div>\
     ');
-      this.editContainer1 = $('\
-      <div class="editContainer1">\
-      </div>\
-    ');
-      this.editContainer2 = $('\
-      <div class="editContainer2">\
-      </div>\
-    ');
       this.superPanel = $('\
       <div class="superPanel" style="clear:both;">\
       </div>\
     ');
-      this.panelContainer1 = $('\
-      <div class="panelContainer1" style="clear:both;">\
-      </div>\
-    ');
-      this.panelContainer2 = $('\
-      <div class="panelContainer2" style="clear:both;">\
-      </div>\
-    ');
-      this.area1 = new EditArea(row);
-      this.area2 = new EditArea(row);
-      this.panel1 = new Panel(row);
-      this.panel2 = new Panel(row);
+      this.areas = [];
+      this.panels = [];
       this.titlePanel = new TitlePanel(row);
       this.fontPanel = new FontPanel(row);
-      this.area1.buildElement();
-      this.area2.buildElement();
-      this.panel1.buildElement();
-      this.panel2.buildElement();
+      for (i = _i = 0, _ref = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        this.areas.push(new EditArea(row));
+        this.panels.push(new Panel(row));
+      }
+      for (i = _j = 0, _ref1 = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+        this.areas[i].buildElement();
+        this.panels[i].buildElement();
+      }
       this.titlePanel.buildElement();
       this.fontPanel.buildElement();
-      this.editContainer1.append(this.area1.element);
-      this.editContainer2.append(this.area2.element);
-      this.superContainer.append(this.editContainer1);
-      this.superContainer.append(this.editContainer2);
-      this.panelContainer1.append(this.panel1.element);
-      this.panelContainer2.append(this.panel2.element);
-      this.superPanel.append(this.panelContainer1);
-      this.superPanel.append(this.panelContainer2);
+      for (i = _k = 0, _ref2 = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref2 ? _k <= _ref2 : _k >= _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
+        this.superContainer.append($('<div class="editContainer"></div>').append(this.areas[i].element));
+        this.superPanel.append($('<div class="panelContainer" style="clear:both;"></div>').append(this.panels[i].element));
+      }
       row.append(this.superContainer);
       row.append(this.titlePanel.element);
       row.append(this.fontPanel.element);
@@ -2212,251 +2079,217 @@
     };
 
     PPEditor.prototype.bindEvents = function() {
-      var _this = this;
+      var i, _i, _ref,
+        _this = this;
       this.element.on('requestUndo', function(event) {
-        console.log('requestUndo');
         return _this.commandManager.undo();
       }).on('requestRedo', function(event) {
-        console.log('requestRedo');
         return _this.commandManager.redo();
       }).on('requestDelete', function(event) {
-        if (_this.area1.boxesContainer.getSelectedBoxes().length !== 0) {
-          _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes()));
+        var i, _i, _ref, _results;
+        _results = [];
+        for (i = _i = 0, _ref = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+          if (_this.areas[i].boxesContainer.getSelectedBoxes().length !== 0) {
+            _results.push(_this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, i, _this.areas[0].boxesContainer.getSelectedBoxes())));
+          } else {
+            _results.push(void 0);
+          }
         }
-        if (_this.area2.boxesContainer.getSelectedBoxes().length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes()));
-        }
+        return _results;
       }).on('requestCopy', function(event) {
-        if (_this.area1.boxesContainer.getSelectedBoxes().length !== 0) {
-          _this.clipboard1.pushItems(_this.area1.boxesContainer.getSelectedBoxes());
+        var i, _i, _ref, _results;
+        _results = [];
+        for (i = _i = 0, _ref = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+          if (_this.areas[i].boxesContainer.getSelectedBoxes().length !== 0) {
+            _this.clipboard.pushItems({
+              pageNum: i,
+              boxes: _this.areas[i].boxesContainer.getSelectedBoxes()
+            });
+            break;
+          } else {
+            _results.push(void 0);
+          }
         }
-        if (_this.area2.boxesContainer.getSelectedBoxes().length !== 0) {
-          return _this.clipboard2.pushItems(_this.area2.boxesContainer.getSelectedBoxes());
-        }
+        return _results;
       }).on('requestPaste', function(event) {
-        var editPage, items;
-        editPage = false;
-        if (_this.area1.boxesContainer.getSelectedBoxes().length !== 0) {
-          editPage = true;
-          items = _this.clipboard1.popItems();
-          if (items.length !== 0) {
-            _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, editPage, items));
-          }
-        }
-        if (_this.area2.boxesContainer.getSelectedBoxes().length !== 0) {
-          items = _this.clipboard2.popItems();
-          if (items.length !== 0) {
-            return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, editPage, items));
-          }
+        var items;
+        items = _this.clipboard.popItems();
+        if ((items.boxes != null) && items.boxes.length > 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createCopyBoxesCommand(_this, items.pageNum, items.boxes));
         }
       }).on('textColorChanged', function(event, hex) {
         var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
+        boxSelected = _this.getSelectedBoxes();
         if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeTextColorCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), hex));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeTextColorCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), hex));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeTextColorCommand(_this, _this.getPageNum(boxSelected), _this.areas[0].boxesContainer.getSelectedBoxes(), hex));
         }
       }).on('graphicContentChanged', function(event, params) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false);
       }).on('boxMoved', function(event, box, currentPosition, originalPosition) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false);
       });
-      this.element.find('.row').on('moveElementUpBtnClick', function(event, editContainer) {
-        var boxes;
-        if (editContainer) {
-          boxes = _this.area1.boxesContainer.getSelectedBoxes();
-        } else {
-          boxes = _this.area2.boxesContainer.getSelectedBoxes();
-        }
+      this.element.find('.row').on('moveElementUpBtnClick', function(event) {
+        var boxes, pageNum;
+        boxes = _this.getSelectedBoxes();
+        pageNum = _this.getPanelNum($(event.target));
         if (boxes.length > 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveUpCommand(_this, editContainer, boxes));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveUpCommand(_this, pageNum, boxes));
         }
-      }).on('moveElementDownBtnClick', function(event, editContainer) {
-        var boxes;
-        if (editContainer) {
-          boxes = _this.area1.boxesContainer.getSelectedBoxes();
-        } else {
-          boxes = _this.area2.boxesContainer.getSelectedBoxes();
-        }
+      }).on('moveElementDownBtnClick', function(event) {
+        var boxes, pageNum;
+        boxes = _this.getSelectedBoxes();
+        pageNum = _this.getPanelNum($(event.target));
         if (boxes.length > 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveDownCommand(_this, editContainer, boxes));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveDownCommand(_this, pageNum, boxes));
         }
-      }).on('panelClickAddBtnClick', function(event, editContainer) {
-        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this, editContainer));
+      }).on('panelClickAddBtnClick', function(event) {
+        var pageNum;
+        pageNum = _this.getPanelNum($(event.target));
+        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this, pageNum));
       }).on('panelClickGridBtnClick', function(event) {
-        _this.area1.grid.toggleGrid();
-        return _this.area2.grid.toggleGrid();
-      }).on('onRowDeleteBtnClick', function(event, editContainer, boxId) {
-        return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, editContainer, _this.root.find('#' + boxId)));
-      }).on('onRowSliderValChanged', function(event, editContainer, boxId, opacityVal) {
-        if (editContainer) {
-          return _this.area1.boxesContainer.changeBoxOpacity(boxId, opacityVal);
-        } else {
-          return _this.area2.boxesContainer.changeBoxOpacity(boxId, opacityVal);
+        var area, _i, _len, _ref, _results;
+        _ref = _this.areas;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          area = _ref[_i];
+          _results.push(area.grid.toggleGrid());
         }
-      }).on('onRowSliderStopValChanged', function(event, editContainer, boxId, prevVal, newVal) {
-        if (editContainer) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeOpacityCommand(_this, true, boxId, prevVal, newVal));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeOpacityCommand(_this, false, boxId, prevVal, newVal));
-        }
-      }).on('addBoxRequested', function(event, editContainer, boxCssOptions) {
-        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this, editContainer, [boxCssOptions]));
+        return _results;
+      }).on('onRowDeleteBtnClick', function(event, boxId) {
+        var pageNum;
+        pageNum = _this.getPanelNum($(event.target));
+        return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, pageNum, _this.root.find('#' + boxId)));
+      }).on('onRowSliderValChanged', function(event, boxId, opacityVal) {
+        var pageNum;
+        console.log(event);
+        pageNum = _this.getPanelNum($(event.target));
+        return _this.areas[pageNum].boxesContainer.changeBoxOpacity(boxId, opacityVal);
+      }).on('onRowSliderStopValChanged', function(event, boxId, prevVal, newVal) {
+        var pageNum;
+        pageNum = _this.getPanelNum($(event.target));
+        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeOpacityCommand(_this, pageNum, boxId, prevVal, newVal));
+      }).on('addBoxRequested', function(event, boxCssOptions) {
+        var pageNum;
+        pageNum = _this.getPageNum($(event.target));
+        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this, pageNum, [boxCssOptions]));
       }).on('fontTypeChanged', function(event, newFontType) {
-        var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontTypeCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), newFontType));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontTypeCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), newFontType));
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontTypeCommand(_this, boxesSelected, newFontType));
         }
       }).on('fontSizeChanged', function(event, newFontSize) {
-        var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontSizeCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), newFontSize));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontSizeCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), newFontSize));
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontSizeCommand(_this, boxesSelected, newFontSize));
         }
       }).on('fontWeightBtnEnableClick', function(event) {
-        var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), true));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), true));
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, boxesSelected, true));
         }
       }).on('fontWeightBtnDisableClick', function(event) {
-        var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), false));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), false));
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontWeightCommand(_this, boxesSelected, false));
         }
       }).on('fontUnderlinedBtnEnableClick', function(event) {
-        var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), true));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), true));
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, boxesSelected, true));
         }
       }).on('fontUnderlinedBtnDisableClick', function(event) {
-        var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), false));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), false));
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeUnderlineFontCommand(_this, boxesSelected, false));
         }
       }).on('fontItalicBtnEnableClick', function(event) {
-        var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), true));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), true));
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, boxesSelected, true));
         }
       }).on('fontItalicBtnDisableClick', function(event) {
-        var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes(), false));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes(), false));
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeItalicFontCommand(_this, boxesSelected, false));
         }
       }).on('rightAlignment', function(event) {
-        var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createRightAlignmentCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes()));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createRightAlignmentCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes()));
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createRightAlignmentCommand(_this, boxesSelected));
         }
       }).on('leftAlignment', function(event) {
-        var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createLeftAlignmentCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes()));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createLeftAlignmentCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes()));
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createLeftAlignmentCommand(_this, boxesSelected));
         }
       }).on('centerAlignment', function(event) {
-        var boxSelected;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createCenterAlignmentCommand(_this, true, _this.area1.boxesContainer.getSelectedBoxes()));
-        } else {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createCenterAlignmentCommand(_this, false, _this.area2.boxesContainer.getSelectedBoxes()));
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createCenterAlignmentCommand(_this, boxesSelected));
         }
       }).on('bulletPointBtnEnableClick', function(event) {
-        var box, boxSelected, boxes, id, selectedBoxes, _results, _results1;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          selectedBoxes = _this.area1.boxesContainer.getSelectedBoxes();
-          boxes = _this.area1.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0));
-          _results = [];
-          for (id in boxes) {
-            box = boxes[id];
-            _results.push(box.addBulletPoint());
-          }
-          return _results;
-        } else {
-          selectedBoxes = _this.area2.boxesContainer.getSelectedBoxes();
-          boxes = _this.area2.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0));
-          _results1 = [];
-          for (id in boxes) {
-            box = boxes[id];
-            _results1.push(box.addBulletPoint());
-          }
-          return _results1;
+        var box, boxes, boxesSelected, id, pageNum, _results;
+        boxesSelected = _this.getSelectedBoxes();
+        pageNum = _this.getPageNum(boxesSelected);
+        boxes = _this.areas[pageNum].boxesContainer.getBoxesFromSelector(boxesSelected.eq(0));
+        _results = [];
+        for (id in boxes) {
+          box = boxes[id];
+          _results.push(box.addBulletPoint());
         }
+        return _results;
       }).on('orderedPointBtnEnableClick', function(event) {
-        var box, boxSelected, boxes, id, selectedBoxes, _results, _results1;
-        boxSelected = _this.area1.boxesContainer.getSelectedBoxes();
-        if (boxSelected.length !== 0) {
-          selectedBoxes = _this.area1.boxesContainer.getSelectedBoxes();
-          boxes = _this.area1.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0));
-          _results = [];
-          for (id in boxes) {
-            box = boxes[id];
-            _results.push(box.addOrderedPointList());
-          }
-          return _results;
-        } else {
-          selectedBoxes = _this.area2.boxesContainer.getSelectedBoxes();
-          boxes = _this.area2.boxesContainer.getBoxesFromSelector(selectedBoxes.eq(0));
-          _results1 = [];
-          for (id in boxes) {
-            box = boxes[id];
-            _results1.push(box.addOrderedPointList());
-          }
-          return _results1;
+        var box, boxes, boxesSelected, id, pageNum, _results;
+        boxesSelected = _this.getSelectedBoxes();
+        pageNum = _this.getPageNum(boxesSelected);
+        boxes = _this.areas[pageNum].boxesContainer.getBoxesFromSelector(boxesSelected.eq(0));
+        _results = [];
+        for (id in boxes) {
+          box = boxes[id];
+          _results.push(box.addOrderedPointList());
         }
-      }).on('unSelectBoxes', function(event, editContainer) {
-        var allSelectedBoxes;
-        if (editContainer) {
-          allSelectedBoxes = _this.area2.boxesContainer.getSelectedBoxes();
-          if (allSelectedBoxes.length !== 0) {
-            return _this.area2.boxesContainer.element.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
-          }
-        } else {
-          allSelectedBoxes = _this.area1.boxesContainer.getSelectedBoxes();
-          if (allSelectedBoxes.length !== 0) {
-            return _this.area1.boxesContainer.element.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
-          }
-        }
+        return _results;
+      }).on('unSelectBoxes', function(event) {
+        return _this.element.find('.ppedit-box').removeClass('ppedit-box-focus').removeClass('ppedit-box-selected');
       }).on('boxSelected', function(event, box) {
         return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
       });
-      this.area1.bindEvents();
-      this.area2.bindEvents();
-      this.panel1.bindEvents();
-      this.panel2.bindEvents();
+      for (i = _i = 0, _ref = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        this.areas[i].bindEvents();
+        this.panels[i].bindEvents();
+      }
       this.fontPanel.bindEvents();
       return this.controller.bindEvents();
+    };
+
+    /*
+    Returns a selector to the currently selected boxes
+    */
+
+
+    PPEditor.prototype.getSelectedBoxes = function() {
+      return this.element.find('.ppedit-box:focus, .ppedit-box-selected, .ppedit-box-focus');
+    };
+
+    PPEditor.prototype.getPageNum = function(boxSelector) {
+      console.log("page index: " + boxSelector.parents('.editContainer').index());
+      return boxSelector.parents('.editContainer').index();
+    };
+
+    PPEditor.prototype.getPanelNum = function(panelElement) {
+      console.log("panel index: " + panelElement.parents('.panelContainer').index());
+      return panelElement.parents('.panelContainer').index();
     };
 
     /*
@@ -2491,7 +2324,17 @@
 
 
     PPEditor.prototype.getAllHunks = function() {
-      return JSON.stringify([this.area1.boxesContainer.getAllHunks(), this.area2.boxesContainer.getAllHunks()]);
+      var area;
+      return JSON.stringify((function() {
+        var _i, _len, _ref, _results;
+        _ref = this.areas;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          area = _ref[_i];
+          _results.push(this.area.boxesContainer.getAllHunks());
+        }
+        return _results;
+      }).call(this));
     };
 
     return PPEditor;

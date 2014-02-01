@@ -12,7 +12,7 @@ viewPortPosition = (jQuerySelector) ->
 Adds a given number of boxes on an EMPTY box container
 ###
 addBox = (numOfBoxes)->
-  $(".panelContainer1 .addElementBtn").click() for i in [0..numOfBoxes-1]
+  $(".addElementBtn").eq(0).simulate 'click' for i in [0..numOfBoxes-1]
   expect($('.ppedit-box')).toHaveLength(numOfBoxes)
 
 ###

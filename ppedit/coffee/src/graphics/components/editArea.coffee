@@ -61,6 +61,8 @@ class EditArea extends Graphic
         @element.find('*').trigger 'containerKeyDown', [event]
 
       .on 'canvasRectSelect', (event, rect) =>
+        console.log 'canvasRectSelect'
+        console.log rect
         @boxesContainer.selectBoxesInRect rect
 
     @boxesContainer.bindEvents()

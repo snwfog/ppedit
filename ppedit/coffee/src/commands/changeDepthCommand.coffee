@@ -9,10 +9,9 @@ class ChangeDepthCommand extends Command
   @moveUp is the parameter that specify the box to move up
   if true, or down if false.
   ###
-  constructor: (@editor, @editContainer, boxSelector, @moveUp) ->
+  constructor: (@editor, @pageNum, boxSelector, @moveUp) ->
     super()
     @boxId = boxSelector.attr('id')
-    @boxIds.push @boxId
 
   execute: ->
     if @moveUp then @swapRowWithUpperRow() else @swapRowWithLowerRow()
@@ -21,36 +20,21 @@ class ChangeDepthCommand extends Command
     if @moveUp then @swapRowWithLowerRow() else @swapRowWithUpperRow()
 
   swapRowWithUpperRow: ->
-    if @editContainer
-      row = @editor.panel1.getRowWithBoxId(@boxId)
-      index = row.index()
+    row = @editor.panels[@pageNum].getRowWithBoxId(@boxId)
+    index = row.index()
 
-      if index-1 >= 0
-        upperRow = @editor.panel1.getRowAtIndex index-1
-        @swapRows row, upperRow
-    else
-      row = @editor.panel2.getRowWithBoxId(@boxId)
-      index = row.index()
-
-      if index-1 >= 0
-        upperRow = @editor.panel2.getRowAtIndex index-1
-        @swapRows row, upperRow
+    if index-1 >= 0
+      upperRow = @editor.panels[@pageNum].getRowAtIndex index-1
+      @swapRows row, upperRow
 
   swapRowWithLowerRow: ->
-    if @editContainer
-      row = @editor.panel1.getRowWithBoxId(@boxId)
-      index = row.index()
+    row = @editor.panels[@pageNum].getRowWithBoxId(@boxId)
+    index = row.index()
 
-      if index+1 < @editor.panel1.element.find('.ppedit-panel-row').length
-        lowerRow = @editor.panel1.getRowAtIndex index+1
-        @swapRows row, lowerRow
-    else
-      row = @editor.panel2.getRowWithBoxId(@boxId)
-      index = row.index()
+    if index+1 < @editor.panels[@pageNum].element.find('.ppedit-panel-row').length
+      lowerRow = @editor.panels[@pageNum].getRowAtIndex index+1
+      @swapRows row, lowerRow
 
-      if index+1 < @editor.panel2.element.find('.ppedit-panel-row').length
-        lowerRow = @editor.panel2.getRowAtIndex index+1
-        @swapRows row, lowerRow
   ###
   Swaps RowOne with RowTwo. Also swaps the z-index of the boxes
   associated with each row.
@@ -63,20 +47,12 @@ class ChangeDepthCommand extends Command
         rowOne.insertBefore(rowTwo)
 
       #swap z-index of RowOne and RowTwo
-      if @editContainer
-        rowOneBox = @editor.area1.boxesContainer.boxes[rowOne.attr('ppedit-box-id')]
-        rowOneBoxTempZindex = rowOneBox.element.css 'z-index'
-        rowTwoBox = @editor.area1.boxesContainer.boxes[rowTwo.attr('ppedit-box-id')]
+      rowOneBox = @editor.areas[@pageNum].boxesContainer.boxes[rowOne.attr('ppedit-box-id')]
+      rowOneBoxTempZindex = rowOneBox.element.css 'z-index'
+      rowTwoBox = @editor.areas[@pageNum].boxesContainer.boxes[rowTwo.attr('ppedit-box-id')]
 
-        rowOneBox.element.css 'z-index', rowTwoBox.element.css('z-index')
-        rowTwoBox.element.css 'z-index', rowOneBoxTempZindex
-      else
-        rowOneBox = @editor.area2.boxesContainer.boxes[rowOne.attr('ppedit-box-id')]
-        rowOneBoxTempZindex = rowOneBox.element.css 'z-index'
-        rowTwoBox = @editor.area2.boxesContainer.boxes[rowTwo.attr('ppedit-box-id')]
-
-        rowOneBox.element.css 'z-index', rowTwoBox.element.css('z-index')
-        rowTwoBox.element.css 'z-index', rowOneBoxTempZindex
+      rowOneBox.element.css 'z-index', rowTwoBox.element.css('z-index')
+      rowTwoBox.element.css 'z-index', rowOneBoxTempZindex
 
   getType: ->
     return 'Modify'

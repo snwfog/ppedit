@@ -30,8 +30,8 @@ class LoadBoxesCommand extends Command
     pages = JSON.parse @jsonBoxes
     for i in [0..pages.length-1]
       for id, boxElement of pages[i]
-        area = if (i == 0) then @editor.area1 else @editor.area2
-        panel = if (i == 0) then @editor.panel1 else @editor.panel2
+        area = @editor.areas[i]
+        panel = @editor.panels[i]
 
         box = new Box area.boxesContainer.element
         box.element = $(boxElement)

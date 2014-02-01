@@ -27,14 +27,10 @@ class BoxesContainer extends Graphic
 
       .dblclick (event) =>
         boxCssOptions = @getPointClicked(event)
-        if @element.parent().parent().hasClass('editContainer1')
-          editContainer = true
-        @root.trigger 'addBoxRequested', [editContainer, boxCssOptions] if @getSelectedBoxes().length == 0
+        @root.trigger 'addBoxRequested', [boxCssOptions] if @getSelectedBoxes().length == 0
 
       .click (event) =>
-        if @element.parent().parent().hasClass('editContainer1')
-          editContainer = true
-        @root.trigger 'unSelectBoxes', [editContainer]
+        @root.trigger 'unSelectBoxes'
 
   ###
   Selects the boxes contained in the passed rect.

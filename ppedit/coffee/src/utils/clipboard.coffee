@@ -10,7 +10,7 @@ class Clipboard
   Saves the passed newItems jQuery selector
   ###
   pushItems: (newItems) ->
-    @items = newItems.clone()
+    @items = $.extend(true, {}, newItems)
 
   ###
   Returns the saved jQuery selector and removes it from the save.
