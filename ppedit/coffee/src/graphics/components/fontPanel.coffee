@@ -108,13 +108,9 @@ class FontPanel extends Graphic
       @root.trigger 'centerAlignment'
 
     @element.find(".bulletPointBtn").click (event) =>
-      #btn = $(event.target).toggleClass('.ppedit-btn-enabled')
-      #@root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'bulletPointBtnEnableClick' else 'bulletPointBtnDisableClick')
       @root.trigger 'bulletPointBtnEnableClick'
 
     @element.find(".orderedPointBtn").click (event) =>
-      #btn = $(event.target).toggleClass('.ppedit-btn-enabled')
-      #@root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'bulletPointBtnEnableClick' else 'bulletPointBtnDisableClick')
       @root.trigger 'orderedPointBtnEnableClick'
 
     @element.find(".gridElementBtn").click =>
