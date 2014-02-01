@@ -67,7 +67,8 @@ class PPEditor extends Graphic
     @panel1 = new Panel row
     @panel2 = new Panel row
     @titlePanel = new TitlePanel row
-    @fontPanel = new FontPanel row
+    @fontPanel1 = new FontPanel row
+    @fontPanel2 = new FontPanel row
 
     @area1.buildElement()
     @area2.buildElement()
@@ -75,8 +76,11 @@ class PPEditor extends Graphic
     @panel1.buildElement()
     @panel2.buildElement()
     @titlePanel.buildElement()
-    @fontPanel.buildElement()
+    @fontPanel1.buildElement()
+    @fontPanel2.buildElement()
 
+    @area1.element.append @fontPanel1.element
+    @area2.element.append @fontPanel2.element
     @editContainer1.append @area1.element
     @editContainer2.append @area2.element
     @superContainer.append @editContainer1
@@ -89,7 +93,6 @@ class PPEditor extends Graphic
 
     row.append @superContainer
     row.append @titlePanel.element
-    row.append @fontPanel.element
     row.append @superPanel
 
 
@@ -301,13 +304,15 @@ class PPEditor extends Graphic
               .removeClass('ppedit-box-selected')
 
       .on 'boxSelected', (event, box) =>
-        @fontPanel.setSettingsFromStyle box.element.get(0).style
+        @fontPanel1.setSettingsFromStyle box.element.get(0).style
+        @fontPanel2.setSettingsFromStyle box.element.get(0).style
 
     @area1.bindEvents()
     @area2.bindEvents()
     @panel1.bindEvents()
     @panel2.bindEvents()
-    @fontPanel.bindEvents()
+    @fontPanel1.bindEvents()
+    @fontPanel2.bindEvents()
     @controller.bindEvents()
 
   ###

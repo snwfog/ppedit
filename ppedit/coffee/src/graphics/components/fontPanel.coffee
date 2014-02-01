@@ -9,7 +9,12 @@ class FontPanel extends Graphic
 
   buildElement: ->
     @element =$('
-            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px">
+            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px; visibility: hidden;>
+            <select class="zoomUpDwnBtn">
+                 <option value="fifty">50%</option>
+                 <option value="hundred" selected>100%</option>
+                 <option value="oneFifty">150%</option>
+            </select>
             <select class="fontTypeBtn">
                  <option value="Times New Roman" selected>Times New Roman</option>
                  <option value="Arial">Arial</option>
@@ -65,11 +70,16 @@ class FontPanel extends Graphic
                </div>
                <button class="gridElementBtn btn btn-default" type="button"><span class="glyphicon glyphicon-th-large"></button>
                <button class="snapBtn btn btn-default" type="button"><span class="glyphicon glyphicon-magnet"></button>
-              </div>')
+              </div>').addClass("FontPanel")
+
 
 
 
   bindEvents: ->
+    @element.find("select.zoomUpDwnBtn").change (event) =>
+      newFontType = $(event.target).find("option:selected").val()
+      @root.trigger 'zoomTypeChanged', [newZoomSelection]
+    
     @element.find("select.fontTypeBtn").change (event) =>
       newFontType = $(event.target).find("option:selected").val()
       @root.trigger 'fontTypeChanged', [newFontType]
@@ -167,5 +177,4 @@ class FontPanel extends Graphic
       @element.find(selector).addClass 'ppedit-btn-enabled active'
     else
       @element.find(selector).removeClass 'ppedit-btn-enabled active'
-
 

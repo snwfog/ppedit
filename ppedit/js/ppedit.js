@@ -375,10 +375,12 @@
         return event.preventDefault();
       }).dblclick(function(event) {
         event.stopPropagation();
-        return event.preventDefault();
+        event.preventDefault();
+        console.log(_this.root.parent());
+        return _this.root.parent().find('.FontPanel').css("visibility", "");
       }).focus(function(event) {
         return _this.element.trigger('boxSelected', [_this]);
-      }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
+      }).on('containerMouseMove', function(event, moseMoveEvent, delta) {
         if (event.target === _this.element.get(0)) {
           if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
             return _this.move(delta.x, delta.y);
@@ -2195,13 +2197,17 @@
       this.panel1 = new Panel(row);
       this.panel2 = new Panel(row);
       this.titlePanel = new TitlePanel(row);
-      this.fontPanel = new FontPanel(row);
+      this.fontPanel1 = new FontPanel(row);
+      this.fontPanel2 = new FontPanel(row);
       this.area1.buildElement();
       this.area2.buildElement();
       this.panel1.buildElement();
       this.panel2.buildElement();
       this.titlePanel.buildElement();
-      this.fontPanel.buildElement();
+      this.fontPanel1.buildElement();
+      this.fontPanel2.buildElement();
+      this.area1.element.append(this.fontPanel1.element);
+      this.area2.element.append(this.fontPanel2.element);
       this.editContainer1.append(this.area1.element);
       this.editContainer2.append(this.area2.element);
       this.superContainer.append(this.editContainer1);
@@ -2212,7 +2218,6 @@
       this.superPanel.append(this.panelContainer2);
       row.append(this.superContainer);
       row.append(this.titlePanel.element);
-      row.append(this.fontPanel.element);
       return row.append(this.superPanel);
     };
 
@@ -2460,13 +2465,15 @@
           }
         }
       }).on('boxSelected', function(event, box) {
-        return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
+        _this.fontPanel1.setSettingsFromStyle(box.element.get(0).style);
+        return _this.fontPanel2.setSettingsFromStyle(box.element.get(0).style);
       });
       this.area1.bindEvents();
       this.area2.bindEvents();
       this.panel1.bindEvents();
       this.panel2.bindEvents();
-      this.fontPanel.bindEvents();
+      this.fontPanel1.bindEvents();
+      this.fontPanel2.bindEvents();
       return this.controller.bindEvents();
     };
 
@@ -2524,7 +2531,12 @@
 
     FontPanel.prototype.buildElement = function() {
       return this.element = $('\
-            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px">\
+            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px; visibility: hidden;>\
+            <select class="zoomUpDwnBtn">\
+                 <option value="fifty">50%</option>\
+                 <option value="hundred" selected>100%</option>\
+                 <option value="oneFifty">150%</option>\
+            </select>\
             <select class="fontTypeBtn">\
                  <option value="Times New Roman" selected>Times New Roman</option>\
                  <option value="Arial">Arial</option>\
@@ -2580,11 +2592,16 @@
                </div>\
                <button class="gridElementBtn btn btn-default" type="button"><span class="glyphicon glyphicon-th-large"></button>\
                <button class="snapBtn btn btn-default" type="button"><span class="glyphicon glyphicon-magnet"></button>\
-              </div>');
+              </div>').addClass("FontPanel");
     };
 
     FontPanel.prototype.bindEvents = function() {
       var _this = this;
+      this.element.find("select.zoomUpDwnBtn").change(function(event) {
+        var newFontType;
+        newFontType = $(event.target).find("option:selected").val();
+        return _this.root.trigger('zoomTypeChanged', [newZoomSelection]);
+      });
       this.element.find("select.fontTypeBtn").change(function(event) {
         var newFontType;
         newFontType = $(event.target).find("option:selected").val();

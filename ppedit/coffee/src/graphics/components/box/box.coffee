@@ -90,11 +90,13 @@ class Box extends Graphic
       .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault()
+        console.log(@root.parent())
+        @root.parent().find('.FontPanel').css("visibility","")
 
       .focus (event) =>
         @element.trigger 'boxSelected', [this]
 
-      .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
+      .on 'containerMouseMove', (event, moseMoveEvent, delta) =>
         if event.target == @element.get(0)
           @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
 
