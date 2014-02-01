@@ -375,12 +375,10 @@
         return event.preventDefault();
       }).dblclick(function(event) {
         event.stopPropagation();
-        event.preventDefault();
-        console.log(_this.root.parent());
-        return _this.root.parent().find('.FontPanel').css("visibility", "");
+        return event.preventDefault();
       }).focus(function(event) {
         return _this.element.trigger('boxSelected', [_this]);
-      }).on('containerMouseMove', function(event, moseMoveEvent, delta) {
+      }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (event.target === _this.element.get(0)) {
           if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
             return _this.move(delta.x, delta.y);
@@ -2029,42 +2027,6 @@
       <div class="superPanel" style="clear:both;">\
       </div>\
     ');
-<<<<<<< HEAD
-      this.panelContainer1 = $('\
-      <div class="panelContainer1" style="clear:both;">\
-      </div>\
-    ');
-      this.panelContainer2 = $('\
-      <div class="panelContainer2" style="clear:both;">\
-      </div>\
-    ');
-      this.area1 = new EditArea(row);
-      this.area2 = new EditArea(row);
-      this.panel1 = new Panel(row);
-      this.panel2 = new Panel(row);
-      this.titlePanel = new TitlePanel(row);
-      this.fontPanel1 = new FontPanel(row);
-      this.fontPanel2 = new FontPanel(row);
-      this.area1.buildElement();
-      this.area2.buildElement();
-      this.panel1.buildElement();
-      this.panel2.buildElement();
-      this.titlePanel.buildElement();
-      this.fontPanel1.buildElement();
-      this.fontPanel2.buildElement();
-      this.area1.element.append(this.fontPanel1.element);
-      this.area2.element.append(this.fontPanel2.element);
-      this.editContainer1.append(this.area1.element);
-      this.editContainer2.append(this.area2.element);
-      this.superContainer.append(this.editContainer1);
-      this.superContainer.append(this.editContainer2);
-      this.panelContainer1.append(this.panel1.element);
-      this.panelContainer2.append(this.panel2.element);
-      this.superPanel.append(this.panelContainer1);
-      this.superPanel.append(this.panelContainer2);
-      row.append(this.superContainer);
-      row.append(this.titlePanel.element);
-=======
       this.areas = [];
       this.panels = [];
       this.mainPanel = new MainPanel(this.element);
@@ -2086,7 +2048,6 @@
       row.append(this.superContainer);
       row.append(this.mainPanel.element);
       row.append(this.fontPanel.element);
->>>>>>> 2a295dfecb4ec7a0ace2f50ff94030b8309df9e2
       return row.append(this.superPanel);
     };
 
@@ -2273,18 +2234,8 @@
         }
         return _results;
       }).on('boxSelected', function(event, box) {
-        _this.fontPanel1.setSettingsFromStyle(box.element.get(0).style);
-        return _this.fontPanel2.setSettingsFromStyle(box.element.get(0).style);
+        return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
       });
-<<<<<<< HEAD
-      this.area1.bindEvents();
-      this.area2.bindEvents();
-      this.panel1.bindEvents();
-      this.panel2.bindEvents();
-      this.fontPanel1.bindEvents();
-      this.fontPanel2.bindEvents();
-      return this.controller.bindEvents();
-=======
       for (i = _i = 0, _ref = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         this.areas[i].bindEvents();
         this.panels[i].bindEvents();
@@ -2311,7 +2262,6 @@
     PPEditor.prototype.getPanelNum = function(panelElement) {
       console.log("panel index: " + panelElement.parents('.panelContainer').index());
       return panelElement.parents('.panelContainer').index();
->>>>>>> 2a295dfecb4ec7a0ace2f50ff94030b8309df9e2
     };
 
     /*
@@ -2378,12 +2328,7 @@
 
     FontPanel.prototype.buildElement = function() {
       return this.element = $('\
-            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px; visibility: hidden;>\
-            <select class="zoomUpDwnBtn">\
-                 <option value="fifty">50%</option>\
-                 <option value="hundred" selected>100%</option>\
-                 <option value="oneFifty">150%</option>\
-            </select>\
+            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px">\
             <select class="fontTypeBtn">\
                  <option value="Times New Roman" selected>Times New Roman</option>\
                  <option value="Arial">Arial</option>\
@@ -2437,22 +2382,11 @@
                   <input type="radio" id="option2"><span class="glyphicon glyphicon-list-alt">\
                 </label>\
                </div>\
-<<<<<<< HEAD
-               <button class="gridElementBtn btn btn-default" type="button"><span class="glyphicon glyphicon-th-large"></button>\
-               <button class="snapBtn btn btn-default" type="button"><span class="glyphicon glyphicon-magnet"></button>\
-              </div>').addClass("FontPanel");
-=======
               </div>');
->>>>>>> 2a295dfecb4ec7a0ace2f50ff94030b8309df9e2
     };
 
     FontPanel.prototype.bindEvents = function() {
       var _this = this;
-      this.element.find("select.zoomUpDwnBtn").change(function(event) {
-        var newFontType;
-        newFontType = $(event.target).find("option:selected").val();
-        return _this.root.trigger('zoomTypeChanged', [newZoomSelection]);
-      });
       this.element.find("select.fontTypeBtn").change(function(event) {
         var newFontType;
         newFontType = $(event.target).find("option:selected").val();
