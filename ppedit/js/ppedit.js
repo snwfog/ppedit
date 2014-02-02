@@ -443,13 +443,13 @@
     Box.prototype.stopMoving = function() {
       this.element.removeClass('ppedit-box-selected');
       if ((this.prevPosition != null) && !Geometry.pointEqualToPoint(this.currentPosition(), this.prevPosition)) {
-        if ($(document).find('.snapBtn').hasClass('snapBtn-selected')) {
+        if ($(document).find('.snapImg').hasClass('snapBtn-selected')) {
           this.snap();
         }
         this.root.trigger('boxMoved', [this, $.extend(true, {}, this.currentPosition()), $.extend(true, {}, this.prevPosition)]);
       }
       this.prevPosition = void 0;
-      if ($(document).find('.snapBtn').hasClass('snapBtn-selected')) {
+      if ($(document).find('.snapImg').hasClass('snapBtn-selected')) {
         this.root.find('.hDotLine').removeClass('ppedit-hDotLine');
         return this.root.find('.vDotLine').removeClass('ppedit-vDotLine');
       }
@@ -465,7 +465,7 @@
       currentPos = this.currentPosition();
       this.setPosition(deltaX + currentPos.left, deltaY + currentPos.top);
       dotLinePos = this.getSnapPosition(this.currentPosition());
-      if ($(document).find('.snapBtn').hasClass('snapBtn-selected')) {
+      if ($(document).find('.snapImg').hasClass('snapBtn-selected')) {
         this.root.find('.hDotLine').addClass('ppedit-hDotLine').css('top', dotLinePos.top);
         return this.root.find('.vDotLine').addClass('ppedit-vDotLine').css('left', dotLinePos.left);
       }
@@ -1624,7 +1624,7 @@
     }
 
     Canvas.prototype.buildElement = function() {
-      return this.element = $('<canvas></canvas>').addClass('ppedit-canvas').attr('width', '980px').attr('height', '1386px');
+      return this.element = $('<canvas></canvas>').addClass('ppedit-canvas').attr('width', '920px').attr('height', '1325px');
     };
 
     Canvas.prototype.bindEvents = function() {
@@ -2016,10 +2016,13 @@
     ');
       this.controller = ControllerFactory.getController(this.element);
       row = this.element.find('.row');
-      this.superContainer = $('\
-      <div class="superContainer">\
-      </div>\
-    ');
+      /*
+      @superContainer = $('
+        <div class="superContainer shadow-effect">
+        </div>
+      ')
+      */
+
       this.superPanel = $('\
       <div class="superPanel" style="clear:both;">\
       </div>\
@@ -2039,11 +2042,11 @@
       this.mainPanel.buildElement();
       this.fontPanel.buildElement();
       for (i = _k = 0, _ref2 = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref2 ? _k <= _ref2 : _k >= _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
-        this.superContainer.append($('<div class="editContainer"></div>').append(this.areas[i].element));
+        row.append($('<div class="editContainer' + i + ' shadow-effect"></div>').append(this.areas[i].element));
         this.superPanel.append($('<div class="panelContainer" style="clear:both;"></div>').append(this.panels[i].element));
       }
+      $('body').append(this.mainPanel.element);
       row.append(this.superContainer);
-      row.append(this.mainPanel.element);
       row.append(this.fontPanel.element);
       return row.append(this.superPanel);
     };
@@ -2251,7 +2254,11 @@
     };
 
     PPEditor.prototype.getPageNum = function(boxSelector) {
-      return boxSelector.parents('.editContainer').index();
+      if (boxSelector.parent().parent().hasClass('editContainer0')) {
+        return 0;
+      } else {
+        return 1;
+      }
     };
 
     PPEditor.prototype.getPanelNum = function(panelElement) {
@@ -2318,37 +2325,30 @@
     MainPanel.prototype.buildElement = function() {
       return this.element = $('\
             <div class="left-sidebar">\
-              <button class="undoBtn btn btn-default icon-set" type="button"></button>\
-              <button class="redoBtn btn btn-default icon-set" type="button"></button>\
-              <button class="gridElementBtn btn btn-default icon-set" type="button"></button>\
-              <button class="snapBtn btn btn-default icon-set" type="button"></button>\
-            </div>');
+              <img class="icon-set undoImg" src="./ppedit/img/icons/glyphicons_221_unshare.png">\
+              <img class="icon-set redoImg" src="./ppedit/img//icons/glyphicons_222_share.png">\
+              <img class="icon-set gridImg" src="./ppedit/img/icons/glyphicons_155_show_big_thumbnails.png">\
+              <img class="icon-set snapImg" src="./ppedit/img/icons/glyphicons_023_magnet.png">\
+          </div>');
     };
 
     MainPanel.prototype.bindEvents = function() {
       var _this = this;
-      this.element.find('.snapBtn.btn.btn-default').click(function() {
+      this.element.find('.snapImg').click(function() {
         if (!$(event.target).hasClass("snapBtn-selected")) {
           return $(event.target).addClass("snapBtn-selected");
         } else {
           return $(event.target).removeClass("snapBtn-selected");
         }
       });
-      this.element.find('.glyphicon.glyphicon-magnet').click(function() {
-        if (!$(event.target).parent().hasClass("snapBtn-selected")) {
-          return $(event.target).parent().addClass("snapBtn-selected");
-        } else {
-          return $(event.target).parent().removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find(".gridElementBtn").click(function() {
+      this.element.find(".gridImg").click(function() {
         return _this.root.find('.row').trigger('panelClickGridBtnClick');
       });
-      this.element.find(".undoBtn").click(function() {
-        return _this.root.find('.row').trigger('requestUndo');
+      this.element.find(".undoImg").click(function() {
+        return _this.root.trigger('requestUndo');
       });
-      return this.element.find(".redoBtn").click(function() {
-        return _this.root.find('.row').trigger('requestRedo');
+      return this.element.find(".redoImg").click(function() {
+        return _this.root.trigger('requestRedo');
       });
     };
 
@@ -2371,7 +2371,7 @@
 
     FontPanel.prototype.buildElement = function() {
       return this.element = $('\
-            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px">\
+            <div class="col-xs-5 fontPanel" style ="padding-left: 30px;padding-bottom: 10px">\
             <select class="fontTypeBtn">\
                  <option value="Times New Roman" selected>Times New Roman</option>\
                  <option value="Arial">Arial</option>\

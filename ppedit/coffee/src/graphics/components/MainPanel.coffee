@@ -7,30 +7,24 @@ class MainPanel extends Graphic
   buildElement: ->
     @element = $('
             <div class="left-sidebar">
-              <button class="undoBtn btn btn-default icon-set" type="button"></button>
-              <button class="redoBtn btn btn-default icon-set" type="button"></button>
-              <button class="gridElementBtn btn btn-default icon-set" type="button"></button>
-              <button class="snapBtn btn btn-default icon-set" type="button"></button>
-            </div>')
+              <img class="icon-set undoImg" src="./ppedit/img/icons/glyphicons_221_unshare.png">
+              <img class="icon-set redoImg" src="./ppedit/img//icons/glyphicons_222_share.png">
+              <img class="icon-set gridImg" src="./ppedit/img/icons/glyphicons_155_show_big_thumbnails.png">
+              <img class="icon-set snapImg" src="./ppedit/img/icons/glyphicons_023_magnet.png">
+          </div>')
 
   bindEvents: ->
-    @element.find('.snapBtn.btn.btn-default').click =>
+    @element.find('.snapImg').click =>
       if !$(event.target).hasClass("snapBtn-selected") 
         $(event.target).addClass("snapBtn-selected") 
       else
         $(event.target).removeClass("snapBtn-selected") 
 
-    @element.find('.glyphicon.glyphicon-magnet').click =>
-      if !$(event.target).parent().hasClass("snapBtn-selected") 
-        $(event.target).parent().addClass("snapBtn-selected") 
-      else
-        $(event.target).parent().removeClass("snapBtn-selected") 
-
-    @element.find(".gridElementBtn").click =>
+    @element.find(".gridImg").click =>
       @root.find('.row').trigger 'panelClickGridBtnClick'
 
-    @element.find(".undoBtn").click =>
-      @root.find('.row').trigger 'requestUndo'
+    @element.find(".undoImg").click =>
+      @root.trigger 'requestUndo'
 
-    @element.find(".redoBtn").click =>
-      @root.find('.row').trigger 'requestRedo'
+    @element.find(".redoImg").click =>
+      @root.trigger 'requestRedo'

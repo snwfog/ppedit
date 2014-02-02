@@ -9,7 +9,7 @@ class FontPanel extends Graphic
 
   buildElement: ->
     @element =$('
-            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px">
+            <div class="col-xs-5 fontPanel" style ="padding-left: 30px;padding-bottom: 10px">
             <select class="fontTypeBtn">
                  <option value="Times New Roman" selected>Times New Roman</option>
                  <option value="Arial">Arial</option>

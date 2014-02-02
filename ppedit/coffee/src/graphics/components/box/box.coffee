@@ -153,11 +153,11 @@ class Box extends Graphic
   stopMoving: ->
     @element.removeClass('ppedit-box-selected')   
     if @prevPosition? && !Geometry.pointEqualToPoint(@currentPosition(), @prevPosition) 
-      if $(document).find('.snapBtn').hasClass('snapBtn-selected')
+      if $(document).find('.snapImg').hasClass('snapBtn-selected')
         @snap()
       @root.trigger 'boxMoved', [@, $.extend(true, {}, @currentPosition()), $.extend(true, {}, @prevPosition)]
     @prevPosition = undefined
-    if $(document).find('.snapBtn').hasClass('snapBtn-selected')
+    if $(document).find('.snapImg').hasClass('snapBtn-selected')
       @root.find('.hDotLine')
         .removeClass('ppedit-hDotLine')
       @root.find('.vDotLine')
@@ -170,7 +170,7 @@ class Box extends Graphic
     currentPos = @currentPosition()
     @setPosition deltaX + currentPos.left, deltaY + currentPos.top
     dotLinePos = @getSnapPosition(@currentPosition())
-    if $(document).find('.snapBtn').hasClass('snapBtn-selected')
+    if $(document).find('.snapImg').hasClass('snapBtn-selected')
       @root.find('.hDotLine')
         .addClass('ppedit-hDotLine')
         .css 'top', dotLinePos.top
