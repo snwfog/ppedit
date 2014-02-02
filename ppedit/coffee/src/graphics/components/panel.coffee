@@ -10,35 +10,29 @@ class Panel extends Graphic
 
   buildElement: ->
     @element = $('
-            <div class="col-xs-5">
+      <div>
+          <!-- Sidebar Right -->
+        <div class="menu-right-btn right-sidebar-btn shadow-effect">
+            <span class="vertical-text">Page 1</span>
+        </div>
 
-              <form class="form-inline" role="form" style="padding-top: 5px;">
-                <div class="form-group col-lg-20">
-                  <fieldset style="padding-left: 15px;">
+        <div class="menu-right-container right-sidebar-container shadow-effect">
 
-                      <button class="btn btn-sm btn-primary addElementBtn" type="button" style="width: 150px;"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>
+          <!-- Row 1 Menu  -->
+          <span class="right-sidebar-menu1">
+            <span class="moveElementUpBtn glyphicon glyphicon-arrow-up btn-lg"></span>
+            <span class="moveElementDownBtn glyphicon glyphicon-arrow-down btn-lg"></span>
+            <span class="addElementBtn glyphicon glyphicon-plus btn-lg"></span>
+          </span>
 
-                      <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>
-                      
-                      <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> 
+          <!-- Row 2 Menu -->
+          <span>
+            <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="0px">
+            </table>
+          </span>
+        </div>
 
-                      <table class="table table-hover dataPanel">
-                          <thead>
-                              <tr>
-                                <th>Remove</th>
-                                <th>Name of Element</th>
-                                <th>Opacity</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-
-                          </tbody>
-                      </table>
-                      <!-- <button type="submit" class="btn btn btn-success" style="float: right;">Save</button> -->
-                  </fieldset>
-                </div>
-              </form>
-            </div>')
+      </div>')
 
   bindEvents: ->
 
@@ -51,22 +45,39 @@ class Panel extends Graphic
     @element.find('.moveElementDownBtn').click =>
       @element.trigger 'moveElementDownBtnClick'
 
+    @element.find('.menu-right-btn').click (event) =>
+      el = $(event.target)
+      if @element.find('.menu-right-btn').css("margin-right") == "350px"
+        @element.find('.menu-right-container').animate {"margin-right": '-=350'}
+        @element.find('.menu-right-btn').animate {"margin-right": '-=350'}
+      else
+        @element.find('.menu-right-container').animate {"margin-right": '+=350'}
+        @element.find('.menu-right-btn').animate {"margin-right": '+=350'}
+
+
   ###
   Adds a row to be associated with the passed box id.
   ### 
   addBoxRow: (boxid, index) ->
-    newRow = $("
-            <tr class='ppedit-panel-row'>
-                <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>
-                <td><p class='ppedit-rowName'></p>
-                <td><div class=\"ppedit-slider\"></div></td>
-            </tr>")
+    newRow = $('
+        	<tr class="ppedit-panel-row">
+        		<td style="width:10%">
+        			<span class="deleteElementBtn glyphicon glyphicon-remove-sign btn-lg"></span>
+    		    </td>
+            <td style="width:50%">
+            <input type="text" class="form-control" placeholder="Element 1">
+            </td>
+            <td style="width:40%">
+              <div class="ppedit-slider"></div>
+            </td>
+    	    </tr>
+    	      ')
     .attr('ppedit-box-id', boxid)
 
     if !index? or index == 0
-      @element.find('.dataPanel tbody').prepend newRow
+      @element.find('.right-sidebar-menu2').prepend newRow
     else
-      newRow.insertBefore @element.find('tbody .ppedit-panel-rown:nth-child("' + index + '")')
+      newRow.insertBefore @element.find('.ppedit-panel-row:nth-child("' + index + '")')
 
     newRow.find(".ppedit-slider")
       .slider(
@@ -86,8 +97,7 @@ class Panel extends Graphic
           $(event.target).trigger 'onRowSliderStopValChanged', [boxid, parseInt(@prevOpacityVal)/100, parseInt(opacityStopVal)/100]
         @prevOpacityVal = undefined
 
-    newRow.find(".deleteElementBtn")
-      .on 'click', (event) =>
+    newRow.find(".deleteElementBtn").on 'click', (event) =>
         $(event.target).trigger 'onRowDeleteBtnClick', [boxid]
 
   ###

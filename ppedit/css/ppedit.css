@@ -46,6 +46,67 @@
     border-color:#888;
 }
 
+/* Right side panel */
+.right-sidebar-btn {
+    width:50px;
+    height:125px;
+    display:block;
+    background-color:#e84842;
+    margin-bottom:125px;
+    border-radius:5px 0px 0px 5px;
+    position:fixed;
+    top:65px;
+    z-index:50;
+    right:0px;
+}
+
+.right-sidebar-container {
+    width:350px;
+    height:250px;
+    display:block;
+    background-color:#fbfbfb;
+    position:fixed;
+    top:65px;
+    z-index:50;
+    right:0px;
+    margin-right:-350px;
+}
+
+.right-sidebar-menu1 {
+    padding:10px;
+    display:block;
+}
+
+.right-sidebar-menu2 {
+    height:175px;
+    border-top:1px solid #cacaca;
+    padding-top:15px;
+    display:block;
+    overflow:scroll;
+}
+
+.shadow-effect {
+    -webkit-box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
+    -moz-box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
+    box-shadow: 0px 0px 6px rgba(0,0,0,0.6);
+    -webkit-font-smoothing: antialiased;
+}
+
+.vertical-text {
+    display:block;
+    color:#fff;
+    font-family:'Oswald', sans-serif;
+    font-size:20px;
+    font-weight:400;
+    margin-top:50px;
+    -webkit-transform:rotate(90deg);
+    -moz-transform:rotate(90deg);
+    -o-transform: rotate(90deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+/* Right Side Panel -- END */
+
 /*
 
 Original css file.
@@ -119,72 +180,5 @@ body {
 
 .icon-set {
     padding-bottom:15px;
-}
-
-.left-sidebar {
-    width:50px; 
-    height:100vh; 
-    background-color:#888; 
-    position:fixed; 
-    top:0px; 
-    padding:10px;
-}
-
-.right-sidebar-btn {
-    width:50px; 
-    height:125px; 
-    display:block; 
-    background-color:#e84842; 
-    margin-bottom:125px; 
-    border-radius:5px 0px 0px 5px;
-    position:fixed; 
-    top:65px; 
-    z-index:50; 
-    right:0px;
-}
-
-.right-sidebar-container {
-    width:350px; 
-    height:250px; 
-    display:block; 
-    background-color:#fbfbfb;
-    position:fixed; 
-    top:65px; 
-    z-index:50; 
-    right:0px; 
-    margin-right:-350px;
-}
-
-.right-sidebar-menu1 {
-    padding:10px; 
-    display:block;
-}
-
-.right-sidebar-menu2 {
-    height:175px; 
-    border-top:1px solid #cacaca; 
-    padding-top:15px; 
-    display:block; 
-    overflow:scroll;
-}
-
-.shadow-effect {
-    -webkit-box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
-    -moz-box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
-    box-shadow: 0px 0px 6px rgba(0,0,0,0.6);
-    -webkit-font-smoothing: antialiased;
-}
-
-.vertical-text {
-    display:block; 
-    color:#fff; 
-    font-family:'Oswald', sans-serif; 
-    font-size:20px; 
-    font-weight:400; 
-    margin-top:50px; 
-    -webkit-transform:rotate(90deg);
-    -moz-transform:rotate(90deg);
-    -o-transform: rotate(90deg); 
-    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 */
