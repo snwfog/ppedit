@@ -9,7 +9,7 @@ class FontPanel extends Graphic
 
   buildElement: ->
     @element =$('
-            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px">
+            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px;visibility:hidden">
             <select class="fontTypeBtn">
                  <option value="Times New Roman" selected>Times New Roman</option>
                  <option value="Arial">Arial</option>
@@ -63,7 +63,7 @@ class FontPanel extends Graphic
                   <input type="radio" id="option2"><span class="glyphicon glyphicon-list-alt">
                 </label>
                </div>
-              </div>')
+              </div>').addClass("FontPanel")
 
 
 
@@ -88,33 +88,34 @@ class FontPanel extends Graphic
 
     @element.find(".wbtn").click (event) =>
       btn = $(event.target).toggleClass('.ppedit-btn-enabled')
-      @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+      btn.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
 
     @element.find(".ubtn").click (event) =>
       btn = $(event.target).toggleClass('.ppedit-btn-enabled')
-      @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontUnderlinedBtnEnableClick' else 'fontUnderlinedBtnDisableClick')
+      btn.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontUnderlinedBtnEnableClick' else 'fontUnderlinedBtnDisableClick')
 
     @element.find(".ibtn").click (event) =>
       btn = $(event.target).toggleClass('.ppedit-btn-enabled')
-      @root.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontItalicBtnEnableClick' else 'fontItalicBtnDisableClick')
+      btn.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontItalicBtnEnableClick' else 'fontItalicBtnDisableClick')
 
     @element.find(".rightAlignBtn").click (event) =>
-      @root.trigger 'rightAlignment'
+      $(event.target).trigger 'rightAlignment'
 
     @element.find(".leftAlignBtn").click (event) =>
-      @root.trigger 'leftAlignment'
+      console.log 'leftAlignBtn'
+      $(event.target).trigger 'leftAlignment'
 
     @element.find(".centerAlignBtn").click (event) =>
-      @root.trigger 'centerAlignment'
+      $(event.target).trigger 'centerAlignment'
 
     @element.find(".bulletPointBtn").click (event) =>
-      @root.trigger 'bulletPointBtnEnableClick'
+      $(event.target).trigger 'bulletPointBtnEnableClick'
 
     @element.find(".orderedPointBtn").click (event) =>
-      @root.trigger 'orderedPointBtnEnableClick'
+      $(event.target).trigger 'orderedPointBtnEnableClick'
 
     @element.find(".gridElementBtn").click =>
-      @root.trigger 'panelClickGridBtnClick'
+      $(event.target).trigger 'panelClickGridBtnClick'
 
     @element.find('.snapBtn').click =>
       if !$(event.target).hasClass("snapBtn-selected") 
