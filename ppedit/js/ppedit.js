@@ -1817,35 +1817,29 @@
 
     Panel.prototype.buildElement = function() {
       return this.element = $('\
-            <div class="col-xs-5">\
+      <div>\
+          <!-- Sidebar Right -->\
+        <div class="menu-right-btn right-sidebar-btn shadow-effect">\
+            <span class="vertical-text">Page 1</span>\
+        </div>\
 \
-              <form class="form-inline" role="form" style="padding-top: 5px;">\
-                <div class="form-group col-lg-20">\
-                  <fieldset style="padding-left: 15px;">\
+        <div class="menu-right-container right-sidebar-container shadow-effect">\
 \
-                      <button class="btn btn-sm btn-primary addElementBtn" type="button" style="width: 150px;"><span class="glyphicon glyphicon-plus-sign"></span> Add Element</button>\
+          <!-- Row 1 Menu  -->\
+          <span class="right-sidebar-menu1">\
+            <span class="moveElementUpBtn glyphicon glyphicon-arrow-up btn-lg"></span>\
+            <span class="moveElementDownBtn glyphicon glyphicon-arrow-down btn-lg"></span>\
+            <span class="addElementBtn glyphicon glyphicon-plus btn-lg"></span>\
+          </span>\
 \
-                      <button class="btn btn-sm btn-info moveElementUpBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-up"></span></button>\
-                      \
-                      <button class="btn btn-sm btn-info moveElementDownBtn" type="button"><span class="glyphicon glyphicon-circle-arrow-down"></span></button> \
+          <!-- Row 2 Menu -->\
+          <span>\
+            <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="0px">\
+            </table>\
+          </span>\
+        </div>\
 \
-                      <table class="table table-hover dataPanel">\
-                          <thead>\
-                              <tr>\
-                                <th>Remove</th>\
-                                <th>Name of Element</th>\
-                                <th>Opacity</th>\
-                              </tr>\
-                          </thead>\
-                          <tbody>\
-\
-                          </tbody>\
-                      </table>\
-                      <!-- <button type="submit" class="btn btn btn-success" style="float: right;">Save</button> -->\
-                  </fieldset>\
-                </div>\
-              </form>\
-            </div>');
+      </div>');
     };
 
     Panel.prototype.bindEvents = function() {
@@ -1856,8 +1850,27 @@
       this.element.find('.moveElementUpBtn').click(function() {
         return _this.element.trigger('moveElementUpBtnClick');
       });
-      return this.element.find('.moveElementDownBtn').click(function() {
+      this.element.find('.moveElementDownBtn').click(function() {
         return _this.element.trigger('moveElementDownBtnClick');
+      });
+      return this.element.find('.menu-right-btn').click(function(event) {
+        var el;
+        el = $(event.target);
+        if (_this.element.find('.menu-right-btn').css("margin-right") === "350px") {
+          _this.element.find('.menu-right-container').animate({
+            "margin-right": '-=350'
+          });
+          return _this.element.find('.menu-right-btn').animate({
+            "margin-right": '-=350'
+          });
+        } else {
+          _this.element.find('.menu-right-container').animate({
+            "margin-right": '+=350'
+          });
+          return _this.element.find('.menu-right-btn').animate({
+            "margin-right": '+=350'
+          });
+        }
       });
     };
 
@@ -1869,11 +1882,23 @@
     Panel.prototype.addBoxRow = function(boxid, index) {
       var newRow,
         _this = this;
-      newRow = $("            <tr class='ppedit-panel-row'>                <td><span class=\"glyphicon glyphicon-remove-sign icon-4x red deleteElementBtn\"></span></td>                <td><p class='ppedit-rowName'></p>                <td><div class=\"ppedit-slider\"></div></td>            </tr>").attr('ppedit-box-id', boxid);
+      newRow = $('\
+        	<tr class="ppedit-panel-row">\
+        		<td style="width:10%">\
+        			<span class="deleteElementBtn glyphicon glyphicon-remove-sign btn-lg"></span>\
+    		    </td>\
+            <td style="width:50%">\
+            <input type="text" class="form-control" placeholder="Element 1">\
+            </td>\
+            <td style="width:40%">\
+              <div class="ppedit-slider"></div>\
+            </td>\
+    	    </tr>\
+    	      ').attr('ppedit-box-id', boxid);
       if ((index == null) || index === 0) {
-        this.element.find('.dataPanel tbody').prepend(newRow);
+        this.element.find('.right-sidebar-menu2').prepend(newRow);
       } else {
-        newRow.insertBefore(this.element.find('tbody .ppedit-panel-rown:nth-child("' + index + '")'));
+        newRow.insertBefore(this.element.find('.ppedit-panel-row:nth-child("' + index + '")'));
       }
       newRow.find(".ppedit-slider").slider({
         min: 0,
@@ -1996,7 +2021,7 @@
   PPEditor = (function(_super) {
     __extends(PPEditor, _super);
 
-    PPEditor.NUMBER_OF_PAGES = 2;
+    PPEditor.NUMBER_OF_PAGES = 1;
 
     function PPEditor(root) {
       this.root = root;
@@ -2314,6 +2339,7 @@
 
   })(Graphic);
 
+
   MainPanel = (function(_super) {
     __extends(MainPanel, _super);
 
@@ -2355,6 +2381,7 @@
     return MainPanel;
 
   })(Graphic);
+
 
   /*
   Graphic containing the font settings to apply to boxes.
@@ -2525,6 +2552,55 @@
     };
 
     return FontPanel;
+
+  })(Graphic);
+
+  MainPanel = (function(_super) {
+    __extends(MainPanel, _super);
+
+    function MainPanel(root) {
+      this.root = root;
+      MainPanel.__super__.constructor.call(this, this.root);
+    }
+
+    MainPanel.prototype.buildElement = function() {
+      return this.element = $('\
+            <div class="left-sidebar">\
+              <button class="undoBtn btn btn-default icon-set" type="button"></button>\
+              <button class="redoBtn btn btn-default icon-set" type="button"></button>\
+              <button class="gridElementBtn btn btn-default icon-set" type="button"></button>\
+              <button class="snapBtn btn btn-default icon-set" type="button"></button>\
+            </div>');
+    };
+
+    MainPanel.prototype.bindEvents = function() {
+      var _this = this;
+      this.element.find('.snapBtn.btn.btn-default').click(function() {
+        if (!$(event.target).hasClass("snapBtn-selected")) {
+          return $(event.target).addClass("snapBtn-selected");
+        } else {
+          return $(event.target).removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find('.glyphicon.glyphicon-magnet').click(function() {
+        if (!$(event.target).parent().hasClass("snapBtn-selected")) {
+          return $(event.target).parent().addClass("snapBtn-selected");
+        } else {
+          return $(event.target).parent().removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find(".gridElementBtn").click(function() {
+        return _this.root.find('.row').trigger('panelClickGridBtnClick');
+      });
+      this.element.find(".undoBtn").click(function() {
+        return _this.root.find('.row').trigger('requestUndo');
+      });
+      return this.element.find(".redoBtn").click(function() {
+        return _this.root.find('.row').trigger('requestRedo');
+      });
+    };
+
+    return MainPanel;
 
   })(Graphic);
 
