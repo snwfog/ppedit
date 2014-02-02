@@ -13,7 +13,7 @@ Graphic acting a the main container of the PPEditor.
 ###
 class PPEditor extends Graphic
 
-  @NUMBER_OF_PAGES: 1
+  @NUMBER_OF_PAGES: 2
 
   constructor: (@root) ->
     super @root

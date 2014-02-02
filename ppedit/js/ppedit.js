@@ -2021,7 +2021,7 @@
   PPEditor = (function(_super) {
     __extends(PPEditor, _super);
 
-    PPEditor.NUMBER_OF_PAGES = 1;
+    PPEditor.NUMBER_OF_PAGES = 2;
 
     function PPEditor(root) {
       this.root = root;
@@ -2339,7 +2339,6 @@
 
   })(Graphic);
 
-
   MainPanel = (function(_super) {
     __extends(MainPanel, _super);
 
@@ -2381,7 +2380,6 @@
     return MainPanel;
 
   })(Graphic);
-
 
   /*
   Graphic containing the font settings to apply to boxes.
@@ -2552,55 +2550,6 @@
     };
 
     return FontPanel;
-
-  })(Graphic);
-
-  MainPanel = (function(_super) {
-    __extends(MainPanel, _super);
-
-    function MainPanel(root) {
-      this.root = root;
-      MainPanel.__super__.constructor.call(this, this.root);
-    }
-
-    MainPanel.prototype.buildElement = function() {
-      return this.element = $('\
-            <div class="left-sidebar">\
-              <button class="undoBtn btn btn-default icon-set" type="button"></button>\
-              <button class="redoBtn btn btn-default icon-set" type="button"></button>\
-              <button class="gridElementBtn btn btn-default icon-set" type="button"></button>\
-              <button class="snapBtn btn btn-default icon-set" type="button"></button>\
-            </div>');
-    };
-
-    MainPanel.prototype.bindEvents = function() {
-      var _this = this;
-      this.element.find('.snapBtn.btn.btn-default').click(function() {
-        if (!$(event.target).hasClass("snapBtn-selected")) {
-          return $(event.target).addClass("snapBtn-selected");
-        } else {
-          return $(event.target).removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find('.glyphicon.glyphicon-magnet').click(function() {
-        if (!$(event.target).parent().hasClass("snapBtn-selected")) {
-          return $(event.target).parent().addClass("snapBtn-selected");
-        } else {
-          return $(event.target).parent().removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find(".gridElementBtn").click(function() {
-        return _this.root.find('.row').trigger('panelClickGridBtnClick');
-      });
-      this.element.find(".undoBtn").click(function() {
-        return _this.root.find('.row').trigger('requestUndo');
-      });
-      return this.element.find(".redoBtn").click(function() {
-        return _this.root.find('.row').trigger('requestRedo');
-      });
-    };
-
-    return MainPanel;
 
   })(Graphic);
 
