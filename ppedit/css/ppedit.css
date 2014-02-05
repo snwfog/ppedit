@@ -1,127 +1,184 @@
-.ppedit-container
-{
-    position:relative;
-    width:980px;
-    height:1386px;
-    border-style:solid;
-    border-width:2px;
-    border-color:#909090;
-    
-    padding: 0px 0px 0px 0px;
-    margin-left: auto;
-    margin-right: auto;
-
+.left-sidebar {
+    width:50px; 
+    height:100vh; 
+    background-color:#888; 
+    position:fixed; 
+    top:0px; 
+    padding:10px;
 }
 
-.superContainer
-{
-    float: left;
-    position:relative;
-    width:1040px;
-    height:1426px;
-    border-style:solid;
-    border-width:2px;
-    border-color:black;
-    overflow: scroll;
-    padding: 0px 0px 0px 0px;
-    margin-left: auto;
-    margin-right: auto;
+.icon-set {
+    padding-bottom: 15px;
+}
+/*.gridElementBtn.icon-set {
+    padding-top: 10px;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+.snapBtn.icon-set {
+    padding-top: 17px;
+    padding-bottom: 17px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-bottom: 15px;
+}*/
+
+.undoBtn {
+    background-image:url('../img/icons/glyphicons_221_unshare.png');
+    background-color:#888;
+    border-color:#888;
 }
 
-.editContainer
-{
-    margin-top: 10px;
-    margin-bottom: 10px;
-    margin-right: 20px;
-    margin-left: 20px;
-    width: inherit;
-    height: inherit;
-    border-color: #909090;
+.redoBtn {
+    background-image:url('../img/icons/glyphicons_222_share.png');
+    background-color:#888;
+    border-color:#888;
 }
 
-.editContainer2
-{
-    top: 1446px;
-    left: 20px;
-    width: 980px;
-    height: 1386px;
-    border-color: #909090;
-    position: absolute;
+.gridElementBtn {
+    background-image:url('../img/icons/glyphicons_155_show_big_thumbnails.png');
+    background-color:#888;
+    border-color:#888;
 }
-.ppedit-box-container
-{
-    position:absolute;
-    width:inherit;
-    height:inherit;
-
-    padding: 0px 0px 0px 0px;
-
-    overflow-y: auto;
-    overflow-x: hidden;
+.snapBtn {
+    background-image:url('../img/icons/glyphicons_023_magnet.png');
+    background-color:#888;
+    border-color:#888;
 }
 
-.ppedit-box
-{
-    position:absolute;
-    
-    border-style:solid;
-    border-width:1px;
-    border-color:orange; 
-    
-    resize:both;
-    overflow:auto;
-
-    background-color: transparent;
-    /*background-color: rgba(255, 255, 255, 1);*/
+/* Right side panel */
+.right-sidebar-btn {
+    width:50px;
+    height:125px;
+    display:block;
+    background-color:#e84842;
+    margin-bottom:125px;
+    border-radius:5px 0px 0px 5px;
+    position:fixed;
+    top:65px;
+    z-index:50;
+    right:0px;
 }
 
-.ppedit-box-selected
-{
-    border-style:dashed;
+.right-sidebar-container {
+    width:350px;
+    height:250px;
+    display:block;
+    background-color:#fbfbfb;
+    position:fixed;
+    top:65px;
+    z-index:50;
+    right:0px;
+    margin-right:-350px;
 }
 
-.ppedit-box-focus,
-.ppedit-box:focus
-{
-    border-color:blue;
-    border-style:dashed;
-    background-color: rgba(200, 200, 200, 0.1);
+.right-sidebar-menu1 {
+    padding:10px;
+    display:block;
 }
 
-.ppedit-canvas
-{
-    position: absolute;
-    z-index: -500;
+.right-sidebar-menu2 {
+    height:175px;
+    border-top:1px solid #cacaca;
+    padding-top:15px;
+    display:block;
+    overflow:scroll;
 }
 
-.ppedit-slider
-{
-    width:100px;
+.shadow-effect {
+    -webkit-box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
+    -moz-box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
+    box-shadow: 0px 0px 6px rgba(0,0,0,0.6);
+    -webkit-font-smoothing: antialiased;
 }
 
-.ppedit-grid
-{
-    position: absolute;
-    width:inherit;
-    height:inherit;
-    opacity:0.5;
-    z-index: -499;
+.vertical-text {
+    display:block;
+    color:#fff;
+    font-family:'Oswald', sans-serif;
+    font-size:20px;
+    font-weight:400;
+    margin-top:50px;
+    -webkit-transform:rotate(90deg);
+    -moz-transform:rotate(90deg);
+    -o-transform: rotate(90deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 
-.ppedit-vDotLine
-{
-    border-right: 1px dotted #0099CC; 
-    height: inherit;
+/* Right Side Panel -- END */
+
+/*
+
+Original css file.
+
+body {
+    background-color:#f0f0f0;
+}
+
+.edit-container {
+    width:980px; 
+    height:1386px; 
+    border:30px solid #fff; 
+    background-image:url('../../images/gridtest.png'); 
+    display:block; 
     position: absolute; 
-    left: 50px; 
-    top: 0px;
+    top:65px; 
+    left:50%; 
+    margin-left:-465px;
 }
 
-.ppedit-hDotLine
-{
-    border-bottom: 1px dotted #0099CC;
-    width:inherit;
-    position: absolute; 
-    left: 0px; 
-    top: 50px;
+.edit-img-set {
+    padding-right:15px;
 }
+
+.edit-menu {
+    width:265px; 
+    height:105px; 
+    display:block; 
+    background-color:#fbfbfb; 
+    position:relative; 
+    top:50px; 
+    left:175px;
+}
+
+.edit-menu-row1 {
+    display:block; 
+    padding:10px;
+}
+
+.edit-menu-row2 {
+    display:block; 
+    padding:10px; 
+    border-top:1px solid #cacaca;
+}
+
+.edit-pointer {
+    width: 0; 
+    height: 0; 
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #fbfbfb;
+    position:relative;
+    top:50px;
+    left:200px;
+    z-index:75;
+}
+
+.edit-text-box {
+    width:200px; 
+    height:100px; 
+    display:block; 
+    border:1px solid #cacaca; 
+    position:relative; 
+    top:50px; 
+    left:50px; 
+    background-color:#fff; 
+    zoom: 1;
+    filter: alpha(opacity=50);
+    opacity: 0.5; color:#000;
+}
+
+.icon-set {
+    padding-bottom:15px;
+}
+*/
