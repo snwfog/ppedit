@@ -13,7 +13,7 @@ Graphic acting a the main container of the PPEditor.
 ###
 class PPEditor extends Graphic
 
-  @NUMBER_OF_PAGES: 1
+  @NUMBER_OF_PAGES: 2
 
   constructor: (@root) ->
     super @root
@@ -36,11 +36,13 @@ class PPEditor extends Graphic
     @controller = ControllerFactory.getController @element
 
     row = @element.find('.row')
+
+    ###
     @superContainer = $('
-      <div class="superContainer">
+      <div class="superContainer shadow-effect">
       </div>
     ')
-
+    ###
     @superPanel = $('
       <div class="superPanel" style="clear:both;">
       </div>
@@ -49,6 +51,7 @@ class PPEditor extends Graphic
     @areas = []
     @panels = []
     @mainPanel = new MainPanel @element
+    @fontPanel = new FontPanel row
 
     for i in [0..PPEditor.NUMBER_OF_PAGES-1]
       @areas.push new EditArea row
@@ -60,12 +63,15 @@ class PPEditor extends Graphic
 
     @mainPanel.buildElement()
 
+    
+
     for i in [0..PPEditor.NUMBER_OF_PAGES-1]
-      @superContainer.append $('<div class="editContainer"></div>').append @areas[i].element
+      row.append $('<div class="editContainer'+i+' shadow-effect"></div>').append @areas[i].element
       @superPanel.append $('<div class="panelContainer" style="clear:both;"></div>').append @panels[i].element
 
+    $('body').append @mainPanel.element
     row.append @superContainer
-    row.append @mainPanel.element
+    row.append @fontPanel.element
     row.append @superPanel
 
   bindEvents: ->
@@ -225,7 +231,10 @@ class PPEditor extends Graphic
     return @element.find '.ppedit-box:focus, .ppedit-box-selected, .ppedit-box-focus'
 
   getPageNum:(boxSelector) ->
-    return boxSelector.parents('.editContainer').index()
+    if boxSelector.parent().parent().hasClass('editContainer0')
+      return 0
+    else 
+      return 1
 
   getPanelNum:(panelElement) ->
     return panelElement.parents('.panelContainer').index()
