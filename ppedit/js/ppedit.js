@@ -813,12 +813,8 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
-        if (this.editContainer === true) {
-          this.editor.areas[this.pageNum].boxesContainer.removeBoxes([box.element.attr('id')]);
-          _results.push(this.editor.panels[this.pageNum].removeBoxRow([box.element.attr('id')]));
-        } else {
-          _results.push(void 0);
-        }
+        this.editor.areas[this.pageNum].boxesContainer.removeBoxes([box.element.attr('id')]);
+        _results.push(this.editor.panels[this.pageNum].removeBoxRow([box.element.attr('id')]));
       }
       return _results;
     };
@@ -2041,13 +2037,10 @@
     ');
       this.controller = ControllerFactory.getController(this.element);
       row = this.element.find('.row');
-      /*
-      @superContainer = $('
-        <div class="superContainer shadow-effect">
-        </div>
-      ')
-      */
-
+      this.superContainer = $('\
+      <div class="superContainer">\
+      </div>\
+    ');
       this.superPanel = $('\
       <div class="superPanel" style="clear:both;">\
       </div>\
@@ -2067,7 +2060,7 @@
       this.mainPanel.buildElement();
       this.fontPanel.buildElement();
       for (i = _k = 0, _ref2 = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref2 ? _k <= _ref2 : _k >= _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
-        row.append($('<div class="editContainer' + i + ' shadow-effect"></div>').append(this.areas[i].element));
+        this.superContainer.append($('<div class="editContainer  shadow-effect"></div>').append(this.areas[i].element));
         this.superPanel.append($('<div class="panelContainer" style="clear:both;"></div>').append(this.panels[i].element));
       }
       $('body').append(this.mainPanel.element);
@@ -2279,11 +2272,7 @@
     };
 
     PPEditor.prototype.getPageNum = function(boxSelector) {
-      if (boxSelector.parent().parent().hasClass('editContainer0')) {
-        return 0;
-      } else {
-        return 1;
-      }
+      return boxSelector.parents('.editContainer').index();
     };
 
     PPEditor.prototype.getPanelNum = function(panelElement) {

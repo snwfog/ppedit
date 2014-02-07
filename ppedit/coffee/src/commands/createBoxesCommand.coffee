@@ -28,9 +28,8 @@ class CreateBoxesCommand extends Command
 
   undo: ->
     for box in @boxes
-      if @editContainer == true
-        @editor.areas[@pageNum].boxesContainer.removeBoxes [box.element.attr('id')]
-        @editor.panels[@pageNum].removeBoxRow [box.element.attr('id')]
+      @editor.areas[@pageNum].boxesContainer.removeBoxes [box.element.attr('id')]
+      @editor.panels[@pageNum].removeBoxRow [box.element.attr('id')]
 
   ###
   Adds the passed box to the boxcontainer and
