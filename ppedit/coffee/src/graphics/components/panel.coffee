@@ -34,7 +34,7 @@ class Panel extends Graphic
 
           <!-- Row 2 Menu -->
           <span>
-            <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="0px">
+            <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="2px">
             </table>
           </span>
         </div>
@@ -42,7 +42,6 @@ class Panel extends Graphic
       </div>')
 
   bindEvents: ->
-
     @element.find(".addElementBtn").click =>
       @element.trigger 'panelClickAddBtnClick'
 
@@ -52,14 +51,11 @@ class Panel extends Graphic
     @element.find('.moveElementDownBtn').click =>
       @element.trigger 'moveElementDownBtnClick'
 
-    @element.find('.menu-right-btn').click (event) =>
-      el = $(event.target)
-      if @element.find('.menu-right-btn').css("margin-right") == "350px"
-        @element.find('.menu-right-container').animate {"margin-right": '-=350'}
-        @element.find('.menu-right-btn').animate {"margin-right": '-=350'}
+    @element.find('.minimize-sidebar-btn').click (event) =>
+      if @element.css("right") == "0px"
+        @element.animate {"right": '+=350'}
       else
-        @element.find('.menu-right-container').animate {"margin-right": '+=350'}
-        @element.find('.menu-right-btn').animate {"margin-right": '+=350'}
+        @element.animate {"right": '-=350'}
 
 
   ###
@@ -69,7 +65,7 @@ class Panel extends Graphic
     newRow = $('
         	<tr class="ppedit-panel-row">
         		<td style="width:10%">
-        			<span class="deleteElementBtn glyphicon glyphicon-remove-sign btn-lg"></span>
+        			<div class="deleteElementBtn menu-panel-icon"></div>
     		    </td>
             <td style="width:50%">
             <input type="text" class="form-control" placeholder="Element 1">

@@ -1837,7 +1837,7 @@
 \
           <!-- Row 2 Menu -->\
           <span>\
-            <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="0px">\
+            <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="2px">\
             </table>\
           </span>\
         </div>\
@@ -1856,22 +1856,14 @@
       this.element.find('.moveElementDownBtn').click(function() {
         return _this.element.trigger('moveElementDownBtnClick');
       });
-      return this.element.find('.menu-right-btn').click(function(event) {
-        var el;
-        el = $(event.target);
-        if (_this.element.find('.menu-right-btn').css("margin-right") === "350px") {
-          _this.element.find('.menu-right-container').animate({
-            "margin-right": '-=350'
-          });
-          return _this.element.find('.menu-right-btn').animate({
-            "margin-right": '-=350'
+      return this.element.find('.minimize-sidebar-btn').click(function(event) {
+        if (_this.element.css("right") === "0px") {
+          return _this.element.animate({
+            "right": '+=350'
           });
         } else {
-          _this.element.find('.menu-right-container').animate({
-            "margin-right": '+=350'
-          });
-          return _this.element.find('.menu-right-btn').animate({
-            "margin-right": '+=350'
+          return _this.element.animate({
+            "right": '-=350'
           });
         }
       });
@@ -1888,7 +1880,7 @@
       newRow = $('\
         	<tr class="ppedit-panel-row">\
         		<td style="width:10%">\
-        			<span class="deleteElementBtn glyphicon glyphicon-remove-sign btn-lg"></span>\
+        			<div class="deleteElementBtn menu-panel-icon"></div>\
     		    </td>\
             <td style="width:50%">\
             <input type="text" class="form-control" placeholder="Element 1">\
@@ -2024,7 +2016,7 @@
   PPEditor = (function(_super) {
     __extends(PPEditor, _super);
 
-    PPEditor.NUMBER_OF_PAGES = 2;
+    PPEditor.NUMBER_OF_PAGES = 1;
 
     function PPEditor(root) {
       this.root = root;
@@ -2070,7 +2062,7 @@
         this.superContainer.append($('<div class="editContainer  shadow-effect"></div>').append(this.areas[i].element));
         this.superPanel.append($('<div class="panelContainer" style="clear:both;"></div>').append(this.panels[i].element));
       }
-      $('body').append(this.mainPanel.element);
+      this.element.append(this.mainPanel.element);
       row.append(this.superContainer);
       row.append(this.fontPanel.element);
       return row.append(this.superPanel);

@@ -1,10 +1,11 @@
 .left-sidebar {
-    width:50px; 
-    height:100vh; 
-    background-color:#888; 
-    position:fixed; 
-    top:0px; 
-    padding:10px;
+    width: 50px;
+    height: 100%;
+    background-color: #888;
+    position: fixed;
+    top: 0px;
+    padding: 10px;
+    left: 0px;
 }
 
 .icon-set {
@@ -84,9 +85,12 @@
     z-index:50;
 }
 
+.menu-tab-pages
+{
+    line-height: 5em;
+}
+
 .page-sidebar-tab {
-    display: table-cell;
-    vertical-align: middle;
 }
 
 .right-sidebar-container {
@@ -120,6 +124,7 @@
 }
 
 .vertical-text {
+    white-space: nowrap;
     display:block;
     color:#fff;
     font-family:'Oswald', sans-serif;
@@ -132,6 +137,16 @@
 }
 
 
+.deleteElementBtn
+{
+    margin-left: 10px;
+    background-image: url(../img/icons/OFF/glyphicons_192_circle_remove.png);
+}
+
+.deleteElementBtn:hover
+{
+    background-image: url(../img/icons/ON/glyphicons_192_circle_remove.png);
+}
 
 
 
