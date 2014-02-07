@@ -1827,11 +1827,18 @@
 
     Panel.prototype.buildElement = function() {
       return this.element = $('\
-      <div>\
+      <div class="menu-sidebar">\
           <!-- Sidebar Right -->\
-        <div class="menu-right-btn right-sidebar-btn shadow-effect">\
-            <span class="vertical-text">Page 1</span>\
-        </div>\
+        <div class="menu-tab-sidebar">\
+            <div class="minimize-sidebar-btn shadow-effect">\
+                <span class="minimize-text">&lt;&lt;</span>\
+            </div>\
+            <div class="menu-tab-pages">\
+               <div class="page-sidebar-tab menu-right-btn shadow-effect">\
+                      <span class="vertical-text">Page 1</span>\
+               </div>\
+            </div>\
+         </div>\
 \
         <div class="menu-right-container right-sidebar-container shadow-effect">\
 \
