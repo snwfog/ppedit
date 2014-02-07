@@ -28,17 +28,9 @@ class FontPanel extends Graphic
                  <option value="16">16</option>
                  <option value="20">20</option>
                </select>
-               <div class="btn-group" data-toggle="buttons">
-                <label class="wbtn btn btn-default">
-                  <input type="checkbox"><span class="weightBtn glyphicon glyphicon-bold"></span>
-                </label>
-                <label class="ubtn btn btn-default">
-                  <input type="checkbox"><span class="underlineBtn glyphicon glyphicon-text-width"></span>
-                </label>
-                <label class="ibtn btn btn-default">
-                  <input type="checkbox"><span class="italicBtn glyphicon glyphicon-italic"></span>
-                </label>
-               </div>
+               <img src="ppedit/img/icons/OFF/glyphicons_102_bold.png" class="wbtn edit-img-set" id="glyphicons_102_bold" onclick="buttonToggle(\'glyphicons_102_bold\')">
+               <img src="ppedit/img/icons/OFF/glyphicons_101_italic.png" class="ibtn edit-img-set" id="glyphicons_101_italic" onclick="buttonToggle(\'glyphicons_101_italic\')">
+               <img src="ppedit/img/icons/OFF/glyphicons_103_text_underline.png" class="ubtn edit-img-set" id="glyphicons_103_text_underline" onclick="buttonToggle(\'glyphicons_103_text_underline\')">
             </span>
                <button class="colorPicker btn btn-default" id="picker"><span class="glyphicon glyphicon-font"></button>
 
@@ -90,7 +82,8 @@ class FontPanel extends Graphic
           $(el).colpickHide()
       })
 
-    @element.find(".wbtn").click (event) =>
+    @element.find('img[src$="/glyphicons_102_bold.png"]').click (event) =>
+      console.log(@element.find('img[src$="/glyphicons_102_bold.png"]'))
       btn = $(event.target).toggleClass('.ppedit-btn-enabled')
       btn.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
 
