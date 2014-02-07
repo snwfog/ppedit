@@ -1843,11 +1843,11 @@
         <div class="menu-right-container right-sidebar-container shadow-effect">\
 \
           <!-- Row 1 Menu  -->\
-          <span class="right-sidebar-menu1">\
-            <span class="moveElementUpBtn glyphicon glyphicon-arrow-up btn-lg"></span>\
-            <span class="moveElementDownBtn glyphicon glyphicon-arrow-down btn-lg"></span>\
-            <span class="addElementBtn glyphicon glyphicon-plus btn-lg"></span>\
-          </span>\
+          <div class="right-sidebar-menu1">\
+            <div class="moveElementUpBtn menu-panel-icon"></div>\
+            <div class="moveElementDownBtn menu-panel-icon"></div>\
+            <div class="addElementBtn menu-panel-icon"></div>\
+          </div>\
 \
           <!-- Row 2 Menu -->\
           <span>\
@@ -2486,7 +2486,7 @@
       this.element.find('img[src$="/glyphicons_102_bold.png"]').click(function(event) {
         var btn;
         console.log(_this.element.find('img[src$="/glyphicons_102_bold.png"]'));
-        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
+        btn = $(event.target).toggle('.ppedit-btn-enabled');
         return btn.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
       });
       this.element.find(".ubtn").click(function(event) {

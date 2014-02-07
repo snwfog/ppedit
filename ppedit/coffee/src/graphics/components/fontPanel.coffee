@@ -84,7 +84,7 @@ class FontPanel extends Graphic
 
     @element.find('img[src$="/glyphicons_102_bold.png"]').click (event) =>
       console.log(@element.find('img[src$="/glyphicons_102_bold.png"]'))
-      btn = $(event.target).toggleClass('.ppedit-btn-enabled')
+      btn = $(event.target).toggle('.ppedit-btn-enabled')
       btn.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
 
     @element.find(".ubtn").click (event) =>

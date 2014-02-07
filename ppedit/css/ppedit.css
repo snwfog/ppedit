@@ -36,7 +36,7 @@
 
 .minimize-sidebar-btn {
     width:50px;
-    height:33px;
+    height:41px;
     display:block;
     background-color:#e84842;
     border-radius:5px 0px 0px 5px;
@@ -69,7 +69,7 @@
 
 .right-sidebar-menu1 {
     padding:10px;
-    display:block;
+    min-height: 40px;
 }
 
 .right-sidebar-menu2 {
@@ -109,19 +109,22 @@
     text-align: center;
 }
 
-/* Right Side Panel -- END */
+.menu-panel-icon
+{
+    width:32px;
+    height:17px;
 
+    background-repeat: no-repeat;
+    background-size: contain;
 
-
-Original css file.
-
-
-body {
-    background-color:#f0f0f0;
+    float:left;
+    margin-top: 2px;
+    cursor: pointer;
 }
 
-.edit-img-set {
-    padding-right:15px;
+.moveElementUpBtn
+{
+    background-image: url(../img/icons/OFF/glyphicons_213_up_arrow.png);
 }
 
 .edit-menu {
@@ -133,10 +136,15 @@ body {
     top:50px; 
     left:175px;
 }
+.moveElementUpBtn:hover
+{
+    background-image: url(../img/icons/ON/glyphicons_213_up_arrow.png);
 
-.edit-menu-row1 {
-    display:block; 
-    padding:10px;
+}
+
+.moveElementDownBtn
+{
+    background-image: url(../img/icons/OFF/glyphicons_212_down_arrow.png);
 }
 
 .edit-menu-row1-dd-ff {
@@ -164,44 +172,25 @@ body {
     padding:10px; 
     border-top:1px solid #cacaca;
 }
-
-.edit-pointer {
-    width: 0; 
-    height: 0; 
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid #fbfbfb;
-    position:relative;
-    top:50px;
-    left:200px;
-    z-index:75;
+.moveElementDownBtn:hover
+{
+    background-image: url(../img/icons/ON/glyphicons_212_down_arrow.png);
 }
 
-.edit-text-box {
-    width:200px; 
-    height:100px; 
-    display:block; 
-    border:1px solid #cacaca; 
-    position:relative; 
-    top:50px; 
-    left:50px; 
-    background-color:#fff; 
-    zoom: 1;
-    filter: alpha(opacity=50);
-    opacity: 0.5; color:#000;
+.addElementBtn
+{
+    background-image: url(../img/icons/OFF/glyphicons_432_plus.png);
 }
 
-.icon-set {
-    padding-bottom:15px;
+.addElementBtn:hover
+{
+    background-image: url(../img/icons/ON/glyphicons_432_plus.png);
 }
 
 
-/*.superPanel {
-    display: none;
-}
-.fontPanel {
-    display: none;
-}*/
+
+/* Right Side Panel -- END */
+
 
 .editContainer0 {
     width:980px; 
