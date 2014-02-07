@@ -2408,15 +2408,16 @@
 
     FontPanel.prototype.buildElement = function() {
       return this.element = $('\
-            <div class="col-xs-5" style ="padding-left: 30px;padding-bottom: 10px;visibility:hidden">\
-            <select class="fontTypeBtn">\
+          <div class="edit-menu shadow-effect">\
+            <span class="edit-menu-row1">\
+            <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">\
                  <option value="Times New Roman" selected>Times New Roman</option>\
                  <option value="Arial">Arial</option>\
                  <option value="Inconsolata">Inconsolata</option>\
                  <option value="Glyphicons Halflings">Glyphicons Halflings</option>\
                </select>\
                \
-               <select class="fontSizeBtn">\
+               <select class="fontSizeBtn from-control edit-menu-row1-dd-fs">\
                  <option value="6">6</option>\
                  <option value="8">8</option>\
                  <option value="10" selected>10</option>\
@@ -2426,7 +2427,6 @@
                  <option value="16">16</option>\
                  <option value="20">20</option>\
                </select>\
-               <button class="colorPicker btn btn-default" id="picker"><span class="glyphicon glyphicon-font"></button>\
                <div class="btn-group" data-toggle="buttons">\
                 <label class="wbtn btn btn-default">\
                   <input type="checkbox"><span class="weightBtn glyphicon glyphicon-bold"></span>\
@@ -2438,6 +2438,8 @@
                   <input type="checkbox"><span class="italicBtn glyphicon glyphicon-italic"></span>\
                 </label>\
                </div>\
+            </span>\
+               <button class="colorPicker btn btn-default" id="picker"><span class="glyphicon glyphicon-font"></button>\
 \
                <br />\
                \
@@ -2453,7 +2455,7 @@
                 </label>\
                </div>\
                \
-			   <br />\
+         <br />\
                <div class="btn-group" data-toggle="buttons">\
                 <label class="bulletPointBtn btn btn-default">\
                   <input type="radio" id="option1"><span class="glyphicon glyphicon-list">\
@@ -2462,6 +2464,7 @@
                   <input type="radio" id="option2"><span class="glyphicon glyphicon-list-alt">\
                 </label>\
                </div>\
+              </div>\
               </div>').addClass("FontPanel");
     };
 

@@ -125,7 +125,7 @@ body {
 }
 
 .edit-menu {
-    width:265px; 
+    width:400px; 
     height:105px; 
     display:block; 
     background-color:#fbfbfb; 
@@ -137,6 +137,26 @@ body {
 .edit-menu-row1 {
     display:block; 
     padding:10px;
+}
+
+.edit-menu-row1-dd-ff {
+    width:115px; 
+    height:25px; 
+    display:inline-block; 
+    float:left; 
+    margin-left:3px; 
+    margin-right:5px; 
+    font-size:10px;
+}
+
+.edit-menu-row1-dd-fs {
+    width:40px; 
+    height:25px; 
+    display:inline-block; 
+    float:left; 
+    margin-left:3px; 
+    margin-right:10px; 
+    font-size:10px;
 }
 
 .edit-menu-row2 {
