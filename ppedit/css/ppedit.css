@@ -15,17 +15,46 @@
 
 
 /* Right side panel */
-.right-sidebar-btn {
+.menu-sidebar
+{
+    position: fixed;
+    right: 0px;
+    top: 65px;
+}
+
+.menu-tab-sidebar
+{
     width:50px;
-    height:125px;
+    height:250px;
     display:block;
-    background-color:#e84842;
-    margin-bottom:125px;
     border-radius:5px 0px 0px 5px;
-    position:fixed;
     top:65px;
     z-index:50;
     right:0px;
+    float:left;
+}
+
+.minimize-sidebar-btn {
+    width:50px;
+    height:33px;
+    display:block;
+    background-color:#e84842;
+    border-radius:5px 0px 0px 5px;
+    z-index:50;
+}
+
+.menu-right-btn {
+    width:50px;
+    height:70px;
+    display:block;
+    background-color:#e84842;
+    border-radius:5px 0px 0px 5px;
+    z-index:50;
+}
+
+.page-sidebar-tab {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .right-sidebar-container {
@@ -33,11 +62,9 @@
     height:250px;
     display:block;
     background-color:#fbfbfb;
-    position:fixed;
-    top:65px;
     z-index:50;
-    right:0px;
     margin-right:-350px;
+    float:left;
 }
 
 .right-sidebar-menu1 {
@@ -66,11 +93,20 @@
     font-family:'Oswald', sans-serif;
     font-size:20px;
     font-weight:400;
-    margin-top:50px;
     -webkit-transform:rotate(90deg);
     -moz-transform:rotate(90deg);
     -o-transform: rotate(90deg);
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+.minimize-text
+{
+    display:block;
+    color:#fff;
+    font-family:'Oswald', sans-serif;
+    font-size:20px;
+    font-weight:400;
+    text-align: center;
 }
 
 /* Right Side Panel -- END */
