@@ -47,17 +47,46 @@
 }
 
 /* Right side panel */
-.right-sidebar-btn {
+.menu-sidebar
+{
+    position: fixed;
+    right: 0px;
+    top: 65px;
+}
+
+.menu-tab-sidebar
+{
     width:50px;
-    height:125px;
+    height:250px;
     display:block;
-    background-color:#e84842;
-    margin-bottom:125px;
     border-radius:5px 0px 0px 5px;
-    position:fixed;
     top:65px;
     z-index:50;
     right:0px;
+    float:left;
+}
+
+.minimize-sidebar-btn {
+    width:50px;
+    height:41px;
+    display:block;
+    background-color:#e84842;
+    border-radius:5px 0px 0px 5px;
+    z-index:50;
+}
+
+.menu-right-btn {
+    width:50px;
+    height:70px;
+    display:block;
+    background-color:#e84842;
+    border-radius:5px 0px 0px 5px;
+    z-index:50;
+}
+
+.page-sidebar-tab {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .right-sidebar-container {
@@ -65,16 +94,14 @@
     height:250px;
     display:block;
     background-color:#fbfbfb;
-    position:fixed;
-    top:65px;
     z-index:50;
-    right:0px;
     margin-right:-350px;
+    float:left;
 }
 
 .right-sidebar-menu1 {
     padding:10px;
-    display:block;
+    min-height: 40px;
 }
 
 .right-sidebar-menu2 {
@@ -98,87 +125,13 @@
     font-family:'Oswald', sans-serif;
     font-size:20px;
     font-weight:400;
-    margin-top:50px;
     -webkit-transform:rotate(90deg);
     -moz-transform:rotate(90deg);
     -o-transform: rotate(90deg);
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 
-/* Right Side Panel -- END */
 
-/*
 
-Original css file.
 
-body {
-    background-color:#f0f0f0;
-}
 
-.edit-container {
-    width:980px; 
-    height:1386px; 
-    border:30px solid #fff; 
-    background-image:url('../../images/gridtest.png'); 
-    display:block; 
-    position: absolute; 
-    top:65px; 
-    left:50%; 
-    margin-left:-465px;
-}
-
-.edit-img-set {
-    padding-right:15px;
-}
-
-.edit-menu {
-    width:265px; 
-    height:105px; 
-    display:block; 
-    background-color:#fbfbfb; 
-    position:relative; 
-    top:50px; 
-    left:175px;
-}
-
-.edit-menu-row1 {
-    display:block; 
-    padding:10px;
-}
-
-.edit-menu-row2 {
-    display:block; 
-    padding:10px; 
-    border-top:1px solid #cacaca;
-}
-
-.edit-pointer {
-    width: 0; 
-    height: 0; 
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid #fbfbfb;
-    position:relative;
-    top:50px;
-    left:200px;
-    z-index:75;
-}
-
-.edit-text-box {
-    width:200px; 
-    height:100px; 
-    display:block; 
-    border:1px solid #cacaca; 
-    position:relative; 
-    top:50px; 
-    left:50px; 
-    background-color:#fff; 
-    zoom: 1;
-    filter: alpha(opacity=50);
-    opacity: 0.5; color:#000;
-}
-
-.icon-set {
-    padding-bottom:15px;
-}
-*/

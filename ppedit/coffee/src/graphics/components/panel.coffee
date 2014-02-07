@@ -10,20 +10,27 @@ class Panel extends Graphic
 
   buildElement: ->
     @element = $('
-      <div>
+      <div class="menu-sidebar">
           <!-- Sidebar Right -->
-        <div class="menu-right-btn right-sidebar-btn shadow-effect">
-            <span class="vertical-text">Page 1</span>
-        </div>
+        <div class="menu-tab-sidebar">
+            <div class="minimize-sidebar-btn shadow-effect">
+                <span class="minimize-text">&lt;&lt;</span>
+            </div>
+            <div class="menu-tab-pages">
+               <div class="page-sidebar-tab menu-right-btn shadow-effect">
+                      <span class="vertical-text">Page 1</span>
+               </div>
+            </div>
+         </div>
 
         <div class="menu-right-container right-sidebar-container shadow-effect">
 
           <!-- Row 1 Menu  -->
-          <span class="right-sidebar-menu1">
-            <span class="moveElementUpBtn glyphicon glyphicon-arrow-up btn-lg"></span>
-            <span class="moveElementDownBtn glyphicon glyphicon-arrow-down btn-lg"></span>
-            <span class="addElementBtn glyphicon glyphicon-plus btn-lg"></span>
-          </span>
+          <div class="right-sidebar-menu1">
+            <div class="moveElementUpBtn menu-panel-icon"></div>
+            <div class="moveElementDownBtn menu-panel-icon"></div>
+            <div class="addElementBtn menu-panel-icon"></div>
+          </div>
 
           <!-- Row 2 Menu -->
           <span>
@@ -99,6 +106,8 @@ class Panel extends Graphic
 
     newRow.find(".deleteElementBtn").on 'click', (event) =>
         $(event.target).trigger 'onRowDeleteBtnClick', [boxid]
+
+
 
   ###
   Removes the row associated with the passed box id.

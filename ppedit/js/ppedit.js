@@ -1813,20 +1813,27 @@
 
     Panel.prototype.buildElement = function() {
       return this.element = $('\
-      <div>\
+      <div class="menu-sidebar">\
           <!-- Sidebar Right -->\
-        <div class="menu-right-btn right-sidebar-btn shadow-effect">\
-            <span class="vertical-text">Page 1</span>\
-        </div>\
+        <div class="menu-tab-sidebar">\
+            <div class="minimize-sidebar-btn shadow-effect">\
+                <span class="minimize-text">&lt;&lt;</span>\
+            </div>\
+            <div class="menu-tab-pages">\
+               <div class="page-sidebar-tab menu-right-btn shadow-effect">\
+                      <span class="vertical-text">Page 1</span>\
+               </div>\
+            </div>\
+         </div>\
 \
         <div class="menu-right-container right-sidebar-container shadow-effect">\
 \
           <!-- Row 1 Menu  -->\
-          <span class="right-sidebar-menu1">\
-            <span class="moveElementUpBtn glyphicon glyphicon-arrow-up btn-lg"></span>\
-            <span class="moveElementDownBtn glyphicon glyphicon-arrow-down btn-lg"></span>\
-            <span class="addElementBtn glyphicon glyphicon-plus btn-lg"></span>\
-          </span>\
+          <div class="right-sidebar-menu1">\
+            <div class="moveElementUpBtn menu-panel-icon"></div>\
+            <div class="moveElementDownBtn menu-panel-icon"></div>\
+            <div class="addElementBtn menu-panel-icon"></div>\
+          </div>\
 \
           <!-- Row 2 Menu -->\
           <span>\
@@ -2328,48 +2335,6 @@
 
   })(Graphic);
 
-  MainPanel = (function(_super) {
-    __extends(MainPanel, _super);
-
-    function MainPanel(root) {
-      this.root = root;
-      MainPanel.__super__.constructor.call(this, this.root);
-    }
-
-    MainPanel.prototype.buildElement = function() {
-      return this.element = $('\
-            <div class="left-sidebar">\
-              <img class="icon-set undoImg" src="./ppedit/img/icons/glyphicons_221_unshare.png">\
-              <img class="icon-set redoImg" src="./ppedit/img//icons/glyphicons_222_share.png">\
-              <img class="icon-set gridImg" src="./ppedit/img/icons/glyphicons_155_show_big_thumbnails.png">\
-              <img class="icon-set snapImg" src="./ppedit/img/icons/glyphicons_023_magnet.png">\
-          </div>');
-    };
-
-    MainPanel.prototype.bindEvents = function() {
-      var _this = this;
-      this.element.find('.snapImg').click(function() {
-        if (!$(event.target).hasClass("snapBtn-selected")) {
-          return $(event.target).addClass("snapBtn-selected");
-        } else {
-          return $(event.target).removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find(".gridImg").click(function() {
-        return _this.root.find('.row').trigger('panelClickGridBtnClick');
-      });
-      this.element.find(".undoImg").click(function() {
-        return _this.root.trigger('requestUndo');
-      });
-      return this.element.find(".redoImg").click(function() {
-        return _this.root.trigger('requestRedo');
-      });
-    };
-
-    return MainPanel;
-
-  })(Graphic);
-
   /*
   Graphic containing the font settings to apply to boxes.
   */
@@ -2539,6 +2504,48 @@
     };
 
     return FontPanel;
+
+  })(Graphic);
+
+  MainPanel = (function(_super) {
+    __extends(MainPanel, _super);
+
+    function MainPanel(root) {
+      this.root = root;
+      MainPanel.__super__.constructor.call(this, this.root);
+    }
+
+    MainPanel.prototype.buildElement = function() {
+      return this.element = $('\
+            <div class="left-sidebar">\
+              <img class="icon-set undoImg" src="./ppedit/img/icons/glyphicons_221_unshare.png">\
+              <img class="icon-set redoImg" src="./ppedit/img//icons/glyphicons_222_share.png">\
+              <img class="icon-set gridImg" src="./ppedit/img/icons/glyphicons_155_show_big_thumbnails.png">\
+              <img class="icon-set snapImg" src="./ppedit/img/icons/glyphicons_023_magnet.png">\
+          </div>');
+    };
+
+    MainPanel.prototype.bindEvents = function() {
+      var _this = this;
+      this.element.find('.snapImg').click(function() {
+        if (!$(event.target).hasClass("snapBtn-selected")) {
+          return $(event.target).addClass("snapBtn-selected");
+        } else {
+          return $(event.target).removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find(".gridImg").click(function() {
+        return _this.root.find('.row').trigger('panelClickGridBtnClick');
+      });
+      this.element.find(".undoImg").click(function() {
+        return _this.root.trigger('requestUndo');
+      });
+      return this.element.find(".redoImg").click(function() {
+        return _this.root.trigger('requestRedo');
+      });
+    };
+
+    return MainPanel;
 
   })(Graphic);
 
