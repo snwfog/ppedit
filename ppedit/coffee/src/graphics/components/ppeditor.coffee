@@ -13,7 +13,7 @@ Graphic acting a the main container of the PPEditor.
 ###
 class PPEditor extends Graphic
 
-  @NUMBER_OF_PAGES: 2
+  @NUMBER_OF_PAGES: 1
 
   constructor: (@root) ->
     super @root
@@ -71,7 +71,7 @@ class PPEditor extends Graphic
       row.append $('<div class="editContainer'+i+' shadow-effect"></div>').append @areas[i].element
       @superPanel.append $('<div class="panelContainer" style="clear:both;"></div>').append @panels[i].element
 
-    $('body').append @mainPanel.element
+    @element.append @mainPanel.element
     row.append @superContainer
     row.append @fontPanel.element
     row.append @superPanel
