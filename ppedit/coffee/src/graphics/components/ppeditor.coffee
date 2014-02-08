@@ -43,38 +43,32 @@ class PPEditor extends Graphic
       <div class="superContainer">
       </div>
     ')
-    
-    @superPanel = $('
-      <div class="superPanel" style="clear:both;">
-      </div>
-    ')
 
     @areas = []
-    @panels = []
+    @panel = new Panel @element
     @mainPanel = new MainPanel @element
     @fontPanel = new FontPanel row
 
     for i in [0..PPEditor.NUMBER_OF_PAGES-1]
       @areas.push new EditArea row
-      @panels.push new Panel row
 
-    for i in [0..PPEditor.NUMBER_OF_PAGES-1]
-      @areas[i].buildElement()
-      @panels[i].buildElement()
-
+    @panel.buildElement()
     @mainPanel.buildElement()
     @fontPanel.buildElement()
 
-    
+    for i in [0..PPEditor.NUMBER_OF_PAGES-1]
+      @areas[i].buildElement()
+      @panel.addNewTab()
 
     for i in [0..PPEditor.NUMBER_OF_PAGES-1]
       @superContainer.append $('<div class="editContainer  shadow-effect"></div>').append @areas[i].element
-      @superPanel.append $('<div class="panelContainer" style="clear:both;"></div>').append @panels[i].element
 
-    @element.append @mainPanel.element
+    @element
+      .append @mainPanel.element
+      .append @panel.element
+
     row.append @superContainer
     row.append @fontPanel.element
-    row.append @superPanel
 
   bindEvents: ->
 
@@ -225,8 +219,8 @@ class PPEditor extends Graphic
 
     for i in [0..PPEditor.NUMBER_OF_PAGES-1]
       @areas[i].bindEvents()
-      @panels[i].bindEvents()
 
+    @panel.bindEvents()
     @fontPanel.bindEvents()
     @controller.bindEvents()
     @mainPanel.bindEvents()

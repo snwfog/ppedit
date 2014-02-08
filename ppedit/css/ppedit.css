@@ -48,7 +48,6 @@
 }
 
 /* Right side panel */
-/* Right side panel */
 .menu-sidebar
 {
     position: fixed;
@@ -75,6 +74,26 @@
     background-color:#e84842;
     border-radius:5px 0px 0px 5px;
     z-index:50;
+}
+
+.add-tab-sidebar-btn {
+    width:50px;
+    height:41px;
+    display:block;
+    background-color:#e84842;
+    border-radius:5px 0px 0px 5px;
+    z-index:50;
+}
+
+.add-text
+{
+    display:block;
+    color:#fff;
+    font-family:'Oswald', sans-serif;
+    font-size:71px;
+    font-weight:400;
+    text-align: center;
+    line-height: 24px;
 }
 
 .menu-right-btn {

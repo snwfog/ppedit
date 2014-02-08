@@ -1121,7 +1121,7 @@
 
     ChangeDepthCommand.prototype.swapRowWithUpperRow = function() {
       var index, row, upperRow;
-      row = this.editor.panels[this.pageNum].getRowWithBoxId(this.boxId);
+      row = this.editor.panel.getRowWithBoxId(this.boxId);
       index = row.index();
       if (index - 1 >= 0) {
         upperRow = this.editor.panels[this.pageNum].getRowAtIndex(index - 1);
@@ -1820,41 +1820,31 @@
                 <span class="minimize-text">&lt;&lt;</span>\
             </div>\
             <div class="menu-tab-pages">\
-               <div class="page-sidebar-tab menu-right-btn shadow-effect">\
-                      <span class="vertical-text">Page 1</span>\
-               </div>\
             </div>\
-         </div>\
 \
-        <div class="menu-right-container right-sidebar-container shadow-effect">\
-\
-          <!-- Row 1 Menu  -->\
-          <div class="right-sidebar-menu1">\
-            <div class="moveElementUpBtn menu-panel-icon"></div>\
-            <div class="moveElementDownBtn menu-panel-icon"></div>\
-            <div class="addElementBtn menu-panel-icon"></div>\
-          </div>\
-\
-          <!-- Row 2 Menu -->\
-          <span>\
-            <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="2px">\
-            </table>\
-          </span>\
+            <div class="add-tab-sidebar-btn shadow-effect">\
+                <span class="add-text">+</span>\
+            </div>\
         </div>\
-\
       </div>');
     };
 
     Panel.prototype.bindEvents = function() {
       var _this = this;
       this.element.find(".addElementBtn").click(function() {
-        return _this.element.trigger('panelClickAddBtnClick');
+        var tabIndex;
+        tabIndex = parseInt(_this.element.find('right-sidebar-container').first().attr('ppedit-tab-index'));
+        return _this.element.trigger('panelClickAddBtnClick', [tabIndex]);
       });
       this.element.find('.moveElementUpBtn').click(function() {
-        return _this.element.trigger('moveElementUpBtnClick');
+        var tabIndex;
+        tabIndex = parseInt(_this.element.find('right-sidebar-container').first().attr('ppedit-tab-index'));
+        return _this.element.trigger('moveElementUpBtnClick', [tabIndex]);
       });
       this.element.find('.moveElementDownBtn').click(function() {
-        return _this.element.trigger('moveElementDownBtnClick');
+        var tabIndex;
+        tabIndex = parseInt(_this.element.find('right-sidebar-container').first().attr('ppedit-tab-index'));
+        return _this.element.trigger('moveElementDownBtnClick', [tabIndex]);
       });
       return this.element.find('.minimize-sidebar-btn').click(function(event) {
         if (_this.element.css("right") === "0px") {
@@ -1869,12 +1859,39 @@
       });
     };
 
+    Panel.prototype.addNewTab = function() {
+      var newPageIndex;
+      newPageIndex = this.element.find('.page-sidebar-tab').length;
+      this.element.find('.menu-tab-pages').append('\
+                   <div class="page-sidebar-tab menu-right-btn shadow-effect" ppedit-tab-index="' + newPageIndex + '">\
+                          <span class="vertical-text">Page ' + (newPageIndex + 1) + '</span>\
+                   </div>\
+    ');
+      return this.element.append('\
+            <div class="right-sidebar-container shadow-effect" ppedit-tab-index="' + newPageIndex + '">\
+\
+              <!-- Row 1 Menu  -->\
+              <div class="right-sidebar-menu1">\
+                <div class="moveElementUpBtn menu-panel-icon"></div>\
+                <div class="moveElementDownBtn menu-panel-icon"></div>\
+                <div class="addElementBtn menu-panel-icon"></div>\
+              </div>\
+\
+              <!-- Row 2 Menu -->\
+              <span>\
+                <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="2px">\
+                </table>\
+              </span>\
+            </div>\
+    ');
+    };
+
     /*
     Adds a row to be associated with the passed box id.
     */
 
 
-    Panel.prototype.addBoxRow = function(boxid, index) {
+    Panel.prototype.addBoxRow = function(tabIndex, boxid, index) {
       var newRow,
         _this = this;
       newRow = $('\
@@ -1891,9 +1908,9 @@
     	    </tr>\
     	      ').attr('ppedit-box-id', boxid);
       if ((index == null) || index === 0) {
-        this.element.find('.right-sidebar-menu2').prepend(newRow);
+        this.element.find('.right-sidebar-container[ppedit-tab-index="' + tabIndex + '"]').find('.right-sidebar-menu2').prepend(newRow);
       } else {
-        newRow.insertBefore(this.element.find('.ppedit-panel-row:nth-child("' + index + '")'));
+        newRow.insertBefore(this.element.find('.right-sidebar-container[ppedit-tab-index="' + tabIndex + '"]').find('.ppedit-panel-row:nth-child("' + index + '")'));
       }
       newRow.find(".ppedit-slider").slider({
         min: 0,
@@ -1915,7 +1932,7 @@
         return _this.prevOpacityVal = void 0;
       });
       return newRow.find(".deleteElementBtn").on('click', function(event) {
-        return $(event.target).trigger('onRowDeleteBtnClick', [boxid]);
+        return $(event.target).trigger('onRowDeleteBtnClick', [tabIndex, boxid]);
       });
     };
 
@@ -2040,32 +2057,26 @@
       <div class="superContainer">\
       </div>\
     ');
-      this.superPanel = $('\
-      <div class="superPanel" style="clear:both;">\
-      </div>\
-    ');
       this.areas = [];
-      this.panels = [];
+      this.panel = new Panel(this.element);
       this.mainPanel = new MainPanel(this.element);
       this.fontPanel = new FontPanel(row);
       for (i = _i = 0, _ref = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         this.areas.push(new EditArea(row));
-        this.panels.push(new Panel(row));
       }
-      for (i = _j = 0, _ref1 = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-        this.areas[i].buildElement();
-        this.panels[i].buildElement();
-      }
+      this.panel.buildElement();
       this.mainPanel.buildElement();
       this.fontPanel.buildElement();
+      for (i = _j = 0, _ref1 = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+        this.areas[i].buildElement();
+        this.panel.addNewTab();
+      }
       for (i = _k = 0, _ref2 = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref2 ? _k <= _ref2 : _k >= _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
         this.superContainer.append($('<div class="editContainer  shadow-effect"></div>').append(this.areas[i].element));
-        this.superPanel.append($('<div class="panelContainer" style="clear:both;"></div>').append(this.panels[i].element));
       }
-      this.element.append(this.mainPanel.element);
+      this.element.append(this.mainPanel.element.append(this.panel.element));
       row.append(this.superContainer);
-      row.append(this.fontPanel.element);
-      return row.append(this.superPanel);
+      return row.append(this.fontPanel.element);
     };
 
     PPEditor.prototype.bindEvents = function() {
@@ -2254,8 +2265,8 @@
       });
       for (i = _i = 0, _ref = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         this.areas[i].bindEvents();
-        this.panels[i].bindEvents();
       }
+      this.panel.bindEvents();
       this.fontPanel.bindEvents();
       this.controller.bindEvents();
       return this.mainPanel.bindEvents();
@@ -2324,72 +2335,6 @@
     };
 
     return PPEditor;
-
-  })(Graphic);
-
-  MainPanel = (function(_super) {
-    __extends(MainPanel, _super);
-
-    function MainPanel(root) {
-      this.root = root;
-      MainPanel.__super__.constructor.call(this, this.root);
-    }
-
-    MainPanel.prototype.buildElement = function() {
-      return this.element = $('\
-            <div class="left-sidebar">\
-              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
-              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
-              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
-              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
-          </div>');
-    };
-
-    MainPanel.prototype.bindEvents = function() {
-      var _this = this;
-      this.element.find('.snapImg').click(function() {
-        if (!$(event.target).hasClass("snapBtn-selected")) {
-          return $(event.target).addClass("snapBtn-selected");
-        } else {
-          return $(event.target).removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find('.snapImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
-      });
-      this.element.find('.snapImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
-      });
-      this.element.find(".gridImg").click(function() {
-        return _this.root.find('.row').trigger('panelClickGridBtnClick');
-      });
-      this.element.find('.gridImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
-      });
-      this.element.find('.gridImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
-      });
-      this.element.find(".undoImg").click(function() {
-        return _this.root.trigger('requestUndo');
-      });
-      this.element.find('.undoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
-      });
-      this.element.find('.undoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
-      });
-      this.element.find(".redoImg").click(function() {
-        return _this.root.trigger('requestRedo');
-      });
-      this.element.find('.redoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
-      });
-      return this.element.find('.redoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
-      });
-    };
-
-    return MainPanel;
 
   })(Graphic);
 
@@ -2562,6 +2507,72 @@
     };
 
     return FontPanel;
+
+  })(Graphic);
+
+  MainPanel = (function(_super) {
+    __extends(MainPanel, _super);
+
+    function MainPanel(root) {
+      this.root = root;
+      MainPanel.__super__.constructor.call(this, this.root);
+    }
+
+    MainPanel.prototype.buildElement = function() {
+      return this.element = $('\
+            <div class="left-sidebar">\
+              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
+              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
+              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
+              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
+          </div>');
+    };
+
+    MainPanel.prototype.bindEvents = function() {
+      var _this = this;
+      this.element.find('.snapImg').click(function() {
+        if (!$(event.target).hasClass("snapBtn-selected")) {
+          return $(event.target).addClass("snapBtn-selected");
+        } else {
+          return $(event.target).removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find('.snapImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
+      });
+      this.element.find('.snapImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
+      });
+      this.element.find(".gridImg").click(function() {
+        return _this.root.find('.row').trigger('panelClickGridBtnClick');
+      });
+      this.element.find('.gridImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
+      });
+      this.element.find('.gridImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
+      });
+      this.element.find(".undoImg").click(function() {
+        return _this.root.trigger('requestUndo');
+      });
+      this.element.find('.undoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
+      });
+      this.element.find('.undoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
+      });
+      this.element.find(".redoImg").click(function() {
+        return _this.root.trigger('requestRedo');
+      });
+      this.element.find('.redoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
+      });
+      return this.element.find('.redoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
+      });
+    };
+
+    return MainPanel;
 
   })(Graphic);
 

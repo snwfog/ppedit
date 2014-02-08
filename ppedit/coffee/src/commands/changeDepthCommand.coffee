@@ -20,7 +20,7 @@ class ChangeDepthCommand extends Command
     if @moveUp then @swapRowWithLowerRow() else @swapRowWithUpperRow()
 
   swapRowWithUpperRow: ->
-    row = @editor.panels[@pageNum].getRowWithBoxId(@boxId)
+    row = @editor.panel.getRowWithBoxId(@boxId)
     index = row.index()
 
     if index-1 >= 0
