@@ -9,7 +9,7 @@ class FontPanel extends Graphic
 
   buildElement: ->
     @element =$('
-          <div class="edit-menu shadow-effect">
+          <div class="edit-menu shadow-effect" style="visibility:hidden;">
             <div class="edit-menu-row1">
                <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">
                  <option value="Times New Roman" selected>Times New Roman</option>
@@ -62,6 +62,7 @@ class FontPanel extends Graphic
       })
 
 
+
     @element.find('.boldButton').click (event) =>
       if $(event.target).hasClass('boldButtonDisable')
         btn = $(event.target).attr('class','boldButton boldButtonEnable font-panel-icon-row')
@@ -73,31 +74,32 @@ class FontPanel extends Graphic
     @element.find('.italicButton').click (event) =>
       if $(event.target).hasClass('italicButtonDisable')
         btn = $(event.target).attr('class','italicButtonEnable font-panel-icon-row')
-        btn.trigger(if btn.hasClass('italicButtonEnable font-panel-icon-row') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+        btn.trigger(if btn.hasClass('italicButtonEnable font-panel-icon-row') then 'fontItalicBtnEnableClick' else 'fontItalicBtnDisableClick')
       else
         btn = $(event.target).attr('class','italicButtonDisable font-panel-icon-row')
-        btn.trigger(if btn.hasClass('.italicButtonDisable font-panel-icon') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+        btn.trigger(if btn.hasClass('.italicButtonDisable font-panel-icon') then 'fontItalicBtnEnableClick' else 'fontItalicBtnDisableClick')
 
     @element.find('.underlineButton').click (event) =>
       if $(event.target).hasClass('underlineButtonDisable')
         btn = $(event.target).attr('class','underlineButtonEnable font-panel-icon-row')
-        btn.trigger(if btn.hasClass('underlineButtonEnable font-panel-icon-row') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+        btn.trigger(if btn.hasClass('underlineButtonEnable font-panel-icon-row') then 'fontUnderlinedBtnEnableClick' else 'fontUnderlinedBtnDisableClick')
       else
         btn = $(event.target).attr('class','underlineButtonDisable font-panel-icon-row')
-        btn.trigger(if btn.hasClass('.underlineButtonDisable font-panel-icon-row') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+        btn.trigger(if btn.hasClass('.underlineButtonDisable font-panel-icon-row') then 'fontUnderlinedBtnEnableClick' else 'fontUnderlinedBtnDisableClick')
+
+    @element.find('.centerAlignBtn').click (event) =>
+      if $(event.target).hasClass('centerAlignButtonDisable')
+        btn = $(event.target).attr('class','centerAlignButtonEnable font-panel-icon-row')
+        @element.find('.leftAlignBtn').attr('class','leftAlignButtonDisable font-panel-icon-row')
+        @element.find('.rightAlignBtn').attr('class','rightAlignButtonDisable font-panel-icon-row')
+        btn.trigger(if btn.hasClass('centerAlignButtonEnable font-panel-icon-row') then '' else '')
+      else
+        btn = $(event.target).attr('class','centerAlignButtonDisable font-panel-icon-row')
+        @element.find('.leftAlignBtn').attr('class','leftAlignButtonEnable font-panel-icon-row') 
+        @element.find('.rightAlignBtn').attr('class','rightAlignButtonDisable font-panel-icon-row') 
+        btn.trigger(if btn.hasClass('leftAlignButtonDisable font-panel-icon-row') then '' else '')
 
 
-    @element.find('.boldButtonEnable').click (event) =>
-      btn = $(event.target).attr('class','boldButtonDisable font-panel-icon')
-      btn.trigger(if btn.hasClass('.boldButtonDisable font-panel-icon') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
-
-    @element.find(".ubtn").click (event) =>
-      btn = $(event.target).toggleClass('.ppedit-btn-enabled')
-      btn.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontUnderlinedBtnEnableClick' else 'fontUnderlinedBtnDisableClick')
-
-    @element.find(".ibtn").click (event) =>
-      btn = $(event.target).toggleClass('.ppedit-btn-enabled')
-      btn.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontItalicBtnEnableClick' else 'fontItalicBtnDisableClick')
 
     @element.find(".rightAlignBtn").click (event) =>
       $(event.target).trigger 'rightAlignment'

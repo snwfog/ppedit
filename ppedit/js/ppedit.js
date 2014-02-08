@@ -2413,7 +2413,7 @@
 
     FontPanel.prototype.buildElement = function() {
       return this.element = $('\
-          <div class="edit-menu shadow-effect">\
+          <div class="edit-menu shadow-effect" style="visibility:hidden;">\
             <div class="edit-menu-row1">\
                <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">\
                  <option value="Times New Roman" selected>Times New Roman</option>\
@@ -2481,36 +2481,35 @@
         var btn;
         if ($(event.target).hasClass('italicButtonDisable')) {
           btn = $(event.target).attr('class', 'italicButtonEnable font-panel-icon-row');
-          return btn.trigger(btn.hasClass('italicButtonEnable font-panel-icon-row') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+          return btn.trigger(btn.hasClass('italicButtonEnable font-panel-icon-row') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');
         } else {
           btn = $(event.target).attr('class', 'italicButtonDisable font-panel-icon-row');
-          return btn.trigger(btn.hasClass('.italicButtonDisable font-panel-icon') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+          return btn.trigger(btn.hasClass('.italicButtonDisable font-panel-icon') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');
         }
       });
       this.element.find('.underlineButton').click(function(event) {
         var btn;
         if ($(event.target).hasClass('underlineButtonDisable')) {
           btn = $(event.target).attr('class', 'underlineButtonEnable font-panel-icon-row');
-          return btn.trigger(btn.hasClass('underlineButtonEnable font-panel-icon-row') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+          return btn.trigger(btn.hasClass('underlineButtonEnable font-panel-icon-row') ? 'fontUnderlinedBtnEnableClick' : 'fontUnderlinedBtnDisableClick');
         } else {
           btn = $(event.target).attr('class', 'underlineButtonDisable font-panel-icon-row');
-          return btn.trigger(btn.hasClass('.underlineButtonDisable font-panel-icon-row') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+          return btn.trigger(btn.hasClass('.underlineButtonDisable font-panel-icon-row') ? 'fontUnderlinedBtnEnableClick' : 'fontUnderlinedBtnDisableClick');
         }
       });
-      this.element.find('.boldButtonEnable').click(function(event) {
+      this.element.find('.centerAlignBtn').click(function(event) {
         var btn;
-        btn = $(event.target).attr('class', 'boldButtonDisable font-panel-icon');
-        return btn.trigger(btn.hasClass('.boldButtonDisable font-panel-icon') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
-      });
-      this.element.find(".ubtn").click(function(event) {
-        var btn;
-        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
-        return btn.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontUnderlinedBtnEnableClick' : 'fontUnderlinedBtnDisableClick');
-      });
-      this.element.find(".ibtn").click(function(event) {
-        var btn;
-        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
-        return btn.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');
+        if ($(event.target).hasClass('centerAlignButtonDisable')) {
+          btn = $(event.target).attr('class', 'centerAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignButtonDisable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('centerAlignButtonEnable font-panel-icon-row') ? '' : '');
+        } else {
+          btn = $(event.target).attr('class', 'centerAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignButtonDisable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('leftAlignButtonDisable font-panel-icon-row') ? '' : '');
+        }
       });
       this.element.find(".rightAlignBtn").click(function(event) {
         return $(event.target).trigger('rightAlignment');
