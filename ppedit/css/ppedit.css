@@ -122,6 +122,92 @@
     cursor: pointer;
 }
 
+.boldButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_102_bold.png);
+}
+
+.boldButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_102_bold.png);
+}
+
+.italicButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_101_italic.png);
+}
+
+.italicButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_101_italic.png);
+}
+
+.underlineButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_103_text_underline.png);
+}
+
+.underlineButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_103_text_underline.png);
+}
+
+.leftAlignButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_110_align_left.png);
+}
+
+.leftAlignButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_110_align_left.png);
+}
+
+.centerAlignButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_111_align_center.png);
+}
+
+.centerAlignButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_111_align_center.png);
+}
+
+.rightAlignButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_112_align_right.png);
+}
+
+.rightAlignButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_112_align_right.png);
+}
+
+.font-panel-icon-row1
+{
+    width:32px;
+    height:17px;
+
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    float:left;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.font-panel-icon-row2
+{
+    width:32px;
+    height:17px;
+
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    float:none;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
 .moveElementUpBtn
 {
     background-image: url(../img/icons/OFF/glyphicons_213_up_arrow.png);
@@ -155,6 +241,12 @@
     margin-left:3px; 
     margin-right:5px; 
     font-size:10px;
+}
+
+.edit-menu-row1
+{
+    padding:12px;
+    height:47px;
 }
 
 .edit-menu-row1-dd-fs {

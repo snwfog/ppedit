@@ -10,8 +10,8 @@ class FontPanel extends Graphic
   buildElement: ->
     @element =$('
           <div class="edit-menu shadow-effect">
-            <span class="edit-menu-row1">
-            <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">
+            <div class="edit-menu-row1">
+               <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">
                  <option value="Times New Roman" selected>Times New Roman</option>
                  <option value="Arial">Arial</option>
                  <option value="Inconsolata">Inconsolata</option>
@@ -28,37 +28,16 @@ class FontPanel extends Graphic
                  <option value="16">16</option>
                  <option value="20">20</option>
                </select>
-               <img src="ppedit/img/icons/OFF/glyphicons_102_bold.png" class="wbtn edit-img-set" id="glyphicons_102_bold" onclick="buttonToggle(\'glyphicons_102_bold\')">
-               <img src="ppedit/img/icons/OFF/glyphicons_101_italic.png" class="ibtn edit-img-set" id="glyphicons_101_italic" onclick="buttonToggle(\'glyphicons_101_italic\')">
-               <img src="ppedit/img/icons/OFF/glyphicons_103_text_underline.png" class="ubtn edit-img-set" id="glyphicons_103_text_underline" onclick="buttonToggle(\'glyphicons_103_text_underline\')">
-            </span>
-               <button class="colorPicker btn btn-default" id="picker"><span class="glyphicon glyphicon-font"></button>
-
-               <br />
-               
-               <div class="btn-group" data-toggle="buttons">
-                <label class="leftAlignBtn btn btn-default">
-                  <input type="radio" id="option1"><span class="glyphicon glyphicon-align-left">
-                </label>
-                <label class="centerAlignBtn btn btn-default">
-                  <input type="radio" id="option2"><span class="glyphicon glyphicon-align-center">
-                </label>
-                <label class="rightAlignBtn btn btn-default">
-                  <input type="radio" id="option3"><span class="glyphicon glyphicon-align-right">
-                </label>
-               </div>
-               
-         <br />
-               <div class="btn-group" data-toggle="buttons">
-                <label class="bulletPointBtn btn btn-default">
-                  <input type="radio" id="option1"><span class="glyphicon glyphicon-list">
-                </label>
-                <label class="orderedPointBtn btn btn-default">
-                  <input type="radio" id="option2"><span class="glyphicon glyphicon-list-alt">
-                </label>
-               </div>
-              </div>
-              </div>').addClass("FontPanel")
+               <div class="boldButton boldButtonDisable font-panel-icon-row1"></div>
+               <div class="italicButton italicButtonDisable font-panel-icon-row1"></div>
+               <div class="underlineButton underlineButtonDisable font-panel-icon-row1"></div>
+             </div>
+             <div class="edit-menu-row2">
+                <div class="leftAlignBtn leftAlignButtonEnable"></div>
+                <div class="centerAlignBtn centerAlignButtonDisable"></div>
+                <div class="rightAlignBtn rightAlignButtonDisable"></div>
+             </div>
+            </div>').addClass("FontPanel")
 
 
 
@@ -82,10 +61,35 @@ class FontPanel extends Graphic
           $(el).colpickHide()
       })
 
-    @element.find('img[src$="/glyphicons_102_bold.png"]').click (event) =>
-      console.log(@element.find('img[src$="/glyphicons_102_bold.png"]'))
-      btn = $(event.target).toggle('.ppedit-btn-enabled')
-      btn.trigger(if btn.hasClass('.ppedit-btn-enabled') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+
+    @element.find('.boldButton').click (event) =>
+      if $(event.target).hasClass('boldButtonDisable')
+        btn = $(event.target).attr('class','boldButton boldButtonEnable font-panel-icon-row1')
+        btn.trigger(if btn.hasClass('boldButtonEnable font-panel-icon-row1') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+      else
+        btn = $(event.target).attr('class','boldButtonDisable font-panel-icon-row1')
+        btn.trigger(if btn.hasClass('.boldButtonDisable font-panel-icon') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+
+    @element.find('.italicButton').click (event) =>
+      if $(event.target).hasClass('italicButtonDisable')
+        btn = $(event.target).attr('class','italicButtonEnable font-panel-icon-row1')
+        btn.trigger(if btn.hasClass('italicButtonEnable font-panel-icon-row1') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+      else
+        btn = $(event.target).attr('class','italicButtonDisable font-panel-icon-row1')
+        btn.trigger(if btn.hasClass('.italicButtonDisable font-panel-icon') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+
+    @element.find('.underlineButton').click (event) =>
+      if $(event.target).hasClass('underlineButtonDisable')
+        btn = $(event.target).attr('class','underlineButtonEnable font-panel-icon-row1')
+        btn.trigger(if btn.hasClass('underlineButtonEnable font-panel-icon-row1') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+      else
+        btn = $(event.target).attr('class','underlineButtonDisable font-panel-icon-row1')
+        btn.trigger(if btn.hasClass('.underlineButtonDisable font-panel-icon-row1') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+
+
+    @element.find('.boldButtonEnable').click (event) =>
+      btn = $(event.target).attr('class','boldButtonDisable font-panel-icon')
+      btn.trigger(if btn.hasClass('.boldButtonDisable font-panel-icon') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
 
     @element.find(".ubtn").click (event) =>
       btn = $(event.target).toggleClass('.ppedit-btn-enabled')
