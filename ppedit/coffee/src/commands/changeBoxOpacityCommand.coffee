@@ -14,7 +14,7 @@ class ChangeBoxOpacityCommand extends Command
 
   changeOpacityToVal: (value) ->
     @editor.areas[@pageNum].boxesContainer.changeBoxOpacity @boxId, value
-    @editor.panels[@pageNum].element.find("tr[ppedit-box-id="+ @boxId + "]").find('.ppedit-slider').slider('setValue', parseInt(value*100))
+    @editor.panel.element.find("tr[ppedit-box-id="+ @boxId + "]").find('.ppedit-slider').slider('setValue', parseInt(value*100))
 
   getType: ->
     return 'Modify'

@@ -18,13 +18,13 @@ class CopyBoxesCommand extends Command
       box = @newBoxes[i]
       @editor.areas[@pageNum].boxesContainer.addBox box
       box.element.html @boxesClones.eq(i).html()
-      @editor.panels[@pageNum].addBoxRow box.element.attr('id')
+      @editor.panel.addBoxRow @pageNum, box.element.attr('id')
       @boxIds[i] = box.element.attr('id')
 
   undo: ->
     for box in @newBoxes
       @editor.areas[@pageNum].boxesContainer.removeBoxes [box.element.attr('id')]
-      @editor.panels[@pageNum].removeBoxRow [box.element.attr('id')]
+      @editor.panel.removeBoxRow [box.element.attr('id')]
 
   getType: ->
     return 'Create'

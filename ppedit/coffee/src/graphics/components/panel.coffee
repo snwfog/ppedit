@@ -112,17 +112,15 @@ class Panel extends Graphic
         @prevOpacityVal = $(event.target).val() or 100
       .on 'slide', (event) =>
         opacityVal = $(event.target).val()
-        $(event.target).trigger 'onRowSliderValChanged', [boxid, parseInt(opacityVal)/100]
+        $(event.target).trigger 'onRowSliderValChanged', [tabIndex, boxid, parseInt(opacityVal)/100]
       .on 'slideStop', (event) =>
         opacityStopVal = $(event.target).val()
         if @prevOpacityVal != opacityStopVal
-          $(event.target).trigger 'onRowSliderStopValChanged', [boxid, parseInt(@prevOpacityVal)/100, parseInt(opacityStopVal)/100]
+          $(event.target).trigger 'onRowSliderStopValChanged', [tabIndex, boxid, parseInt(@prevOpacityVal)/100, parseInt(opacityStopVal)/100]
         @prevOpacityVal = undefined
 
     newRow.find(".deleteElementBtn").on 'click', (event) =>
         $(event.target).trigger 'onRowDeleteBtnClick', [tabIndex, boxid]
-
-
 
   ###
   Removes the row associated with the passed box id.
@@ -140,8 +138,11 @@ class Panel extends Graphic
   ###
   Returns a selector matching the row at the specified index.
   ###
-  getRowAtIndex: (index) ->
-    @element.find(".ppedit-panel-row").eq(index)
+  getRowAtIndex: (tabIndex, index) ->
+    @element
+      .find('.right-sidebar-container[ppedit-tab-index="' + tabIndex + '"]')
+      .find(".ppedit-panel-row")
+      .eq(index)
 
   ###
   Sets the name of the row.
@@ -152,5 +153,7 @@ class Panel extends Graphic
   ###
   Returns a selector matching with all rows.
   ###
-  getRows: ->
-    @element.find(".ppedit-panel-row")
+  getRows:(tabIndex) ->
+    @element
+      .find('.right-sidebar-container[ppedit-tab-index="' + tabIndex + '"]')
+      .find(".ppedit-panel-row")

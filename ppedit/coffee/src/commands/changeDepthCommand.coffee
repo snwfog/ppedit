@@ -24,15 +24,15 @@ class ChangeDepthCommand extends Command
     index = row.index()
 
     if index-1 >= 0
-      upperRow = @editor.panels[@pageNum].getRowAtIndex index-1
+      upperRow = @editor.panel.getRowAtIndex @pageNum, index-1
       @swapRows row, upperRow
 
   swapRowWithLowerRow: ->
-    row = @editor.panels[@pageNum].getRowWithBoxId(@boxId)
+    row = @editor.panel.getRowWithBoxId(@boxId)
     index = row.index()
 
-    if index+1 < @editor.panels[@pageNum].element.find('.ppedit-panel-row').length
-      lowerRow = @editor.panels[@pageNum].getRowAtIndex index+1
+    if index+1 < @editor.panel.getRows(@pageNum).length
+      lowerRow = @editor.panel.getRowAtIndex @pageNum, index+1
       @swapRows row, lowerRow
 
   ###

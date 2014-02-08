@@ -109,34 +109,28 @@ class PPEditor extends Graphic
         @commandManager.pushCommand(@cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false) 
 
     @element.find('.row')
-      .on 'moveElementUpBtnClick', (event) =>
+      .on 'moveElementUpBtnClick', (event, tabIndex) =>
         boxes = @getSelectedBoxes()
-        pageNum = @getPanelNum $(event.target)
-        @commandManager.pushCommand @cmdFactory.createMoveUpCommand(this, pageNum, boxes) if boxes.length > 0
+        @commandManager.pushCommand @cmdFactory.createMoveUpCommand(this, tabIndex, boxes) if boxes.length > 0
 
-      .on 'moveElementDownBtnClick', (event) =>
+      .on 'moveElementDownBtnClick', (event, tabIndex) =>
         boxes = @getSelectedBoxes()
-        pageNum = @getPanelNum $(event.target)
-        @commandManager.pushCommand @cmdFactory.createMoveDownCommand(this, pageNum, boxes) if boxes.length > 0
+        @commandManager.pushCommand @cmdFactory.createMoveDownCommand(this, tabIndex, boxes) if boxes.length > 0
 
-      .on 'panelClickAddBtnClick', (event) =>
-        pageNum = @getPanelNum $(event.target)
-        @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, pageNum)
+      .on 'panelClickAddBtnClick', (event, tabIndex) =>
+        @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, tabIndex)
 
       .on 'panelClickGridBtnClick', (event) =>
         area.grid.toggleGrid() for area in @areas
 
-      .on 'onRowDeleteBtnClick', (event, boxId) =>
-        pageNum = @getPanelNum $(event.target)
-        @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, pageNum, @root.find('#' + boxId))
+      .on 'onRowDeleteBtnClick', (event, tabIndex, boxId) =>
+        @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, tabIndex, @root.find('#' + boxId))
 
-     .on 'onRowSliderValChanged', (event, boxId, opacityVal) =>
-       pageNum = @getPanelNum $(event.target)
-       @areas[pageNum].boxesContainer.changeBoxOpacity(boxId, opacityVal)
+     .on 'onRowSliderValChanged', (event, tabIndex, boxId, opacityVal) =>
+       @areas[tabIndex].boxesContainer.changeBoxOpacity(boxId, opacityVal)
 
-      .on 'onRowSliderStopValChanged', (event, boxId, prevVal, newVal) =>
-        pageNum = @getPanelNum $(event.target)
-        @commandManager.pushCommand @cmdFactory.createChangeOpacityCommand(this, pageNum, boxId, prevVal, newVal)
+      .on 'onRowSliderStopValChanged', (event, tabIndex, boxId, prevVal, newVal) =>
+        @commandManager.pushCommand @cmdFactory.createChangeOpacityCommand(this, tabIndex, boxId, prevVal, newVal)
 
       .on 'addBoxRequested', (event, boxCssOptions) =>
         pageNum = @getPageNum $(event.target)
@@ -233,9 +227,6 @@ class PPEditor extends Graphic
 
   getPageNum:(boxSelector) ->
     return boxSelector.parents('.editContainer').index()
-
-  getPanelNum:(panelElement) ->
-    return panelElement.parents('.panelContainer').index()
 
   ###
   Populates the editor with the boxes

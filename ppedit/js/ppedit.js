@@ -619,7 +619,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         boxId = _ref[_i];
-        _results.push(this.editor.panels[this.pageNum].removeBoxRow(boxId));
+        _results.push(this.editor.panel.removeBoxRow(boxId));
       }
       return _results;
     };
@@ -720,11 +720,11 @@
           for (id in _ref1) {
             boxElement = _ref1[id];
             area = this.editor.areas[i];
-            panel = this.editor.panels[i];
+            panel = this.editor.panel;
             box = new Box(area.boxesContainer.element);
             box.element = $(boxElement);
             area.boxesContainer.addBox(box);
-            rows = panel.getRows();
+            rows = panel.getRows(i);
             if (rows.length === 0) {
               _results1.push(panel.addBoxRow(id));
             } else {
@@ -814,7 +814,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
         this.editor.areas[this.pageNum].boxesContainer.removeBoxes([box.element.attr('id')]);
-        _results.push(this.editor.panels[this.pageNum].removeBoxRow([box.element.attr('id')]));
+        _results.push(this.editor.panel.removeBoxRow([box.element.attr('id')]));
       }
       return _results;
     };
@@ -829,7 +829,7 @@
       var boxId;
       this.editor.areas[this.pageNum].boxesContainer.addBox(box);
       boxId = box.element.attr('id');
-      this.editor.panels[this.pageNum].addBoxRow(boxId);
+      this.editor.panel.addBoxRow(this.pageNum, boxId);
       if (this.boxIds.indexOf(boxId) === -1) {
         return this.boxIds.push(boxId);
       }
@@ -874,7 +874,7 @@
         box = this.newBoxes[i];
         this.editor.areas[this.pageNum].boxesContainer.addBox(box);
         box.element.html(this.boxesClones.eq(i).html());
-        this.editor.panels[this.pageNum].addBoxRow(box.element.attr('id'));
+        this.editor.panel.addBoxRow(this.pageNum, box.element.attr('id'));
         _results.push(this.boxIds[i] = box.element.attr('id'));
       }
       return _results;
@@ -887,7 +887,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
         this.editor.areas[this.pageNum].boxesContainer.removeBoxes([box.element.attr('id')]);
-        _results.push(this.editor.panels[this.pageNum].removeBoxRow([box.element.attr('id')]));
+        _results.push(this.editor.panel.removeBoxRow([box.element.attr('id')]));
       }
       return _results;
     };
@@ -1124,17 +1124,17 @@
       row = this.editor.panel.getRowWithBoxId(this.boxId);
       index = row.index();
       if (index - 1 >= 0) {
-        upperRow = this.editor.panels[this.pageNum].getRowAtIndex(index - 1);
+        upperRow = this.editor.panel.getRowAtIndex(this.pageNum, index - 1);
         return this.swapRows(row, upperRow);
       }
     };
 
     ChangeDepthCommand.prototype.swapRowWithLowerRow = function() {
       var index, lowerRow, row;
-      row = this.editor.panels[this.pageNum].getRowWithBoxId(this.boxId);
+      row = this.editor.panel.getRowWithBoxId(this.boxId);
       index = row.index();
-      if (index + 1 < this.editor.panels[this.pageNum].element.find('.ppedit-panel-row').length) {
-        lowerRow = this.editor.panels[this.pageNum].getRowAtIndex(index + 1);
+      if (index + 1 < this.editor.panel.getRows(this.pageNum).length) {
+        lowerRow = this.editor.panel.getRowAtIndex(this.pageNum, index + 1);
         return this.swapRows(row, lowerRow);
       }
     };
@@ -1216,7 +1216,7 @@
 
     ChangeBoxOpacityCommand.prototype.changeOpacityToVal = function(value) {
       this.editor.areas[this.pageNum].boxesContainer.changeBoxOpacity(this.boxId, value);
-      return this.editor.panels[this.pageNum].element.find("tr[ppedit-box-id=" + this.boxId + "]").find('.ppedit-slider').slider('setValue', parseInt(value * 100));
+      return this.editor.panel.element.find("tr[ppedit-box-id=" + this.boxId + "]").find('.ppedit-slider').slider('setValue', parseInt(value * 100));
     };
 
     ChangeBoxOpacityCommand.prototype.getType = function() {
@@ -1922,12 +1922,12 @@
       }).on('slide', function(event) {
         var opacityVal;
         opacityVal = $(event.target).val();
-        return $(event.target).trigger('onRowSliderValChanged', [boxid, parseInt(opacityVal) / 100]);
+        return $(event.target).trigger('onRowSliderValChanged', [tabIndex, boxid, parseInt(opacityVal) / 100]);
       }).on('slideStop', function(event) {
         var opacityStopVal;
         opacityStopVal = $(event.target).val();
         if (_this.prevOpacityVal !== opacityStopVal) {
-          $(event.target).trigger('onRowSliderStopValChanged', [boxid, parseInt(_this.prevOpacityVal) / 100, parseInt(opacityStopVal) / 100]);
+          $(event.target).trigger('onRowSliderStopValChanged', [tabIndex, boxid, parseInt(_this.prevOpacityVal) / 100, parseInt(opacityStopVal) / 100]);
         }
         return _this.prevOpacityVal = void 0;
       });
@@ -1960,8 +1960,8 @@
     */
 
 
-    Panel.prototype.getRowAtIndex = function(index) {
-      return this.element.find(".ppedit-panel-row").eq(index);
+    Panel.prototype.getRowAtIndex = function(tabIndex, index) {
+      return this.element.find('.right-sidebar-container[ppedit-tab-index="' + tabIndex + '"]').find(".ppedit-panel-row").eq(index);
     };
 
     /*
@@ -1978,8 +1978,8 @@
     */
 
 
-    Panel.prototype.getRows = function() {
-      return this.element.find(".ppedit-panel-row");
+    Panel.prototype.getRows = function(tabIndex) {
+      return this.element.find('.right-sidebar-container[ppedit-tab-index="' + tabIndex + '"]').find(".ppedit-panel-row");
     };
 
     return Panel;
@@ -2129,24 +2129,20 @@
       }).on('boxMoved', function(event, box, currentPosition, originalPosition) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false);
       });
-      this.element.find('.row').on('moveElementUpBtnClick', function(event) {
-        var boxes, pageNum;
+      this.element.find('.row').on('moveElementUpBtnClick', function(event, tabIndex) {
+        var boxes;
         boxes = _this.getSelectedBoxes();
-        pageNum = _this.getPanelNum($(event.target));
         if (boxes.length > 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveUpCommand(_this, pageNum, boxes));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveUpCommand(_this, tabIndex, boxes));
         }
-      }).on('moveElementDownBtnClick', function(event) {
-        var boxes, pageNum;
+      }).on('moveElementDownBtnClick', function(event, tabIndex) {
+        var boxes;
         boxes = _this.getSelectedBoxes();
-        pageNum = _this.getPanelNum($(event.target));
         if (boxes.length > 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveDownCommand(_this, pageNum, boxes));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createMoveDownCommand(_this, tabIndex, boxes));
         }
-      }).on('panelClickAddBtnClick', function(event) {
-        var pageNum;
-        pageNum = _this.getPanelNum($(event.target));
-        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this, pageNum));
+      }).on('panelClickAddBtnClick', function(event, tabIndex) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this, tabIndex));
       }).on('panelClickGridBtnClick', function(event) {
         var area, _i, _len, _ref, _results;
         _ref = _this.areas;
@@ -2156,18 +2152,12 @@
           _results.push(area.grid.toggleGrid());
         }
         return _results;
-      }).on('onRowDeleteBtnClick', function(event, boxId) {
-        var pageNum;
-        pageNum = _this.getPanelNum($(event.target));
-        return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, pageNum, _this.root.find('#' + boxId)));
-      }).on('onRowSliderValChanged', function(event, boxId, opacityVal) {
-        var pageNum;
-        pageNum = _this.getPanelNum($(event.target));
-        return _this.areas[pageNum].boxesContainer.changeBoxOpacity(boxId, opacityVal);
-      }).on('onRowSliderStopValChanged', function(event, boxId, prevVal, newVal) {
-        var pageNum;
-        pageNum = _this.getPanelNum($(event.target));
-        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeOpacityCommand(_this, pageNum, boxId, prevVal, newVal));
+      }).on('onRowDeleteBtnClick', function(event, tabIndex, boxId) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createRemoveBoxesCommand(_this, tabIndex, _this.root.find('#' + boxId)));
+      }).on('onRowSliderValChanged', function(event, tabIndex, boxId, opacityVal) {
+        return _this.areas[tabIndex].boxesContainer.changeBoxOpacity(boxId, opacityVal);
+      }).on('onRowSliderStopValChanged', function(event, tabIndex, boxId, prevVal, newVal) {
+        return _this.commandManager.pushCommand(_this.cmdFactory.createChangeOpacityCommand(_this, tabIndex, boxId, prevVal, newVal));
       }).on('addBoxRequested', function(event, boxCssOptions) {
         var pageNum;
         pageNum = _this.getPageNum($(event.target));
@@ -2283,10 +2273,6 @@
 
     PPEditor.prototype.getPageNum = function(boxSelector) {
       return boxSelector.parents('.editContainer').index();
-    };
-
-    PPEditor.prototype.getPanelNum = function(panelElement) {
-      return panelElement.parents('.panelContainer').index();
     };
 
     /*
