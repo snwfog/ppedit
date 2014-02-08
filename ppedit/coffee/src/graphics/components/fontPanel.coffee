@@ -28,14 +28,14 @@ class FontPanel extends Graphic
                  <option value="16">16</option>
                  <option value="20">20</option>
                </select>
-               <div class="boldButton boldButtonDisable font-panel-icon-row1"></div>
-               <div class="italicButton italicButtonDisable font-panel-icon-row1"></div>
-               <div class="underlineButton underlineButtonDisable font-panel-icon-row1"></div>
+               <div class="boldButton boldButtonDisable font-panel-icon-row"></div>
+               <div class="italicButton italicButtonDisable font-panel-icon-row"></div>
+               <div class="underlineButton underlineButtonDisable font-panel-icon-row"></div>
              </div>
              <div class="edit-menu-row2">
-                <div class="leftAlignBtn leftAlignButtonEnable"></div>
-                <div class="centerAlignBtn centerAlignButtonDisable"></div>
-                <div class="rightAlignBtn rightAlignButtonDisable"></div>
+                <div class="leftAlignBtn leftAlignButtonEnable font-panel-icon-row"></div>
+                <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>
+                <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>
              </div>
             </div>').addClass("FontPanel")
 
@@ -64,27 +64,27 @@ class FontPanel extends Graphic
 
     @element.find('.boldButton').click (event) =>
       if $(event.target).hasClass('boldButtonDisable')
-        btn = $(event.target).attr('class','boldButton boldButtonEnable font-panel-icon-row1')
-        btn.trigger(if btn.hasClass('boldButtonEnable font-panel-icon-row1') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+        btn = $(event.target).attr('class','boldButton boldButtonEnable font-panel-icon-row')
+        btn.trigger(if btn.hasClass('boldButtonEnable font-panel-icon-row') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
       else
-        btn = $(event.target).attr('class','boldButtonDisable font-panel-icon-row1')
+        btn = $(event.target).attr('class','boldButtonDisable font-panel-icon-row')
         btn.trigger(if btn.hasClass('.boldButtonDisable font-panel-icon') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
 
     @element.find('.italicButton').click (event) =>
       if $(event.target).hasClass('italicButtonDisable')
-        btn = $(event.target).attr('class','italicButtonEnable font-panel-icon-row1')
-        btn.trigger(if btn.hasClass('italicButtonEnable font-panel-icon-row1') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+        btn = $(event.target).attr('class','italicButtonEnable font-panel-icon-row')
+        btn.trigger(if btn.hasClass('italicButtonEnable font-panel-icon-row') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
       else
-        btn = $(event.target).attr('class','italicButtonDisable font-panel-icon-row1')
+        btn = $(event.target).attr('class','italicButtonDisable font-panel-icon-row')
         btn.trigger(if btn.hasClass('.italicButtonDisable font-panel-icon') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
 
     @element.find('.underlineButton').click (event) =>
       if $(event.target).hasClass('underlineButtonDisable')
-        btn = $(event.target).attr('class','underlineButtonEnable font-panel-icon-row1')
-        btn.trigger(if btn.hasClass('underlineButtonEnable font-panel-icon-row1') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+        btn = $(event.target).attr('class','underlineButtonEnable font-panel-icon-row')
+        btn.trigger(if btn.hasClass('underlineButtonEnable font-panel-icon-row') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
       else
-        btn = $(event.target).attr('class','underlineButtonDisable font-panel-icon-row1')
-        btn.trigger(if btn.hasClass('.underlineButtonDisable font-panel-icon-row1') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
+        btn = $(event.target).attr('class','underlineButtonDisable font-panel-icon-row')
+        btn.trigger(if btn.hasClass('.underlineButtonDisable font-panel-icon-row') then 'fontWeightBtnEnableClick' else 'fontWeightBtnDisableClick')
 
 
     @element.find('.boldButtonEnable').click (event) =>

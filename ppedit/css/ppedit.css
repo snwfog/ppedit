@@ -1,19 +1,53 @@
-
 .left-sidebar {
-    width:50px; 
-    height:100vh; 
-    background-color:#888; 
-    position:fixed; 
-    top:0px; 
-    padding:10px;
+    width: 50px;
+    height: 100%;
+    background-color: #888;
+    position: fixed;
+    top: 0px;
+    padding: 10px;
+    left: 0px;
 }
 
 .icon-set {
     padding-bottom: 15px;
 }
+/*.gridElementBtn.icon-set {
+    padding-top: 10px;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+.snapBtn.icon-set {
+    padding-top: 17px;
+    padding-bottom: 17px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-bottom: 15px;
+}*/
 
+.undoBtn {
+    background-image:url('../img/icons/glyphicons_221_unshare.png');
+    background-color:#888;
+    border-color:#888;
+}
 
+.redoBtn {
+    background-image:url('../img/icons/glyphicons_222_share.png');
+    background-color:#888;
+    border-color:#888;
+}
 
+.gridElementBtn {
+    background-image:url('../img/icons/glyphicons_155_show_big_thumbnails.png');
+    background-color:#888;
+    border-color:#888;
+}
+.snapBtn {
+    background-image:url('../img/icons/glyphicons_023_magnet.png');
+    background-color:#888;
+    border-color:#888;
+}
+
+/* Right side panel */
 /* Right side panel */
 .menu-sidebar
 {
@@ -52,9 +86,12 @@
     z-index:50;
 }
 
+.menu-tab-pages
+{
+    line-height: 5em;
+}
+
 .page-sidebar-tab {
-    display: table-cell;
-    vertical-align: middle;
 }
 
 .right-sidebar-container {
@@ -88,6 +125,7 @@
 }
 
 .vertical-text {
+    white-space: nowrap;
     display:block;
     color:#fff;
     font-family:'Oswald', sans-serif;
@@ -182,7 +220,7 @@
     background-image: url(../img/icons/OFF/glyphicons_112_align_right.png);
 }
 
-.font-panel-icon-row1
+.font-panel-icon-row
 {
     width:32px;
     height:17px;
@@ -191,19 +229,6 @@
     background-size: contain;
 
     float:left;
-    margin-top: 5px;
-    cursor: pointer;
-}
-
-.font-panel-icon-row2
-{
-    width:32px;
-    height:17px;
-
-    background-repeat: no-repeat;
-    background-size: contain;
-
-    float:none;
     margin-top: 5px;
     cursor: pointer;
 }
@@ -279,117 +304,14 @@
     background-image: url(../img/icons/ON/glyphicons_432_plus.png);
 }
 
+.deleteElementBtn
+{
+    margin-left: 10px;
+    background-image: url(../img/icons/OFF/glyphicons_192_circle_remove.png);
+}
 
-
+.deleteElementBtn:hover
+{
+    background-image: url(../img/icons/ON/glyphicons_192_circle_remove.png);
+}
 /* Right Side Panel -- END */
-
-
-.editContainer0 {
-    width:980px; 
-    height:1300px; 
-    border:30px solid #fff; 
-    display:block; 
-    position: absolute; 
-    top:65px; 
-    left:50%; 
-    margin-left:-465px;
-}
-
-.editContainer1 {
-    width:980px; 
-    height:1300px; 
-    border:30px solid #fff; 
-    display:block; 
-    position: absolute; 
-    top:1400px; 
-    left:50%; 
-    margin-left:-465px;
-}
-
-.ppedit-container
-{
-    position:relative;
-    width:920px;
-    height:1240px;
-    padding: 0px 0px 0px 0px;
-    margin-left: auto;
-    margin-right: auto;
-
-}
-
-.ppedit-box-container
-{
-    position:absolute;
-    width:inherit;
-    height:inherit;
-    padding: 0px 0px 0px 0px;
-    overflow-y: hidden;
-    overflow-x: hidden;
-}
-
-.ppedit-box
-{
-    position:absolute;
-    
-    border-style:solid;
-    border-width:1px;
-    border-color:orange; 
-    
-    resize:both;
-    overflow:auto;
-
-    background-color: transparent;
-}
-
-.ppedit-box-selected
-{
-    border-style:dashed;
-}
-
-.ppedit-box-focus,
-.ppedit-box:focus
-{
-    border-color:blue;
-    border-style:dashed;
-    background-color: rgba(200, 200, 200, 0.1);
-}
-
-.ppedit-canvas
-{
-    position: absolute;
-    z-index: -500;
-}
-
-.ppedit-slider
-{
-    width:100px;
-}
-
-.ppedit-grid
-{
-    position: absolute;
-    width:inherit;
-    height:inherit;
-    opacity:0.5;
-    z-index: -499;
-}
-
-.ppedit-vDotLine
-{
-    border-right: 1px dotted #0099CC; 
-    height: inherit;
-    position: absolute; 
-    left: 50px; 
-    top: 0px;
-}
-
-.ppedit-hDotLine
-{
-    border-bottom: 1px dotted #0099CC;
-    width:inherit;
-    position: absolute; 
-    left: 0px; 
-    top: 50px;
-}
-
-

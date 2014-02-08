@@ -816,12 +816,8 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
-        if (this.editContainer === true) {
-          this.editor.areas[this.pageNum].boxesContainer.removeBoxes([box.element.attr('id')]);
-          _results.push(this.editor.panels[this.pageNum].removeBoxRow([box.element.attr('id')]));
-        } else {
-          _results.push(void 0);
-        }
+        this.editor.areas[this.pageNum].boxesContainer.removeBoxes([box.element.attr('id')]);
+        _results.push(this.editor.panels[this.pageNum].removeBoxRow([box.element.attr('id')]));
       }
       return _results;
     };
@@ -1851,7 +1847,7 @@
 \
           <!-- Row 2 Menu -->\
           <span>\
-            <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="0px">\
+            <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="2px">\
             </table>\
           </span>\
         </div>\
@@ -1870,22 +1866,14 @@
       this.element.find('.moveElementDownBtn').click(function() {
         return _this.element.trigger('moveElementDownBtnClick');
       });
-      return this.element.find('.menu-right-btn').click(function(event) {
-        var el;
-        el = $(event.target);
-        if (_this.element.find('.menu-right-btn').css("margin-right") === "350px") {
-          _this.element.find('.menu-right-container').animate({
-            "margin-right": '-=350'
-          });
-          return _this.element.find('.menu-right-btn').animate({
-            "margin-right": '-=350'
+      return this.element.find('.minimize-sidebar-btn').click(function(event) {
+        if (_this.element.css("right") === "0px") {
+          return _this.element.animate({
+            "right": '+=350'
           });
         } else {
-          _this.element.find('.menu-right-container').animate({
-            "margin-right": '+=350'
-          });
-          return _this.element.find('.menu-right-btn').animate({
-            "margin-right": '+=350'
+          return _this.element.animate({
+            "right": '-=350'
           });
         }
       });
@@ -1902,7 +1890,7 @@
       newRow = $('\
         	<tr class="ppedit-panel-row">\
         		<td style="width:10%">\
-        			<span class="deleteElementBtn glyphicon glyphicon-remove-sign btn-lg"></span>\
+        			<div class="deleteElementBtn menu-panel-icon"></div>\
     		    </td>\
             <td style="width:50%">\
             <input type="text" class="form-control" placeholder="Element 1">\
@@ -2038,7 +2026,7 @@
   PPEditor = (function(_super) {
     __extends(PPEditor, _super);
 
-    PPEditor.NUMBER_OF_PAGES = 2;
+    PPEditor.NUMBER_OF_PAGES = 3;
 
     function PPEditor(root) {
       this.root = root;
@@ -2058,13 +2046,10 @@
     ');
       this.controller = ControllerFactory.getController(this.element);
       row = this.element.find('.row');
-      /*
-      @superContainer = $('
-        <div class="superContainer shadow-effect">
-        </div>
-      ')
-      */
-
+      this.superContainer = $('\
+      <div class="superContainer">\
+      </div>\
+    ');
       this.superPanel = $('\
       <div class="superPanel" style="clear:both;">\
       </div>\
@@ -2083,10 +2068,10 @@
       }
       this.mainPanel.buildElement();
       for (i = _k = 0, _ref2 = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref2 ? _k <= _ref2 : _k >= _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
-        row.append($('<div class="editContainer' + i + ' shadow-effect"></div>').append(this.areas[i].element));
+        this.superContainer.append($('<div class="editContainer  shadow-effect"></div>').append(this.areas[i].element));
         this.superPanel.append($('<div class="panelContainer" style="clear:both;"></div>').append(this.panels[i].element));
       }
-      $('body').append(this.mainPanel.element);
+      this.element.append(this.mainPanel.element);
       row.append(this.superContainer);
       row.append(this.fontPanel.element);
       return row.append(this.superPanel);
@@ -2291,11 +2276,7 @@
     };
 
     PPEditor.prototype.getPageNum = function(boxSelector) {
-      if (boxSelector.parent().parent().hasClass('editContainer0')) {
-        return 0;
-      } else {
-        return 1;
-      }
+      return boxSelector.parents('.editContainer').index();
     };
 
     PPEditor.prototype.getPanelNum = function(panelElement) {
@@ -2362,10 +2343,10 @@
     MainPanel.prototype.buildElement = function() {
       return this.element = $('\
             <div class="left-sidebar">\
-              <img class="icon-set undoImg" src="./ppedit/img/icons/glyphicons_221_unshare.png">\
-              <img class="icon-set redoImg" src="./ppedit/img//icons/glyphicons_222_share.png">\
-              <img class="icon-set gridImg" src="./ppedit/img/icons/glyphicons_155_show_big_thumbnails.png">\
-              <img class="icon-set snapImg" src="./ppedit/img/icons/glyphicons_023_magnet.png">\
+              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
+              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
+              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
+              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
           </div>');
     };
 
@@ -2378,14 +2359,38 @@
           return $(event.target).removeClass("snapBtn-selected");
         }
       });
+      this.element.find('.snapImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
+      });
+      this.element.find('.snapImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
+      });
       this.element.find(".gridImg").click(function() {
         return _this.root.find('.row').trigger('panelClickGridBtnClick');
+      });
+      this.element.find('.gridImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
+      });
+      this.element.find('.gridImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
       });
       this.element.find(".undoImg").click(function() {
         return _this.root.trigger('requestUndo');
       });
-      return this.element.find(".redoImg").click(function() {
+      this.element.find('.undoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
+      });
+      this.element.find('.undoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
+      });
+      this.element.find(".redoImg").click(function() {
         return _this.root.trigger('requestRedo');
+      });
+      this.element.find('.redoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
+      });
+      return this.element.find('.redoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
       });
     };
 
@@ -2427,14 +2432,14 @@
                  <option value="16">16</option>\
                  <option value="20">20</option>\
                </select>\
-               <div class="boldButton boldButtonDisable font-panel-icon-row1"></div>\
-               <div class="italicButton italicButtonDisable font-panel-icon-row1"></div>\
-               <div class="underlineButton underlineButtonDisable font-panel-icon-row1"></div>\
+               <div class="boldButton boldButtonDisable font-panel-icon-row"></div>\
+               <div class="italicButton italicButtonDisable font-panel-icon-row"></div>\
+               <div class="underlineButton underlineButtonDisable font-panel-icon-row"></div>\
              </div>\
              <div class="edit-menu-row2">\
-                <div class="leftAlignBtn leftAlignButtonEnable"></div>\
-                <div class="centerAlignBtn centerAlignButtonDisable"></div>\
-                <div class="rightAlignBtn rightAlignButtonDisable"></div>\
+                <div class="leftAlignBtn leftAlignButtonEnable font-panel-icon-row"></div>\
+                <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>\
+                <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>\
              </div>\
             </div>').addClass("FontPanel");
     };
@@ -2465,31 +2470,31 @@
       this.element.find('.boldButton').click(function(event) {
         var btn;
         if ($(event.target).hasClass('boldButtonDisable')) {
-          btn = $(event.target).attr('class', 'boldButton boldButtonEnable font-panel-icon-row1');
-          return btn.trigger(btn.hasClass('boldButtonEnable font-panel-icon-row1') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+          btn = $(event.target).attr('class', 'boldButton boldButtonEnable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('boldButtonEnable font-panel-icon-row') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
         } else {
-          btn = $(event.target).attr('class', 'boldButtonDisable font-panel-icon-row1');
+          btn = $(event.target).attr('class', 'boldButtonDisable font-panel-icon-row');
           return btn.trigger(btn.hasClass('.boldButtonDisable font-panel-icon') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
         }
       });
       this.element.find('.italicButton').click(function(event) {
         var btn;
         if ($(event.target).hasClass('italicButtonDisable')) {
-          btn = $(event.target).attr('class', 'italicButtonEnable font-panel-icon-row1');
-          return btn.trigger(btn.hasClass('italicButtonEnable font-panel-icon-row1') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+          btn = $(event.target).attr('class', 'italicButtonEnable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('italicButtonEnable font-panel-icon-row') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
         } else {
-          btn = $(event.target).attr('class', 'italicButtonDisable font-panel-icon-row1');
+          btn = $(event.target).attr('class', 'italicButtonDisable font-panel-icon-row');
           return btn.trigger(btn.hasClass('.italicButtonDisable font-panel-icon') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
         }
       });
       this.element.find('.underlineButton').click(function(event) {
         var btn;
         if ($(event.target).hasClass('underlineButtonDisable')) {
-          btn = $(event.target).attr('class', 'underlineButtonEnable font-panel-icon-row1');
-          return btn.trigger(btn.hasClass('underlineButtonEnable font-panel-icon-row1') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+          btn = $(event.target).attr('class', 'underlineButtonEnable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('underlineButtonEnable font-panel-icon-row') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
         } else {
-          btn = $(event.target).attr('class', 'underlineButtonDisable font-panel-icon-row1');
-          return btn.trigger(btn.hasClass('.underlineButtonDisable font-panel-icon-row1') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+          btn = $(event.target).attr('class', 'underlineButtonDisable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('.underlineButtonDisable font-panel-icon-row') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
         }
       });
       this.element.find('.boldButtonEnable').click(function(event) {
