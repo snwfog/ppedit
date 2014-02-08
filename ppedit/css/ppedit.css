@@ -48,6 +48,7 @@
 }
 
 /* Right side panel */
+/* Right side panel */
 .menu-sidebar
 {
     position: fixed;
@@ -136,6 +137,58 @@
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 
+.minimize-text
+{
+    display:block;
+    color:#fff;
+    font-family:'Oswald', sans-serif;
+    font-size:20px;
+    font-weight:400;
+    text-align: center;
+}
+
+.menu-panel-icon
+{
+    width:32px;
+    height:17px;
+
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    float:left;
+    margin-top: 2px;
+    cursor: pointer;
+}
+
+.moveElementUpBtn
+{
+    background-image: url(../img/icons/OFF/glyphicons_213_up_arrow.png);
+}
+
+.moveElementUpBtn:hover
+{
+    background-image: url(../img/icons/ON/glyphicons_213_up_arrow.png);
+}
+
+.moveElementDownBtn
+{
+    background-image: url(../img/icons/OFF/glyphicons_212_down_arrow.png);
+}
+
+.moveElementDownBtn:hover
+{
+    background-image: url(../img/icons/ON/glyphicons_212_down_arrow.png);
+}
+
+.addElementBtn
+{
+    background-image: url(../img/icons/OFF/glyphicons_432_plus.png);
+}
+
+.addElementBtn:hover
+{
+    background-image: url(../img/icons/ON/glyphicons_432_plus.png);
+}
 
 .deleteElementBtn
 {
@@ -147,6 +200,4 @@
 {
     background-image: url(../img/icons/ON/glyphicons_192_circle_remove.png);
 }
-
-
-
+/* Right Side Panel -- END */
