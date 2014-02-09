@@ -23,20 +23,28 @@ class Panel extends Graphic
                 <span class="add-text">+</span>
             </div>
         </div>
+
+         <div class="right-sidebar-container shadow-effect">
+
+            <!-- Row 1 Menu  -->
+            <div class="right-sidebar-menu1">
+              <div class="moveElementUpBtn menu-panel-icon"></div>
+              <div class="moveElementDownBtn menu-panel-icon"></div>
+              <div class="addElementBtn menu-panel-icon"></div>
+            </div>
+
+          </div>
       </div>')
 
   bindEvents: ->
     @element.find(".addElementBtn").click =>
-      tabIndex = parseInt(@element.find('right-sidebar-container').first().attr('ppedit-tab-index'))
-      @element.trigger 'panelClickAddBtnClick', [tabIndex]
+      @element.trigger 'panelClickAddBtnClick', [@_getDisplayedTabIndex()]
 
     @element.find('.moveElementUpBtn').click =>
-      tabIndex = parseInt(@element.find('right-sidebar-container').first().attr('ppedit-tab-index'))
-      @element.trigger 'moveElementUpBtnClick', [tabIndex]
+      @element.trigger 'moveElementUpBtnClick', [@_getDisplayedTabIndex()]
 
     @element.find('.moveElementDownBtn').click =>
-      tabIndex = parseInt(@element.find('right-sidebar-container').first().attr('ppedit-tab-index'))
-      @element.trigger 'moveElementDownBtnClick', [tabIndex]
+      @element.trigger 'moveElementDownBtnClick', [@_getDisplayedTabIndex()]
 
     @element.find('.minimize-sidebar-btn').click (event) =>
       if @element.css("right") == "0px"
@@ -49,29 +57,25 @@ class Panel extends Graphic
 
     # Add tab header
     @element.find('.menu-tab-pages').append('
-                   <div class="page-sidebar-tab menu-right-btn shadow-effect" ppedit-tab-index="' + newPageIndex + '">
-                          <span class="vertical-text">Page ' + (newPageIndex + 1) + '</span>
-                   </div>
+       <div class="page-sidebar-tab menu-right-btn shadow-effect" ppedit-tab-index="' + newPageIndex + '">
+              <span class="vertical-text">Page ' + (newPageIndex + 1) + '</span>
+       </div>
     ')
 
     # Add box rows container
-    @element.append('
-            <div class="right-sidebar-container shadow-effect" ppedit-tab-index="' + newPageIndex + '">
-
-              <!-- Row 1 Menu  -->
-              <div class="right-sidebar-menu1">
-                <div class="moveElementUpBtn menu-panel-icon"></div>
-                <div class="moveElementDownBtn menu-panel-icon"></div>
-                <div class="addElementBtn menu-panel-icon"></div>
-              </div>
-
-              <!-- Row 2 Menu -->
-              <span>
-                <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="2px">
-                </table>
-              </span>
-            </div>
+    @element.find('.right-sidebar-container').append('
+        <!-- Row 2 Menu -->
+        <span class="ppedit-row-container" ppedit-tab-index="' + newPageIndex + '">
+          <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="2px">
+          </table>
+        </span>
     ')
+
+    @element
+      .find('.ppedit-row-container')
+      .removeClass('ppedit-row-container-active')
+      .last()
+      .addClass('ppedit-row-container-active')
 
 
   ###
@@ -94,12 +98,9 @@ class Panel extends Graphic
     .attr('ppedit-box-id', boxid)
 
     if !index? or index == 0
-      @element.find('.right-sidebar-container[ppedit-tab-index="' + tabIndex + '"]')
-              .find('.right-sidebar-menu2')
-              .prepend newRow
+      @_getRowContainer(tabIndex).find('.right-sidebar-menu2').prepend newRow
     else
-      newRow.insertBefore(@element.find('.right-sidebar-container[ppedit-tab-index="' + tabIndex + '"]')
-                                  .find('.ppedit-panel-row:nth-child("' + index + '")'))
+      newRow.insertBefore(@_getRowContainer(tabIndex).find('.ppedit-panel-row:nth-child("' + index + '")'))
 
     newRow.find(".ppedit-slider")
       .slider(
@@ -139,10 +140,7 @@ class Panel extends Graphic
   Returns a selector matching the row at the specified index.
   ###
   getRowAtIndex: (tabIndex, index) ->
-    @element
-      .find('.right-sidebar-container[ppedit-tab-index="' + tabIndex + '"]')
-      .find(".ppedit-panel-row")
-      .eq(index)
+    @_getRowContainer(tabIndex).find(".ppedit-panel-row").eq(index)
 
   ###
   Sets the name of the row.
@@ -154,6 +152,20 @@ class Panel extends Graphic
   Returns a selector matching with all rows.
   ###
   getRows:(tabIndex) ->
+    @_getRowContainer(tabIndex).find(".ppedit-panel-row")
+
+  switchToTab:(tabIndex) ->
     @element
-      .find('.right-sidebar-container[ppedit-tab-index="' + tabIndex + '"]')
-      .find(".ppedit-panel-row")
+      .find('.ppedit-row-container')
+      .removeClass('ppedit-row-container-active')
+      .eq(tabIndex)
+      .addClass('ppedit-row-container-active')
+
+  _getRowContainer:(tabIndex) ->
+    @element.find('.ppedit-row-container[ppedit-tab-index="' + tabIndex + '"]')
+
+  _getDisplayedRowContainer: ->
+    @element.find('.ppedit-row-container').eq(0)
+
+  _getDisplayedTabIndex: ->
+    parseInt(@_getDisplayedRowContainer().attr('ppedit-tab-index'))

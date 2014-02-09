@@ -63,9 +63,8 @@ class PPEditor extends Graphic
     for i in [0..PPEditor.NUMBER_OF_PAGES-1]
       @superContainer.append $('<div class="editContainer  shadow-effect"></div>').append @areas[i].element
 
-    @element
-      .append @mainPanel.element
-      .append @panel.element
+    @element.append @mainPanel.element
+    @element.append @panel.element
 
     row.append @superContainer
     row.append @fontPanel.element
@@ -108,7 +107,6 @@ class PPEditor extends Graphic
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
         @commandManager.pushCommand(@cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false) 
 
-    @element.find('.row')
       .on 'moveElementUpBtnClick', (event, tabIndex) =>
         boxes = @getSelectedBoxes()
         @commandManager.pushCommand @cmdFactory.createMoveUpCommand(this, tabIndex, boxes) if boxes.length > 0
