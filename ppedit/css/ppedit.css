@@ -53,6 +53,7 @@
     position: fixed;
     right: 0px;
     top: 65px;
+    z-index: 900;
 }
 
 .menu-tab-sidebar

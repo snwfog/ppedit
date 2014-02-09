@@ -13,7 +13,7 @@ Graphic acting a the main container of the PPEditor.
 ###
 class PPEditor extends Graphic
 
-  @NUMBER_OF_PAGES: 3
+  @INIT_NUM_OF_PAGES: 2
 
   constructor: (@root) ->
     super @root
@@ -30,14 +30,10 @@ class PPEditor extends Graphic
   buildElement: ->
     @element = $('
       <div class="container" tabindex="0">
-        <div class="row"></div>
       </div>
     ')
 
     @controller = ControllerFactory.getController @element
-
-    row = @element.find('.row')
-
     
     @superContainer = $('
       <div class="superContainer">
@@ -47,27 +43,16 @@ class PPEditor extends Graphic
     @areas = []
     @panel = new Panel @element
     @mainPanel = new MainPanel @element
-    @fontPanel = new FontPanel row
-
-    for i in [0..PPEditor.NUMBER_OF_PAGES-1]
-      @areas.push new EditArea row
+    @fontPanel = new FontPanel @element
 
     @panel.buildElement()
     @mainPanel.buildElement()
     @fontPanel.buildElement()
 
-    for i in [0..PPEditor.NUMBER_OF_PAGES-1]
-      @areas[i].buildElement()
-      @panel.addNewTab()
-
-    for i in [0..PPEditor.NUMBER_OF_PAGES-1]
-      @superContainer.append $('<div class="editContainer  shadow-effect"></div>').append @areas[i].element
-
     @element.append @mainPanel.element
     @element.append @panel.element
-
-    row.append @superContainer
-    row.append @fontPanel.element
+    @element.append @superContainer
+    @element.append @fontPanel.element
 
   bindEvents: ->
 
@@ -79,12 +64,12 @@ class PPEditor extends Graphic
         @commandManager.redo()
 
       .on 'requestDelete', (event) =>
-        for i in [0..PPEditor.NUMBER_OF_PAGES-1]
+        for i in [0..PPEditor.INIT_NUM_OF_PAGES-1]
           if @areas[i].boxesContainer.getSelectedBoxes().length != 0
             @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, i, @areas[0].boxesContainer.getSelectedBoxes())
 
       .on 'requestCopy', (event) =>
-        for i in [0..PPEditor.NUMBER_OF_PAGES-1]
+        for i in [0..PPEditor.INIT_NUM_OF_PAGES-1]
           if @areas[i].boxesContainer.getSelectedBoxes().length != 0
             @clipboard.pushItems
               pageNum:i
@@ -201,21 +186,17 @@ class PPEditor extends Graphic
         boxes = @areas[pageNum].boxesContainer.getBoxesFromSelector(boxesSelected.eq(0))
         box.addOrderedPointList() for id, box of boxes
 
-#      .on 'unSelectBoxes', (event) =>
-#        @element.find('.ppedit-box')
-#          .removeClass('ppedit-box-focus')
-#          .removeClass('ppedit-box-selected')
-
       .on 'boxSelected', (event, box) =>
         @fontPanel.setSettingsFromStyle box.element.get(0).style
-
-    for i in [0..PPEditor.NUMBER_OF_PAGES-1]
-      @areas[i].bindEvents()
 
     @panel.bindEvents()
     @fontPanel.bindEvents()
     @controller.bindEvents()
     @mainPanel.bindEvents()
+
+    for i in [0..PPEditor.INIT_NUM_OF_PAGES-1]
+      cmd = @cmdFactory.createAddPageCommand(this)
+      cmd.execute();
 
   ###
   Returns a selector to the currently selected boxes

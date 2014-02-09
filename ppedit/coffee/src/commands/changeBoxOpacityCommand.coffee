@@ -7,6 +7,7 @@ class ChangeBoxOpacityCommand extends Command
     super()
 
   execute: ->
+    newArea = new EditArea row
     @changeOpacityToVal @newVal
 
   undo: ->
