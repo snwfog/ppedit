@@ -54,6 +54,17 @@
     right: 0px;
     top: 65px;
     z-index: 900;
+
+    -webkit-transition: right 1000ms;
+    -moz-transition: right 1000ms;
+    -ms-transition: right 1000ms;
+    -o-transition: right 1000ms;
+    transition: right 1000ms;
+}
+
+.menu-sidebar-open
+{
+    right: 350px;
 }
 
 .menu-tab-sidebar

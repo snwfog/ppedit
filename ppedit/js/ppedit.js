@@ -1902,15 +1902,7 @@
         return _this.element.trigger('moveElementDownBtnClick', [_this._getDisplayedTabIndex()]);
       });
       return this.element.find('.minimize-sidebar-btn').click(function(event) {
-        if (_this.element.css("right") === "0px") {
-          return _this.element.animate({
-            "right": '+=350'
-          });
-        } else {
-          return _this.element.animate({
-            "right": '-=350'
-          });
-        }
+        return _this.element.toggleClass('menu-sidebar-open');
       });
     };
 

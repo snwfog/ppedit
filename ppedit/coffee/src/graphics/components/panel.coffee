@@ -47,10 +47,7 @@ class Panel extends Graphic
       @element.trigger 'moveElementDownBtnClick', [@_getDisplayedTabIndex()]
 
     @element.find('.minimize-sidebar-btn').click (event) =>
-      if @element.css("right") == "0px"
-        @element.animate {"right": '+=350'}
-      else
-        @element.animate {"right": '-=350'}
+      @element.toggleClass('menu-sidebar-open');
 
   addNewTab: ->
     newPageIndex = @element.find('.page-sidebar-tab').length;
