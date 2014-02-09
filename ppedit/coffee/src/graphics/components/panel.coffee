@@ -173,7 +173,7 @@ class Panel extends Graphic
     @element.find('.ppedit-row-container[ppedit-tab-index="' + tabIndex + '"]')
 
   _getDisplayedRowContainer: ->
-    @element.find('.ppedit-row-container').eq(0)
+    @element.find('.ppedit-row-container-active').eq(0)
 
   _getDisplayedTabIndex: ->
     parseInt(@_getDisplayedRowContainer().attr('ppedit-tab-index'))
