@@ -375,7 +375,9 @@
         return event.preventDefault();
       }).dblclick(function(event) {
         event.stopPropagation();
-        return event.preventDefault();
+        event.preventDefault();
+        console.log(_this.root.parent());
+        return _this.root.parent().find(".FontPanel").css("visibility", "");
       }).focus(function(event) {
         return _this.element.trigger('boxSelected', [_this]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
@@ -451,8 +453,9 @@
       this.prevPosition = void 0;
       if ($(document).find('.snapImg').hasClass('snapBtn-selected')) {
         this.root.find('.hDotLine').removeClass('ppedit-hDotLine');
-        return this.root.find('.vDotLine').removeClass('ppedit-vDotLine');
+        this.root.find('.vDotLine').removeClass('ppedit-vDotLine');
       }
+      return this.root.parent().find(".FontPanel").css("visibility", "hidden");
     };
 
     /*
@@ -1640,6 +1643,7 @@
       this.canvas = void 0;
       this.grid = void 0;
       this.boxesContainer = void 0;
+      this.fontPanel = void 0;
     }
 
     EditArea.prototype.buildElement = function() {
@@ -1647,12 +1651,15 @@
       this.boxesContainer = new BoxesContainer(this.element);
       this.canvas = new Canvas(this.element);
       this.grid = new Grid(this.element);
+      this.fontPanel = new FontPanel(this.element);
       this.boxesContainer.buildElement();
       this.canvas.buildElement();
       this.grid.buildElement();
+      this.fontPanel.buildElement();
       this.element.append(this.boxesContainer.element);
       this.element.append(this.canvas.element);
-      return this.element.append(this.grid.element);
+      this.element.append(this.grid.element);
+      return this.element.append(this.fontPanel.element);
     };
 
     EditArea.prototype.bindEvents = function() {
@@ -1682,10 +1689,13 @@
         return _this.element.find('*').trigger('containerKeyDown', [event]);
       }).on('canvasRectSelect', function(event, rect) {
         return _this.boxesContainer.selectBoxesInRect(rect);
+      }).on('boxSelected', function(event, box) {
+        return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
       });
       this.boxesContainer.bindEvents();
       this.canvas.bindEvents();
-      return this.grid.bindEvents();
+      this.grid.bindEvents();
+      return this.fontPanel.bindEvents();
     };
 
     return EditArea;
@@ -2039,7 +2049,7 @@
     };
 
     Panel.prototype._getDisplayedRowContainer = function() {
-      return this.element.find('.ppedit-row-container').eq(0);
+      return this.element.find('.ppedit-row-container-active').eq(0);
     };
 
     Panel.prototype._getDisplayedTabIndex = function() {
@@ -2124,7 +2134,6 @@
       this.fontPanel = new FontPanel(this.element);
       this.panel.buildElement();
       this.mainPanel.buildElement();
-      this.fontPanel.buildElement();
       this.element.append(this.mainPanel.element);
       this.element.append(this.panel.element);
       this.element.append(this.superContainer);
@@ -2301,8 +2310,6 @@
           _results.push(box.addOrderedPointList());
         }
         return _results;
-      }).on('boxSelected', function(event, box) {
-        return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
       });
       this.panel.bindEvents();
       this.fontPanel.bindEvents();
@@ -2393,15 +2400,16 @@
 
     FontPanel.prototype.buildElement = function() {
       return this.element = $('\
-            <div class="col-xs-5 fontPanel" style ="padding-left: 30px;padding-bottom: 10px">\
-            <select class="fontTypeBtn">\
+          <div class="edit-menu shadow-effect" style="visibility:hidden;">\
+            <div class="edit-menu-row1">\
+               <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">\
                  <option value="Times New Roman" selected>Times New Roman</option>\
                  <option value="Arial">Arial</option>\
                  <option value="Inconsolata">Inconsolata</option>\
                  <option value="Glyphicons Halflings">Glyphicons Halflings</option>\
                </select>\
                \
-               <select class="fontSizeBtn">\
+               <select class="fontSizeBtn from-control edit-menu-row1-dd-fs">\
                  <option value="6">6</option>\
                  <option value="8">8</option>\
                  <option value="10" selected>10</option>\
@@ -2411,43 +2419,16 @@
                  <option value="16">16</option>\
                  <option value="20">20</option>\
                </select>\
-               <button class="colorPicker btn btn-default" id="picker"><span class="glyphicon glyphicon-font"></button>\
-               <div class="btn-group" data-toggle="buttons">\
-                <label class="wbtn btn btn-default">\
-                  <input type="checkbox"><span class="weightBtn glyphicon glyphicon-bold"></span>\
-                </label>\
-                <label class="ubtn btn btn-default">\
-                  <input type="checkbox"><span class="underlineBtn glyphicon glyphicon-text-width"></span>\
-                </label>\
-                <label class="ibtn btn btn-default">\
-                  <input type="checkbox"><span class="italicBtn glyphicon glyphicon-italic"></span>\
-                </label>\
-               </div>\
-\
-               <br />\
-               \
-               <div class="btn-group" data-toggle="buttons">\
-                <label class="leftAlignBtn btn btn-default">\
-                  <input type="radio" id="option1"><span class="glyphicon glyphicon-align-left">\
-                </label>\
-                <label class="centerAlignBtn btn btn-default">\
-                  <input type="radio" id="option2"><span class="glyphicon glyphicon-align-center">\
-                </label>\
-                <label class="rightAlignBtn btn btn-default">\
-                  <input type="radio" id="option3"><span class="glyphicon glyphicon-align-right">\
-                </label>\
-               </div>\
-               \
-			   <br />\
-               <div class="btn-group" data-toggle="buttons">\
-                <label class="bulletPointBtn btn btn-default">\
-                  <input type="radio" id="option1"><span class="glyphicon glyphicon-list">\
-                </label>\
-                <label class="orderedPointBtn btn btn-default">\
-                  <input type="radio" id="option2"><span class="glyphicon glyphicon-list-alt">\
-                </label>\
-               </div>\
-              </div>');
+               <div class="boldButton boldButtonDisable font-panel-icon-row"></div>\
+               <div class="italicButton italicButtonDisable font-panel-icon-row"></div>\
+               <div class="underlineButton underlineButtonDisable font-panel-icon-row"></div>\
+             </div>\
+             <div class="edit-menu-row2">\
+                <div class="leftAlignBtn leftAlignButtonEnable font-panel-icon-row"></div>\
+                <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>\
+                <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>\
+             </div>\
+            </div>').addClass("FontPanel");
     };
 
     FontPanel.prototype.bindEvents = function() {
@@ -2473,38 +2454,68 @@
           }
         });
       });
-      this.element.find(".wbtn").click(function(event) {
+      this.element.find('.boldButton').click(function(event) {
         var btn;
-        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
-        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+        if ($(event.target).hasClass('boldButtonDisable')) {
+          btn = $(event.target).attr('class', 'boldButton boldButtonEnable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('boldButtonEnable font-panel-icon-row') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+        } else {
+          btn = $(event.target).attr('class', 'boldButtonDisable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('.boldButtonDisable font-panel-icon') ? 'fontWeightBtnEnableClick' : 'fontWeightBtnDisableClick');
+        }
       });
-      this.element.find(".ubtn").click(function(event) {
+      this.element.find('.italicButton').click(function(event) {
         var btn;
-        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
-        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontUnderlinedBtnEnableClick' : 'fontUnderlinedBtnDisableClick');
+        if ($(event.target).hasClass('italicButtonDisable')) {
+          btn = $(event.target).attr('class', 'italicButtonEnable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('italicButtonEnable font-panel-icon-row') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');
+        } else {
+          btn = $(event.target).attr('class', 'italicButtonDisable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('.italicButtonDisable font-panel-icon') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');
+        }
       });
-      this.element.find(".ibtn").click(function(event) {
+      this.element.find('.underlineButton').click(function(event) {
         var btn;
-        btn = $(event.target).toggleClass('.ppedit-btn-enabled');
-        return _this.root.trigger(btn.hasClass('.ppedit-btn-enabled') ? 'fontItalicBtnEnableClick' : 'fontItalicBtnDisableClick');
+        if ($(event.target).hasClass('underlineButtonDisable')) {
+          btn = $(event.target).attr('class', 'underlineButtonEnable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('underlineButtonEnable font-panel-icon-row') ? 'fontUnderlinedBtnEnableClick' : 'fontUnderlinedBtnDisableClick');
+        } else {
+          btn = $(event.target).attr('class', 'underlineButtonDisable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('.underlineButtonDisable font-panel-icon-row') ? 'fontUnderlinedBtnEnableClick' : 'fontUnderlinedBtnDisableClick');
+        }
+      });
+      this.element.find('.centerAlignBtn').click(function(event) {
+        var btn;
+        if ($(event.target).hasClass('centerAlignButtonDisable')) {
+          btn = $(event.target).attr('class', 'centerAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignButtonDisable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('centerAlignButtonEnable font-panel-icon-row') ? '' : '');
+        } else {
+          btn = $(event.target).attr('class', 'centerAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignButtonDisable font-panel-icon-row');
+          return btn.trigger(btn.hasClass('leftAlignButtonDisable font-panel-icon-row') ? '' : '');
+        }
       });
       this.element.find(".rightAlignBtn").click(function(event) {
-        return _this.root.trigger('rightAlignment');
+        return $(event.target).trigger('rightAlignment');
       });
       this.element.find(".leftAlignBtn").click(function(event) {
-        return _this.root.trigger('leftAlignment');
+        console.log('leftAlignBtn');
+        return $(event.target).trigger('leftAlignment');
       });
       this.element.find(".centerAlignBtn").click(function(event) {
-        return _this.root.trigger('centerAlignment');
+        return $(event.target).trigger('centerAlignment');
       });
       this.element.find(".bulletPointBtn").click(function(event) {
-        return _this.root.trigger('bulletPointBtnEnableClick');
+        return $(event.target).trigger('bulletPointBtnEnableClick');
       });
       this.element.find(".orderedPointBtn").click(function(event) {
-        return _this.root.trigger('orderedPointBtnEnableClick');
+        return $(event.target).trigger('orderedPointBtnEnableClick');
       });
       this.element.find(".gridElementBtn").click(function() {
-        return _this.root.trigger('panelClickGridBtnClick');
+        return $(event.target).trigger('panelClickGridBtnClick');
       });
       return this.element.find('.snapBtn').click(function() {
         if (!$(event.target).hasClass("snapBtn-selected")) {

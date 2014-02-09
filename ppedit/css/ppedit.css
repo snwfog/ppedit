@@ -202,14 +202,97 @@
     cursor: pointer;
 }
 
+.boldButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_102_bold.png);
+}
+
+.boldButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_102_bold.png);
+}
+
+.italicButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_101_italic.png);
+}
+
+.italicButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_101_italic.png);
+}
+
+.underlineButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_103_text_underline.png);
+}
+
+.underlineButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_103_text_underline.png);
+}
+
+.leftAlignButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_110_align_left.png);
+}
+
+.leftAlignButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_110_align_left.png);
+}
+
+.centerAlignButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_111_align_center.png);
+}
+
+.centerAlignButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_111_align_center.png);
+}
+
+.rightAlignButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_112_align_right.png);
+}
+
+.rightAlignButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_112_align_right.png);
+}
+
+.font-panel-icon-row
+{
+    width:32px;
+    height:17px;
+
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    float:left;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
 .moveElementUpBtn
 {
     background-image: url(../img/icons/OFF/glyphicons_213_up_arrow.png);
 }
 
+.edit-menu {
+    width:400px; 
+    height:105px; 
+    display:block; 
+    background-color:#fbfbfb; 
+    position:relative; 
+    top:50px; 
+    left:175px;
+}
 .moveElementUpBtn:hover
 {
     background-image: url(../img/icons/ON/glyphicons_213_up_arrow.png);
+
 }
 
 .moveElementDownBtn
@@ -217,6 +300,37 @@
     background-image: url(../img/icons/OFF/glyphicons_212_down_arrow.png);
 }
 
+.edit-menu-row1-dd-ff {
+    width:115px; 
+    height:25px; 
+    display:inline-block; 
+    float:left; 
+    margin-left:3px; 
+    margin-right:5px; 
+    font-size:10px;
+}
+
+.edit-menu-row1
+{
+    padding:12px;
+    height:47px;
+}
+
+.edit-menu-row1-dd-fs {
+    width:40px; 
+    height:25px; 
+    display:inline-block; 
+    float:left; 
+    margin-left:3px; 
+    margin-right:10px; 
+    font-size:10px;
+}
+
+.edit-menu-row2 {
+    display:block; 
+    padding:10px; 
+    border-top:1px solid #cacaca;
+}
 .moveElementDownBtn:hover
 {
     background-image: url(../img/icons/ON/glyphicons_212_down_arrow.png);

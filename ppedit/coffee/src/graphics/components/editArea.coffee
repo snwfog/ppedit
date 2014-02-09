@@ -15,6 +15,7 @@ class EditArea extends Graphic
     @canvas = undefined
     @grid = undefined
     @boxesContainer = undefined
+    @fontPanel = undefined
 
   buildElement: ->
     @element = $('<div class="editContainer shadow-effect"></div>')
@@ -27,14 +28,17 @@ class EditArea extends Graphic
     @boxesContainer = new BoxesContainer @element
     @canvas = new Canvas @element
     @grid = new Grid @element
+    @fontPanel = new FontPanel @element
 
     @boxesContainer.buildElement()
     @canvas.buildElement()
     @grid.buildElement()
+    @fontPanel.buildElement()
     
     @element.append @boxesContainer.element
     @element.append @canvas.element
     @element.append @grid.element
+    @element.append @fontPanel.element
 
   bindEvents:->
     @element
@@ -64,7 +68,11 @@ class EditArea extends Graphic
 
       .on 'canvasRectSelect', (event, rect) =>
         @boxesContainer.selectBoxesInRect rect
+    
+      .on 'boxSelected', (event, box) =>
+        @fontPanel.setSettingsFromStyle box.element.get(0).style
 
     @boxesContainer.bindEvents()
     @canvas.bindEvents()
     @grid.bindEvents()
+    @fontPanel.bindEvents()

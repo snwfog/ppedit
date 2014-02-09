@@ -21,7 +21,6 @@ class PPEditor extends Graphic
     @clipboard = new Clipboard
     @commandManager = new CommandManager
     @cmdFactory = new CommandFactory
-
     @controller = undefined
     # @area = undefined
     # @panel = undefined
@@ -47,7 +46,6 @@ class PPEditor extends Graphic
 
     @panel.buildElement()
     @mainPanel.buildElement()
-    @fontPanel.buildElement()
 
     @element.append @mainPanel.element
     @element.append @panel.element
@@ -186,8 +184,6 @@ class PPEditor extends Graphic
         boxes = @areas[pageNum].boxesContainer.getBoxesFromSelector(boxesSelected.eq(0))
         box.addOrderedPointList() for id, box of boxes
 
-      .on 'boxSelected', (event, box) =>
-        @fontPanel.setSettingsFromStyle box.element.get(0).style
 
     @panel.bindEvents()
     @fontPanel.bindEvents()

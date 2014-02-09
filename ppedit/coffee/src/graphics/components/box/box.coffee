@@ -90,6 +90,9 @@ class Box extends Graphic
       .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault()
+        console.log( @root.parent())
+        @root.parent().find(".FontPanel").css("visibility","")
+
 
       .focus (event) =>
         @element.trigger 'boxSelected', [this]
@@ -162,6 +165,7 @@ class Box extends Graphic
         .removeClass('ppedit-hDotLine')
       @root.find('.vDotLine')
         .removeClass('ppedit-vDotLine')
+    @root.parent().find(".FontPanel").css("visibility","hidden")
 
   ###
   Moves the box by the passed delta amounts.
