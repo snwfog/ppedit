@@ -60,6 +60,9 @@
     -ms-transition: right 1000ms;
     -o-transition: right 1000ms;
     transition: right 1000ms;
+
+    /* Chrome redraw bug fix : forcing gpu hardware acceleration */
+    -webkit-transform: translate3d(0, 0, 0);
 }
 
 .menu-sidebar-open
