@@ -49,6 +49,7 @@ ppeditDescribe 'A test for issue "CAP-49 : As a backend developer, I want an API
     $(".addElementBtn").click()
 
     result2 = JSON.parse $('.editor').ppedit('save')
+    console.log JSON.stringify(result2, null, 4);
 
     expect(result.etag).not.toEqual(result2.etag)
 

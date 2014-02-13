@@ -8,7 +8,7 @@ A graphic acting as a container of a boxesContainer, a canvas and a grid.
 ###
 class EditArea extends Graphic
 
-  constructor: (@root) ->
+  constructor: (@root, @pageNum) ->
     super @root
 
     @prevMouseMoveEvent = undefined
@@ -18,7 +18,9 @@ class EditArea extends Graphic
     @fontPanel = undefined
 
   buildElement: ->
-    @element = $('<div></div>')
+    @element = $('<div class="editContainer shadow-effect"></div>')
+      .attr('id', 'ppedit-page-' + @pageNum)
+      .append('<div></div>')
       .addClass("ppedit-container")
       .addClass("col-xs-8")
       .attr('tabindex', 0)
