@@ -36,6 +36,9 @@ class FontPanel extends Graphic
                 <div class="leftAlignBtn leftAlignButtonEnable font-panel-icon-row"></div>
                 <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>
                 <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>
+                <div class="colorPicker colorPickerButton font-panel-icon-row"></div>
+                <div class="orderedPointBtn orderedBulletPointButtonDisable font-panel-icon-row"></div>
+                <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>                 
              </div>
             </div>').addClass("FontPanel")
 
@@ -89,27 +92,40 @@ class FontPanel extends Graphic
 
     @element.find('.centerAlignBtn').click (event) =>
       if $(event.target).hasClass('centerAlignButtonDisable')
-        btn = $(event.target).attr('class','centerAlignButtonEnable font-panel-icon-row')
-        @element.find('.leftAlignBtn').attr('class','leftAlignButtonDisable font-panel-icon-row')
-        @element.find('.rightAlignBtn').attr('class','rightAlignButtonDisable font-panel-icon-row')
-        btn.trigger(if btn.hasClass('centerAlignButtonEnable font-panel-icon-row') then '' else '')
+        btn = $(event.target).attr('class','centerAlignBtn centerAlignButtonEnable font-panel-icon-row')        
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonDisable font-panel-icon-row')
+        @element.find('.rightAlignBtn').attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        btn.trigger 'centerAlignment'
       else
-        btn = $(event.target).attr('class','centerAlignButtonDisable font-panel-icon-row')
-        @element.find('.leftAlignBtn').attr('class','leftAlignButtonEnable font-panel-icon-row') 
-        @element.find('.rightAlignBtn').attr('class','rightAlignButtonDisable font-panel-icon-row') 
-        btn.trigger(if btn.hasClass('leftAlignButtonDisable font-panel-icon-row') then '' else '')
+        btn = $(event.target).attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonEnable font-panel-icon-row')
+        @element.find('.rightAlignBtn').attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        $(event.target).trigger 'leftAlignment'
 
+    @element.find('.rightAlignBtn').click (event) =>
+      if $(event.target).hasClass('rightAlignButtonDisable')
+        btn = $(event.target).attr('class','rightAlignBtn rightAlignButtonEnable font-panel-icon-row')      
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonDisable font-panel-icon-row')
+        @element.find('.centerAlignBtn').attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        btn.trigger 'rightAlignment'
+      else
+        btn = $(event.target).attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonEnable font-panel-icon-row')
+        @element.find('.centerAlignBtn').attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        $(event.target).trigger 'leftAlignment'
 
+    @element.find('.leftAlignBtn').click (event) =>
+      if $(event.target).hasClass('leftAlignButtonDisable')
+        btn = $(event.target).attr('class','leftAlignBtn leftAlignButtonEnable font-panel-icon-row')      
+        @element.find('.rightAlignBtn').attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        @element.find('.centerAlignBtn').attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        btn.trigger 'leftAlignment'
 
     @element.find(".rightAlignBtn").click (event) =>
       $(event.target).trigger 'rightAlignment'
 
     @element.find(".leftAlignBtn").click (event) =>
-      console.log 'leftAlignBtn'
       $(event.target).trigger 'leftAlignment'
-
-    @element.find(".centerAlignBtn").click (event) =>
-      $(event.target).trigger 'centerAlignment'
 
     @element.find(".bulletPointBtn").click (event) =>
       $(event.target).trigger 'bulletPointBtnEnableClick'
@@ -125,6 +141,9 @@ class FontPanel extends Graphic
         $(event.target).addClass("snapBtn-selected") 
       else
         $(event.target).removeClass("snapBtn-selected") 
+
+    @element.find("edit-menu").click (event) =>
+      $(event.target).css("visibility","")
       
   changeColor: (hsb, hex, rgb, el) ->
     $(el).css('background-color', '#'+hex)

@@ -220,6 +220,31 @@
     background-image: url(../img/icons/OFF/glyphicons_112_align_right.png);
 }
 
+.colorPickerButton
+{
+    background-image: url(../img/icons/OFF/glyphicons_092_tint.png);
+}
+
+.bulletPointButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_114_list.png);
+}
+
+.orderedBulletPointButtonDisable
+{
+    background-image: url(../img/icons/OFF/glyphicons_406_sort-by-order.png);
+}
+
+.bulletPointButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_114_list.png);
+}
+
+.orderedBulletPointButtonEnable
+{
+    background-image: url(../img/icons/ON/glyphicons_406_sort-by-order.png);
+}
+
 .font-panel-icon-row
 {
     width:32px;
@@ -239,7 +264,7 @@
 }
 
 .edit-menu {
-    width:400px; 
+    width:300px; 
     height:105px; 
     display:block; 
     background-color:#fbfbfb; 
@@ -286,7 +311,8 @@
 
 .edit-menu-row2 {
     display:block; 
-    padding:10px; 
+    padding:12px; 
+    height:47px;
     border-top:1px solid #cacaca;
 }
 .moveElementDownBtn:hover

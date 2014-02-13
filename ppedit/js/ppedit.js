@@ -372,11 +372,13 @@
         return _this.stopMoving();
       }).click(function(event) {
         event.stopPropagation();
-        return event.preventDefault();
+        event.preventDefault();
+        if (_this.element.hasClass("ppedit-box-focus")) {
+          return _this.root.parent().find(".FontPanel").css("visibility", "");
+        }
       }).dblclick(function(event) {
         event.stopPropagation();
         event.preventDefault();
-        console.log(_this.root.parent());
         return _this.root.parent().find(".FontPanel").css("visibility", "");
       }).focus(function(event) {
         return _this.element.trigger('boxSelected', [_this]);
@@ -2440,6 +2442,9 @@
                 <div class="leftAlignBtn leftAlignButtonEnable font-panel-icon-row"></div>\
                 <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>\
                 <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>\
+                <div class="colorPicker colorPickerButton font-panel-icon-row"></div>\
+                <div class="orderedPointBtn orderedBulletPointButtonDisable font-panel-icon-row"></div>\
+                <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>                 \
              </div>\
             </div>').addClass("FontPanel");
     };
@@ -2500,26 +2505,45 @@
       this.element.find('.centerAlignBtn').click(function(event) {
         var btn;
         if ($(event.target).hasClass('centerAlignButtonDisable')) {
-          btn = $(event.target).attr('class', 'centerAlignButtonEnable font-panel-icon-row');
-          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignButtonDisable font-panel-icon-row');
-          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignButtonDisable font-panel-icon-row');
-          return btn.trigger(btn.hasClass('centerAlignButtonEnable font-panel-icon-row') ? '' : '');
+          btn = $(event.target).attr('class', 'centerAlignBtn centerAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          return btn.trigger('centerAlignment');
         } else {
-          btn = $(event.target).attr('class', 'centerAlignButtonDisable font-panel-icon-row');
-          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignButtonEnable font-panel-icon-row');
-          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignButtonDisable font-panel-icon-row');
-          return btn.trigger(btn.hasClass('leftAlignButtonDisable font-panel-icon-row') ? '' : '');
+          btn = $(event.target).attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          return $(event.target).trigger('leftAlignment');
+        }
+      });
+      this.element.find('.rightAlignBtn').click(function(event) {
+        var btn;
+        if ($(event.target).hasClass('rightAlignButtonDisable')) {
+          btn = $(event.target).attr('class', 'rightAlignBtn rightAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.centerAlignBtn').attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          return btn.trigger('rightAlignment');
+        } else {
+          btn = $(event.target).attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.centerAlignBtn').attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          return $(event.target).trigger('leftAlignment');
+        }
+      });
+      this.element.find('.leftAlignBtn').click(function(event) {
+        var btn;
+        if ($(event.target).hasClass('leftAlignButtonDisable')) {
+          btn = $(event.target).attr('class', 'leftAlignBtn leftAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.centerAlignBtn').attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          return btn.trigger('leftAlignment');
         }
       });
       this.element.find(".rightAlignBtn").click(function(event) {
         return $(event.target).trigger('rightAlignment');
       });
       this.element.find(".leftAlignBtn").click(function(event) {
-        console.log('leftAlignBtn');
         return $(event.target).trigger('leftAlignment');
-      });
-      this.element.find(".centerAlignBtn").click(function(event) {
-        return $(event.target).trigger('centerAlignment');
       });
       this.element.find(".bulletPointBtn").click(function(event) {
         return $(event.target).trigger('bulletPointBtnEnableClick');
@@ -2530,12 +2554,15 @@
       this.element.find(".gridElementBtn").click(function() {
         return $(event.target).trigger('panelClickGridBtnClick');
       });
-      return this.element.find('.snapBtn').click(function() {
+      this.element.find('.snapBtn').click(function() {
         if (!$(event.target).hasClass("snapBtn-selected")) {
           return $(event.target).addClass("snapBtn-selected");
         } else {
           return $(event.target).removeClass("snapBtn-selected");
         }
+      });
+      return this.element.find("edit-menu").click(function(event) {
+        return $(event.target).css("visibility", "");
       });
     };
 
