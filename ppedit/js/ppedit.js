@@ -381,7 +381,7 @@
         topPos = $(event.target).position().top;
         heightPos = $(event.target).height();
         widthPos = $(event.target).width();
-        return _this.root.trigger('toolTipShowsUp', [leftPos, topPos, heightPos, widthPos]);
+        return _this.root.parent().trigger('toolTipShowsUp', [leftPos, topPos, heightPos, widthPos]);
       }).focus(function(event) {
         return _this.element.trigger('boxSelected', [_this]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
@@ -1337,8 +1337,6 @@
 
     BoxesContainer.prototype.buildElement = function() {
       console.log(this.superRoot);
-      this.fontPanel = new FontPanel(this.superRoot);
-      this.fontPanel.buildElement();
       this.element = $('<div></div>').addClass('ppedit-box-container');
       this.element.append('<p class="hDotLine"></p>');
       return this.element.append('<p class="vDotLine"></p>');
@@ -1347,10 +1345,6 @@
     BoxesContainer.prototype.bindEvents = function() {
       var box, id, _ref, _results,
         _this = this;
-<<<<<<< HEAD
-      editContainer = false;
-=======
->>>>>>> 263fbdcf584d4d4d189135d3a1f9419fa8d1d8fb
       this.element.mousedown(function(event) {
         event.preventDefault();
         return _this.unSelectAllBoxes();
@@ -1364,13 +1358,7 @@
         return _this.root.trigger('unSelectBoxes');
       }).on('boxSelected', function(event, box) {
         return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
-      }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
-        _this.showToolTip();
-        return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
       });
-<<<<<<< HEAD
-      return this.fontPanel.bindEvents();
-=======
       _ref = this.boxes;
       _results = [];
       for (id in _ref) {
@@ -1378,7 +1366,6 @@
         _results.push(box.bindEvents());
       }
       return _results;
->>>>>>> 263fbdcf584d4d4d189135d3a1f9419fa8d1d8fb
     };
 
     /*
@@ -1604,34 +1591,6 @@
       }).call(this);
     };
 
-    BoxesContainer.prototype.setToolTipPosition = function(leftPos, topPos, heightPos, widthPos) {
-      var toolTip;
-      toolTip = this.fontPanel.element;
-      if (this.element.height() - topPos - heightPos < toolTip.height() + 10) {
-        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
-          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
-        } else {
-          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
-        }
-        return toolTip.css('top', (topPos - toolTip.height() - 25) + 'px');
-      } else {
-        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
-          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
-        } else {
-          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
-        }
-        return toolTip.css('top', (topPos + heightPos + 10) + 'px');
-      }
-    };
-
-    BoxesContainer.prototype.showToolTip = function() {
-      return this.element.append(this.fontPanel.element);
-    };
-
-    BoxesContainer.prototype.removeToolTip = function() {
-      return this.fontPanel.element.remove();
-    };
-
     return BoxesContainer;
 
   })(Graphic);
@@ -1701,15 +1660,12 @@
     }
 
     EditArea.prototype.buildElement = function() {
-<<<<<<< HEAD
-      this.element = $('<div></div>').addClass("ppedit-container").addClass("col-xs-8").attr('tabindex', 0);
-      this.boxesContainer = new BoxesContainer(this.element, this.root);
-=======
       this.element = $('<div class="editContainer shadow-effect"></div>').attr('id', 'ppedit-page-' + this.pageNum).append('<div></div>').addClass("ppedit-container").addClass("col-xs-8").attr('tabindex', 0);
-      this.boxesContainer = new BoxesContainer(this.element);
->>>>>>> 263fbdcf584d4d4d189135d3a1f9419fa8d1d8fb
+      this.boxesContainer = new BoxesContainer(this.element, this.root);
       this.canvas = new Canvas(this.element);
       this.grid = new Grid(this.element);
+      this.fontPanel = new FontPanel(this.root);
+      this.fontPanel.buildElement();
       this.boxesContainer.buildElement();
       this.canvas.buildElement();
       this.grid.buildElement();
@@ -1745,10 +1701,44 @@
         return _this.element.find('*').trigger('containerKeyDown', [event]);
       }).on('canvasRectSelect', function(event, rect) {
         return _this.boxesContainer.selectBoxesInRect(rect);
+      }).on('boxSelected', function(event, box) {
+        return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
+      }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
+        _this.showToolTip();
+        return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
       });
+      this.fontPanel.bindEvents();
       this.boxesContainer.bindEvents();
       this.canvas.bindEvents();
       return this.grid.bindEvents();
+    };
+
+    EditArea.prototype.setToolTipPosition = function(leftPos, topPos, heightPos, widthPos) {
+      var toolTip;
+      toolTip = this.fontPanel.element;
+      if (this.element.height() - topPos - heightPos < toolTip.height() + 10) {
+        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
+          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
+        } else {
+          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
+        }
+        return toolTip.css('top', (topPos - toolTip.height() - 25) + 'px');
+      } else {
+        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
+          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
+        } else {
+          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
+        }
+        return toolTip.css('top', (topPos + heightPos + 10) + 'px');
+      }
+    };
+
+    EditArea.prototype.showToolTip = function() {
+      return this.element.append(this.fontPanel.element);
+    };
+
+    EditArea.prototype.removeToolTip = function() {
+      return this.fontPanel.element.remove();
     };
 
     return EditArea;
@@ -2249,36 +2239,19 @@
       this.areas = [];
       this.panel = new Panel(this.element);
       this.mainPanel = new MainPanel(this.element);
-<<<<<<< HEAD
-      for (i = _i = 0, _ref = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-        this.areas.push(new EditArea(row));
-        this.panels.push(new Panel(row));
-      }
-      for (i = _j = 0, _ref1 = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-        this.areas[i].buildElement();
-        this.panels[i].buildElement();
-      }
-=======
-      this.fontPanel = new FontPanel(this.element);
       this.panel.buildElement();
->>>>>>> 263fbdcf584d4d4d189135d3a1f9419fa8d1d8fb
       this.mainPanel.buildElement();
-      this.fontPanel.buildElement();
       this.element.append(this.mainPanel.element);
-<<<<<<< HEAD
-      row.append(this.superContainer);
-      return row.append(this.superPanel);
-=======
       this.element.append(this.panel.element);
-      this.element.append(this.superContainer);
-      return this.element.append(this.fontPanel.element);
->>>>>>> 263fbdcf584d4d4d189135d3a1f9419fa8d1d8fb
+      return this.element.append(this.superContainer);
     };
 
     PPEditor.prototype.bindEvents = function() {
       var cmd, i, _i, _ref, _results,
         _this = this;
-      this.element.on('requestUndo', function(event) {
+      this.element.on('focus', function(event) {
+        return _this.element.blur();
+      }).on('requestUndo', function(event) {
         return _this.commandManager.undo();
       }).on('requestRedo', function(event) {
         return _this.commandManager.redo();
@@ -2447,7 +2420,6 @@
         return _results;
       });
       this.panel.bindEvents();
-      this.fontPanel.bindEvents();
       this.controller.bindEvents();
       this.mainPanel.bindEvents();
       _results = [];
@@ -2520,6 +2492,72 @@
 
   })(Graphic);
 
+  MainPanel = (function(_super) {
+    __extends(MainPanel, _super);
+
+    function MainPanel(root) {
+      this.root = root;
+      MainPanel.__super__.constructor.call(this, this.root);
+    }
+
+    MainPanel.prototype.buildElement = function() {
+      return this.element = $('\
+            <div class="left-sidebar">\
+              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
+              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
+              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
+              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
+          </div>');
+    };
+
+    MainPanel.prototype.bindEvents = function() {
+      var _this = this;
+      this.element.find('.snapImg').click(function() {
+        if (!$(event.target).hasClass("snapBtn-selected")) {
+          return $(event.target).addClass("snapBtn-selected");
+        } else {
+          return $(event.target).removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find('.snapImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
+      });
+      this.element.find('.snapImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
+      });
+      this.element.find(".gridImg").click(function() {
+        return _this.root.trigger('panelClickGridBtnClick');
+      });
+      this.element.find('.gridImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
+      });
+      this.element.find('.gridImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
+      });
+      this.element.find(".undoImg").click(function() {
+        return _this.root.trigger('requestUndo');
+      });
+      this.element.find('.undoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
+      });
+      this.element.find('.undoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
+      });
+      this.element.find(".redoImg").click(function() {
+        return _this.root.trigger('requestRedo');
+      });
+      this.element.find('.redoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
+      });
+      return this.element.find('.redoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
+      });
+    };
+
+    return MainPanel;
+
+  })(Graphic);
+
   /*
   Graphic containing the font settings to apply to boxes.
   */
@@ -2554,6 +2592,18 @@
                  <option value="16">16</option>\
                  <option value="20">20</option>\
                </select>\
+               \
+               <select class="line-space from-control edit-menu-row1-dd-fs">\
+                 <option value="double">6</option>\
+                 <option value="single">8</option>\
+                 <option value="triple" selected>single</option>\
+                 <option value="11">11</option>\
+                 <option value="12">12</option>\
+                 <option value="14">14</option>\
+                 <option value="16">16</option>\
+                 <option value="20">20</option>\
+               </select>\
+\
                <div class="boldButton boldButtonDisable font-panel-icon-row"></div>\
                <div class="italicButton italicButtonDisable font-panel-icon-row"></div>\
                <div class="underlineButton underlineButtonDisable font-panel-icon-row"></div>\
@@ -2693,72 +2743,6 @@
     };
 
     return FontPanel;
-
-  })(Graphic);
-
-  MainPanel = (function(_super) {
-    __extends(MainPanel, _super);
-
-    function MainPanel(root) {
-      this.root = root;
-      MainPanel.__super__.constructor.call(this, this.root);
-    }
-
-    MainPanel.prototype.buildElement = function() {
-      return this.element = $('\
-            <div class="left-sidebar">\
-              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
-              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
-              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
-              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
-          </div>');
-    };
-
-    MainPanel.prototype.bindEvents = function() {
-      var _this = this;
-      this.element.find('.snapImg').click(function() {
-        if (!$(event.target).hasClass("snapBtn-selected")) {
-          return $(event.target).addClass("snapBtn-selected");
-        } else {
-          return $(event.target).removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find('.snapImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
-      });
-      this.element.find('.snapImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
-      });
-      this.element.find(".gridImg").click(function() {
-        return _this.root.find('.row').trigger('panelClickGridBtnClick');
-      });
-      this.element.find('.gridImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
-      });
-      this.element.find('.gridImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
-      });
-      this.element.find(".undoImg").click(function() {
-        return _this.root.trigger('requestUndo');
-      });
-      this.element.find('.undoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
-      });
-      this.element.find('.undoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
-      });
-      this.element.find(".redoImg").click(function() {
-        return _this.root.trigger('requestRedo');
-      });
-      this.element.find('.redoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
-      });
-      return this.element.find('.redoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
-      });
-    };
-
-    return MainPanel;
 
   })(Graphic);
 

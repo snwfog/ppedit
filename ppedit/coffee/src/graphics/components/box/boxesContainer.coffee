@@ -15,8 +15,7 @@ class BoxesContainer extends Graphic
 
   buildElement: ->
     console.log(@superRoot)
-    @fontPanel = new FontPanel @superRoot
-    @fontPanel.buildElement()
+    
     @element = $('<div></div>').addClass('ppedit-box-container')
     @element.append('<p class="hDotLine"></p>')
     @element.append('<p class="vDotLine"></p>')
@@ -38,10 +37,7 @@ class BoxesContainer extends Graphic
       .on 'boxSelected', (event, box) =>
         @fontPanel.setSettingsFromStyle box.element.get(0).style
 
-      .on 'toolTipShowsUp', (event, leftPos,topPos,heightPos,widthPos) =>
-        @showToolTip()
-        @setToolTipPosition(leftPos,topPos,heightPos,widthPos)
-    @fontPanel.bindEvents()
+      
 
     box.bindEvents() for id, box of @boxes
 
@@ -185,24 +181,4 @@ class BoxesContainer extends Graphic
     return ({id:boxId, html:box.element.wrap("<div></div>").parent().html()} for boxId, box of @boxes)
 
 
-  setToolTipPosition: (leftPos, topPos,heightPos,widthPos) ->
-    toolTip = @fontPanel.element
-    if(@element.height()-topPos-heightPos < toolTip.height()+10)
-      if((@element.width()-leftPos-widthPos/2)<toolTip.width()+10)
-        toolTip.css 'left', (leftPos+widthPos/2-toolTip.width()) + 'px'
-      else
-        toolTip.css 'left', (leftPos+widthPos/2) + 'px'
-      toolTip.css 'top', (topPos-toolTip.height()-25) + 'px'
-
-    else
-      if((@element.width()-leftPos-widthPos/2)<toolTip.width()+10)
-        toolTip.css 'left', (leftPos+widthPos/2-toolTip.width()) + 'px'
-      else
-        toolTip.css 'left', (leftPos+widthPos/2) + 'px'
-      toolTip.css 'top', (topPos+heightPos+10) + 'px'
-
-  showToolTip: ->
-    @element.append @fontPanel.element
-
-  removeToolTip: ->
-    @fontPanel.element.remove()
+  

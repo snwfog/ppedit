@@ -55,6 +55,9 @@ class PPEditor extends Graphic
   bindEvents: ->
 
     @element
+      .on 'focus', (event) =>
+        @element.blur()
+
       .on 'requestUndo', (event) =>
         @commandManager.undo()
 
