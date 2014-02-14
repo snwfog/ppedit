@@ -374,10 +374,14 @@
         event.stopPropagation();
         return event.preventDefault();
       }).dblclick(function(event) {
+        var heightPos, leftPos, topPos, widthPos;
         event.stopPropagation();
         event.preventDefault();
-        console.log(_this.root.parent());
-        return _this.root.parent().find(".FontPanel").css("visibility", "");
+        leftPos = $(event.target).position().left;
+        topPos = $(event.target).position().top;
+        heightPos = $(event.target).height();
+        widthPos = $(event.target).width();
+        return _this.root.trigger('toolTipShowsUp', [leftPos, topPos, heightPos, widthPos]);
       }).focus(function(event) {
         return _this.element.trigger('boxSelected', [_this]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
@@ -453,9 +457,8 @@
       this.prevPosition = void 0;
       if ($(document).find('.snapImg').hasClass('snapBtn-selected')) {
         this.root.find('.hDotLine').removeClass('ppedit-hDotLine');
-        this.root.find('.vDotLine').removeClass('ppedit-vDotLine');
+        return this.root.find('.vDotLine').removeClass('ppedit-vDotLine');
       }
-      return this.root.parent().find(".FontPanel").css("visibility", "hidden");
     };
 
     /*
@@ -1348,13 +1351,17 @@
 
     BoxesContainer.CLICK_TIME_INTERVAL = 200;
 
-    function BoxesContainer(root) {
+    function BoxesContainer(root, superRoot) {
       this.root = root;
+      this.superRoot = superRoot;
       BoxesContainer.__super__.constructor.call(this, this.root);
       this.boxes = {};
     }
 
     BoxesContainer.prototype.buildElement = function() {
+      console.log(this.superRoot);
+      this.fontPanel = new FontPanel(this.superRoot);
+      this.fontPanel.buildElement();
       this.element = $('<div></div>').addClass('ppedit-box-container');
       this.element.append('<p class="hDotLine"></p>');
       return this.element.append('<p class="vDotLine"></p>');
@@ -1364,7 +1371,7 @@
       var editContainer,
         _this = this;
       editContainer = false;
-      return this.element.mousedown(function(event) {
+      this.element.mousedown(function(event) {
         event.preventDefault();
         return _this.unSelectAllBoxes();
       }).dblclick(function(event) {
@@ -1375,7 +1382,13 @@
         }
       }).click(function(event) {
         return _this.root.trigger('unSelectBoxes');
+      }).on('boxSelected', function(event, box) {
+        return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
+      }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
+        _this.showToolTip();
+        return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
       });
+      return this.fontPanel.bindEvents();
     };
 
     /*
@@ -1601,6 +1614,34 @@
       }).call(this);
     };
 
+    BoxesContainer.prototype.setToolTipPosition = function(leftPos, topPos, heightPos, widthPos) {
+      var toolTip;
+      toolTip = this.fontPanel.element;
+      if (this.element.height() - topPos - heightPos < toolTip.height() + 10) {
+        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
+          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
+        } else {
+          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
+        }
+        return toolTip.css('top', (topPos - toolTip.height() - 25) + 'px');
+      } else {
+        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
+          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
+        } else {
+          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
+        }
+        return toolTip.css('top', (topPos + heightPos + 10) + 'px');
+      }
+    };
+
+    BoxesContainer.prototype.showToolTip = function() {
+      return this.element.append(this.fontPanel.element);
+    };
+
+    BoxesContainer.prototype.removeToolTip = function() {
+      return this.fontPanel.element.remove();
+    };
+
     return BoxesContainer;
 
   })(Graphic);
@@ -1753,18 +1794,15 @@
 
     EditArea.prototype.buildElement = function() {
       this.element = $('<div></div>').addClass("ppedit-container").addClass("col-xs-8").attr('tabindex', 0);
-      this.boxesContainer = new BoxesContainer(this.element);
+      this.boxesContainer = new BoxesContainer(this.element, this.root);
       this.canvas = new Canvas(this.element);
       this.grid = new Grid(this.element);
-      this.fontPanel = new FontPanel(this.element);
       this.boxesContainer.buildElement();
       this.canvas.buildElement();
       this.grid.buildElement();
-      this.fontPanel.buildElement();
       this.element.append(this.boxesContainer.element);
       this.element.append(this.canvas.element);
-      this.element.append(this.grid.element);
-      return this.element.append(this.fontPanel.element);
+      return this.element.append(this.grid.element);
     };
 
     EditArea.prototype.bindEvents = function() {
@@ -1794,13 +1832,10 @@
         return _this.element.find('*').trigger('containerKeyDown', [event]);
       }).on('canvasRectSelect', function(event, rect) {
         return _this.boxesContainer.selectBoxesInRect(rect);
-      }).on('boxSelected', function(event, box) {
-        return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
       });
       this.boxesContainer.bindEvents();
       this.canvas.bindEvents();
-      this.grid.bindEvents();
-      return this.fontPanel.bindEvents();
+      return this.grid.bindEvents();
     };
 
     return EditArea;
@@ -2057,7 +2092,6 @@
       this.areas = [];
       this.panels = [];
       this.mainPanel = new MainPanel(this.element);
-      this.fontPanel = new FontPanel(row);
       for (i = _i = 0, _ref = PPEditor.NUMBER_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         this.areas.push(new EditArea(row));
         this.panels.push(new Panel(row));
@@ -2073,7 +2107,6 @@
       }
       this.element.append(this.mainPanel.element);
       row.append(this.superContainer);
-      row.append(this.fontPanel.element);
       return row.append(this.superPanel);
     };
 
@@ -2413,7 +2446,7 @@
 
     FontPanel.prototype.buildElement = function() {
       return this.element = $('\
-          <div class="edit-menu shadow-effect" style="visibility:hidden;">\
+          <div class="edit-menu FontPanel shadow-effect">\
             <div class="edit-menu-row1">\
                <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">\
                  <option value="Times New Roman" selected>Times New Roman</option>\
@@ -2441,7 +2474,7 @@
                 <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>\
                 <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>\
              </div>\
-            </div>').addClass("FontPanel");
+            </div>');
     };
 
     FontPanel.prototype.bindEvents = function() {

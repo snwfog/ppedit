@@ -51,7 +51,7 @@ class PPEditor extends Graphic
     @areas = []
     @panels = []
     @mainPanel = new MainPanel @element
-    @fontPanel = new FontPanel row
+    # @fontPanel = new FontPanel row
 
     for i in [0..PPEditor.NUMBER_OF_PAGES-1]
       @areas.push new EditArea row
@@ -71,7 +71,7 @@ class PPEditor extends Graphic
 
     @element.append @mainPanel.element
     row.append @superContainer
-    row.append @fontPanel.element
+    # row.append @fontPanel.element
     row.append @superPanel
 
   bindEvents: ->

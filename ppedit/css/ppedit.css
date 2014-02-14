@@ -246,7 +246,9 @@
     position:relative; 
     top:50px; 
     left:175px;
+    z-index: 99;
 }
+
 .moveElementUpBtn:hover
 {
     background-image: url(../img/icons/ON/glyphicons_213_up_arrow.png);

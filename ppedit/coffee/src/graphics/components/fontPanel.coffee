@@ -9,7 +9,7 @@ class FontPanel extends Graphic
 
   buildElement: ->
     @element =$('
-          <div class="edit-menu shadow-effect" style="visibility:hidden;">
+          <div class="edit-menu FontPanel shadow-effect">
             <div class="edit-menu-row1">
                <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">
                  <option value="Times New Roman" selected>Times New Roman</option>
@@ -37,7 +37,7 @@ class FontPanel extends Graphic
                 <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>
                 <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>
              </div>
-            </div>').addClass("FontPanel")
+            </div>')
 
 
 
@@ -60,8 +60,6 @@ class FontPanel extends Graphic
           @element.trigger 'textColorChanged', [hex]
           $(el).colpickHide()
       })
-
-
 
     @element.find('.boldButton').click (event) =>
       if $(event.target).hasClass('boldButtonDisable')

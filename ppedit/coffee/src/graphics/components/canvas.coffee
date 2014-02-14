@@ -44,6 +44,7 @@ class Canvas extends Graphic
           size:@rectSize] if @downPosition? && @rectSize?
         @clear()
 
+
     @_context = @element.get(0).getContext('2d')
 
   ###
