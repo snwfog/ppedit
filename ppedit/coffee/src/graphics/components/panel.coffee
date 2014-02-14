@@ -50,35 +50,60 @@ class Panel extends Graphic
       @element.toggleClass('menu-sidebar-open');
 
   addNewTab: ->
-    newPageIndex = @element.find('.page-sidebar-tab').length;
+    @insertTab @element.find('.page-sidebar-tab').length
+
+  insertTab: (tabIndex) ->
+    newPageIndex = Math.max(tabIndex, @element.find('.page-sidebar-tab').length)
 
     # Add tab header
-    $('
-       <a href="#ppedit-page-'+ (newPageIndex) + '">
-              <div class="page-sidebar-tab menu-right-btn shadow-effect" ppedit-tab-index="' + newPageIndex + '">
-                <span class="vertical-text">Page ' + (newPageIndex + 1) + '</span>
-              </div>
-       </a>
+    tab = $('
+           <a href="#ppedit-page-'+ (newPageIndex) + '">
+                  <div class="page-sidebar-tab menu-right-btn shadow-effect">
+                    <span class="vertical-text">Page ' + (newPageIndex + 1) + '</span>
+                  </div>
+           </a>
     ')
-    .appendTo(@element.find('.menu-tab-pages'))
-    .click (event) =>
-      @_displayTab newPageIndex
 
-    # Add box rows container
-    @element.find('.right-sidebar-container').append('
-        <!-- Row 2 Menu -->
-        <div class="ppedit-row-container" ppedit-tab-index="' + newPageIndex + '">
-          <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="2px">
-          </table>
-        </div>
+    if newPageIndex == 0
+      @element.find('.menu-tab-pages').append(tab)
+    else
+      tab.insertAfter(@element.find('.menu-tab-pages a').eq(newPageIndex-1))
+
+    tab
+      .click (event) =>
+        @_displayTab newPageIndex
+
+      # Increment all subsequent tabIndexes by 1.
+      .nextAll('a').each (el, index) =>
+        $(el)
+          .attr('href', '#ppedit-page-' + (newPageIndex + index + 1))
+          .html('
+            <div class="page-sidebar-tab menu-right-btn shadow-effect">
+              <span class="vertical-text">Page ' + (newPageIndex + index + 2) + '</span>
+            </div>
+          ')
+          .click =>
+            @_displayTab newPageIndex + index + 1
+        console.log el
+
+    rowContainer = $('
+      <!-- Row 2 Menu -->
+      <div class="ppedit-row-container">
+        <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="2px">
+        </table>
+      </div>
     ')
+
+    if newPageIndex == 0
+      @element.find('.right-sidebar-container').append(rowContainer)
+    else
+      rowContainer.insertAfter(@element.find('.ppedit-row-container').eq(newPageIndex-1))
 
     @element
       .find('.ppedit-row-container')
       .removeClass('ppedit-row-container-active')
-      .last()
+      .eq(newPageIndex)
       .addClass('ppedit-row-container-active')
-
 
   ###
   Adds a row to be associated with the passed box id.
@@ -166,14 +191,14 @@ class Panel extends Graphic
   removeTab:(tabIndex) ->
     @_getRowContainer(tabIndex).remove()
     @element
-      .find('.page-sidebar-tab[ppedit-tab-index="' + tabIndex + '"]')
+      .find('.page-sidebar-tab').eq(tabIndex)
       .remove()
 
   _getRowContainer:(tabIndex) ->
-    @element.find('.ppedit-row-container[ppedit-tab-index="' + tabIndex + '"]')
+    @element.find('.ppedit-row-container').eq(tabIndex)
 
   _getDisplayedRowContainer: ->
     @element.find('.ppedit-row-container-active').eq(0)
 
   _getDisplayedTabIndex: ->
-    parseInt(@_getDisplayedRowContainer().attr('ppedit-tab-index'))
+    @_getDisplayedRowContainer().index() - 1

@@ -1338,10 +1338,9 @@
     };
 
     BoxesContainer.prototype.bindEvents = function() {
-      var editContainer,
+      var box, id, _ref, _results,
         _this = this;
-      editContainer = false;
-      return this.element.mousedown(function(event) {
+      this.element.mousedown(function(event) {
         event.preventDefault();
         return _this.unSelectAllBoxes();
       }).dblclick(function(event) {
@@ -1353,6 +1352,13 @@
       }).click(function(event) {
         return _this.root.trigger('unSelectBoxes');
       });
+      _ref = this.boxes;
+      _results = [];
+      for (id in _ref) {
+        box = _ref[id];
+        _results.push(box.bindEvents());
+      }
+      return _results;
     };
 
     /*
@@ -1709,31 +1715,70 @@
       this.editor = editor;
       this.addPage = addPage;
       this.pageNum = pageNum;
+      this.area = void 0;
       AddOrRemoveCommand.__super__.constructor.call(this);
     }
 
     AddOrRemoveCommand.prototype.execute = function() {
       if (this.addPage) {
-        return this._addNewPage();
+        if (this.pageNum == null) {
+          this.pageNum = this.editor.areas.length;
+        }
+        return this._insertNewPage(this.pageNum);
+      } else {
+        return this._removePage(this.pageNum);
       }
     };
 
     AddOrRemoveCommand.prototype.undo = function() {
-      return this.changeOpacityToVal(this.prevVal);
+      return this._removePage(this.pageNum)(this.addPage ? void 0 : this._insertPage(this.pageNum, this.area));
     };
 
-    AddOrRemoveCommand.prototype._addNewPage = function() {
+    AddOrRemoveCommand.prototype._insertNewPage = function(pageNum) {
       var newArea;
       newArea = new EditArea(this.editor.element, this.editor.areas.length);
       newArea.buildElement();
-      this.editor.superContainer.append(newArea.buildElement());
-      newArea.bindEvents();
-      this.editor.panel.addNewTab();
-      return this.editor.areas.push(newArea);
+      this._insertPage(pageNum, newArea);
+      this.area = newArea;
+      return this.editor.areas = this.editor.areas.slice(0, pageNum).concat([this.area]).concat(this.editor.areas.slice(pageNum, this.editor.areas.length));
+    };
+
+    AddOrRemoveCommand.prototype._insertPage = function(pageNum, area) {
+      var box, id, panel, rows, _ref, _results,
+        _this = this;
+      if (pageNum > 0) {
+        area.element.insertAfter(this.editor.superContainer.children().eq(pageNum - 1));
+      } else {
+        this.editor.superContainer.append(area.element);
+      }
+      area.bindEvents();
+      panel = this.editor.panel;
+      panel.insertTab(pageNum);
+      _ref = area.boxesContainer.boxes;
+      _results = [];
+      for (id in _ref) {
+        box = _ref[id];
+        rows = panel.getRows(pageNum);
+        if (rows.length === 0) {
+          _results.push(panel.addBoxRow(id));
+        } else {
+          _results.push(rows.each(function(index, rowNode) {
+            var otherBoxId, otherBoxZIndex;
+            otherBoxId = $(rowNode).attr('ppedit-box-id');
+            otherBoxZIndex = area.boxesContainer.boxes[otherBoxId].element.css('z-index');
+            if (parseInt(otherBoxZIndex) < parseInt(box.element.css('z-index')) || index === rows.length - 1) {
+              panel.addBoxRow(id, index);
+              return false;
+            }
+          }));
+        }
+      }
+      return _results;
     };
 
     AddOrRemoveCommand.prototype._removePage = function(pageNum) {
-      this.editor.areas.splice(pageNum, 1).element.remove();
+      this.area = this.editor.areas.splice(pageNum, 1);
+      this.area.element.remove();
       return this.editor.panel.removeTab(pageNum);
     };
 
@@ -1917,26 +1962,50 @@
     };
 
     Panel.prototype.addNewTab = function() {
-      var newPageIndex,
+      return this.insertTab(this.element.find('.page-sidebar-tab').length);
+    };
+
+    Panel.prototype.insertTab = function(tabIndex) {
+      var newPageIndex, rowContainer, tab,
         _this = this;
-      newPageIndex = this.element.find('.page-sidebar-tab').length;
-      $('\
-       <a href="#ppedit-page-' + newPageIndex + '">\
-              <div class="page-sidebar-tab menu-right-btn shadow-effect" ppedit-tab-index="' + newPageIndex + '">\
-                <span class="vertical-text">Page ' + (newPageIndex + 1) + '</span>\
-              </div>\
-       </a>\
-    ').appendTo(this.element.find('.menu-tab-pages')).click(function(event) {
-        return _this._displayTab(newPageIndex);
-      });
-      this.element.find('.right-sidebar-container').append('\
-        <!-- Row 2 Menu -->\
-        <div class="ppedit-row-container" ppedit-tab-index="' + newPageIndex + '">\
-          <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="2px">\
-          </table>\
-        </div>\
+      newPageIndex = Math.max(tabIndex, this.element.find('.page-sidebar-tab').length);
+      tab = $('\
+           <a href="#ppedit-page-' + newPageIndex + '">\
+                  <div class="page-sidebar-tab menu-right-btn shadow-effect">\
+                    <span class="vertical-text">Page ' + (newPageIndex + 1) + '</span>\
+                  </div>\
+           </a>\
     ');
-      return this.element.find('.ppedit-row-container').removeClass('ppedit-row-container-active').last().addClass('ppedit-row-container-active');
+      if (newPageIndex === 0) {
+        this.element.find('.menu-tab-pages').append(tab);
+      } else {
+        tab.insertAfter(this.element.find('.menu-tab-pages a').eq(newPageIndex - 1));
+      }
+      tab.click(function(event) {
+        return _this._displayTab(newPageIndex);
+      }).nextAll('a').each(function(el, index) {
+        $(el).attr('href', '#ppedit-page-' + (newPageIndex + index + 1)).html('\
+            <div class="page-sidebar-tab menu-right-btn shadow-effect">\
+              <span class="vertical-text">Page ' + (newPageIndex + index + 2) + '</span>\
+            </div>\
+          ').click(function() {
+          return _this._displayTab(newPageIndex + index + 1);
+        });
+        return console.log(el);
+      });
+      rowContainer = $('\
+      <!-- Row 2 Menu -->\
+      <div class="ppedit-row-container">\
+        <table class="right-sidebar-menu2" cellspacing="0px" cellpadding="2px">\
+        </table>\
+      </div>\
+    ');
+      if (newPageIndex === 0) {
+        this.element.find('.right-sidebar-container').append(rowContainer);
+      } else {
+        rowContainer.insertAfter(this.element.find('.ppedit-row-container').eq(newPageIndex - 1));
+      }
+      return this.element.find('.ppedit-row-container').removeClass('ppedit-row-container-active').eq(newPageIndex).addClass('ppedit-row-container-active');
     };
 
     /*
@@ -2041,11 +2110,11 @@
 
     Panel.prototype.removeTab = function(tabIndex) {
       this._getRowContainer(tabIndex).remove();
-      return this.element.find('.page-sidebar-tab[ppedit-tab-index="' + tabIndex + '"]').remove();
+      return this.element.find('.page-sidebar-tab').eq(tabIndex).remove();
     };
 
     Panel.prototype._getRowContainer = function(tabIndex) {
-      return this.element.find('.ppedit-row-container[ppedit-tab-index="' + tabIndex + '"]');
+      return this.element.find('.ppedit-row-container').eq(tabIndex);
     };
 
     Panel.prototype._getDisplayedRowContainer = function() {
@@ -2053,7 +2122,7 @@
     };
 
     Panel.prototype._getDisplayedTabIndex = function() {
-      return parseInt(this._getDisplayedRowContainer().attr('ppedit-tab-index'));
+      return this._getDisplayedRowContainer().index() - 1;
     };
 
     return Panel;
@@ -2115,7 +2184,9 @@
       this.clipboard = new Clipboard;
       this.commandManager = new CommandManager;
       this.cmdFactory = new CommandFactory;
+      this.fontPanel = void 0;
       this.controller = void 0;
+      this.panel = void 0;
     }
 
     PPEditor.prototype.buildElement = function() {
@@ -2134,6 +2205,7 @@
       this.fontPanel = new FontPanel(this.element);
       this.panel.buildElement();
       this.mainPanel.buildElement();
+      this.fontPanel.buildElement();
       this.element.append(this.mainPanel.element);
       this.element.append(this.panel.element);
       this.element.append(this.superContainer);
