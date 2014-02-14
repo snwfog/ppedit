@@ -28,7 +28,7 @@ class MainPanel extends Graphic
 
 
     @element.find(".gridImg").click =>
-      @root.find('.row').trigger 'panelClickGridBtnClick'
+      @root.trigger 'panelClickGridBtnClick'
 
     @element.find('.gridImg').mouseover (event) =>
       $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png')

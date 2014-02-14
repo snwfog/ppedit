@@ -28,6 +28,18 @@ class FontPanel extends Graphic
                  <option value="16">16</option>
                  <option value="20">20</option>
                </select>
+               
+               <select class="line-space from-control edit-menu-row1-dd-fs">
+                 <option value="double">6</option>
+                 <option value="single">8</option>
+                 <option value="triple" selected>single</option>
+                 <option value="11">11</option>
+                 <option value="12">12</option>
+                 <option value="14">14</option>
+                 <option value="16">16</option>
+                 <option value="20">20</option>
+               </select>
+
                <div class="boldButton boldButtonDisable font-panel-icon-row"></div>
                <div class="italicButton italicButtonDisable font-panel-icon-row"></div>
                <div class="underlineButton underlineButtonDisable font-panel-icon-row"></div>

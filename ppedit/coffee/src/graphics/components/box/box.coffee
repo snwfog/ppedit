@@ -103,7 +103,7 @@ class Box extends Graphic
         topPos = $(event.target).position().top
         heightPos = $(event.target).height()
         widthPos = $(event.target).width()
-        @root.trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
+        @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
 
       .focus (event) =>
         @element.trigger 'boxSelected', [this]

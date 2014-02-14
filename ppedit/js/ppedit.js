@@ -391,7 +391,7 @@
         topPos = $(event.target).position().top;
         heightPos = $(event.target).height();
         widthPos = $(event.target).width();
-        return _this.root.trigger('toolTipShowsUp', [leftPos, topPos, heightPos, widthPos]);
+        return _this.root.parent().trigger('toolTipShowsUp', [leftPos, topPos, heightPos, widthPos]);
       }).focus(function(event) {
         return _this.element.trigger('boxSelected', [_this]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
@@ -1347,8 +1347,6 @@
 
     BoxesContainer.prototype.buildElement = function() {
       console.log(this.superRoot);
-      this.fontPanel = new FontPanel(this.superRoot);
-      this.fontPanel.buildElement();
       this.element = $('<div></div>').addClass('ppedit-box-container');
       this.element.append('<p class="hDotLine"></p>');
       return this.element.append('<p class="vDotLine"></p>');
@@ -1370,11 +1368,7 @@
         return _this.root.trigger('unSelectBoxes');
       }).on('boxSelected', function(event, box) {
         return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
-      }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
-        _this.showToolTip();
-        return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
       });
-      this.fontPanel.bindEvents();
       _ref = this.boxes;
       _results = [];
       for (id in _ref) {
@@ -1607,34 +1601,6 @@
       }).call(this);
     };
 
-    BoxesContainer.prototype.setToolTipPosition = function(leftPos, topPos, heightPos, widthPos) {
-      var toolTip;
-      toolTip = this.fontPanel.element;
-      if (this.element.height() - topPos - heightPos < toolTip.height() + 10) {
-        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
-          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
-        } else {
-          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
-        }
-        return toolTip.css('top', (topPos - toolTip.height() - 25) + 'px');
-      } else {
-        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
-          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
-        } else {
-          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
-        }
-        return toolTip.css('top', (topPos + heightPos + 10) + 'px');
-      }
-    };
-
-    BoxesContainer.prototype.showToolTip = function() {
-      return this.element.append(this.fontPanel.element);
-    };
-
-    BoxesContainer.prototype.removeToolTip = function() {
-      return this.fontPanel.element.remove();
-    };
-
     return BoxesContainer;
 
   })(Graphic);
@@ -1708,6 +1674,8 @@
       this.boxesContainer = new BoxesContainer(this.element, this.root);
       this.canvas = new Canvas(this.element);
       this.grid = new Grid(this.element);
+      this.fontPanel = new FontPanel(this.root);
+      this.fontPanel.buildElement();
       this.boxesContainer.buildElement();
       this.canvas.buildElement();
       this.grid.buildElement();
@@ -1743,10 +1711,44 @@
         return _this.element.find('*').trigger('containerKeyDown', [event]);
       }).on('canvasRectSelect', function(event, rect) {
         return _this.boxesContainer.selectBoxesInRect(rect);
+      }).on('boxSelected', function(event, box) {
+        return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
+      }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
+        _this.showToolTip();
+        return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
       });
+      this.fontPanel.bindEvents();
       this.boxesContainer.bindEvents();
       this.canvas.bindEvents();
       return this.grid.bindEvents();
+    };
+
+    EditArea.prototype.setToolTipPosition = function(leftPos, topPos, heightPos, widthPos) {
+      var toolTip;
+      toolTip = this.fontPanel.element;
+      if (this.element.height() - topPos - heightPos < toolTip.height() + 10) {
+        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
+          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
+        } else {
+          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
+        }
+        return toolTip.css('top', (topPos - toolTip.height() - 25) + 'px');
+      } else {
+        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
+          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
+        } else {
+          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
+        }
+        return toolTip.css('top', (topPos + heightPos + 10) + 'px');
+      }
+    };
+
+    EditArea.prototype.showToolTip = function() {
+      return this.element.append(this.fontPanel.element);
+    };
+
+    EditArea.prototype.removeToolTip = function() {
+      return this.fontPanel.element.remove();
     };
 
     return EditArea;
@@ -2256,7 +2258,9 @@
     PPEditor.prototype.bindEvents = function() {
       var cmd, i, _i, _ref, _results,
         _this = this;
-      this.element.on('requestUndo', function(event) {
+      this.element.on('focus', function(event) {
+        return _this.element.blur();
+      }).on('requestUndo', function(event) {
         return _this.commandManager.undo();
       }).on('requestRedo', function(event) {
         return _this.commandManager.redo();
@@ -2531,7 +2535,7 @@
         return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
       });
       this.element.find(".gridImg").click(function() {
-        return _this.root.find('.row').trigger('panelClickGridBtnClick');
+        return _this.root.trigger('panelClickGridBtnClick');
       });
       this.element.find('.gridImg').mouseover(function(event) {
         return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
@@ -2597,6 +2601,18 @@
                  <option value="16">16</option>\
                  <option value="20">20</option>\
                </select>\
+               \
+               <select class="line-space from-control edit-menu-row1-dd-fs">\
+                 <option value="double">6</option>\
+                 <option value="single">8</option>\
+                 <option value="triple" selected>single</option>\
+                 <option value="11">11</option>\
+                 <option value="12">12</option>\
+                 <option value="14">14</option>\
+                 <option value="16">16</option>\
+                 <option value="20">20</option>\
+               </select>\
+\
                <div class="boldButton boldButtonDisable font-panel-icon-row"></div>\
                <div class="italicButton italicButtonDisable font-panel-icon-row"></div>\
                <div class="underlineButton underlineButtonDisable font-panel-icon-row"></div>\
