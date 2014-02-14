@@ -22,7 +22,6 @@ class BoxesContainer extends Graphic
     @element.append('<p class="vDotLine"></p>')
 
   bindEvents: ->
-    editContainer = false
     @element
       .mousedown (event) =>
         event.preventDefault()
@@ -43,6 +42,8 @@ class BoxesContainer extends Graphic
         @showToolTip()
         @setToolTipPosition(leftPos,topPos,heightPos,widthPos)
     @fontPanel.bindEvents()
+
+    box.bindEvents() for id, box of @boxes
 
   ###
   Selects the boxes contained in the passed rect.

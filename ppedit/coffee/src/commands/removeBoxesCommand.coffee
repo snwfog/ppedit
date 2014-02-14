@@ -13,7 +13,7 @@ class RemoveBoxesCommand extends Command
 
   execute: ->
     @editor.areas[@pageNum].boxesContainer.removeBoxes @boxIds
-    @editor.panels[@pageNum].removeBoxRow boxId for boxId in @boxIds
+    @editor.panel.removeBoxRow boxId for boxId in @boxIds
 
   undo: ->
     for box in @boxes

@@ -29,7 +29,7 @@ class CreateBoxesCommand extends Command
   undo: ->
     for box in @boxes
       @editor.areas[@pageNum].boxesContainer.removeBoxes [box.element.attr('id')]
-      @editor.panels[@pageNum].removeBoxRow [box.element.attr('id')]
+      @editor.panel.removeBoxRow [box.element.attr('id')]
 
   ###
   Adds the passed box to the boxcontainer and
@@ -38,7 +38,7 @@ class CreateBoxesCommand extends Command
   _addBox: (box) ->
     @editor.areas[@pageNum].boxesContainer.addBox box
     boxId = box.element.attr('id')
-    @editor.panels[@pageNum].addBoxRow boxId
+    @editor.panel.addBoxRow @pageNum, boxId
     @boxIds.push boxId if @boxIds.indexOf(boxId) == -1
 
   getType: ->

@@ -31,14 +31,14 @@ class LoadBoxesCommand extends Command
     for i in [0..pages.length-1]
       for id, boxElement of pages[i]
         area = @editor.areas[i]
-        panel = @editor.panels[i]
+        panel = @editor.panel
 
         box = new Box area.boxesContainer.element
         box.element = $(boxElement)
         area.boxesContainer.addBox box
 
         # Add row associated with box in the panel.
-        rows = panel.getRows()
+        rows = panel.getRows i
         if rows.length == 0
           panel.addBoxRow id
         else

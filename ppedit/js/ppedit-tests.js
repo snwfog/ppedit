@@ -244,6 +244,7 @@
       expect(result.etag.length).toBeGreaterThan(5);
       $(".addElementBtn").click();
       result2 = JSON.parse($('.editor').ppedit('save'));
+      console.log(JSON.stringify(result2, null, 4));
       return expect(result.etag).not.toEqual(result2.etag);
     });
     it("identifies a box which is first loaded and then deleted as removed", function() {
