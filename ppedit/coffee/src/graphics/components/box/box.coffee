@@ -86,7 +86,8 @@ class Box extends Graphic
       .click (event) =>
         event.stopPropagation()
         event.preventDefault()
-
+        @root.parent().trigger 'hideToolTip'
+        
       .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault()

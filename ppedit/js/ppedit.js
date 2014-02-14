@@ -372,7 +372,8 @@
         return _this.stopMoving();
       }).click(function(event) {
         event.stopPropagation();
-        return event.preventDefault();
+        event.preventDefault();
+        return _this.root.parent().trigger('hideToolTip');
       }).dblclick(function(event) {
         var heightPos, leftPos, topPos, widthPos;
         event.stopPropagation();
@@ -1355,7 +1356,8 @@
           return _this.element.trigger('addBoxRequested', [boxCssOptions]);
         }
       }).click(function(event) {
-        return _this.root.trigger('unSelectBoxes');
+        _this.root.trigger('unSelectBoxes');
+        return _this.root.trigger('hideToolTip');
       }).on('boxSelected', function(event, box) {
         return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
       });
@@ -1706,6 +1708,8 @@
       }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
         _this.showToolTip();
         return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
+      }).on('hideToolTip', function(event) {
+        return _this.removeToolTip();
       });
       this.fontPanel.bindEvents();
       this.boxesContainer.bindEvents();

@@ -32,7 +32,7 @@ class BoxesContainer extends Graphic
 
       .click (event) =>
         @root.trigger 'unSelectBoxes'
-        # @removeToolTip()
+        @root.trigger 'hideToolTip'
 
       .on 'boxSelected', (event, box) =>
         @fontPanel.setSettingsFromStyle box.element.get(0).style
