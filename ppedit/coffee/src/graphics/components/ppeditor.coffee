@@ -21,9 +21,9 @@ class PPEditor extends Graphic
     @clipboard = new Clipboard
     @commandManager = new CommandManager
     @cmdFactory = new CommandFactory
+    @fontPanel = undefined
     @controller = undefined
-    # @area = undefined
-    # @panel = undefined
+    @panel = undefined
 
 
   buildElement: ->
@@ -46,6 +46,7 @@ class PPEditor extends Graphic
 
     @panel.buildElement()
     @mainPanel.buildElement()
+    @fontPanel.buildElement()
 
     @element.append @mainPanel.element
     @element.append @panel.element
@@ -107,8 +108,8 @@ class PPEditor extends Graphic
       .on 'onRowDeleteBtnClick', (event, tabIndex, boxId) =>
         @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, tabIndex, @root.find('#' + boxId))
 
-     .on 'onRowSliderValChanged', (event, tabIndex, boxId, opacityVal) =>
-       @areas[tabIndex].boxesContainer.changeBoxOpacity(boxId, opacityVal)
+      .on 'onRowSliderValChanged', (event, tabIndex, boxId, opacityVal) =>
+        @areas[tabIndex].boxesContainer.changeBoxOpacity(boxId, opacityVal)
 
       .on 'onRowSliderStopValChanged', (event, tabIndex, boxId, prevVal, newVal) =>
         @commandManager.pushCommand @cmdFactory.createChangeOpacityCommand(this, tabIndex, boxId, prevVal, newVal)
