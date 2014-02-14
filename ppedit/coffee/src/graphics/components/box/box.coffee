@@ -88,6 +88,8 @@ class Box extends Graphic
         event.preventDefault()
         if @element.hasClass("ppedit-box-focus")
           @root.parent().find(".FontPanel").css("visibility","")
+        else
+          @root.parent().find(".FontPanel").css("visibility","hidden")
 
       .dblclick (event) =>
         event.stopPropagation()

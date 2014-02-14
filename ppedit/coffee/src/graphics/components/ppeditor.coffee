@@ -21,7 +21,6 @@ class PPEditor extends Graphic
     @clipboard = new Clipboard
     @commandManager = new CommandManager
     @cmdFactory = new CommandFactory
-    @fontPanel = undefined
     @controller = undefined
     @panel = undefined
 
@@ -42,16 +41,13 @@ class PPEditor extends Graphic
     @areas = []
     @panel = new Panel @element
     @mainPanel = new MainPanel @element
-    @fontPanel = new FontPanel @element
 
     @panel.buildElement()
     @mainPanel.buildElement()
-    @fontPanel.buildElement()
 
     @element.append @mainPanel.element
     @element.append @panel.element
     @element.append @superContainer
-    @element.append @fontPanel.element
 
   bindEvents: ->
 
@@ -187,7 +183,6 @@ class PPEditor extends Graphic
 
 
     @panel.bindEvents()
-    @fontPanel.bindEvents()
     @controller.bindEvents()
     @mainPanel.bindEvents()
 

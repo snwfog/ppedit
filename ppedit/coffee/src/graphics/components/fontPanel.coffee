@@ -9,7 +9,7 @@ class FontPanel extends Graphic
 
   buildElement: ->
     @element =$('
-          <div class="edit-menu shadow-effect" style="visibility:hidden;">
+          <div class="edit-menu shadow-effect" id="fPanel">
             <div class="edit-menu-row1">
                <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">
                  <option value="Times New Roman" selected>Times New Roman</option>
@@ -63,8 +63,6 @@ class FontPanel extends Graphic
           @element.trigger 'textColorChanged', [hex]
           $(el).colpickHide()
       })
-
-
 
     @element.find('.boldButton').click (event) =>
       if $(event.target).hasClass('boldButtonDisable')
@@ -141,9 +139,6 @@ class FontPanel extends Graphic
         $(event.target).addClass("snapBtn-selected") 
       else
         $(event.target).removeClass("snapBtn-selected") 
-
-    @element.find("edit-menu").click (event) =>
-      $(event.target).css("visibility","")
       
   changeColor: (hsb, hex, rgb, el) ->
     $(el).css('background-color', '#'+hex)
@@ -184,5 +179,11 @@ class FontPanel extends Graphic
       @element.find(selector).addClass 'ppedit-btn-enabled active'
     else
       @element.find(selector).removeClass 'ppedit-btn-enabled active'
+
+  selectPanel: ->
+    @element.addClass('ppedit-panel-selected')
+    
+
+
 
 

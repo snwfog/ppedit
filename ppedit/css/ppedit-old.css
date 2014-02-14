@@ -75,6 +75,11 @@ body {
     border-style:dashed;
 }
 
+.ppedit-panel-selected
+{
+    border-style:dashed;
+}
+
 .ppedit-box-focus,
 .ppedit-box:focus
 {
