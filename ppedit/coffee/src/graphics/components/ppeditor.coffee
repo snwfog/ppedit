@@ -46,6 +46,7 @@ class PPEditor extends Graphic
     @mainPanel.buildElement()
 
     @element.append @mainPanel.element
+
     @element.append @panel.element
     @element.append @superContainer
 

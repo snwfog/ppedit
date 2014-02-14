@@ -87,14 +87,23 @@ class Box extends Graphic
         event.stopPropagation()
         event.preventDefault()
         if @element.hasClass("ppedit-box-focus")
-          @root.parent().find(".FontPanel").css("visibility","")
+          @element.find(".FontPanel").css("visibility","")
+          console.log("if")
+        else if @element.hasClass("ppedit-box-container")
+          @element.find(".FontPanel").css("visibility","hidden")
+          console.log("else if")
         else
-          @root.parent().find(".FontPanel").css("visibility","hidden")
+          @element.find(".FontPanel").css("visibility","hidden")
+          console.log("else")
 
       .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault()
-        @root.parent().find(".FontPanel").css("visibility","")
+        leftPos = $(event.target).position().left
+        topPos = $(event.target).position().top
+        heightPos = $(event.target).height()
+        widthPos = $(event.target).width()
+        @root.trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
 
       .focus (event) =>
         @element.trigger 'boxSelected', [this]
@@ -167,7 +176,6 @@ class Box extends Graphic
         .removeClass('ppedit-hDotLine')
       @root.find('.vDotLine')
         .removeClass('ppedit-vDotLine')
-    @root.parent().find(".FontPanel").css("visibility","hidden")
 
   ###
   Moves the box by the passed delta amounts.
@@ -271,3 +279,5 @@ class Box extends Graphic
 
   _onDoubleClick: ->
     @_enableFocus()
+
+

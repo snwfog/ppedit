@@ -9,7 +9,7 @@ class FontPanel extends Graphic
 
   buildElement: ->
     @element =$('
-          <div class="edit-menu shadow-effect" id="fPanel">
+          <div class="edit-menu FontPanel shadow-effect">
             <div class="edit-menu-row1">
                <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">
                  <option value="Times New Roman" selected>Times New Roman</option>
@@ -40,7 +40,7 @@ class FontPanel extends Graphic
                 <div class="orderedPointBtn orderedBulletPointButtonDisable font-panel-icon-row"></div>
                 <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>                 
              </div>
-            </div>').addClass("FontPanel")
+            </div>')
 
 
 
