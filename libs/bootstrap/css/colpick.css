@@ -4,6 +4,7 @@ colpick Color Picker / colpick.com
 
 /*Main container*/
 .colpick {
+	z-index: 100;
 	position: absolute;
 	width: 346px;
 	height: 170px;

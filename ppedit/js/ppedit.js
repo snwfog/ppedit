@@ -1702,7 +1702,7 @@
       }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
         _this.showToolTip();
         return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
-      }).click(function(event) {
+      }).on('hideToolTip', function(event) {
         return _this.removeToolTip();
       });
       this.fontPanel.bindEvents();
@@ -2566,7 +2566,8 @@
     function FontPanel(root) {
       this.root = root;
       FontPanel.__super__.constructor.call(this, this.root);
-      console.log(this.root);
+      this.prevPosition = void 0;
+      this.prevMouseDownTime = 0;
     }
 
     FontPanel.prototype.buildElement = function() {
@@ -2619,7 +2620,30 @@
 
     FontPanel.prototype.bindEvents = function() {
       var _this = this;
-      this.element.find("FontPanel").draggable();
+      this.element.mousedown(function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        _this.selectFontPanel();
+        return _this.prevMouseDownTime = event.timeStamp;
+      }).mouseup(function(event) {
+        event.preventDefault();
+        return _this.stopMoveFontPanel();
+      }).click(function(event) {
+        event.stopPropagation();
+        return event.preventDefault();
+      }).on('containerMouseMove', function(event, containerMouseEvent, delta) {
+        if (event.target === _this.element.get(0)) {
+          if (_this.element.hasClass('ppedit-panel-selected') && (delta != null)) {
+            return _this.moveFontPanel(delta.x, delta.y);
+          }
+        }
+      }).on('containerMouseLeave', function() {
+        return _this.stopMoveFontPanel();
+      }).keydown(function(event) {
+        if (!_this.isFocused()) {
+          return _this._processKeyDownEvent(event);
+        }
+      });
       this.element.find("select.fontTypeBtn").change(function(event) {
         var newFontType;
         newFontType = $(event.target).find("option:selected").val();
@@ -2761,6 +2785,31 @@
       } else {
         return this.element.find(selector).removeClass('ppedit-btn-enabled active');
       }
+    };
+
+    FontPanel.prototype.selectFontPanel = function() {
+      this.element.addClass('ppedit-panel-selected');
+      return this.prevPosition = this.currentFontPanelPosition();
+    };
+
+    FontPanel.prototype.moveFontPanel = function(deltaX, deltaY) {
+      var currentPos;
+      currentPos = this.currentFontPanelPosition();
+      return this.setFontPanelPosition(deltaX + currentPos.left, deltaY + currentPos.top);
+    };
+
+    FontPanel.prototype.stopMoveFontPanel = function() {
+      this.element.removeClass('ppedit-panel-selected');
+      return this.root.trigger('boxMoved', [this, $.extend(true, {}, this.currentFontPanelPosition()), $.extend(true, {}, this.prevPosition)]);
+    };
+
+    FontPanel.prototype.currentFontPanelPosition = function() {
+      return this.element.position();
+    };
+
+    FontPanel.prototype.setFontPanelPosition = function(x, y) {
+      this.element.css('left', x + 'px');
+      return this.element.css('top', y + 'px');
     };
 
     return FontPanel;

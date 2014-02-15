@@ -306,7 +306,7 @@
 }
 
 .edit-menu {
-    width:349px; 
+    width:353px; 
     height:105px; 
     display:block; 
     background-color:#fbfbfb; 
@@ -314,6 +314,7 @@
     top:50px; 
     left:175px;
     z-index: 99;
+    cursor:move;
 }
 
 .moveElementUpBtn:hover

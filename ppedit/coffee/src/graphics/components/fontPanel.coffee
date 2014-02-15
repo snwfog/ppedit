@@ -6,7 +6,9 @@ Graphic containing the font settings to apply to boxes.
 class FontPanel extends Graphic
   constructor: (@root) ->
     super @root
-    console.log(@root)
+
+    @prevPosition = undefined
+    @prevMouseDownTime = 0  
 
   buildElement: ->
     @element =$('
@@ -59,7 +61,31 @@ class FontPanel extends Graphic
 
 
   bindEvents: ->
-    @element.find("FontPanel").draggable()
+    @element
+      .mousedown (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+
+        @selectFontPanel()
+        @prevMouseDownTime = event.timeStamp
+
+      .mouseup (event) =>
+        event.preventDefault()
+        @stopMoveFontPanel()
+
+      .click (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+
+      .on 'containerMouseMove', (event, containerMouseEvent, delta) =>
+        if event.target == @element.get(0)
+          @moveFontPanel delta.x, delta.y if @element.hasClass('ppedit-panel-selected') && delta?
+
+      .on 'containerMouseLeave', () =>
+        @stopMoveFontPanel()
+
+    .keydown (event) =>
+      @_processKeyDownEvent(event) if!@isFocused()
 
     @element.find("select.fontTypeBtn").change (event) =>
       newFontType = $(event.target).find("option:selected").val()
@@ -195,8 +221,21 @@ class FontPanel extends Graphic
     else
       @element.find(selector).removeClass 'ppedit-btn-enabled active'
 
-    
+  selectFontPanel: ->
+    @element.addClass('ppedit-panel-selected')
+    @prevPosition = @currentFontPanelPosition()
 
+  moveFontPanel: (deltaX, deltaY) ->
+    currentPos = @currentFontPanelPosition()
+    @setFontPanelPosition deltaX + currentPos.left, deltaY + currentPos.top
 
+  stopMoveFontPanel: ->
+    @element.removeClass('ppedit-panel-selected')
+    @root.trigger 'boxMoved' , [@,$.extend(true, {}, @currentFontPanelPosition()), $.extend(true,{},@prevPosition)]
+  
+  currentFontPanelPosition: ->
+    @element.position()
 
-
+  setFontPanelPosition: (x,y) ->
+    @element.css 'left', x + 'px'
+    @element.css 'top', y + 'px'
