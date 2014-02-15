@@ -372,8 +372,7 @@
         return _this.stopMoving();
       }).click(function(event) {
         event.stopPropagation();
-        event.preventDefault();
-        return _this.root.parent().trigger('hideToolTip');
+        return event.preventDefault();
       }).dblclick(function(event) {
         var heightPos, leftPos, topPos, widthPos;
         event.stopPropagation();
@@ -1329,15 +1328,13 @@
 
     BoxesContainer.CLICK_TIME_INTERVAL = 200;
 
-    function BoxesContainer(root, superRoot) {
+    function BoxesContainer(root) {
       this.root = root;
-      this.superRoot = superRoot;
       BoxesContainer.__super__.constructor.call(this, this.root);
       this.boxes = {};
     }
 
     BoxesContainer.prototype.buildElement = function() {
-      console.log(this.superRoot);
       this.element = $('<div></div>').addClass('ppedit-box-container');
       this.element.append('<p class="hDotLine"></p>');
       return this.element.append('<p class="vDotLine"></p>');
@@ -1356,10 +1353,7 @@
           return _this.element.trigger('addBoxRequested', [boxCssOptions]);
         }
       }).click(function(event) {
-        _this.root.trigger('unSelectBoxes');
-        return _this.root.trigger('hideToolTip');
-      }).on('boxSelected', function(event, box) {
-        return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
+        return _this.root.trigger('unSelectBoxes');
       });
       _ref = this.boxes;
       _results = [];
@@ -1663,7 +1657,7 @@
 
     EditArea.prototype.buildElement = function() {
       this.element = $('<div class="editContainer shadow-effect"></div>').attr('id', 'ppedit-page-' + this.pageNum).append('<div></div>').addClass("ppedit-container").addClass("col-xs-8").attr('tabindex', 0);
-      this.boxesContainer = new BoxesContainer(this.element, this.root);
+      this.boxesContainer = new BoxesContainer(this.element);
       this.canvas = new Canvas(this.element);
       this.grid = new Grid(this.element);
       this.fontPanel = new FontPanel(this.root);
@@ -1708,7 +1702,7 @@
       }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
         _this.showToolTip();
         return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
-      }).on('hideToolTip', function(event) {
+      }).click(function(event) {
         return _this.removeToolTip();
       });
       this.fontPanel.bindEvents();
@@ -2572,6 +2566,7 @@
     function FontPanel(root) {
       this.root = root;
       FontPanel.__super__.constructor.call(this, this.root);
+      console.log(this.root);
     }
 
     FontPanel.prototype.buildElement = function() {

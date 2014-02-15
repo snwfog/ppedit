@@ -25,7 +25,7 @@ class EditArea extends Graphic
       .addClass("col-xs-8")
       .attr('tabindex', 0)
 
-    @boxesContainer = new BoxesContainer @element, @root
+    @boxesContainer = new BoxesContainer @element
     @canvas = new Canvas @element
     @grid = new Grid @element
 

@@ -9,13 +9,11 @@ class BoxesContainer extends Graphic
 
   @CLICK_TIME_INTERVAL: 200
 
-  constructor: (@root, @superRoot) ->
+  constructor: (@root) ->
     super @root
     @boxes = {}
 
   buildElement: ->
-    console.log(@superRoot)
-    
     @element = $('<div></div>').addClass('ppedit-box-container')
     @element.append('<p class="hDotLine"></p>')
     @element.append('<p class="vDotLine"></p>')
@@ -32,10 +30,7 @@ class BoxesContainer extends Graphic
 
       .click (event) =>
         @root.trigger 'unSelectBoxes'
-        @root.trigger 'hideToolTip'
-
-      .on 'boxSelected', (event, box) =>
-        @fontPanel.setSettingsFromStyle box.element.get(0).style
+        # @root.trigger 'hideToolTip'
 
       
 
