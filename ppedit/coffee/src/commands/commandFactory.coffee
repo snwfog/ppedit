@@ -20,6 +20,15 @@ class CommandFactory
   createChangeFontTypeCommand: (editor, boxesSelector, newFontType) ->
     return new ChangeStyleCommand editor, boxesSelector, {'font-family': newFontType}
 
+  createChangeLetterSpaceCommand: (editor, boxesSelector, newletterSpace) ->
+    return new ChangeStyleCommand editor, boxesSelector, {'letter-spacing': newletterSpace}
+
+  createChangeLineHeightCommand: (editor, boxesSelector, newLineHeight) ->
+    return new ChangeStyleCommand editor, boxesSelector, {'line-height': newLineHeight}
+
+  createChangePaddingCommand: (editor, boxesSelector, newPadding) ->
+    return new ChangeStyleCommand editor, boxesSelector, {'padding': newPadding}
+
   createChangeFontWeightCommand: (editor, boxesSelector, enable) ->
     fontWeightValue = if enable then 'bold' else 'normal'
     return new ChangeStyleCommand editor, boxesSelector, {'font-weight': fontWeightValue}

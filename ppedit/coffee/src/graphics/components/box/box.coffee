@@ -40,6 +40,9 @@ class Box extends Graphic
       'font-weight': 'normal'
       'text-decoration': 'none'
       'font-style': 'normal'
+      'line-height': '117%'
+      'letter-spacing': '0px'
+      'padding' : '0px'
       'z-index' : if highestZIndex? then (highestZIndex + 1) else 0;
       'text-align': 'left'
       'vertical-align': 'bottom'

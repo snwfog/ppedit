@@ -130,6 +130,21 @@ class PPEditor extends Graphic
         if boxesSelected.length != 0
           @commandManager.pushCommand @cmdFactory.createChangeFontSizeCommand(this, boxesSelected, newFontSize)
 
+      .on 'letterSpaceChanged', (event, newletterSpace) =>
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createChangeLetterSpaceCommand(this, boxesSelected, newletterSpace)
+
+      .on 'lineHeightChanged', (event, newLineHeight) =>
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createChangeLineHeightCommand(this, boxesSelected, newLineHeight)
+
+      .on 'paddingChanged', (event, newPadding) =>
+        boxesSelected = @getSelectedBoxes()
+        if boxesSelected.length != 0
+          @commandManager.pushCommand @cmdFactory.createChangePaddingCommand(this, boxesSelected, newPadding)
+
       .on 'fontWeightBtnEnableClick', (event) =>
         boxesSelected = @getSelectedBoxes()
         if boxesSelected.length != 0
