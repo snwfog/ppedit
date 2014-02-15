@@ -58,6 +58,8 @@ class FontPanel extends Graphic
 
 
   bindEvents: ->
+    @element.find("FontPanel").draggable()
+
     @element.find("select.fontTypeBtn").change (event) =>
       newFontType = $(event.target).find("option:selected").val()
       @root.trigger 'fontTypeChanged', [newFontType]
@@ -192,8 +194,6 @@ class FontPanel extends Graphic
     else
       @element.find(selector).removeClass 'ppedit-btn-enabled active'
 
-  selectPanel: ->
-    @element.addClass('ppedit-panel-selected')
     
 
 

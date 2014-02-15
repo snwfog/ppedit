@@ -86,16 +86,8 @@ class Box extends Graphic
       .click (event) =>
         event.stopPropagation()
         event.preventDefault()
-        if @element.hasClass("ppedit-box-focus")
-          @element.find(".FontPanel").css("visibility","")
-          console.log("if")
-        else if @element.hasClass("ppedit-box-container")
-          @element.find(".FontPanel").css("visibility","hidden")
-          console.log("else if")
-        else
-          @element.find(".FontPanel").css("visibility","hidden")
-          console.log("else")
-
+        @root.parent().trigger 'hideToolTip'
+        
       .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault()

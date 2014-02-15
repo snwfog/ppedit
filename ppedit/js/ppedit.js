@@ -373,16 +373,7 @@
       }).click(function(event) {
         event.stopPropagation();
         event.preventDefault();
-        if (_this.element.hasClass("ppedit-box-focus")) {
-          _this.element.find(".FontPanel").css("visibility", "");
-          return console.log("if");
-        } else if (_this.element.hasClass("ppedit-box-container")) {
-          _this.element.find(".FontPanel").css("visibility", "hidden");
-          return console.log("else if");
-        } else {
-          _this.element.find(".FontPanel").css("visibility", "hidden");
-          return console.log("else");
-        }
+        return _this.root.parent().trigger('hideToolTip');
       }).dblclick(function(event) {
         var heightPos, leftPos, topPos, widthPos;
         event.stopPropagation();
@@ -1365,7 +1356,8 @@
           return _this.element.trigger('addBoxRequested', [boxCssOptions]);
         }
       }).click(function(event) {
-        return _this.root.trigger('unSelectBoxes');
+        _this.root.trigger('unSelectBoxes');
+        return _this.root.trigger('hideToolTip');
       }).on('boxSelected', function(event, box) {
         return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
       });
@@ -1716,6 +1708,8 @@
       }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
         _this.showToolTip();
         return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
+      }).on('hideToolTip', function(event) {
+        return _this.removeToolTip();
       });
       this.fontPanel.bindEvents();
       this.boxesContainer.bindEvents();
@@ -2630,6 +2624,7 @@
 
     FontPanel.prototype.bindEvents = function() {
       var _this = this;
+      this.element.find("FontPanel").draggable();
       this.element.find("select.fontTypeBtn").change(function(event) {
         var newFontType;
         newFontType = $(event.target).find("option:selected").val();
@@ -2771,10 +2766,6 @@
       } else {
         return this.element.find(selector).removeClass('ppedit-btn-enabled active');
       }
-    };
-
-    FontPanel.prototype.selectPanel = function() {
-      return this.element.addClass('ppedit-panel-selected');
     };
 
     return FontPanel;
