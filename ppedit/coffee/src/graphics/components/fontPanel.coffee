@@ -6,6 +6,7 @@ Graphic containing the font settings to apply to boxes.
 class FontPanel extends Graphic
   constructor: (@root) ->
     super @root
+    console.log(@root)
 
   buildElement: ->
     @element =$('
