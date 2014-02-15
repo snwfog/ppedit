@@ -118,6 +118,18 @@ class Box extends Graphic
 
     .keydown (event) =>
         @_processKeyDownEvent(event) if !@isFocused()
+      ###
+      .mouseover (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+        leftPos = $(event.target).position().left
+        topPos = $(event.target).position().top
+        heightPos = $(event.target).height()
+        widthPos = $(event.target).width()
+        @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
+      ###
+      # .mouseout (event) =>
+        # @root.parent().trigger 'removeToolTip'
 
     @helper.bindEvents()
       

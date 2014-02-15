@@ -30,7 +30,7 @@ class BoxesContainer extends Graphic
 
       .click (event) =>
         @root.trigger 'unSelectBoxes'
-        # @root.trigger 'hideToolTip'
+        @root.trigger 'removeToolTip'
 
       
 

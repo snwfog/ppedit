@@ -406,6 +406,17 @@
           return _this._processKeyDownEvent(event);
         }
       });
+      /*
+      .mouseover (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+        leftPos = $(event.target).position().left
+        topPos = $(event.target).position().top
+        heightPos = $(event.target).height()
+        widthPos = $(event.target).width()
+        @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
+      */
+
       return this.helper.bindEvents();
     };
 
@@ -1356,7 +1367,8 @@
           return _this.element.trigger('addBoxRequested', [boxCssOptions]);
         }
       }).click(function(event) {
-        return _this.root.trigger('unSelectBoxes');
+        _this.root.trigger('unSelectBoxes');
+        return _this.root.trigger('removeToolTip');
       });
       _ref = this.boxes;
       _results = [];
@@ -1705,10 +1717,9 @@
       }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
         _this.showToolTip();
         return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
-      }).on('hideToolTip', function(event) {
+      }).on('removeToolTip', function(event) {
         return _this.removeToolTip();
       });
-      this.fontPanel.bindEvents();
       this.boxesContainer.bindEvents();
       this.canvas.bindEvents();
       return this.grid.bindEvents();
@@ -1735,6 +1746,7 @@
     };
 
     EditArea.prototype.showToolTip = function() {
+      this.fontPanel.bindEvents();
       return this.element.append(this.fontPanel.element);
     };
 
@@ -2630,7 +2642,20 @@
                  <option value="16">16</option>\
                  <option value="20">20</option>\
                </select>\
+\
                \
+\
+               <div class="boldButton boldButtonDisable font-panel-icon-row"></div>\
+               <div class="italicButton italicButtonDisable font-panel-icon-row"></div>\
+               <div class="underlineButton underlineButtonDisable font-panel-icon-row"></div>\
+             </div>\
+             <div class="edit-menu-row2">\
+                <div class="leftAlignBtn leftAlignButtonEnable font-panel-icon-row"></div>\
+                <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>\
+                <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>\
+\
+               <div>\
+               <img class="icon-set letter-space-img" src="./ppedit/img/icons/text_letterspacing25.png" style="float:left;display:inline;">\
                <select class="letter-space from-control edit-menu-row1-dd-fs">\
                  <option value="0" selected>0</option>\
                  <option value="1">1</option>\
@@ -2639,7 +2664,10 @@
                  <option value="4">4</option>\
                  <option value="5">5</option>\
                </select>\
+               </div>\
 \
+               <div>\
+               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-line-spacing25.png" style="float:left;display:inline;">\
                <select class="line-height from-control edit-menu-row1-dd-fs">\
                  <option value="117" selected>1.0</option>\
                  <option value="175">1.5</option>\
@@ -2649,7 +2677,10 @@
                  <option value="407">3.5</option>\
                  <option value="465">4.0</option>\
                </select>\
+               </div>\
 \
+               <div>\
+               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-padding25.png" style="float:left;display:inline;">\
                <select class="padding from-control edit-menu-row1-dd-fs">\
                  <option value="0" selected>0</option>\
                  <option value="5">0.5</option>\
@@ -2661,15 +2692,8 @@
                  <option value="35">3.5</option>\
                  <option value="40">4.0</option>\
                </select>\
+               </div>\
 \
-               <div class="boldButton boldButtonDisable font-panel-icon-row"></div>\
-               <div class="italicButton italicButtonDisable font-panel-icon-row"></div>\
-               <div class="underlineButton underlineButtonDisable font-panel-icon-row"></div>\
-             </div>\
-             <div class="edit-menu-row2">\
-                <div class="leftAlignBtn leftAlignButtonEnable font-panel-icon-row"></div>\
-                <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>\
-                <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>\
              </div>\
             </div>');
     };
