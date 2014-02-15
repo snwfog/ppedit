@@ -339,6 +339,9 @@
         'font-weight': 'normal',
         'text-decoration': 'none',
         'font-style': 'normal',
+        'line-height': '117%',
+        'letter-spacing': '0px',
+        'padding': '0px',
         'z-index': highestZIndex != null ? highestZIndex + 1 : 0,
         'text-align': 'left',
         'vertical-align': 'bottom'
@@ -403,6 +406,17 @@
           return _this._processKeyDownEvent(event);
         }
       });
+      /*
+      .mouseover (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+        leftPos = $(event.target).position().left
+        topPos = $(event.target).position().top
+        heightPos = $(event.target).height()
+        widthPos = $(event.target).width()
+        @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
+      */
+
       return this.helper.bindEvents();
     };
 
@@ -1353,7 +1367,8 @@
           return _this.element.trigger('addBoxRequested', [boxCssOptions]);
         }
       }).click(function(event) {
-        return _this.root.trigger('unSelectBoxes');
+        _this.root.trigger('unSelectBoxes');
+        return _this.root.trigger('removeToolTip');
       });
       _ref = this.boxes;
       _results = [];
@@ -1702,13 +1717,13 @@
       }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
         _this.showToolTip();
         return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
-      }).on('hideToolTip', function(event) {
+      }).on('removeToolTip', function(event) {
         return _this.removeToolTip();
       });
-      this.fontPanel.bindEvents();
       this.boxesContainer.bindEvents();
       this.canvas.bindEvents();
-      return this.grid.bindEvents();
+      this.grid.bindEvents();
+      return this.fontPanel.bindEvents();
     };
 
     EditArea.prototype.setToolTipPosition = function(leftPos, topPos, heightPos, widthPos) {
@@ -1736,7 +1751,7 @@
     };
 
     EditArea.prototype.removeToolTip = function() {
-      return this.fontPanel.element.remove();
+      return this.fontPanel.element.detach();
     };
 
     return EditArea;
@@ -1842,6 +1857,24 @@
     CommandFactory.prototype.createChangeFontTypeCommand = function(editor, boxesSelector, newFontType) {
       return new ChangeStyleCommand(editor, boxesSelector, {
         'font-family': newFontType
+      });
+    };
+
+    CommandFactory.prototype.createChangeLetterSpaceCommand = function(editor, boxesSelector, newletterSpace) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'letter-spacing': newletterSpace
+      });
+    };
+
+    CommandFactory.prototype.createChangeLineHeightCommand = function(editor, boxesSelector, newLineHeight) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'line-height': newLineHeight
+      });
+    };
+
+    CommandFactory.prototype.createChangePaddingCommand = function(editor, boxesSelector, newPadding) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'padding': newPadding
       });
     };
 
@@ -2339,6 +2372,24 @@
         if (boxesSelected.length !== 0) {
           return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontSizeCommand(_this, boxesSelected, newFontSize));
         }
+      }).on('letterSpaceChanged', function(event, newletterSpace) {
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeLetterSpaceCommand(_this, boxesSelected, newletterSpace));
+        }
+      }).on('lineHeightChanged', function(event, newLineHeight) {
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeLineHeightCommand(_this, boxesSelected, newLineHeight));
+        }
+      }).on('paddingChanged', function(event, newPadding) {
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangePaddingCommand(_this, boxesSelected, newPadding));
+        }
       }).on('fontWeightBtnEnableClick', function(event) {
         var boxesSelected;
         boxesSelected = _this.getSelectedBoxes();
@@ -2591,17 +2642,8 @@
                  <option value="16">16</option>\
                  <option value="20">20</option>\
                </select>\
+\
                \
-               <select class="line-space from-control edit-menu-row1-dd-fs">\
-                 <option value="double">6</option>\
-                 <option value="single">8</option>\
-                 <option value="triple" selected>single</option>\
-                 <option value="11">11</option>\
-                 <option value="12">12</option>\
-                 <option value="14">14</option>\
-                 <option value="16">16</option>\
-                 <option value="20">20</option>\
-               </select>\
 \
                <div class="boldButton boldButtonDisable font-panel-icon-row"></div>\
                <div class="italicButton italicButtonDisable font-panel-icon-row"></div>\
@@ -2613,7 +2655,48 @@
                 <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>\
                 <div class="colorPicker colorPickerButton font-panel-icon-row"></div>\
                 <div class="orderedPointBtn orderedBulletPointButtonDisable font-panel-icon-row"></div>\
-                <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>                 \
+                <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>  \
+               \
+               <div>\
+               <img class="icon-set letter-space-img" src="./ppedit/img/icons/text_letterspacing25.png" style="float:left;display:inline;">\
+               <select class="letter-space from-control edit-menu-row1-dd-fs">\
+                 <option value="0" selected>0</option>\
+                 <option value="1">1</option>\
+                 <option value="2">2</option>\
+                 <option value="3">3</option>\
+                 <option value="4">4</option>\
+                 <option value="5">5</option>\
+               </select>\
+               </div>\
+\
+               <div>\
+               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-line-spacing25.png" style="float:left;display:inline;">\
+               <select class="line-height from-control edit-menu-row1-dd-fs">\
+                 <option value="117" selected>1.0</option>\
+                 <option value="175">1.5</option>\
+                 <option value="233">2.0</option>\
+                 <option value="291">2.5</option>\
+                 <option value="349">3.0</option>\
+                 <option value="407">3.5</option>\
+                 <option value="465">4.0</option>\
+               </select>\
+               </div>\
+\
+               <div>\
+               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-padding25.png" style="float:left;display:inline;">\
+               <select class="padding from-control edit-menu-row1-dd-fs">\
+                 <option value="0" selected>0</option>\
+                 <option value="5">0.5</option>\
+                 <option value="10">1.0</option>\
+                 <option value="15">1.5</option>\
+                 <option value="20">2.0</option>\
+                 <option value="25">2.5</option>\
+                 <option value="30">3.0</option>\
+                 <option value="35">3.5</option>\
+                 <option value="40">4.0</option>\
+               </select>\
+               </div>\
+\
              </div>\
             </div>');
     };
@@ -2622,11 +2705,9 @@
       var _this = this;
       this.element.mousedown(function(event) {
         event.stopPropagation();
-        event.preventDefault();
         _this.selectFontPanel();
         return _this.prevMouseDownTime = event.timeStamp;
       }).mouseup(function(event) {
-        event.preventDefault();
         return _this.stopMoveFontPanel();
       }).click(function(event) {
         event.stopPropagation();
@@ -2649,10 +2730,28 @@
         newFontType = $(event.target).find("option:selected").val();
         return _this.root.trigger('fontTypeChanged', [newFontType]);
       });
+      this.element.find("select.letter-space").change(function(event) {
+        var newletterSpace;
+        newletterSpace = $(event.target).find("option:selected").val() + "px";
+        return _this.root.trigger('letterSpaceChanged', [newletterSpace]);
+      });
       this.element.find("select.fontSizeBtn").change(function(event) {
         var newFontSize;
         newFontSize = $(event.target).find("option:selected").val() + "pt";
         return _this.root.trigger('fontSizeChanged', [newFontSize]);
+      });
+      this.element.find("select.line-height").change(function(event) {
+        var newLineHeight;
+        newLineHeight = $(event.target).find("option:selected").val();
+        if (newLineHeight !== 'normal') {
+          newLineHeight += "%";
+        }
+        return _this.root.trigger('lineHeightChanged', [newLineHeight]);
+      });
+      this.element.find("select.padding").change(function(event) {
+        var newPadding;
+        newPadding = $(event.target).find("option:selected").val() + 'px';
+        return _this.root.trigger('paddingChanged', [newPadding]);
       });
       this.element.find(".colorPicker").click(function(event) {
         return $(event.target).colpick({
@@ -2764,6 +2863,10 @@
     FontPanel.prototype.setSettingsFromStyle = function(style) {
       this.element.find('.fontTypeBtn').children().removeAttr('selected').filter('option[value=' + style['font-family'] + ']').attr('selected', 'selected');
       this.element.find('.fontSizeBtn').children().removeAttr('selected').filter('option[value="' + parseInt(style['font-size']) + '"]').attr('selected', 'selected');
+      console.log(parseInt(style['padding']));
+      this.element.find('.letter-space').children().removeAttr('selected').filter('option[value="' + parseInt(style['letter-spacing']) + '"]').attr('selected', 'selected');
+      this.element.find('.line-height').children().removeAttr('selected').filter('option[value="' + parseInt(style['line-height']) + '"]').attr('selected', 'selected');
+      this.element.find('.padding').children().removeAttr('selected').filter('option[value="' + parseInt(style['padding']) + '"]').attr('selected', 'selected');
       this._switchBtn('.wbtn', style['font-weight'] === 'bold');
       this._switchBtn('.ubtn', style['text-decoration'].indexOf('underline') !== -1);
       this._switchBtn('.ibtn', style['font-style'] === 'italic');

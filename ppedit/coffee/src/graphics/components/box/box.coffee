@@ -40,6 +40,9 @@ class Box extends Graphic
       'font-weight': 'normal'
       'text-decoration': 'none'
       'font-style': 'normal'
+      'line-height': '117%'
+      'letter-spacing': '0px'
+      'padding' : '0px'
       'z-index' : if highestZIndex? then (highestZIndex + 1) else 0;
       'text-align': 'left'
       'vertical-align': 'bottom'
@@ -114,6 +117,18 @@ class Box extends Graphic
 
     .keydown (event) =>
         @_processKeyDownEvent(event) if !@isFocused()
+      ###
+      .mouseover (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+        leftPos = $(event.target).position().left
+        topPos = $(event.target).position().top
+        heightPos = $(event.target).height()
+        widthPos = $(event.target).width()
+        @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
+      ###
+      # .mouseout (event) =>
+        # @root.parent().trigger 'removeToolTip'
 
     @helper.bindEvents()
       

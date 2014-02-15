@@ -31,17 +31,8 @@ class FontPanel extends Graphic
                  <option value="16">16</option>
                  <option value="20">20</option>
                </select>
+
                
-               <select class="line-space from-control edit-menu-row1-dd-fs">
-                 <option value="double">6</option>
-                 <option value="single">8</option>
-                 <option value="triple" selected>single</option>
-                 <option value="11">11</option>
-                 <option value="12">12</option>
-                 <option value="14">14</option>
-                 <option value="16">16</option>
-                 <option value="20">20</option>
-               </select>
 
                <div class="boldButton boldButtonDisable font-panel-icon-row"></div>
                <div class="italicButton italicButtonDisable font-panel-icon-row"></div>
@@ -53,24 +44,60 @@ class FontPanel extends Graphic
                 <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>
                 <div class="colorPicker colorPickerButton font-panel-icon-row"></div>
                 <div class="orderedPointBtn orderedBulletPointButtonDisable font-panel-icon-row"></div>
-                <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>                 
+                <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>  
+               
+               <div>
+               <img class="icon-set letter-space-img" src="./ppedit/img/icons/text_letterspacing25.png" style="float:left;display:inline;">
+               <select class="letter-space from-control edit-menu-row1-dd-fs">
+                 <option value="0" selected>0</option>
+                 <option value="1">1</option>
+                 <option value="2">2</option>
+                 <option value="3">3</option>
+                 <option value="4">4</option>
+                 <option value="5">5</option>
+               </select>
+               </div>
+
+               <div>
+               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-line-spacing25.png" style="float:left;display:inline;">
+               <select class="line-height from-control edit-menu-row1-dd-fs">
+                 <option value="117" selected>1.0</option>
+                 <option value="175">1.5</option>
+                 <option value="233">2.0</option>
+                 <option value="291">2.5</option>
+                 <option value="349">3.0</option>
+                 <option value="407">3.5</option>
+                 <option value="465">4.0</option>
+               </select>
+               </div>
+
+               <div>
+               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-padding25.png" style="float:left;display:inline;">
+               <select class="padding from-control edit-menu-row1-dd-fs">
+                 <option value="0" selected>0</option>
+                 <option value="5">0.5</option>
+                 <option value="10">1.0</option>
+                 <option value="15">1.5</option>
+                 <option value="20">2.0</option>
+                 <option value="25">2.5</option>
+                 <option value="30">3.0</option>
+                 <option value="35">3.5</option>
+                 <option value="40">4.0</option>
+               </select>
+               </div>
+
              </div>
             </div>')
-
-
-
 
   bindEvents: ->
     @element
       .mousedown (event) =>
         event.stopPropagation()
-        event.preventDefault()
 
         @selectFontPanel()
         @prevMouseDownTime = event.timeStamp
 
       .mouseup (event) =>
-        event.preventDefault()
         @stopMoveFontPanel()
 
       .click (event) =>
@@ -91,9 +118,23 @@ class FontPanel extends Graphic
       newFontType = $(event.target).find("option:selected").val()
       @root.trigger 'fontTypeChanged', [newFontType]
 
+    @element.find("select.letter-space").change (event) =>
+      newletterSpace = $(event.target).find("option:selected").val()+"px"
+      @root.trigger 'letterSpaceChanged', [newletterSpace]
+
     @element.find("select.fontSizeBtn").change (event) =>
       newFontSize = $(event.target).find("option:selected").val()+"pt"
       @root.trigger 'fontSizeChanged', [newFontSize]
+
+    @element.find("select.line-height").change (event) =>
+      newLineHeight = $(event.target).find("option:selected").val()
+      if(newLineHeight != 'normal')
+        newLineHeight += "%"
+      @root.trigger 'lineHeightChanged', [newLineHeight]
+
+    @element.find("select.padding").change (event) =>
+      newPadding = $(event.target).find("option:selected").val()+'px'
+      @root.trigger 'paddingChanged', [newPadding]
 
     @element.find(".colorPicker").click (event) =>
       $(event.target).colpick ({
@@ -198,6 +239,27 @@ class FontPanel extends Graphic
       .children()
       .removeAttr('selected')
       .filter('option[value="' + parseInt(style['font-size']) + '"]')
+      .attr('selected', 'selected')
+    console.log(parseInt(style['padding']))
+    @element
+      .find('.letter-space')
+      .children()
+      .removeAttr('selected')
+      .filter('option[value="' + parseInt(style['letter-spacing']) + '"]')
+      .attr('selected', 'selected')
+
+    @element
+      .find('.line-height')
+      .children()
+      .removeAttr('selected')
+      .filter('option[value="' + parseInt(style['line-height']) + '"]')
+      .attr('selected', 'selected')
+
+    @element
+      .find('.padding')
+      .children()
+      .removeAttr('selected')
+      .filter('option[value="' + parseInt(style['padding']) + '"]')
       .attr('selected', 'selected')
 
     @_switchBtn '.wbtn', style['font-weight'] == 'bold'
