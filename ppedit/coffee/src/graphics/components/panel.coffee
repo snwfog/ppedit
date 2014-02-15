@@ -31,7 +31,9 @@ class Panel extends Graphic
               <div class="moveElementUpBtn menu-panel-icon"></div>
               <div class="moveElementDownBtn menu-panel-icon"></div>
               <div class="addElementBtn menu-panel-icon"></div>
-            </div>
+              <div class="ppedit-pageNumLabel"></div>
+              <div class="ppedit-deletePage menu-panel-icon"></div>
+             </div>
 
           </div>
       </div>')
@@ -46,8 +48,11 @@ class Panel extends Graphic
     @element.find('.moveElementDownBtn').click =>
       @element.trigger 'moveElementDownBtnClick', [@_getDisplayedTabIndex()]
 
+    @element.find('.add-tab-sidebar-btn').click =>
+      @element.trigger 'addTabBtnClick'
+
     @element.find('.minimize-sidebar-btn').click (event) =>
-      @element.toggleClass('menu-sidebar-open');
+      @element.toggleClass 'menu-sidebar-open'
 
   addNewTab: ->
     @insertTab @element.find('.page-sidebar-tab').length
@@ -74,7 +79,7 @@ class Panel extends Graphic
         @_displayTab newPageIndex
 
       # Increment all subsequent tabIndexes by 1.
-      .nextAll('a').each (el, index) =>
+      .nextAll('a').each (index, el) =>
         $(el)
           .attr('href', '#ppedit-page-' + (newPageIndex + index + 1))
           .html('
@@ -84,7 +89,6 @@ class Panel extends Graphic
           ')
           .click =>
             @_displayTab newPageIndex + index + 1
-        console.log el
 
     rowContainer = $('
       <!-- Row 2 Menu -->
@@ -99,28 +103,24 @@ class Panel extends Graphic
     else
       rowContainer.insertAfter(@element.find('.ppedit-row-container').eq(newPageIndex-1))
 
-    @element
-      .find('.ppedit-row-container')
-      .removeClass('ppedit-row-container-active')
-      .eq(newPageIndex)
-      .addClass('ppedit-row-container-active')
+    @_displayTab newPageIndex
 
   ###
   Adds a row to be associated with the passed box id.
   ### 
   addBoxRow: (tabIndex, boxid, index) ->
     newRow = $('
-        	<tr class="ppedit-panel-row">
-        		<td style="width:10%">
-        			<div class="deleteElementBtn menu-panel-icon"></div>
-    		    </td>
-            <td style="width:50%">
-            <input type="text" class="form-control" placeholder="Element 1">
-            </td>
-            <td style="width:40%">
-              <div class="ppedit-slider"></div>
-            </td>
-    	    </tr>
+        <tr class="ppedit-panel-row">
+          <td style="width:10%">
+            <div class="deleteElementBtn menu-panel-icon"></div>
+          </td>
+          <td style="width:50%">
+          <input type="text" class="form-control" placeholder="Element 1">
+          </td>
+          <td style="width:40%">
+            <div class="ppedit-slider"></div>
+          </td>
+        </tr>
     	      ')
     .attr('ppedit-box-id', boxid)
 
@@ -128,7 +128,6 @@ class Panel extends Graphic
       @_getRowContainer(tabIndex).find('.right-sidebar-menu2').prepend newRow
     else
       newRow.insertBefore(@_getRowContainer(tabIndex).find('.ppedit-panel-row:nth-child("' + index + '")'))
-
     newRow.find(".ppedit-slider")
       .slider(
           min: 0
@@ -140,15 +139,18 @@ class Panel extends Graphic
         @prevOpacityVal = $(event.target).val() or 100
       .on 'slide', (event) =>
         opacityVal = $(event.target).val()
-        $(event.target).trigger 'onRowSliderValChanged', [tabIndex, boxid, parseInt(opacityVal)/100]
+        index = newRow.parents('.ppedit-row-container').index()-1
+        $(event.target).trigger 'onRowSliderValChanged', [index, boxid, parseInt(opacityVal)/100]
       .on 'slideStop', (event) =>
         opacityStopVal = $(event.target).val()
+        index = newRow.parents('.ppedit-row-container').index()-1
         if @prevOpacityVal != opacityStopVal
-          $(event.target).trigger 'onRowSliderStopValChanged', [tabIndex, boxid, parseInt(@prevOpacityVal)/100, parseInt(opacityStopVal)/100]
+          $(event.target).trigger 'onRowSliderStopValChanged', [index, boxid, parseInt(@prevOpacityVal)/100, parseInt(opacityStopVal)/100]
         @prevOpacityVal = undefined
 
     newRow.find(".deleteElementBtn").on 'click', (event) =>
-        $(event.target).trigger 'onRowDeleteBtnClick', [tabIndex, boxid]
+      index = newRow.parents('.ppedit-row-container').index()-1
+      $(event.target).trigger 'onRowDeleteBtnClick', [index, boxid]
 
   ###
   Removes the row associated with the passed box id.
@@ -188,11 +190,29 @@ class Panel extends Graphic
       .eq(tabIndex)
       .addClass('ppedit-row-container-active')
 
+    @element.find('.ppedit-pageNumLabel').html 'Page ' + (tabIndex + 1)
+    @element.find('.ppedit-deletePage').off().click =>
+      @element.trigger 'deleteTabBtnClick', [tabIndex]
+
   removeTab:(tabIndex) ->
     @_getRowContainer(tabIndex).remove()
+
     @element
-      .find('.page-sidebar-tab').eq(tabIndex)
+      .find('.menu-tab-pages a').eq(tabIndex)
       .remove()
+
+    @element.find('.menu-tab-pages a').each (index, el) =>
+      $(el)
+        .attr('href', '#ppedit-page-' + (index))
+        .html('
+          <div class="page-sidebar-tab menu-right-btn shadow-effect">
+            <span class="vertical-text">Page ' + (index + 1) + '</span>
+          </div>
+        ')
+        .click =>
+            @_displayTab index
+
+    @_displayTab tabIndex
 
   _getRowContainer:(tabIndex) ->
     @element.find('.ppedit-row-container').eq(tabIndex)

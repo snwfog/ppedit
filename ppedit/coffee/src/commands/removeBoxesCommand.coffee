@@ -18,7 +18,7 @@ class RemoveBoxesCommand extends Command
   undo: ->
     for box in @boxes
       @editor.areas[@pageNum].boxesContainer.addBox box
-      @editor.panel[@pageNum].addBoxRow box.element.attr 'id'
+      @editor.panel.addBoxRow box.element.attr 'id'
 
   getType: ->
     return 'Remove'

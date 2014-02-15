@@ -617,6 +617,7 @@
 
     RemoveBoxesCommand.prototype.execute = function() {
       var boxId, _i, _len, _ref, _results;
+      console.log('pageNum = ' + this.pageNum);
       this.editor.areas[this.pageNum].boxesContainer.removeBoxes(this.boxIds);
       _ref = this.boxIds;
       _results = [];
@@ -634,7 +635,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
         this.editor.areas[this.pageNum].boxesContainer.addBox(box);
-        _results.push(this.editor.panel[this.pageNum].addBoxRow(box.element.attr('id')));
+        _results.push(this.editor.panel.addBoxRow(box.element.attr('id')));
       }
       return _results;
     };
@@ -1731,7 +1732,11 @@
     };
 
     AddOrRemoveCommand.prototype.undo = function() {
-      return this._removePage(this.pageNum)(this.addPage ? void 0 : this._insertPage(this.pageNum, this.area));
+      if (this.addPage) {
+        return this._removePage(this.pageNum);
+      } else {
+        return this._insertPage(this.pageNum, this.area);
+      }
     };
 
     AddOrRemoveCommand.prototype._insertNewPage = function(pageNum) {
@@ -1739,12 +1744,11 @@
       newArea = new EditArea(this.editor.element, this.editor.areas.length);
       newArea.buildElement();
       this._insertPage(pageNum, newArea);
-      this.area = newArea;
-      return this.editor.areas = this.editor.areas.slice(0, pageNum).concat([this.area]).concat(this.editor.areas.slice(pageNum, this.editor.areas.length));
+      return this.area = newArea;
     };
 
     AddOrRemoveCommand.prototype._insertPage = function(pageNum, area) {
-      var box, id, panel, rows, _ref, _results,
+      var box, i, id, panel, rows, _i, _ref, _ref1, _results,
         _this = this;
       if (pageNum > 0) {
         area.element.insertAfter(this.editor.superContainer.children().eq(pageNum - 1));
@@ -1755,14 +1759,13 @@
       panel = this.editor.panel;
       panel.insertTab(pageNum);
       _ref = area.boxesContainer.boxes;
-      _results = [];
       for (id in _ref) {
         box = _ref[id];
         rows = panel.getRows(pageNum);
         if (rows.length === 0) {
-          _results.push(panel.addBoxRow(id));
+          panel.addBoxRow(id);
         } else {
-          _results.push(rows.each(function(index, rowNode) {
+          rows.each(function(index, rowNode) {
             var otherBoxId, otherBoxZIndex;
             otherBoxId = $(rowNode).attr('ppedit-box-id');
             otherBoxZIndex = area.boxesContainer.boxes[otherBoxId].element.css('z-index');
@@ -1770,16 +1773,27 @@
               panel.addBoxRow(id, index);
               return false;
             }
-          }));
+          });
         }
+      }
+      this.editor.areas = this.editor.areas.slice(0, pageNum).concat([area]).concat(this.editor.areas.slice(pageNum));
+      _results = [];
+      for (i = _i = 0, _ref1 = this.editor.areas.length - 1; 0 <= _ref1 ? _i <= _ref1 : _i >= _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
+        _results.push(this.editor.areas[i].element.attr('id', 'ppedit-page-' + i));
       }
       return _results;
     };
 
     AddOrRemoveCommand.prototype._removePage = function(pageNum) {
-      this.area = this.editor.areas.splice(pageNum, 1);
-      this.area.element.remove();
-      return this.editor.panel.removeTab(pageNum);
+      var i, _i, _ref, _results;
+      this.area = this.editor.areas.splice(pageNum, 1)[0];
+      this.area.element.detach();
+      this.editor.panel.removeTab(pageNum);
+      _results = [];
+      for (i = _i = 0, _ref = this.editor.areas.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        _results.push(this.editor.areas[i].element.attr('id', 'ppedit-page-' + i));
+      }
+      return _results;
     };
 
     AddOrRemoveCommand.prototype.getType = function() {
@@ -1898,6 +1912,10 @@
       return new AddOrRemoveCommand(editor, true);
     };
 
+    CommandFactory.prototype.createRemovePageCommand = function(editor, pageNum) {
+      return new AddOrRemoveCommand(editor, false, pageNum);
+    };
+
     return CommandFactory;
 
   })();
@@ -1939,7 +1957,9 @@
               <div class="moveElementUpBtn menu-panel-icon"></div>\
               <div class="moveElementDownBtn menu-panel-icon"></div>\
               <div class="addElementBtn menu-panel-icon"></div>\
-            </div>\
+              <div class="ppedit-pageNumLabel"></div>\
+              <div class="ppedit-deletePage menu-panel-icon"></div>\
+             </div>\
 \
           </div>\
       </div>');
@@ -1955,6 +1975,9 @@
       });
       this.element.find('.moveElementDownBtn').click(function() {
         return _this.element.trigger('moveElementDownBtnClick', [_this._getDisplayedTabIndex()]);
+      });
+      this.element.find('.add-tab-sidebar-btn').click(function() {
+        return _this.element.trigger('addTabBtnClick');
       });
       return this.element.find('.minimize-sidebar-btn').click(function(event) {
         return _this.element.toggleClass('menu-sidebar-open');
@@ -1983,15 +2006,14 @@
       }
       tab.click(function(event) {
         return _this._displayTab(newPageIndex);
-      }).nextAll('a').each(function(el, index) {
-        $(el).attr('href', '#ppedit-page-' + (newPageIndex + index + 1)).html('\
+      }).nextAll('a').each(function(index, el) {
+        return $(el).attr('href', '#ppedit-page-' + (newPageIndex + index + 1)).html('\
             <div class="page-sidebar-tab menu-right-btn shadow-effect">\
               <span class="vertical-text">Page ' + (newPageIndex + index + 2) + '</span>\
             </div>\
           ').click(function() {
           return _this._displayTab(newPageIndex + index + 1);
         });
-        return console.log(el);
       });
       rowContainer = $('\
       <!-- Row 2 Menu -->\
@@ -2005,7 +2027,7 @@
       } else {
         rowContainer.insertAfter(this.element.find('.ppedit-row-container').eq(newPageIndex - 1));
       }
-      return this.element.find('.ppedit-row-container').removeClass('ppedit-row-container-active').eq(newPageIndex).addClass('ppedit-row-container-active');
+      return this._displayTab(newPageIndex);
     };
 
     /*
@@ -2017,17 +2039,17 @@
       var newRow,
         _this = this;
       newRow = $('\
-        	<tr class="ppedit-panel-row">\
-        		<td style="width:10%">\
-        			<div class="deleteElementBtn menu-panel-icon"></div>\
-    		    </td>\
-            <td style="width:50%">\
-            <input type="text" class="form-control" placeholder="Element 1">\
-            </td>\
-            <td style="width:40%">\
-              <div class="ppedit-slider"></div>\
-            </td>\
-    	    </tr>\
+        <tr class="ppedit-panel-row">\
+          <td style="width:10%">\
+            <div class="deleteElementBtn menu-panel-icon"></div>\
+          </td>\
+          <td style="width:50%">\
+          <input type="text" class="form-control" placeholder="Element 1">\
+          </td>\
+          <td style="width:40%">\
+            <div class="ppedit-slider"></div>\
+          </td>\
+        </tr>\
     	      ').attr('ppedit-box-id', boxid);
       if ((index == null) || index === 0) {
         this._getRowContainer(tabIndex).find('.right-sidebar-menu2').prepend(newRow);
@@ -2044,17 +2066,20 @@
       }).on('slide', function(event) {
         var opacityVal;
         opacityVal = $(event.target).val();
-        return $(event.target).trigger('onRowSliderValChanged', [tabIndex, boxid, parseInt(opacityVal) / 100]);
+        index = newRow.parents('.ppedit-row-container').index() - 1;
+        return $(event.target).trigger('onRowSliderValChanged', [index, boxid, parseInt(opacityVal) / 100]);
       }).on('slideStop', function(event) {
         var opacityStopVal;
         opacityStopVal = $(event.target).val();
+        index = newRow.parents('.ppedit-row-container').index() - 1;
         if (_this.prevOpacityVal !== opacityStopVal) {
-          $(event.target).trigger('onRowSliderStopValChanged', [tabIndex, boxid, parseInt(_this.prevOpacityVal) / 100, parseInt(opacityStopVal) / 100]);
+          $(event.target).trigger('onRowSliderStopValChanged', [index, boxid, parseInt(_this.prevOpacityVal) / 100, parseInt(opacityStopVal) / 100]);
         }
         return _this.prevOpacityVal = void 0;
       });
       return newRow.find(".deleteElementBtn").on('click', function(event) {
-        return $(event.target).trigger('onRowDeleteBtnClick', [tabIndex, boxid]);
+        index = newRow.parents('.ppedit-row-container').index() - 1;
+        return $(event.target).trigger('onRowDeleteBtnClick', [index, boxid]);
       });
     };
 
@@ -2105,12 +2130,28 @@
     };
 
     Panel.prototype._displayTab = function(tabIndex) {
-      return this.element.find('.ppedit-row-container').removeClass('ppedit-row-container-active').eq(tabIndex).addClass('ppedit-row-container-active');
+      var _this = this;
+      this.element.find('.ppedit-row-container').removeClass('ppedit-row-container-active').eq(tabIndex).addClass('ppedit-row-container-active');
+      this.element.find('.ppedit-pageNumLabel').html('Page ' + (tabIndex + 1));
+      return this.element.find('.ppedit-deletePage').off().click(function() {
+        return _this.element.trigger('deleteTabBtnClick', [tabIndex]);
+      });
     };
 
     Panel.prototype.removeTab = function(tabIndex) {
+      var _this = this;
       this._getRowContainer(tabIndex).remove();
-      return this.element.find('.page-sidebar-tab').eq(tabIndex).remove();
+      this.element.find('.menu-tab-pages a').eq(tabIndex).remove();
+      this.element.find('.menu-tab-pages a').each(function(index, el) {
+        return $(el).attr('href', '#ppedit-page-' + index).html('\
+          <div class="page-sidebar-tab menu-right-btn shadow-effect">\
+            <span class="vertical-text">Page ' + (index + 1) + '</span>\
+          </div>\
+        ').click(function() {
+          return _this._displayTab(index);
+        });
+      });
+      return this._displayTab(tabIndex);
     };
 
     Panel.prototype._getRowContainer = function(tabIndex) {
@@ -2177,6 +2218,8 @@
     __extends(PPEditor, _super);
 
     PPEditor.INIT_NUM_OF_PAGES = 2;
+
+    PPEditor.MAX_NUM_OF_PAGES = 3;
 
     function PPEditor(root) {
       this.root = root;
@@ -2272,6 +2315,14 @@
         boxes = _this.getSelectedBoxes();
         if (boxes.length > 0) {
           return _this.commandManager.pushCommand(_this.cmdFactory.createMoveDownCommand(_this, tabIndex, boxes));
+        }
+      }).on('addTabBtnClick', function(event) {
+        if (_this.areas.length < PPEditor.MAX_NUM_OF_PAGES) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createAddPageCommand(_this));
+        }
+      }).on('deleteTabBtnClick', function(event, tabIndex) {
+        if (_this.areas.length > PPEditor.INIT_NUM_OF_PAGES) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createRemovePageCommand(_this, tabIndex));
         }
       }).on('panelClickAddBtnClick', function(event, tabIndex) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this, tabIndex));

@@ -14,6 +14,7 @@ Graphic acting a the main container of the PPEditor.
 class PPEditor extends Graphic
 
   @INIT_NUM_OF_PAGES: 2
+  @MAX_NUM_OF_PAGES: 3
 
   constructor: (@root) ->
     super @root
@@ -98,6 +99,14 @@ class PPEditor extends Graphic
       .on 'moveElementDownBtnClick', (event, tabIndex) =>
         boxes = @getSelectedBoxes()
         @commandManager.pushCommand @cmdFactory.createMoveDownCommand(this, tabIndex, boxes) if boxes.length > 0
+
+      .on 'addTabBtnClick', (event) =>
+        if @areas.length < PPEditor.MAX_NUM_OF_PAGES
+          @commandManager.pushCommand @cmdFactory.createAddPageCommand(this)
+
+      .on 'deleteTabBtnClick', (event, tabIndex) =>
+        if @areas.length > PPEditor.INIT_NUM_OF_PAGES
+          @commandManager.pushCommand @cmdFactory.createRemovePageCommand(this, tabIndex)
 
       .on 'panelClickAddBtnClick', (event, tabIndex) =>
         @commandManager.pushCommand @cmdFactory.createCreateBoxesCommand(this, tabIndex)

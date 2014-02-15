@@ -300,6 +300,23 @@
     background-image: url(../img/icons/OFF/glyphicons_212_down_arrow.png);
 }
 
+.ppedit-pageNumLabel
+{
+    width: 50px;
+    float: left;
+    cursor: pointer;
+}
+
+.ppedit-deletePage
+{
+    background-image: url(../img/icons/OFF/glyphicons_192_circle_remove.png);
+}
+
+.ppedit-deletePage:hover
+{
+    background-image: url(../img/icons/ON/glyphicons_192_circle_remove.png);
+}
+
 .edit-menu-row1-dd-ff {
     width:115px; 
     height:25px; 
