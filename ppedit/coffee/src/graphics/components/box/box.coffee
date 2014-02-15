@@ -40,6 +40,9 @@ class Box extends Graphic
       'font-weight': 'normal'
       'text-decoration': 'none'
       'font-style': 'normal'
+      'line-height': '117%'
+      'letter-spacing': '0px'
+      'padding' : '0px'
       'z-index' : if highestZIndex? then (highestZIndex + 1) else 0;
       'text-align': 'left'
       'vertical-align': 'bottom'
@@ -86,13 +89,15 @@ class Box extends Graphic
       .click (event) =>
         event.stopPropagation()
         event.preventDefault()
-
+        
       .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault()
-        console.log( @root.parent())
-        @root.parent().find(".FontPanel").css("visibility","")
-
+        leftPos = $(event.target).position().left
+        topPos = $(event.target).position().top
+        heightPos = $(event.target).height()
+        widthPos = $(event.target).width()
+        @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
 
       .focus (event) =>
         @element.trigger 'boxSelected', [this]
@@ -112,6 +117,18 @@ class Box extends Graphic
 
     .keydown (event) =>
         @_processKeyDownEvent(event) if !@isFocused()
+      ###
+      .mouseover (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+        leftPos = $(event.target).position().left
+        topPos = $(event.target).position().top
+        heightPos = $(event.target).height()
+        widthPos = $(event.target).width()
+        @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
+      ###
+      # .mouseout (event) =>
+        # @root.parent().trigger 'removeToolTip'
 
     @helper.bindEvents()
       
@@ -165,7 +182,6 @@ class Box extends Graphic
         .removeClass('ppedit-hDotLine')
       @root.find('.vDotLine')
         .removeClass('ppedit-vDotLine')
-    @root.parent().find(".FontPanel").css("visibility","hidden")
 
   ###
   Moves the box by the passed delta amounts.
@@ -229,12 +245,12 @@ class Box extends Graphic
   Puts the box on focus.
   ###
   _enableFocus: ->
-      @root.find('.ppedit-box')
-        .removeClass('ppedit-box-focus')
-        .removeClass('ppedit-box-selected')
-      @element
-        .addClass('ppedit-box-focus')
-        .focus()
+    @root.find('.ppedit-box')
+      .removeClass('ppedit-box-focus')
+      .removeClass('ppedit-box-selected')
+    @element
+      .addClass('ppedit-box-focus')
+      .focus()
 
   ###
   Adds an unordered point list at the current position
@@ -269,3 +285,5 @@ class Box extends Graphic
 
   _onDoubleClick: ->
     @_enableFocus()
+
+

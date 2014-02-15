@@ -28,17 +28,18 @@ class EditArea extends Graphic
     @boxesContainer = new BoxesContainer @element
     @canvas = new Canvas @element
     @grid = new Grid @element
-    @fontPanel = new FontPanel @element
 
+    @fontPanel = new FontPanel @root
+    @fontPanel.buildElement()
+    
     @boxesContainer.buildElement()
     @canvas.buildElement()
     @grid.buildElement()
-    @fontPanel.buildElement()
+    # @fontPanel.buildElement()
     
     @element.append @boxesContainer.element
     @element.append @canvas.element
     @element.append @grid.element
-    @element.append @fontPanel.element
 
   bindEvents:->
     @element
@@ -72,7 +73,37 @@ class EditArea extends Graphic
       .on 'boxSelected', (event, box) =>
         @fontPanel.setSettingsFromStyle box.element.get(0).style
 
+      .on 'toolTipShowsUp', (event, leftPos,topPos,heightPos,widthPos) =>
+        @showToolTip()
+        @setToolTipPosition(leftPos,topPos,heightPos,widthPos)
+        
+      .on 'removeToolTip', (event) =>
+        @removeToolTip()
+
     @boxesContainer.bindEvents()
     @canvas.bindEvents()
     @grid.bindEvents()
     @fontPanel.bindEvents()
+
+  setToolTipPosition: (leftPos, topPos,heightPos,widthPos) ->
+    toolTip = @fontPanel.element
+
+    if(@element.height()-topPos-heightPos < toolTip.height()+10)
+      if((@element.width()-leftPos-widthPos/2)<toolTip.width()+10)
+        toolTip.css 'left', (leftPos+widthPos/2-toolTip.width()) + 'px'
+      else
+        toolTip.css 'left', (leftPos+widthPos/2) + 'px'
+      toolTip.css 'top', (topPos-toolTip.height()-25) + 'px'
+
+    else
+      if((@element.width()-leftPos-widthPos/2)<toolTip.width()+10)
+        toolTip.css 'left', (leftPos+widthPos/2-toolTip.width()) + 'px'
+      else
+        toolTip.css 'left', (leftPos+widthPos/2) + 'px'
+      toolTip.css 'top', (topPos+heightPos+10) + 'px'
+
+  showToolTip: ->
+    @element.append @fontPanel.element
+
+  removeToolTip: ->
+    @fontPanel.element.detach()

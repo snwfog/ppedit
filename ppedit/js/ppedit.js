@@ -339,6 +339,9 @@
         'font-weight': 'normal',
         'text-decoration': 'none',
         'font-style': 'normal',
+        'line-height': '117%',
+        'letter-spacing': '0px',
+        'padding': '0px',
         'z-index': highestZIndex != null ? highestZIndex + 1 : 0,
         'text-align': 'left',
         'vertical-align': 'bottom'
@@ -374,10 +377,14 @@
         event.stopPropagation();
         return event.preventDefault();
       }).dblclick(function(event) {
+        var heightPos, leftPos, topPos, widthPos;
         event.stopPropagation();
         event.preventDefault();
-        console.log(_this.root.parent());
-        return _this.root.parent().find(".FontPanel").css("visibility", "");
+        leftPos = $(event.target).position().left;
+        topPos = $(event.target).position().top;
+        heightPos = $(event.target).height();
+        widthPos = $(event.target).width();
+        return _this.root.parent().trigger('toolTipShowsUp', [leftPos, topPos, heightPos, widthPos]);
       }).focus(function(event) {
         return _this.element.trigger('boxSelected', [_this]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
@@ -399,6 +406,17 @@
           return _this._processKeyDownEvent(event);
         }
       });
+      /*
+      .mouseover (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+        leftPos = $(event.target).position().left
+        topPos = $(event.target).position().top
+        heightPos = $(event.target).height()
+        widthPos = $(event.target).width()
+        @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
+      */
+
       return this.helper.bindEvents();
     };
 
@@ -453,9 +471,8 @@
       this.prevPosition = void 0;
       if ($(document).find('.snapImg').hasClass('snapBtn-selected')) {
         this.root.find('.hDotLine').removeClass('ppedit-hDotLine');
-        this.root.find('.vDotLine').removeClass('ppedit-vDotLine');
+        return this.root.find('.vDotLine').removeClass('ppedit-vDotLine');
       }
-      return this.root.parent().find(".FontPanel").css("visibility", "hidden");
     };
 
     /*
@@ -1351,7 +1368,8 @@
           return _this.element.trigger('addBoxRequested', [boxCssOptions]);
         }
       }).click(function(event) {
-        return _this.root.trigger('unSelectBoxes');
+        _this.root.trigger('unSelectBoxes');
+        return _this.root.trigger('removeToolTip');
       });
       _ref = this.boxes;
       _results = [];
@@ -1658,15 +1676,14 @@
       this.boxesContainer = new BoxesContainer(this.element);
       this.canvas = new Canvas(this.element);
       this.grid = new Grid(this.element);
-      this.fontPanel = new FontPanel(this.element);
+      this.fontPanel = new FontPanel(this.root);
+      this.fontPanel.buildElement();
       this.boxesContainer.buildElement();
       this.canvas.buildElement();
       this.grid.buildElement();
-      this.fontPanel.buildElement();
       this.element.append(this.boxesContainer.element);
       this.element.append(this.canvas.element);
-      this.element.append(this.grid.element);
-      return this.element.append(this.fontPanel.element);
+      return this.element.append(this.grid.element);
     };
 
     EditArea.prototype.bindEvents = function() {
@@ -1698,11 +1715,44 @@
         return _this.boxesContainer.selectBoxesInRect(rect);
       }).on('boxSelected', function(event, box) {
         return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
+      }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
+        _this.showToolTip();
+        return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
+      }).on('removeToolTip', function(event) {
+        return _this.removeToolTip();
       });
       this.boxesContainer.bindEvents();
       this.canvas.bindEvents();
       this.grid.bindEvents();
       return this.fontPanel.bindEvents();
+    };
+
+    EditArea.prototype.setToolTipPosition = function(leftPos, topPos, heightPos, widthPos) {
+      var toolTip;
+      toolTip = this.fontPanel.element;
+      if (this.element.height() - topPos - heightPos < toolTip.height() + 10) {
+        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
+          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
+        } else {
+          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
+        }
+        return toolTip.css('top', (topPos - toolTip.height() - 25) + 'px');
+      } else {
+        if ((this.element.width() - leftPos - widthPos / 2) < toolTip.width() + 10) {
+          toolTip.css('left', (leftPos + widthPos / 2 - toolTip.width()) + 'px');
+        } else {
+          toolTip.css('left', (leftPos + widthPos / 2) + 'px');
+        }
+        return toolTip.css('top', (topPos + heightPos + 10) + 'px');
+      }
+    };
+
+    EditArea.prototype.showToolTip = function() {
+      return this.element.append(this.fontPanel.element);
+    };
+
+    EditArea.prototype.removeToolTip = function() {
+      return this.fontPanel.element.detach();
     };
 
     return EditArea;
@@ -1821,6 +1871,24 @@
     CommandFactory.prototype.createChangeFontTypeCommand = function(editor, boxesSelector, newFontType) {
       return new ChangeStyleCommand(editor, boxesSelector, {
         'font-family': newFontType
+      });
+    };
+
+    CommandFactory.prototype.createChangeLetterSpaceCommand = function(editor, boxesSelector, newletterSpace) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'letter-spacing': newletterSpace
+      });
+    };
+
+    CommandFactory.prototype.createChangeLineHeightCommand = function(editor, boxesSelector, newLineHeight) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'line-height': newLineHeight
+      });
+    };
+
+    CommandFactory.prototype.createChangePaddingCommand = function(editor, boxesSelector, newPadding) {
+      return new ChangeStyleCommand(editor, boxesSelector, {
+        'padding': newPadding
       });
     };
 
@@ -2227,7 +2295,6 @@
       this.clipboard = new Clipboard;
       this.commandManager = new CommandManager;
       this.cmdFactory = new CommandFactory;
-      this.fontPanel = void 0;
       this.controller = void 0;
       this.panel = void 0;
     }
@@ -2245,20 +2312,19 @@
       this.areas = [];
       this.panel = new Panel(this.element);
       this.mainPanel = new MainPanel(this.element);
-      this.fontPanel = new FontPanel(this.element);
       this.panel.buildElement();
       this.mainPanel.buildElement();
-      this.fontPanel.buildElement();
       this.element.append(this.mainPanel.element);
       this.element.append(this.panel.element);
-      this.element.append(this.superContainer);
-      return this.element.append(this.fontPanel.element);
+      return this.element.append(this.superContainer);
     };
 
     PPEditor.prototype.bindEvents = function() {
       var cmd, i, _i, _ref, _results,
         _this = this;
-      this.element.on('requestUndo', function(event) {
+      this.element.on('focus', function(event) {
+        return _this.element.blur();
+      }).on('requestUndo', function(event) {
         return _this.commandManager.undo();
       }).on('requestRedo', function(event) {
         return _this.commandManager.redo();
@@ -2357,6 +2423,24 @@
         if (boxesSelected.length !== 0) {
           return _this.commandManager.pushCommand(_this.cmdFactory.createChangeFontSizeCommand(_this, boxesSelected, newFontSize));
         }
+      }).on('letterSpaceChanged', function(event, newletterSpace) {
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeLetterSpaceCommand(_this, boxesSelected, newletterSpace));
+        }
+      }).on('lineHeightChanged', function(event, newLineHeight) {
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeLineHeightCommand(_this, boxesSelected, newLineHeight));
+        }
+      }).on('paddingChanged', function(event, newPadding) {
+        var boxesSelected;
+        boxesSelected = _this.getSelectedBoxes();
+        if (boxesSelected.length !== 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangePaddingCommand(_this, boxesSelected, newPadding));
+        }
       }).on('fontWeightBtnEnableClick', function(event) {
         var boxesSelected;
         boxesSelected = _this.getSelectedBoxes();
@@ -2435,7 +2519,6 @@
         return _results;
       });
       this.panel.bindEvents();
-      this.fontPanel.bindEvents();
       this.controller.bindEvents();
       this.mainPanel.bindEvents();
       _results = [];
@@ -2508,6 +2591,72 @@
 
   })(Graphic);
 
+  MainPanel = (function(_super) {
+    __extends(MainPanel, _super);
+
+    function MainPanel(root) {
+      this.root = root;
+      MainPanel.__super__.constructor.call(this, this.root);
+    }
+
+    MainPanel.prototype.buildElement = function() {
+      return this.element = $('\
+            <div class="left-sidebar">\
+              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
+              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
+              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
+              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
+          </div>');
+    };
+
+    MainPanel.prototype.bindEvents = function() {
+      var _this = this;
+      this.element.find('.snapImg').click(function() {
+        if (!$(event.target).hasClass("snapBtn-selected")) {
+          return $(event.target).addClass("snapBtn-selected");
+        } else {
+          return $(event.target).removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find('.snapImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
+      });
+      this.element.find('.snapImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
+      });
+      this.element.find(".gridImg").click(function() {
+        return _this.root.trigger('panelClickGridBtnClick');
+      });
+      this.element.find('.gridImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
+      });
+      this.element.find('.gridImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
+      });
+      this.element.find(".undoImg").click(function() {
+        return _this.root.trigger('requestUndo');
+      });
+      this.element.find('.undoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
+      });
+      this.element.find('.undoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
+      });
+      this.element.find(".redoImg").click(function() {
+        return _this.root.trigger('requestRedo');
+      });
+      this.element.find('.redoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
+      });
+      return this.element.find('.redoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
+      });
+    };
+
+    return MainPanel;
+
+  })(Graphic);
+
   /*
   Graphic containing the font settings to apply to boxes.
   */
@@ -2519,11 +2668,13 @@
     function FontPanel(root) {
       this.root = root;
       FontPanel.__super__.constructor.call(this, this.root);
+      this.prevPosition = void 0;
+      this.prevMouseDownTime = 0;
     }
 
     FontPanel.prototype.buildElement = function() {
       return this.element = $('\
-          <div class="edit-menu shadow-effect" style="visibility:hidden;">\
+          <div class="edit-menu FontPanel shadow-effect">\
             <div class="edit-menu-row1">\
                <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">\
                  <option value="Times New Roman" selected>Times New Roman</option>\
@@ -2542,6 +2693,9 @@
                  <option value="16">16</option>\
                  <option value="20">20</option>\
                </select>\
+\
+               \
+\
                <div class="boldButton boldButtonDisable font-panel-icon-row"></div>\
                <div class="italicButton italicButtonDisable font-panel-icon-row"></div>\
                <div class="underlineButton underlineButtonDisable font-panel-icon-row"></div>\
@@ -2550,21 +2704,105 @@
                 <div class="leftAlignBtn leftAlignButtonEnable font-panel-icon-row"></div>\
                 <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>\
                 <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>\
+                <div class="colorPicker colorPickerButton font-panel-icon-row"></div>\
+                <div class="orderedPointBtn orderedBulletPointButtonDisable font-panel-icon-row"></div>\
+                <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>  \
+               \
+               <div>\
+               <img class="icon-set letter-space-img" src="./ppedit/img/icons/text_letterspacing25.png" style="float:left;display:inline;">\
+               <select class="letter-space from-control edit-menu-row1-dd-fs">\
+                 <option value="0" selected>0</option>\
+                 <option value="1">1</option>\
+                 <option value="2">2</option>\
+                 <option value="3">3</option>\
+                 <option value="4">4</option>\
+                 <option value="5">5</option>\
+               </select>\
+               </div>\
+\
+               <div>\
+               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-line-spacing25.png" style="float:left;display:inline;">\
+               <select class="line-height from-control edit-menu-row1-dd-fs">\
+                 <option value="117" selected>1.0</option>\
+                 <option value="175">1.5</option>\
+                 <option value="233">2.0</option>\
+                 <option value="291">2.5</option>\
+                 <option value="349">3.0</option>\
+                 <option value="407">3.5</option>\
+                 <option value="465">4.0</option>\
+               </select>\
+               </div>\
+\
+               <div>\
+               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-padding25.png" style="float:left;display:inline;">\
+               <select class="padding from-control edit-menu-row1-dd-fs">\
+                 <option value="0" selected>0</option>\
+                 <option value="5">0.5</option>\
+                 <option value="10">1.0</option>\
+                 <option value="15">1.5</option>\
+                 <option value="20">2.0</option>\
+                 <option value="25">2.5</option>\
+                 <option value="30">3.0</option>\
+                 <option value="35">3.5</option>\
+                 <option value="40">4.0</option>\
+               </select>\
+               </div>\
+\
              </div>\
-            </div>').addClass("FontPanel");
+            </div>');
     };
 
     FontPanel.prototype.bindEvents = function() {
       var _this = this;
+      this.element.mousedown(function(event) {
+        event.stopPropagation();
+        _this.selectFontPanel();
+        return _this.prevMouseDownTime = event.timeStamp;
+      }).mouseup(function(event) {
+        return _this.stopMoveFontPanel();
+      }).click(function(event) {
+        event.stopPropagation();
+        return event.preventDefault();
+      }).on('containerMouseMove', function(event, containerMouseEvent, delta) {
+        if (event.target === _this.element.get(0)) {
+          if (_this.element.hasClass('ppedit-panel-selected') && (delta != null)) {
+            return _this.moveFontPanel(delta.x, delta.y);
+          }
+        }
+      }).on('containerMouseLeave', function() {
+        return _this.stopMoveFontPanel();
+      }).keydown(function(event) {
+        if (!_this.isFocused()) {
+          return _this._processKeyDownEvent(event);
+        }
+      });
       this.element.find("select.fontTypeBtn").change(function(event) {
         var newFontType;
         newFontType = $(event.target).find("option:selected").val();
         return _this.root.trigger('fontTypeChanged', [newFontType]);
       });
+      this.element.find("select.letter-space").change(function(event) {
+        var newletterSpace;
+        newletterSpace = $(event.target).find("option:selected").val() + "px";
+        return _this.root.trigger('letterSpaceChanged', [newletterSpace]);
+      });
       this.element.find("select.fontSizeBtn").change(function(event) {
         var newFontSize;
         newFontSize = $(event.target).find("option:selected").val() + "pt";
         return _this.root.trigger('fontSizeChanged', [newFontSize]);
+      });
+      this.element.find("select.line-height").change(function(event) {
+        var newLineHeight;
+        newLineHeight = $(event.target).find("option:selected").val();
+        if (newLineHeight !== 'normal') {
+          newLineHeight += "%";
+        }
+        return _this.root.trigger('lineHeightChanged', [newLineHeight]);
+      });
+      this.element.find("select.padding").change(function(event) {
+        var newPadding;
+        newPadding = $(event.target).find("option:selected").val() + 'px';
+        return _this.root.trigger('paddingChanged', [newPadding]);
       });
       this.element.find(".colorPicker").click(function(event) {
         return $(event.target).colpick({
@@ -2610,26 +2848,45 @@
       this.element.find('.centerAlignBtn').click(function(event) {
         var btn;
         if ($(event.target).hasClass('centerAlignButtonDisable')) {
-          btn = $(event.target).attr('class', 'centerAlignButtonEnable font-panel-icon-row');
-          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignButtonDisable font-panel-icon-row');
-          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignButtonDisable font-panel-icon-row');
-          return btn.trigger(btn.hasClass('centerAlignButtonEnable font-panel-icon-row') ? '' : '');
+          btn = $(event.target).attr('class', 'centerAlignBtn centerAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          return btn.trigger('centerAlignment');
         } else {
-          btn = $(event.target).attr('class', 'centerAlignButtonDisable font-panel-icon-row');
-          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignButtonEnable font-panel-icon-row');
-          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignButtonDisable font-panel-icon-row');
-          return btn.trigger(btn.hasClass('leftAlignButtonDisable font-panel-icon-row') ? '' : '');
+          btn = $(event.target).attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          return $(event.target).trigger('leftAlignment');
+        }
+      });
+      this.element.find('.rightAlignBtn').click(function(event) {
+        var btn;
+        if ($(event.target).hasClass('rightAlignButtonDisable')) {
+          btn = $(event.target).attr('class', 'rightAlignBtn rightAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.centerAlignBtn').attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          return btn.trigger('rightAlignment');
+        } else {
+          btn = $(event.target).attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.centerAlignBtn').attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          return $(event.target).trigger('leftAlignment');
+        }
+      });
+      this.element.find('.leftAlignBtn').click(function(event) {
+        var btn;
+        if ($(event.target).hasClass('leftAlignButtonDisable')) {
+          btn = $(event.target).attr('class', 'leftAlignBtn leftAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.centerAlignBtn').attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          return btn.trigger('leftAlignment');
         }
       });
       this.element.find(".rightAlignBtn").click(function(event) {
         return $(event.target).trigger('rightAlignment');
       });
       this.element.find(".leftAlignBtn").click(function(event) {
-        console.log('leftAlignBtn');
         return $(event.target).trigger('leftAlignment');
-      });
-      this.element.find(".centerAlignBtn").click(function(event) {
-        return $(event.target).trigger('centerAlignment');
       });
       this.element.find(".bulletPointBtn").click(function(event) {
         return $(event.target).trigger('bulletPointBtnEnableClick');
@@ -2657,6 +2914,10 @@
     FontPanel.prototype.setSettingsFromStyle = function(style) {
       this.element.find('.fontTypeBtn').children().removeAttr('selected').filter('option[value=' + style['font-family'] + ']').attr('selected', 'selected');
       this.element.find('.fontSizeBtn').children().removeAttr('selected').filter('option[value="' + parseInt(style['font-size']) + '"]').attr('selected', 'selected');
+      console.log(parseInt(style['padding']));
+      this.element.find('.letter-space').children().removeAttr('selected').filter('option[value="' + parseInt(style['letter-spacing']) + '"]').attr('selected', 'selected');
+      this.element.find('.line-height').children().removeAttr('selected').filter('option[value="' + parseInt(style['line-height']) + '"]').attr('selected', 'selected');
+      this.element.find('.padding').children().removeAttr('selected').filter('option[value="' + parseInt(style['padding']) + '"]').attr('selected', 'selected');
       this._switchBtn('.wbtn', style['font-weight'] === 'bold');
       this._switchBtn('.ubtn', style['text-decoration'].indexOf('underline') !== -1);
       this._switchBtn('.ibtn', style['font-style'] === 'italic');
@@ -2680,73 +2941,32 @@
       }
     };
 
+    FontPanel.prototype.selectFontPanel = function() {
+      this.element.addClass('ppedit-panel-selected');
+      return this.prevPosition = this.currentFontPanelPosition();
+    };
+
+    FontPanel.prototype.moveFontPanel = function(deltaX, deltaY) {
+      var currentPos;
+      currentPos = this.currentFontPanelPosition();
+      return this.setFontPanelPosition(deltaX + currentPos.left, deltaY + currentPos.top);
+    };
+
+    FontPanel.prototype.stopMoveFontPanel = function() {
+      this.element.removeClass('ppedit-panel-selected');
+      return this.root.trigger('boxMoved', [this, $.extend(true, {}, this.currentFontPanelPosition()), $.extend(true, {}, this.prevPosition)]);
+    };
+
+    FontPanel.prototype.currentFontPanelPosition = function() {
+      return this.element.position();
+    };
+
+    FontPanel.prototype.setFontPanelPosition = function(x, y) {
+      this.element.css('left', x + 'px');
+      return this.element.css('top', y + 'px');
+    };
+
     return FontPanel;
-
-  })(Graphic);
-
-  MainPanel = (function(_super) {
-    __extends(MainPanel, _super);
-
-    function MainPanel(root) {
-      this.root = root;
-      MainPanel.__super__.constructor.call(this, this.root);
-    }
-
-    MainPanel.prototype.buildElement = function() {
-      return this.element = $('\
-            <div class="left-sidebar">\
-              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
-              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
-              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
-              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
-          </div>');
-    };
-
-    MainPanel.prototype.bindEvents = function() {
-      var _this = this;
-      this.element.find('.snapImg').click(function() {
-        if (!$(event.target).hasClass("snapBtn-selected")) {
-          return $(event.target).addClass("snapBtn-selected");
-        } else {
-          return $(event.target).removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find('.snapImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
-      });
-      this.element.find('.snapImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
-      });
-      this.element.find(".gridImg").click(function() {
-        return _this.root.find('.row').trigger('panelClickGridBtnClick');
-      });
-      this.element.find('.gridImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
-      });
-      this.element.find('.gridImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
-      });
-      this.element.find(".undoImg").click(function() {
-        return _this.root.trigger('requestUndo');
-      });
-      this.element.find('.undoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
-      });
-      this.element.find('.undoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
-      });
-      this.element.find(".redoImg").click(function() {
-        return _this.root.trigger('requestRedo');
-      });
-      this.element.find('.redoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
-      });
-      return this.element.find('.redoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
-      });
-    };
-
-    return MainPanel;
 
   })(Graphic);
 

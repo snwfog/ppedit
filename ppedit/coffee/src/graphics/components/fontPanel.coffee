@@ -7,9 +7,12 @@ class FontPanel extends Graphic
   constructor: (@root) ->
     super @root
 
+    @prevPosition = undefined
+    @prevMouseDownTime = 0  
+
   buildElement: ->
     @element =$('
-          <div class="edit-menu shadow-effect" style="visibility:hidden;">
+          <div class="edit-menu FontPanel shadow-effect">
             <div class="edit-menu-row1">
                <select class="fontTypeBtn from-control edit-menu-row1-dd-ff">
                  <option value="Times New Roman" selected>Times New Roman</option>
@@ -28,6 +31,9 @@ class FontPanel extends Graphic
                  <option value="16">16</option>
                  <option value="20">20</option>
                </select>
+
+               
+
                <div class="boldButton boldButtonDisable font-panel-icon-row"></div>
                <div class="italicButton italicButtonDisable font-panel-icon-row"></div>
                <div class="underlineButton underlineButtonDisable font-panel-icon-row"></div>
@@ -36,20 +42,99 @@ class FontPanel extends Graphic
                 <div class="leftAlignBtn leftAlignButtonEnable font-panel-icon-row"></div>
                 <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>
                 <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>
+                <div class="colorPicker colorPickerButton font-panel-icon-row"></div>
+                <div class="orderedPointBtn orderedBulletPointButtonDisable font-panel-icon-row"></div>
+                <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>  
+               
+               <div>
+               <img class="icon-set letter-space-img" src="./ppedit/img/icons/text_letterspacing25.png" style="float:left;display:inline;">
+               <select class="letter-space from-control edit-menu-row1-dd-fs">
+                 <option value="0" selected>0</option>
+                 <option value="1">1</option>
+                 <option value="2">2</option>
+                 <option value="3">3</option>
+                 <option value="4">4</option>
+                 <option value="5">5</option>
+               </select>
+               </div>
+
+               <div>
+               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-line-spacing25.png" style="float:left;display:inline;">
+               <select class="line-height from-control edit-menu-row1-dd-fs">
+                 <option value="117" selected>1.0</option>
+                 <option value="175">1.5</option>
+                 <option value="233">2.0</option>
+                 <option value="291">2.5</option>
+                 <option value="349">3.0</option>
+                 <option value="407">3.5</option>
+                 <option value="465">4.0</option>
+               </select>
+               </div>
+
+               <div>
+               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-padding25.png" style="float:left;display:inline;">
+               <select class="padding from-control edit-menu-row1-dd-fs">
+                 <option value="0" selected>0</option>
+                 <option value="5">0.5</option>
+                 <option value="10">1.0</option>
+                 <option value="15">1.5</option>
+                 <option value="20">2.0</option>
+                 <option value="25">2.5</option>
+                 <option value="30">3.0</option>
+                 <option value="35">3.5</option>
+                 <option value="40">4.0</option>
+               </select>
+               </div>
+
              </div>
-            </div>').addClass("FontPanel")
-
-
-
+            </div>')
 
   bindEvents: ->
+    @element
+      .mousedown (event) =>
+        event.stopPropagation()
+
+        @selectFontPanel()
+        @prevMouseDownTime = event.timeStamp
+
+      .mouseup (event) =>
+        @stopMoveFontPanel()
+
+      .click (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+
+      .on 'containerMouseMove', (event, containerMouseEvent, delta) =>
+        if event.target == @element.get(0)
+          @moveFontPanel delta.x, delta.y if @element.hasClass('ppedit-panel-selected') && delta?
+
+      .on 'containerMouseLeave', () =>
+        @stopMoveFontPanel()
+
+    .keydown (event) =>
+      @_processKeyDownEvent(event) if!@isFocused()
+
     @element.find("select.fontTypeBtn").change (event) =>
       newFontType = $(event.target).find("option:selected").val()
       @root.trigger 'fontTypeChanged', [newFontType]
 
+    @element.find("select.letter-space").change (event) =>
+      newletterSpace = $(event.target).find("option:selected").val()+"px"
+      @root.trigger 'letterSpaceChanged', [newletterSpace]
+
     @element.find("select.fontSizeBtn").change (event) =>
       newFontSize = $(event.target).find("option:selected").val()+"pt"
       @root.trigger 'fontSizeChanged', [newFontSize]
+
+    @element.find("select.line-height").change (event) =>
+      newLineHeight = $(event.target).find("option:selected").val()
+      if(newLineHeight != 'normal')
+        newLineHeight += "%"
+      @root.trigger 'lineHeightChanged', [newLineHeight]
+
+    @element.find("select.padding").change (event) =>
+      newPadding = $(event.target).find("option:selected").val()+'px'
+      @root.trigger 'paddingChanged', [newPadding]
 
     @element.find(".colorPicker").click (event) =>
       $(event.target).colpick ({
@@ -60,8 +145,6 @@ class FontPanel extends Graphic
           @element.trigger 'textColorChanged', [hex]
           $(el).colpickHide()
       })
-
-
 
     @element.find('.boldButton').click (event) =>
       if $(event.target).hasClass('boldButtonDisable')
@@ -89,27 +172,40 @@ class FontPanel extends Graphic
 
     @element.find('.centerAlignBtn').click (event) =>
       if $(event.target).hasClass('centerAlignButtonDisable')
-        btn = $(event.target).attr('class','centerAlignButtonEnable font-panel-icon-row')
-        @element.find('.leftAlignBtn').attr('class','leftAlignButtonDisable font-panel-icon-row')
-        @element.find('.rightAlignBtn').attr('class','rightAlignButtonDisable font-panel-icon-row')
-        btn.trigger(if btn.hasClass('centerAlignButtonEnable font-panel-icon-row') then '' else '')
+        btn = $(event.target).attr('class','centerAlignBtn centerAlignButtonEnable font-panel-icon-row')        
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonDisable font-panel-icon-row')
+        @element.find('.rightAlignBtn').attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        btn.trigger 'centerAlignment'
       else
-        btn = $(event.target).attr('class','centerAlignButtonDisable font-panel-icon-row')
-        @element.find('.leftAlignBtn').attr('class','leftAlignButtonEnable font-panel-icon-row') 
-        @element.find('.rightAlignBtn').attr('class','rightAlignButtonDisable font-panel-icon-row') 
-        btn.trigger(if btn.hasClass('leftAlignButtonDisable font-panel-icon-row') then '' else '')
+        btn = $(event.target).attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonEnable font-panel-icon-row')
+        @element.find('.rightAlignBtn').attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        $(event.target).trigger 'leftAlignment'
 
+    @element.find('.rightAlignBtn').click (event) =>
+      if $(event.target).hasClass('rightAlignButtonDisable')
+        btn = $(event.target).attr('class','rightAlignBtn rightAlignButtonEnable font-panel-icon-row')      
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonDisable font-panel-icon-row')
+        @element.find('.centerAlignBtn').attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        btn.trigger 'rightAlignment'
+      else
+        btn = $(event.target).attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonEnable font-panel-icon-row')
+        @element.find('.centerAlignBtn').attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        $(event.target).trigger 'leftAlignment'
 
+    @element.find('.leftAlignBtn').click (event) =>
+      if $(event.target).hasClass('leftAlignButtonDisable')
+        btn = $(event.target).attr('class','leftAlignBtn leftAlignButtonEnable font-panel-icon-row')      
+        @element.find('.rightAlignBtn').attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        @element.find('.centerAlignBtn').attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        btn.trigger 'leftAlignment'
 
     @element.find(".rightAlignBtn").click (event) =>
       $(event.target).trigger 'rightAlignment'
 
     @element.find(".leftAlignBtn").click (event) =>
-      console.log 'leftAlignBtn'
       $(event.target).trigger 'leftAlignment'
-
-    @element.find(".centerAlignBtn").click (event) =>
-      $(event.target).trigger 'centerAlignment'
 
     @element.find(".bulletPointBtn").click (event) =>
       $(event.target).trigger 'bulletPointBtnEnableClick'
@@ -144,6 +240,27 @@ class FontPanel extends Graphic
       .removeAttr('selected')
       .filter('option[value="' + parseInt(style['font-size']) + '"]')
       .attr('selected', 'selected')
+    console.log(parseInt(style['padding']))
+    @element
+      .find('.letter-space')
+      .children()
+      .removeAttr('selected')
+      .filter('option[value="' + parseInt(style['letter-spacing']) + '"]')
+      .attr('selected', 'selected')
+
+    @element
+      .find('.line-height')
+      .children()
+      .removeAttr('selected')
+      .filter('option[value="' + parseInt(style['line-height']) + '"]')
+      .attr('selected', 'selected')
+
+    @element
+      .find('.padding')
+      .children()
+      .removeAttr('selected')
+      .filter('option[value="' + parseInt(style['padding']) + '"]')
+      .attr('selected', 'selected')
 
     @_switchBtn '.wbtn', style['font-weight'] == 'bold'
     @_switchBtn '.ubtn', style['text-decoration'].indexOf('underline') != -1
@@ -166,4 +283,21 @@ class FontPanel extends Graphic
     else
       @element.find(selector).removeClass 'ppedit-btn-enabled active'
 
+  selectFontPanel: ->
+    @element.addClass('ppedit-panel-selected')
+    @prevPosition = @currentFontPanelPosition()
 
+  moveFontPanel: (deltaX, deltaY) ->
+    currentPos = @currentFontPanelPosition()
+    @setFontPanelPosition deltaX + currentPos.left, deltaY + currentPos.top
+
+  stopMoveFontPanel: ->
+    @element.removeClass('ppedit-panel-selected')
+    @root.trigger 'boxMoved' , [@,$.extend(true, {}, @currentFontPanelPosition()), $.extend(true,{},@prevPosition)]
+  
+  currentFontPanelPosition: ->
+    @element.position()
+
+  setFontPanelPosition: (x,y) ->
+    @element.css 'left', x + 'px'
+    @element.css 'top', y + 'px'

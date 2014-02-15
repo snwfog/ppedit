@@ -30,6 +30,9 @@ class BoxesContainer extends Graphic
 
       .click (event) =>
         @root.trigger 'unSelectBoxes'
+        @root.trigger 'removeToolTip'
+
+      
 
     box.bindEvents() for id, box of @boxes
 
@@ -171,3 +174,6 @@ class BoxesContainer extends Graphic
   ###
   getAllHunks: ->
     return ({id:boxId, html:box.element.wrap("<div></div>").parent().html()} for boxId, box of @boxes)
+
+
+  
