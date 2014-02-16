@@ -57,5 +57,8 @@ class ChangeDepthCommand extends Command
   getType: ->
     return 'Modify'
 
+  getPageNum: ->
+    return @pageNum
+
 
 

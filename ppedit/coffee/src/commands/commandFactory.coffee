@@ -56,8 +56,8 @@ class CommandFactory
   createChangeOpacityCommand: (editor, editPage, boxId, prevVal, newVal) ->
     return new ChangeBoxOpacityCommand editor, editPage, boxId, prevVal, newVal
 
-  createMoveBoxCommand: (box, toPosition, fromPosition) ->
-    return new MoveBoxCommand box, toPosition, fromPosition
+  createMoveBoxCommand: (box, pageNum, toPosition, fromPosition) ->
+    return new MoveBoxCommand box, pageNum, toPosition, fromPosition
 
   createRemoveBoxesCommand: (editor, pageNum, boxesSelector) ->
     return new RemoveBoxesCommand editor, pageNum, boxesSelector
@@ -68,8 +68,8 @@ class CommandFactory
   createCreateBoxesCommand: (editor, editContainer,optionsList) ->
     return new CreateBoxesCommand editor, editContainer, optionsList
 
-  createCreateChangeBoxContentCommand: (box, prevContent, newContent) ->
-    return new ChangeBoxContentCommand box, prevContent, newContent
+  createCreateChangeBoxContentCommand: (box, pageNum, prevContent, newContent) ->
+    return new ChangeBoxContentCommand box, pageNum, prevContent, newContent
 
   createMoveUpCommand: (editor, pageNum, boxSelector) ->
     return new ChangeDepthCommand editor, pageNum, boxSelector, true

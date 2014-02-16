@@ -7,14 +7,12 @@
 #= require ControllerFactory
 #= require Clipboard
 #= require CommandFactory
+#= require Constants
 
 ###
 Graphic acting a the main container of the PPEditor.
 ###
 class PPEditor extends Graphic
-
-  @INIT_NUM_OF_PAGES: 2
-  @MAX_NUM_OF_PAGES: 3
 
   constructor: (@root) ->
     super @root
@@ -24,7 +22,6 @@ class PPEditor extends Graphic
     @cmdFactory = new CommandFactory
     @controller = undefined
     @panel = undefined
-
 
   buildElement: ->
     @element = $('
@@ -64,12 +61,12 @@ class PPEditor extends Graphic
         @commandManager.redo()
 
       .on 'requestDelete', (event) =>
-        for i in [0..PPEditor.INIT_NUM_OF_PAGES-1]
+        for i in [0..Constants.INIT_NUM_OF_PAGES-1]
           if @areas[i].boxesContainer.getSelectedBoxes().length != 0
             @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, i, @areas[0].boxesContainer.getSelectedBoxes())
 
       .on 'requestCopy', (event) =>
-        for i in [0..PPEditor.INIT_NUM_OF_PAGES-1]
+        for i in [0..Constants.INIT_NUM_OF_PAGES-1]
           if @areas[i].boxesContainer.getSelectedBoxes().length != 0
             @clipboard.pushItems
               pageNum:i
@@ -87,10 +84,12 @@ class PPEditor extends Graphic
           @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, boxSelected, hex)
 
       .on 'graphicContentChanged', (event, params) =>
-        @commandManager.pushCommand(@cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false)
+        pageNum = @getPageNum params.graphic
+        @commandManager.pushCommand(@cmdFactory.createCreateChangeBoxContentCommand(params.graphic, pageNum, params.prevContent, params.newContent), false)
 
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
-        @commandManager.pushCommand(@cmdFactory.createMoveBoxCommand(box, currentPosition, originalPosition), false) 
+        pageNum = @getPageNum box.element
+        @commandManager.pushCommand(@cmdFactory.createMoveBoxCommand(box, pageNum, currentPosition, originalPosition), false)
 
       .on 'moveElementUpBtnClick', (event, tabIndex) =>
         boxes = @getSelectedBoxes()
@@ -101,11 +100,11 @@ class PPEditor extends Graphic
         @commandManager.pushCommand @cmdFactory.createMoveDownCommand(this, tabIndex, boxes) if boxes.length > 0
 
       .on 'addTabBtnClick', (event) =>
-        if @areas.length < PPEditor.MAX_NUM_OF_PAGES
+        if @areas.length < Constants.MAX_NUM_OF_PAGES
           @commandManager.pushCommand @cmdFactory.createAddPageCommand(this)
 
       .on 'deleteTabBtnClick', (event, tabIndex) =>
-        if @areas.length > PPEditor.INIT_NUM_OF_PAGES
+        if @areas.length > Constants.INIT_NUM_OF_PAGES
           @commandManager.pushCommand @cmdFactory.createRemovePageCommand(this, tabIndex)
 
       .on 'panelClickAddBtnClick', (event, tabIndex) =>
@@ -214,7 +213,7 @@ class PPEditor extends Graphic
     @controller.bindEvents()
     @mainPanel.bindEvents()
 
-    for i in [0..PPEditor.INIT_NUM_OF_PAGES-1]
+    for i in [0..Constants.INIT_NUM_OF_PAGES-1]
       cmd = @cmdFactory.createAddPageCommand(this)
       cmd.execute();
 
@@ -248,9 +247,11 @@ class PPEditor extends Graphic
     command = @cmdFactory.createLoadBoxesCommand this, jsonBoxes
     command.execute()
 
+    @commandManager.initNumOfPages = @areas.length
+
   ###
   Returns a JSON string containing a description of
   all the boxes currently existing in the editor.
   ###
   getAllHunks: ->
-    return JSON.stringify (@area.boxesContainer.getAllHunks() for area in @areas)
+      return JSON.stringify (@area.boxesContainer.getAllHunks() for area in @areas)

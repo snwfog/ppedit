@@ -5,6 +5,7 @@ class ChangeStyleCommand extends Command
 
   constructor: (@editor, @boxesSelector, @newCssOptions) ->
     super()
+    @pageNum = @editor.getPageNum @boxesSelector.first()
     @boxesToCopy = @boxesSelector.clone()
 
   execute: ->
@@ -18,3 +19,6 @@ class ChangeStyleCommand extends Command
 
   getType: ->
     return 'Modify'
+
+  getPageNum: ->
+    return @pageNum

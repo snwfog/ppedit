@@ -3,7 +3,7 @@
 
 class MoveBoxCommand extends Command
 
-  constructor: (@box, @toPosition, @fromPosition) ->
+  constructor: (@box, @pageNum, @toPosition, @fromPosition) ->
     super()
     @boxIds.push @box.element.attr('id')
     @fromPosition = @box.currentPosition() if !fromPosition?
@@ -16,3 +16,6 @@ class MoveBoxCommand extends Command
 
   getType: ->
     return 'Modify'
+
+  getPageNum: ->
+    return @pageNum

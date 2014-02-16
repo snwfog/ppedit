@@ -3,8 +3,9 @@
 
 class ChangeBoxContentCommand extends Command
 
-  constructor: (@box, @prevContent, @newContent) ->
+  constructor: (@box, @pageNum, @prevContent, @newContent) ->
     super()
+
     @boxIds.push @box.element.attr('id')
 
   execute: ->
@@ -15,3 +16,6 @@ class ChangeBoxContentCommand extends Command
 
   getType: ->
     return 'Modify'
+
+  getPageNum: ->
+    return @pageNum
