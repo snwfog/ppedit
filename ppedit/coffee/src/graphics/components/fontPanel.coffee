@@ -293,7 +293,6 @@ class FontPanel extends Graphic
 
   stopMoveFontPanel: ->
     @element.removeClass('ppedit-panel-selected')
-    @root.trigger 'boxMoved' , [@,$.extend(true, {}, @currentFontPanelPosition()), $.extend(true,{},@prevPosition)]
   
   currentFontPanelPosition: ->
     @element.position()
