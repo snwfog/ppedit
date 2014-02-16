@@ -240,7 +240,6 @@ class FontPanel extends Graphic
       .removeAttr('selected')
       .filter('option[value="' + parseInt(style['font-size']) + '"]')
       .attr('selected', 'selected')
-    console.log(parseInt(style['padding']))
     @element
       .find('.letter-space')
       .children()
