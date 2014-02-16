@@ -6,6 +6,7 @@ class Box extends Graphic
 
   @CLICK_TIME_MILLIS:200
   @DBLCLICK_TIME_MILLIS:200
+  @TOOLTIP_DISPEAR_MILLS:1000
 
   constructor: (@root, @options)->
     super @root
@@ -115,9 +116,9 @@ class Box extends Graphic
       .on 'containerKeyDown', (event, keyDownEvent) =>
         @_processKeyDownEvent(keyDownEvent) if @element.hasClass('ppedit-box-selected')
 
-    .keydown (event) =>
+      .keydown (event) =>
         @_processKeyDownEvent(event) if !@isFocused()
-      ###
+      
       .mouseover (event) =>
         event.stopPropagation()
         event.preventDefault()
@@ -126,9 +127,12 @@ class Box extends Graphic
         heightPos = $(event.target).height()
         widthPos = $(event.target).width()
         @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
-      ###
-      # .mouseout (event) =>
-        # @root.parent().trigger 'removeToolTip'
+      
+      .mouseleave (event) =>
+        @toolTipTimeout = setTimeout ( =>
+          @root.parent().trigger 'removeToolTip'
+
+        ), Box.TOOLTIP_DISPEAR_MILLS
 
     @helper.bindEvents()
       
