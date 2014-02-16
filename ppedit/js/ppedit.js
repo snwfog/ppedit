@@ -306,6 +306,8 @@
 
     Box.DBLCLICK_TIME_MILLIS = 200;
 
+    Box.TOOLTIP_DISPEAR_MILLS = 1000;
+
     function Box(root, options) {
       this.root = root;
       this.options = options;
@@ -405,18 +407,20 @@
         if (!_this.isFocused()) {
           return _this._processKeyDownEvent(event);
         }
+      }).mouseover(function(event) {
+        var heightPos, leftPos, topPos, widthPos;
+        event.stopPropagation();
+        event.preventDefault();
+        leftPos = $(event.target).position().left;
+        topPos = $(event.target).position().top;
+        heightPos = $(event.target).height();
+        widthPos = $(event.target).width();
+        return _this.root.parent().trigger('toolTipShowsUp', [leftPos, topPos, heightPos, widthPos]);
+      }).mouseleave(function(event) {
+        return _this.toolTipTimeout = setTimeout((function() {
+          return _this.root.parent().trigger('removeToolTip');
+        }), Box.TOOLTIP_DISPEAR_MILLS);
       });
-      /*
-      .mouseover (event) =>
-        event.stopPropagation()
-        event.preventDefault()
-        leftPos = $(event.target).position().left
-        topPos = $(event.target).position().top
-        heightPos = $(event.target).height()
-        widthPos = $(event.target).width()
-        @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
-      */
-
       return this.helper.bindEvents();
     };
 
@@ -1168,7 +1172,9 @@
         _this.showToolTip();
         return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
       }).on('removeToolTip', function(event) {
-        return _this.removeToolTip();
+        if (!_this.fontPanel.element.is(':hover')) {
+          return _this.removeToolTip();
+        }
       });
       this.boxesContainer.bindEvents();
       this.canvas.bindEvents();

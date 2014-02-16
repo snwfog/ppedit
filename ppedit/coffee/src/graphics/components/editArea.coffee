@@ -78,7 +78,8 @@ class EditArea extends Graphic
         @setToolTipPosition(leftPos,topPos,heightPos,widthPos)
         
       .on 'removeToolTip', (event) =>
-        @removeToolTip()
+        if(!@fontPanel.element.is(':hover'))
+          @removeToolTip()
 
     @boxesContainer.bindEvents()
     @canvas.bindEvents()
