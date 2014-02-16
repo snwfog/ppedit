@@ -6,7 +6,9 @@ Graphic containing the font settings to apply to boxes.
 class FontPanel extends Graphic
   constructor: (@root) ->
     super @root
-    console.log(@root)
+
+    @prevPosition = undefined
+    @prevMouseDownTime = 0  
 
   buildElement: ->
     @element =$('
@@ -40,7 +42,10 @@ class FontPanel extends Graphic
                 <div class="leftAlignBtn leftAlignButtonEnable font-panel-icon-row"></div>
                 <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>
                 <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>
-
+                <div class="colorPicker colorPickerButton font-panel-icon-row"></div>
+                <div class="orderedPointBtn orderedBulletPointButtonDisable font-panel-icon-row"></div>
+                <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>  
+               
                <div>
                <img class="icon-set letter-space-img" src="./ppedit/img/icons/text_letterspacing25.png" style="float:left;display:inline;">
                <select class="letter-space from-control edit-menu-row1-dd-fs">
@@ -85,6 +90,30 @@ class FontPanel extends Graphic
             </div>')
 
   bindEvents: ->
+    @element
+      .mousedown (event) =>
+        event.stopPropagation()
+
+        @selectFontPanel()
+        @prevMouseDownTime = event.timeStamp
+
+      .mouseup (event) =>
+        @stopMoveFontPanel()
+
+      .click (event) =>
+        event.stopPropagation()
+        event.preventDefault()
+
+      .on 'containerMouseMove', (event, containerMouseEvent, delta) =>
+        if event.target == @element.get(0)
+          @moveFontPanel delta.x, delta.y if @element.hasClass('ppedit-panel-selected') && delta?
+
+      .on 'containerMouseLeave', () =>
+        @stopMoveFontPanel()
+
+    .keydown (event) =>
+      @_processKeyDownEvent(event) if!@isFocused()
+
     @element.find("select.fontTypeBtn").change (event) =>
       newFontType = $(event.target).find("option:selected").val()
       @root.trigger 'fontTypeChanged', [newFontType]
@@ -143,27 +172,40 @@ class FontPanel extends Graphic
 
     @element.find('.centerAlignBtn').click (event) =>
       if $(event.target).hasClass('centerAlignButtonDisable')
-        btn = $(event.target).attr('class','centerAlignButtonEnable font-panel-icon-row')
-        @element.find('.leftAlignBtn').attr('class','leftAlignButtonDisable font-panel-icon-row')
-        @element.find('.rightAlignBtn').attr('class','rightAlignButtonDisable font-panel-icon-row')
-        btn.trigger(if btn.hasClass('centerAlignButtonEnable font-panel-icon-row') then '' else '')
+        btn = $(event.target).attr('class','centerAlignBtn centerAlignButtonEnable font-panel-icon-row')        
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonDisable font-panel-icon-row')
+        @element.find('.rightAlignBtn').attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        btn.trigger 'centerAlignment'
       else
-        btn = $(event.target).attr('class','centerAlignButtonDisable font-panel-icon-row')
-        @element.find('.leftAlignBtn').attr('class','leftAlignButtonEnable font-panel-icon-row') 
-        @element.find('.rightAlignBtn').attr('class','rightAlignButtonDisable font-panel-icon-row') 
-        btn.trigger(if btn.hasClass('leftAlignButtonDisable font-panel-icon-row') then '' else '')
+        btn = $(event.target).attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonEnable font-panel-icon-row')
+        @element.find('.rightAlignBtn').attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        $(event.target).trigger 'leftAlignment'
 
+    @element.find('.rightAlignBtn').click (event) =>
+      if $(event.target).hasClass('rightAlignButtonDisable')
+        btn = $(event.target).attr('class','rightAlignBtn rightAlignButtonEnable font-panel-icon-row')      
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonDisable font-panel-icon-row')
+        @element.find('.centerAlignBtn').attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        btn.trigger 'rightAlignment'
+      else
+        btn = $(event.target).attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        @element.find('.leftAlignBtn').attr('class','leftAlignBtn leftAlignButtonEnable font-panel-icon-row')
+        @element.find('.centerAlignBtn').attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        $(event.target).trigger 'leftAlignment'
 
+    @element.find('.leftAlignBtn').click (event) =>
+      if $(event.target).hasClass('leftAlignButtonDisable')
+        btn = $(event.target).attr('class','leftAlignBtn leftAlignButtonEnable font-panel-icon-row')      
+        @element.find('.rightAlignBtn').attr('class','rightAlignBtn rightAlignButtonDisable font-panel-icon-row')
+        @element.find('.centerAlignBtn').attr('class','centerAlignBtn centerAlignButtonDisable font-panel-icon-row')
+        btn.trigger 'leftAlignment'
 
     @element.find(".rightAlignBtn").click (event) =>
       $(event.target).trigger 'rightAlignment'
 
     @element.find(".leftAlignBtn").click (event) =>
-      console.log 'leftAlignBtn'
       $(event.target).trigger 'leftAlignment'
-
-    @element.find(".centerAlignBtn").click (event) =>
-      $(event.target).trigger 'centerAlignment'
 
     @element.find(".bulletPointBtn").click (event) =>
       $(event.target).trigger 'bulletPointBtnEnableClick'
@@ -241,4 +283,20 @@ class FontPanel extends Graphic
     else
       @element.find(selector).removeClass 'ppedit-btn-enabled active'
 
+  selectFontPanel: ->
+    @element.addClass('ppedit-panel-selected')
+    @prevPosition = @currentFontPanelPosition()
 
+  moveFontPanel: (deltaX, deltaY) ->
+    currentPos = @currentFontPanelPosition()
+    @setFontPanelPosition deltaX + currentPos.left, deltaY + currentPos.top
+
+  stopMoveFontPanel: ->
+    @element.removeClass('ppedit-panel-selected')
+  
+  currentFontPanelPosition: ->
+    @element.position()
+
+  setFontPanelPosition: (x,y) ->
+    @element.css 'left', x + 'px'
+    @element.css 'top', y + 'px'

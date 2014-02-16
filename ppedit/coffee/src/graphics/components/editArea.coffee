@@ -83,6 +83,7 @@ class EditArea extends Graphic
     @boxesContainer.bindEvents()
     @canvas.bindEvents()
     @grid.bindEvents()
+    @fontPanel.bindEvents()
 
   setToolTipPosition: (leftPos, topPos,heightPos,widthPos) ->
     toolTip = @fontPanel.element
@@ -102,8 +103,7 @@ class EditArea extends Graphic
       toolTip.css 'top', (topPos+heightPos+10) + 'px'
 
   showToolTip: ->
-    @fontPanel.bindEvents()
     @element.append @fontPanel.element
 
   removeToolTip: ->
-    @fontPanel.element.remove()
+    @fontPanel.element.detach()

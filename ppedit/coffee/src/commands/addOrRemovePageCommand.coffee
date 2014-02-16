@@ -16,18 +16,13 @@ class AddOrRemoveCommand extends Command
       @_removePage(@pageNum)
 
   undo: ->
-    @_removePage(@pageNum) if @addPage else @_insertPage @pageNum, @area
+    if @addPage then @_removePage(@pageNum) else @_insertPage(@pageNum, @area)
 
   _insertNewPage: (pageNum) ->
     newArea = new EditArea @editor.element, @editor.areas.length
     newArea.buildElement()
     @_insertPage pageNum, newArea
     @area = newArea
-
-    # Insert @area into the areas array at position pagenum
-    @editor.areas = @editor.areas.slice(0, pageNum)
-      .concat([@area])
-      .concat(@editor.areas.slice(pageNum, @editor.areas.length))
 
   _insertPage:(pageNum, area) ->
     if pageNum > 0
@@ -57,10 +52,21 @@ class AddOrRemoveCommand extends Command
             panel.addBoxRow id, index
             return false # break statement
 
+    # Insert @area into the areas array at position pagenum
+    @editor.areas = @editor.areas.slice(0, pageNum)
+      .concat([area])
+      .concat(@editor.areas.slice(pageNum))
+
+    for i in [0..@editor.areas.length-1]
+      @editor.areas[i].element.attr('id', 'ppedit-page-' + i)
+
   _removePage:(pageNum) ->
-    @area = @editor.areas.splice(pageNum, 1)
-    @area.element.remove()
-    @editor.panel.removeTab(pageNum)
+    @area = @editor.areas.splice(pageNum, 1)[0]
+    @area.element.detach()
+    @editor.panel.removeTab pageNum
+
+    for i in [0..@editor.areas.length-1]
+      @editor.areas[i].element.attr('id', 'ppedit-page-' + i)
 
   getType: ->
     return 'Modify'

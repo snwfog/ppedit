@@ -82,3 +82,6 @@ class CommandFactory
 
   createAddPageCommand: (editor) ->
     return new AddOrRemoveCommand editor, true
+
+  createRemovePageCommand: (editor, pageNum) ->
+    return new AddOrRemoveCommand editor, false, pageNum

@@ -27,7 +27,7 @@ class LoadBoxesCommand extends Command
     super()
 
   execute: ->
-    pages = JSON.parse @jsonBoxes
+    pages = @jsonBoxes
     for i in [0..pages.length-1]
       for id, boxElement of pages[i]
         area = @editor.areas[i]

@@ -99,7 +99,6 @@ class Box extends Graphic
         widthPos = $(event.target).width()
         @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
 
-
       .focus (event) =>
         @element.trigger 'boxSelected', [this]
 
@@ -246,12 +245,12 @@ class Box extends Graphic
   Puts the box on focus.
   ###
   _enableFocus: ->
-      @root.find('.ppedit-box')
-        .removeClass('ppedit-box-focus')
-        .removeClass('ppedit-box-selected')
-      @element
-        .addClass('ppedit-box-focus')
-        .focus()
+    @root.find('.ppedit-box')
+      .removeClass('ppedit-box-focus')
+      .removeClass('ppedit-box-selected')
+    @element
+      .addClass('ppedit-box-focus')
+      .focus()
 
   ###
   Adds an unordered point list at the current position

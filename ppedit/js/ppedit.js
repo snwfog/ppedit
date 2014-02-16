@@ -651,7 +651,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         box = _ref[_i];
         this.editor.areas[this.pageNum].boxesContainer.addBox(box);
-        _results.push(this.editor.panel[this.pageNum].addBoxRow(box.element.attr('id')));
+        _results.push(this.editor.panel.addBoxRow(box.element.attr('id')));
       }
       return _results;
     };
@@ -729,7 +729,7 @@
 
     LoadBoxesCommand.prototype.execute = function() {
       var area, box, boxElement, i, id, pages, panel, rows, _i, _ref, _results;
-      pages = JSON.parse(this.jsonBoxes);
+      pages = this.jsonBoxes;
       _results = [];
       for (i = _i = 0, _ref = pages.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         _results.push((function() {
@@ -1722,7 +1722,8 @@
       });
       this.boxesContainer.bindEvents();
       this.canvas.bindEvents();
-      return this.grid.bindEvents();
+      this.grid.bindEvents();
+      return this.fontPanel.bindEvents();
     };
 
     EditArea.prototype.setToolTipPosition = function(leftPos, topPos, heightPos, widthPos) {
@@ -1746,12 +1747,11 @@
     };
 
     EditArea.prototype.showToolTip = function() {
-      this.fontPanel.bindEvents();
       return this.element.append(this.fontPanel.element);
     };
 
     EditArea.prototype.removeToolTip = function() {
-      return this.fontPanel.element.remove();
+      return this.fontPanel.element.detach();
     };
 
     return EditArea;
@@ -1781,7 +1781,11 @@
     };
 
     AddOrRemoveCommand.prototype.undo = function() {
-      return this._removePage(this.pageNum)(this.addPage ? void 0 : this._insertPage(this.pageNum, this.area));
+      if (this.addPage) {
+        return this._removePage(this.pageNum);
+      } else {
+        return this._insertPage(this.pageNum, this.area);
+      }
     };
 
     AddOrRemoveCommand.prototype._insertNewPage = function(pageNum) {
@@ -1789,12 +1793,11 @@
       newArea = new EditArea(this.editor.element, this.editor.areas.length);
       newArea.buildElement();
       this._insertPage(pageNum, newArea);
-      this.area = newArea;
-      return this.editor.areas = this.editor.areas.slice(0, pageNum).concat([this.area]).concat(this.editor.areas.slice(pageNum, this.editor.areas.length));
+      return this.area = newArea;
     };
 
     AddOrRemoveCommand.prototype._insertPage = function(pageNum, area) {
-      var box, id, panel, rows, _ref, _results,
+      var box, i, id, panel, rows, _i, _ref, _ref1, _results,
         _this = this;
       if (pageNum > 0) {
         area.element.insertAfter(this.editor.superContainer.children().eq(pageNum - 1));
@@ -1805,14 +1808,13 @@
       panel = this.editor.panel;
       panel.insertTab(pageNum);
       _ref = area.boxesContainer.boxes;
-      _results = [];
       for (id in _ref) {
         box = _ref[id];
         rows = panel.getRows(pageNum);
         if (rows.length === 0) {
-          _results.push(panel.addBoxRow(id));
+          panel.addBoxRow(id);
         } else {
-          _results.push(rows.each(function(index, rowNode) {
+          rows.each(function(index, rowNode) {
             var otherBoxId, otherBoxZIndex;
             otherBoxId = $(rowNode).attr('ppedit-box-id');
             otherBoxZIndex = area.boxesContainer.boxes[otherBoxId].element.css('z-index');
@@ -1820,16 +1822,27 @@
               panel.addBoxRow(id, index);
               return false;
             }
-          }));
+          });
         }
+      }
+      this.editor.areas = this.editor.areas.slice(0, pageNum).concat([area]).concat(this.editor.areas.slice(pageNum));
+      _results = [];
+      for (i = _i = 0, _ref1 = this.editor.areas.length - 1; 0 <= _ref1 ? _i <= _ref1 : _i >= _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
+        _results.push(this.editor.areas[i].element.attr('id', 'ppedit-page-' + i));
       }
       return _results;
     };
 
     AddOrRemoveCommand.prototype._removePage = function(pageNum) {
-      this.area = this.editor.areas.splice(pageNum, 1);
-      this.area.element.remove();
-      return this.editor.panel.removeTab(pageNum);
+      var i, _i, _ref, _results;
+      this.area = this.editor.areas.splice(pageNum, 1)[0];
+      this.area.element.detach();
+      this.editor.panel.removeTab(pageNum);
+      _results = [];
+      for (i = _i = 0, _ref = this.editor.areas.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        _results.push(this.editor.areas[i].element.attr('id', 'ppedit-page-' + i));
+      }
+      return _results;
     };
 
     AddOrRemoveCommand.prototype.getType = function() {
@@ -1966,6 +1979,10 @@
       return new AddOrRemoveCommand(editor, true);
     };
 
+    CommandFactory.prototype.createRemovePageCommand = function(editor, pageNum) {
+      return new AddOrRemoveCommand(editor, false, pageNum);
+    };
+
     return CommandFactory;
 
   })();
@@ -2007,7 +2024,9 @@
               <div class="moveElementUpBtn menu-panel-icon"></div>\
               <div class="moveElementDownBtn menu-panel-icon"></div>\
               <div class="addElementBtn menu-panel-icon"></div>\
-            </div>\
+              <div class="ppedit-pageNumLabel"></div>\
+              <div class="ppedit-deletePage menu-panel-icon"></div>\
+             </div>\
 \
           </div>\
       </div>');
@@ -2023,6 +2042,9 @@
       });
       this.element.find('.moveElementDownBtn').click(function() {
         return _this.element.trigger('moveElementDownBtnClick', [_this._getDisplayedTabIndex()]);
+      });
+      this.element.find('.add-tab-sidebar-btn').click(function() {
+        return _this.element.trigger('addTabBtnClick');
       });
       return this.element.find('.minimize-sidebar-btn').click(function(event) {
         return _this.element.toggleClass('menu-sidebar-open');
@@ -2051,15 +2073,14 @@
       }
       tab.click(function(event) {
         return _this._displayTab(newPageIndex);
-      }).nextAll('a').each(function(el, index) {
-        $(el).attr('href', '#ppedit-page-' + (newPageIndex + index + 1)).html('\
+      }).nextAll('a').each(function(index, el) {
+        return $(el).attr('href', '#ppedit-page-' + (newPageIndex + index + 1)).html('\
             <div class="page-sidebar-tab menu-right-btn shadow-effect">\
               <span class="vertical-text">Page ' + (newPageIndex + index + 2) + '</span>\
             </div>\
           ').click(function() {
           return _this._displayTab(newPageIndex + index + 1);
         });
-        return console.log(el);
       });
       rowContainer = $('\
       <!-- Row 2 Menu -->\
@@ -2073,7 +2094,7 @@
       } else {
         rowContainer.insertAfter(this.element.find('.ppedit-row-container').eq(newPageIndex - 1));
       }
-      return this.element.find('.ppedit-row-container').removeClass('ppedit-row-container-active').eq(newPageIndex).addClass('ppedit-row-container-active');
+      return this._displayTab(newPageIndex);
     };
 
     /*
@@ -2085,17 +2106,17 @@
       var newRow,
         _this = this;
       newRow = $('\
-        	<tr class="ppedit-panel-row">\
-        		<td style="width:10%">\
-        			<div class="deleteElementBtn menu-panel-icon"></div>\
-    		    </td>\
-            <td style="width:50%">\
-            <input type="text" class="form-control" placeholder="Element 1">\
-            </td>\
-            <td style="width:40%">\
-              <div class="ppedit-slider"></div>\
-            </td>\
-    	    </tr>\
+        <tr class="ppedit-panel-row">\
+          <td style="width:10%">\
+            <div class="deleteElementBtn menu-panel-icon"></div>\
+          </td>\
+          <td style="width:50%">\
+          <input type="text" class="form-control" placeholder="Element 1">\
+          </td>\
+          <td style="width:40%">\
+            <div class="ppedit-slider"></div>\
+          </td>\
+        </tr>\
     	      ').attr('ppedit-box-id', boxid);
       if ((index == null) || index === 0) {
         this._getRowContainer(tabIndex).find('.right-sidebar-menu2').prepend(newRow);
@@ -2112,17 +2133,20 @@
       }).on('slide', function(event) {
         var opacityVal;
         opacityVal = $(event.target).val();
-        return $(event.target).trigger('onRowSliderValChanged', [tabIndex, boxid, parseInt(opacityVal) / 100]);
+        index = newRow.parents('.ppedit-row-container').index() - 1;
+        return $(event.target).trigger('onRowSliderValChanged', [index, boxid, parseInt(opacityVal) / 100]);
       }).on('slideStop', function(event) {
         var opacityStopVal;
         opacityStopVal = $(event.target).val();
+        index = newRow.parents('.ppedit-row-container').index() - 1;
         if (_this.prevOpacityVal !== opacityStopVal) {
-          $(event.target).trigger('onRowSliderStopValChanged', [tabIndex, boxid, parseInt(_this.prevOpacityVal) / 100, parseInt(opacityStopVal) / 100]);
+          $(event.target).trigger('onRowSliderStopValChanged', [index, boxid, parseInt(_this.prevOpacityVal) / 100, parseInt(opacityStopVal) / 100]);
         }
         return _this.prevOpacityVal = void 0;
       });
       return newRow.find(".deleteElementBtn").on('click', function(event) {
-        return $(event.target).trigger('onRowDeleteBtnClick', [tabIndex, boxid]);
+        index = newRow.parents('.ppedit-row-container').index() - 1;
+        return $(event.target).trigger('onRowDeleteBtnClick', [index, boxid]);
       });
     };
 
@@ -2173,12 +2197,28 @@
     };
 
     Panel.prototype._displayTab = function(tabIndex) {
-      return this.element.find('.ppedit-row-container').removeClass('ppedit-row-container-active').eq(tabIndex).addClass('ppedit-row-container-active');
+      var _this = this;
+      this.element.find('.ppedit-row-container').removeClass('ppedit-row-container-active').eq(tabIndex).addClass('ppedit-row-container-active');
+      this.element.find('.ppedit-pageNumLabel').html('Page ' + (tabIndex + 1));
+      return this.element.find('.ppedit-deletePage').off().click(function() {
+        return _this.element.trigger('deleteTabBtnClick', [tabIndex]);
+      });
     };
 
     Panel.prototype.removeTab = function(tabIndex) {
+      var _this = this;
       this._getRowContainer(tabIndex).remove();
-      return this.element.find('.page-sidebar-tab').eq(tabIndex).remove();
+      this.element.find('.menu-tab-pages a').eq(tabIndex).remove();
+      this.element.find('.menu-tab-pages a').each(function(index, el) {
+        return $(el).attr('href', '#ppedit-page-' + index).html('\
+          <div class="page-sidebar-tab menu-right-btn shadow-effect">\
+            <span class="vertical-text">Page ' + (index + 1) + '</span>\
+          </div>\
+        ').click(function() {
+          return _this._displayTab(index);
+        });
+      });
+      return this._displayTab(tabIndex);
     };
 
     Panel.prototype._getRowContainer = function(tabIndex) {
@@ -2246,13 +2286,14 @@
 
     PPEditor.INIT_NUM_OF_PAGES = 2;
 
+    PPEditor.MAX_NUM_OF_PAGES = 3;
+
     function PPEditor(root) {
       this.root = root;
       PPEditor.__super__.constructor.call(this, this.root);
       this.clipboard = new Clipboard;
       this.commandManager = new CommandManager;
       this.cmdFactory = new CommandFactory;
-      this.fontPanel = void 0;
       this.controller = void 0;
       this.panel = void 0;
     }
@@ -2339,6 +2380,14 @@
         boxes = _this.getSelectedBoxes();
         if (boxes.length > 0) {
           return _this.commandManager.pushCommand(_this.cmdFactory.createMoveDownCommand(_this, tabIndex, boxes));
+        }
+      }).on('addTabBtnClick', function(event) {
+        if (_this.areas.length < PPEditor.MAX_NUM_OF_PAGES) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createAddPageCommand(_this));
+        }
+      }).on('deleteTabBtnClick', function(event, tabIndex) {
+        if (_this.areas.length > PPEditor.INIT_NUM_OF_PAGES) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createRemovePageCommand(_this, tabIndex));
         }
       }).on('panelClickAddBtnClick', function(event, tabIndex) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateBoxesCommand(_this, tabIndex));
@@ -2541,72 +2590,6 @@
 
   })(Graphic);
 
-  MainPanel = (function(_super) {
-    __extends(MainPanel, _super);
-
-    function MainPanel(root) {
-      this.root = root;
-      MainPanel.__super__.constructor.call(this, this.root);
-    }
-
-    MainPanel.prototype.buildElement = function() {
-      return this.element = $('\
-            <div class="left-sidebar">\
-              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
-              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
-              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
-              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
-          </div>');
-    };
-
-    MainPanel.prototype.bindEvents = function() {
-      var _this = this;
-      this.element.find('.snapImg').click(function() {
-        if (!$(event.target).hasClass("snapBtn-selected")) {
-          return $(event.target).addClass("snapBtn-selected");
-        } else {
-          return $(event.target).removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find('.snapImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
-      });
-      this.element.find('.snapImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
-      });
-      this.element.find(".gridImg").click(function() {
-        return _this.root.trigger('panelClickGridBtnClick');
-      });
-      this.element.find('.gridImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
-      });
-      this.element.find('.gridImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
-      });
-      this.element.find(".undoImg").click(function() {
-        return _this.root.trigger('requestUndo');
-      });
-      this.element.find('.undoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
-      });
-      this.element.find('.undoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
-      });
-      this.element.find(".redoImg").click(function() {
-        return _this.root.trigger('requestRedo');
-      });
-      this.element.find('.redoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
-      });
-      return this.element.find('.redoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
-      });
-    };
-
-    return MainPanel;
-
-  })(Graphic);
-
   /*
   Graphic containing the font settings to apply to boxes.
   */
@@ -2618,7 +2601,8 @@
     function FontPanel(root) {
       this.root = root;
       FontPanel.__super__.constructor.call(this, this.root);
-      console.log(this.root);
+      this.prevPosition = void 0;
+      this.prevMouseDownTime = 0;
     }
 
     FontPanel.prototype.buildElement = function() {
@@ -2653,7 +2637,10 @@
                 <div class="leftAlignBtn leftAlignButtonEnable font-panel-icon-row"></div>\
                 <div class="centerAlignBtn centerAlignButtonDisable font-panel-icon-row"></div>\
                 <div class="rightAlignBtn rightAlignButtonDisable font-panel-icon-row"></div>\
-\
+                <div class="colorPicker colorPickerButton font-panel-icon-row"></div>\
+                <div class="orderedPointBtn orderedBulletPointButtonDisable font-panel-icon-row"></div>\
+                <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>  \
+               \
                <div>\
                <img class="icon-set letter-space-img" src="./ppedit/img/icons/text_letterspacing25.png" style="float:left;display:inline;">\
                <select class="letter-space from-control edit-menu-row1-dd-fs">\
@@ -2700,6 +2687,28 @@
 
     FontPanel.prototype.bindEvents = function() {
       var _this = this;
+      this.element.mousedown(function(event) {
+        event.stopPropagation();
+        _this.selectFontPanel();
+        return _this.prevMouseDownTime = event.timeStamp;
+      }).mouseup(function(event) {
+        return _this.stopMoveFontPanel();
+      }).click(function(event) {
+        event.stopPropagation();
+        return event.preventDefault();
+      }).on('containerMouseMove', function(event, containerMouseEvent, delta) {
+        if (event.target === _this.element.get(0)) {
+          if (_this.element.hasClass('ppedit-panel-selected') && (delta != null)) {
+            return _this.moveFontPanel(delta.x, delta.y);
+          }
+        }
+      }).on('containerMouseLeave', function() {
+        return _this.stopMoveFontPanel();
+      }).keydown(function(event) {
+        if (!_this.isFocused()) {
+          return _this._processKeyDownEvent(event);
+        }
+      });
       this.element.find("select.fontTypeBtn").change(function(event) {
         var newFontType;
         newFontType = $(event.target).find("option:selected").val();
@@ -2772,26 +2781,45 @@
       this.element.find('.centerAlignBtn').click(function(event) {
         var btn;
         if ($(event.target).hasClass('centerAlignButtonDisable')) {
-          btn = $(event.target).attr('class', 'centerAlignButtonEnable font-panel-icon-row');
-          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignButtonDisable font-panel-icon-row');
-          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignButtonDisable font-panel-icon-row');
-          return btn.trigger(btn.hasClass('centerAlignButtonEnable font-panel-icon-row') ? '' : '');
+          btn = $(event.target).attr('class', 'centerAlignBtn centerAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          return btn.trigger('centerAlignment');
         } else {
-          btn = $(event.target).attr('class', 'centerAlignButtonDisable font-panel-icon-row');
-          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignButtonEnable font-panel-icon-row');
-          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignButtonDisable font-panel-icon-row');
-          return btn.trigger(btn.hasClass('leftAlignButtonDisable font-panel-icon-row') ? '' : '');
+          btn = $(event.target).attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          return $(event.target).trigger('leftAlignment');
+        }
+      });
+      this.element.find('.rightAlignBtn').click(function(event) {
+        var btn;
+        if ($(event.target).hasClass('rightAlignButtonDisable')) {
+          btn = $(event.target).attr('class', 'rightAlignBtn rightAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.centerAlignBtn').attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          return btn.trigger('rightAlignment');
+        } else {
+          btn = $(event.target).attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.leftAlignBtn').attr('class', 'leftAlignBtn leftAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.centerAlignBtn').attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          return $(event.target).trigger('leftAlignment');
+        }
+      });
+      this.element.find('.leftAlignBtn').click(function(event) {
+        var btn;
+        if ($(event.target).hasClass('leftAlignButtonDisable')) {
+          btn = $(event.target).attr('class', 'leftAlignBtn leftAlignButtonEnable font-panel-icon-row');
+          _this.element.find('.rightAlignBtn').attr('class', 'rightAlignBtn rightAlignButtonDisable font-panel-icon-row');
+          _this.element.find('.centerAlignBtn').attr('class', 'centerAlignBtn centerAlignButtonDisable font-panel-icon-row');
+          return btn.trigger('leftAlignment');
         }
       });
       this.element.find(".rightAlignBtn").click(function(event) {
         return $(event.target).trigger('rightAlignment');
       });
       this.element.find(".leftAlignBtn").click(function(event) {
-        console.log('leftAlignBtn');
         return $(event.target).trigger('leftAlignment');
-      });
-      this.element.find(".centerAlignBtn").click(function(event) {
-        return $(event.target).trigger('centerAlignment');
       });
       this.element.find(".bulletPointBtn").click(function(event) {
         return $(event.target).trigger('bulletPointBtnEnableClick');
@@ -2846,7 +2874,97 @@
       }
     };
 
+    FontPanel.prototype.selectFontPanel = function() {
+      this.element.addClass('ppedit-panel-selected');
+      return this.prevPosition = this.currentFontPanelPosition();
+    };
+
+    FontPanel.prototype.moveFontPanel = function(deltaX, deltaY) {
+      var currentPos;
+      currentPos = this.currentFontPanelPosition();
+      return this.setFontPanelPosition(deltaX + currentPos.left, deltaY + currentPos.top);
+    };
+
+    FontPanel.prototype.stopMoveFontPanel = function() {
+      return this.element.removeClass('ppedit-panel-selected');
+    };
+
+    FontPanel.prototype.currentFontPanelPosition = function() {
+      return this.element.position();
+    };
+
+    FontPanel.prototype.setFontPanelPosition = function(x, y) {
+      this.element.css('left', x + 'px');
+      return this.element.css('top', y + 'px');
+    };
+
     return FontPanel;
+
+  })(Graphic);
+
+  MainPanel = (function(_super) {
+    __extends(MainPanel, _super);
+
+    function MainPanel(root) {
+      this.root = root;
+      MainPanel.__super__.constructor.call(this, this.root);
+    }
+
+    MainPanel.prototype.buildElement = function() {
+      return this.element = $('\
+            <div class="left-sidebar">\
+              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
+              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
+              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
+              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
+          </div>');
+    };
+
+    MainPanel.prototype.bindEvents = function() {
+      var _this = this;
+      this.element.find('.snapImg').click(function() {
+        if (!$(event.target).hasClass("snapBtn-selected")) {
+          return $(event.target).addClass("snapBtn-selected");
+        } else {
+          return $(event.target).removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find('.snapImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
+      });
+      this.element.find('.snapImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
+      });
+      this.element.find(".gridImg").click(function() {
+        return _this.root.trigger('panelClickGridBtnClick');
+      });
+      this.element.find('.gridImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
+      });
+      this.element.find('.gridImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
+      });
+      this.element.find(".undoImg").click(function() {
+        return _this.root.trigger('requestUndo');
+      });
+      this.element.find('.undoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
+      });
+      this.element.find('.undoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
+      });
+      this.element.find(".redoImg").click(function() {
+        return _this.root.trigger('requestRedo');
+      });
+      this.element.find('.redoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
+      });
+      return this.element.find('.redoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
+      });
+    };
+
+    return MainPanel;
 
   })(Graphic);
 
