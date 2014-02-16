@@ -84,7 +84,7 @@ class PPEditor extends Graphic
       .on 'textColorChanged', (event, hex) =>
         boxSelected = @getSelectedBoxes()
         if boxSelected.length != 0
-          @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, @getPageNum(boxSelected), @areas[0].boxesContainer.getSelectedBoxes(), hex)
+          @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, boxSelected, hex)
 
       .on 'graphicContentChanged', (event, params) =>
         @commandManager.pushCommand(@cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false)
