@@ -67,6 +67,8 @@ class AddOrRemoveCommand extends Command
 
     for i in [0..@editor.areas.length-1]
       @editor.areas[i].element.attr('id', 'ppedit-page-' + i)
+      @editor.areas[i].grid.toggleGrid()
+      @editor.areas[i].grid.toggleGrid()
 
   getType: ->
     return 'Modify'

@@ -1840,7 +1840,9 @@
       this.editor.panel.removeTab(pageNum);
       _results = [];
       for (i = _i = 0, _ref = this.editor.areas.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-        _results.push(this.editor.areas[i].element.attr('id', 'ppedit-page-' + i));
+        this.editor.areas[i].element.attr('id', 'ppedit-page-' + i);
+        this.editor.areas[i].grid.toggleGrid();
+        _results.push(this.editor.areas[i].grid.toggleGrid());
       }
       return _results;
     };
