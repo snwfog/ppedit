@@ -2363,7 +2363,7 @@
         var boxSelected;
         boxSelected = _this.getSelectedBoxes();
         if (boxSelected.length !== 0) {
-          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeTextColorCommand(_this, _this.getPageNum(boxSelected), _this.areas[0].boxesContainer.getSelectedBoxes(), hex));
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeTextColorCommand(_this, boxSelected, hex));
         }
       }).on('graphicContentChanged', function(event, params) {
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateChangeBoxContentCommand(params.graphic, params.prevContent, params.newContent), false);
@@ -2847,7 +2847,6 @@
     FontPanel.prototype.setSettingsFromStyle = function(style) {
       this.element.find('.fontTypeBtn').children().removeAttr('selected').filter('option[value=' + style['font-family'] + ']').attr('selected', 'selected');
       this.element.find('.fontSizeBtn').children().removeAttr('selected').filter('option[value="' + parseInt(style['font-size']) + '"]').attr('selected', 'selected');
-      console.log(parseInt(style['padding']));
       this.element.find('.letter-space').children().removeAttr('selected').filter('option[value="' + parseInt(style['letter-spacing']) + '"]').attr('selected', 'selected');
       this.element.find('.line-height').children().removeAttr('selected').filter('option[value="' + parseInt(style['line-height']) + '"]').attr('selected', 'selected');
       this.element.find('.padding').children().removeAttr('selected').filter('option[value="' + parseInt(style['padding']) + '"]').attr('selected', 'selected');
