@@ -121,7 +121,7 @@ class Box extends Graphic
         @element.trigger 'boxMouseOver', [this]
 
       .mouseleave (event) =>
-        @element.trigger 'boxMouseLeave', [this]
+        # @element.trigger 'boxMouseLeave', [this]
       
     @helper.bindEvents()
       

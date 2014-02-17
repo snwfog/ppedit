@@ -7,6 +7,10 @@ class FontPanel extends Graphic
   constructor: (@root) ->
     super @root
 
+    @leftPosition = undefined
+    @topPosition = undefined
+
+
   buildElement: ->
     @element =$('
           <div class="edit-menu FontPanel shadow-effect">
@@ -92,6 +96,8 @@ class FontPanel extends Graphic
         @selectFontPanel()
 
       .mouseup (event) =>
+        @leftPosition = @currentFontPanelPosition().left
+        @topPosition = @currentFontPanelPosition().right
         @stopMoveFontPanel()
 
       .on 'containerMouseMove', (event, containerMouseEvent, delta) =>

@@ -72,13 +72,14 @@ class EditArea extends Graphic
     
       .on 'boxSelected', (event, box) =>
         @fontPanel.setSettingsFromStyle box.element.get(0).style
-        @showToolTip()
-        @setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width())
+        @showToolTip(box)
 
       .on 'boxMouseOver', (event, box) =>
         @fontPanel.setSettingsFromStyle box.element.get(0).style
-        @showToolTip()
-        @setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width())
+        @showToolTip(box)
+        
+      .on 'removeToolTip', (event) =>
+        @removeToolTip()
 
       .on 'boxMouseLeave', (event) =>
         @toolTipTimeout = setTimeout ( =>
@@ -110,8 +111,15 @@ class EditArea extends Graphic
         toolTip.css 'left', (leftPos+widthPos/2) + 'px'
       toolTip.css 'top', (topPos+heightPos+10) + 'px'
 
-  showToolTip: ->
+  showToolTip: (box) ->
     @element.append @fontPanel.element
+    if (!@fontPanel.leftPosition)&&(!@fontPanel.topPosition)
+      @setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width())
+    else
+      @fontPanel.element.css 'left', @fontPanel.leftPosition + 'px'
+      @fontPanel.element.css 'top', @fontPanel.topPosition + 'px'
+      
+
 
   removeToolTip: ->
     @fontPanel.element.detach()

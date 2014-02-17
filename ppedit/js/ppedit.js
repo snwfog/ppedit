@@ -412,9 +412,7 @@
         }
       }).mouseenter(function(event) {
         return _this.element.trigger('boxMouseOver', [_this]);
-      }).mouseleave(function(event) {
-        return _this.element.trigger('boxMouseLeave', [_this]);
-      });
+      }).mouseleave(function(event) {});
       return this.helper.bindEvents();
     };
 
@@ -816,7 +814,7 @@
         }
       }).click(function(event) {
         _this.element.trigger('unSelectBoxes');
-        return _this.element.trigger('removeToolTip');
+        return _this.element.parent().trigger('removeToolTip');
       });
       _ref = this.boxes;
       _results = [];
@@ -1163,12 +1161,12 @@
         return _this.boxesContainer.selectBoxesInRect(rect);
       }).on('boxSelected', function(event, box) {
         _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
-        _this.showToolTip();
-        return _this.setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width());
+        return _this.showToolTip(box);
       }).on('boxMouseOver', function(event, box) {
         _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
-        _this.showToolTip();
-        return _this.setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width());
+        return _this.showToolTip(box);
+      }).on('removeToolTip', function(event) {
+        return _this.removeToolTip();
       }).on('boxMouseLeave', function(event) {
         return _this.toolTipTimeout = setTimeout((function() {
           return _this.removeToolTip();
@@ -1203,8 +1201,14 @@
       }
     };
 
-    EditArea.prototype.showToolTip = function() {
-      return this.element.append(this.fontPanel.element);
+    EditArea.prototype.showToolTip = function(box) {
+      this.element.append(this.fontPanel.element);
+      if ((!this.fontPanel.leftPosition) && (!this.fontPanel.topPosition)) {
+        return this.setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width());
+      } else {
+        this.fontPanel.element.css('left', this.fontPanel.leftPosition + 'px');
+        return this.fontPanel.element.css('top', this.fontPanel.topPosition + 'px');
+      }
     };
 
     EditArea.prototype.removeToolTip = function() {
@@ -1384,7 +1388,6 @@
               rows.each(function(index, rowNode) {
                 var otherBoxId, otherBoxZIndex;
                 otherBoxId = $(rowNode).attr('ppedit-box-id');
-                console.log(otherBoxId);
                 otherBoxZIndex = area.boxesContainer.boxes[otherBoxId].element.css('z-index');
                 if (parseInt(otherBoxZIndex) < parseInt(box.element.css('z-index')) || index === rows.length - 1) {
                   panel.addBoxRow(i, id, index);
@@ -2786,6 +2789,72 @@
 
   })(Graphic);
 
+  MainPanel = (function(_super) {
+    __extends(MainPanel, _super);
+
+    function MainPanel(root) {
+      this.root = root;
+      MainPanel.__super__.constructor.call(this, this.root);
+    }
+
+    MainPanel.prototype.buildElement = function() {
+      return this.element = $('\
+            <div class="left-sidebar">\
+              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
+              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
+              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
+              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
+          </div>');
+    };
+
+    MainPanel.prototype.bindEvents = function() {
+      var _this = this;
+      this.element.find('.snapImg').click(function() {
+        if (!$(event.target).hasClass("snapBtn-selected")) {
+          return $(event.target).addClass("snapBtn-selected");
+        } else {
+          return $(event.target).removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find('.snapImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
+      });
+      this.element.find('.snapImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
+      });
+      this.element.find(".gridImg").click(function() {
+        return _this.root.trigger('panelClickGridBtnClick');
+      });
+      this.element.find('.gridImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
+      });
+      this.element.find('.gridImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
+      });
+      this.element.find(".undoImg").click(function() {
+        return _this.root.trigger('requestUndo');
+      });
+      this.element.find('.undoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
+      });
+      this.element.find('.undoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
+      });
+      this.element.find(".redoImg").click(function() {
+        return _this.root.trigger('requestRedo');
+      });
+      this.element.find('.redoImg').mouseover(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
+      });
+      return this.element.find('.redoImg').mouseout(function(event) {
+        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
+      });
+    };
+
+    return MainPanel;
+
+  })(Graphic);
+
   /*
   Graphic containing the font settings to apply to boxes.
   */
@@ -2797,6 +2866,8 @@
     function FontPanel(root) {
       this.root = root;
       FontPanel.__super__.constructor.call(this, this.root);
+      this.leftPosition = void 0;
+      this.topPosition = void 0;
     }
 
     FontPanel.prototype.buildElement = function() {
@@ -2884,6 +2955,8 @@
       this.element.mousedown(function(event) {
         return _this.selectFontPanel();
       }).mouseup(function(event) {
+        _this.leftPosition = _this.currentFontPanelPosition().left;
+        _this.topPosition = _this.currentFontPanelPosition().right;
         return _this.stopMoveFontPanel();
       }).on('containerMouseMove', function(event, containerMouseEvent, delta) {
         if (event.target === _this.element.get(0)) {
@@ -3104,72 +3177,6 @@
     };
 
     return FontPanel;
-
-  })(Graphic);
-
-  MainPanel = (function(_super) {
-    __extends(MainPanel, _super);
-
-    function MainPanel(root) {
-      this.root = root;
-      MainPanel.__super__.constructor.call(this, this.root);
-    }
-
-    MainPanel.prototype.buildElement = function() {
-      return this.element = $('\
-            <div class="left-sidebar">\
-              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
-              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
-              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
-              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
-          </div>');
-    };
-
-    MainPanel.prototype.bindEvents = function() {
-      var _this = this;
-      this.element.find('.snapImg').click(function() {
-        if (!$(event.target).hasClass("snapBtn-selected")) {
-          return $(event.target).addClass("snapBtn-selected");
-        } else {
-          return $(event.target).removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find('.snapImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
-      });
-      this.element.find('.snapImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
-      });
-      this.element.find(".gridImg").click(function() {
-        return _this.root.trigger('panelClickGridBtnClick');
-      });
-      this.element.find('.gridImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
-      });
-      this.element.find('.gridImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
-      });
-      this.element.find(".undoImg").click(function() {
-        return _this.root.trigger('requestUndo');
-      });
-      this.element.find('.undoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
-      });
-      this.element.find('.undoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
-      });
-      this.element.find(".redoImg").click(function() {
-        return _this.root.trigger('requestRedo');
-      });
-      this.element.find('.redoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
-      });
-      return this.element.find('.redoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
-      });
-    };
-
-    return MainPanel;
 
   })(Graphic);
 

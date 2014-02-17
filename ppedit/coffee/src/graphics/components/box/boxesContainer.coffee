@@ -30,7 +30,7 @@ class BoxesContainer extends Graphic
 
       .click (event) =>
         @element.trigger 'unSelectBoxes'
-        @element.trigger 'removeToolTip'
+        @element.parent().trigger 'removeToolTip'
 
     box.bindEvents() for id, box of @boxes
 
