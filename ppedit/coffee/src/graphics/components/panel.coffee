@@ -115,7 +115,7 @@ class Panel extends Graphic
             <div class="deleteElementBtn menu-panel-icon"></div>
           </td>
           <td style="width:50%">
-          <input type="text" class="form-control" placeholder="Element 1">
+          <input type="text" class="form-control" placeholder="Untitled box">
           </td>
           <td style="width:40%">
             <div class="ppedit-slider"></div>

@@ -75,18 +75,20 @@ body {
     
     resize:both;
     overflow:auto;
-
+    cursor:move;
     /*background-color: rgba(255, 255, 255, 1);*/
 }
 
 .ppedit-box-selected
 {
+    cursor: move;
     border-style:dashed;
 }
 
 .ppedit-box-focus,
 .ppedit-box:focus
 {
+    cursor: text;
     background-color: rgba(255, 255, 255, 0.5);
 }
 
@@ -185,11 +187,11 @@ body {
     top: 65px;
     z-index: 900;
 
-    -webkit-transition: right 1000ms;
-    -moz-transition: right 1000ms;
-    -ms-transition: right 1000ms;
-    -o-transition: right 1000ms;
-    transition: right 1000ms;
+    -webkit-transition: right 500ms;
+    -moz-transition: right 500ms;
+    -ms-transition: right 500ms;
+    -o-transition: right 500ms;
+    transition: right 500ms;
 
     /* Chrome redraw bug fix : forcing gpu hardware acceleration */
     -webkit-transform: translate3d(0, 0, 0);

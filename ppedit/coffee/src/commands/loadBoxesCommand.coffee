@@ -31,9 +31,10 @@ class LoadBoxesCommand extends Command
     pages = @jsonBoxes
 
     # Adding new pages if there are not enough
-    for i in [0..pages.length - @editor.areas.length]
-      addCmd = new AddOrRemoveCommand @editor, true
-      addCmd.execute()
+    if pages.length > @editor.areas.length
+      for i in [0..pages.length - @editor.areas.length]
+        addCmd = new AddOrRemoveCommand @editor, true
+        addCmd.execute()
 
     for i in [0..pages.length-1]
       for id, boxElement of pages[i]
@@ -47,7 +48,7 @@ class LoadBoxesCommand extends Command
         # Add row associated with box in the panel.
         rows = panel.getRows i
         if rows.length == 0
-          panel.addBoxRow id
+          panel.addBoxRow i, id
         else
           # Insert new row in panel at a position
           # determined by its associated box's z-index property.
@@ -57,7 +58,7 @@ class LoadBoxesCommand extends Command
 
             if (parseInt(otherBoxZIndex) < parseInt(box.element.css('z-index')) or
                 index == rows.length - 1)
-              panel.addBoxRow id, index
+              panel.addBoxRow i, id, index
               return false # break statement
 
   undo: ->

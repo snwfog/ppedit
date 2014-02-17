@@ -29,10 +29,8 @@ class BoxesContainer extends Graphic
         @element.trigger 'addBoxRequested', [boxCssOptions] if @getSelectedBoxes().length == 0
 
       .click (event) =>
-        @root.trigger 'unSelectBoxes'
-        @root.trigger 'removeToolTip'
-
-      
+        @element.trigger 'unSelectBoxes'
+        @element.trigger 'removeToolTip'
 
     box.bindEvents() for id, box of @boxes
 

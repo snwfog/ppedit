@@ -7,9 +7,6 @@ class FontPanel extends Graphic
   constructor: (@root) ->
     super @root
 
-    @prevPosition = undefined
-    @prevMouseDownTime = 0  
-
   buildElement: ->
     @element =$('
           <div class="edit-menu FontPanel shadow-effect">
@@ -92,17 +89,10 @@ class FontPanel extends Graphic
   bindEvents: ->
     @element
       .mousedown (event) =>
-        event.stopPropagation()
-
         @selectFontPanel()
-        @prevMouseDownTime = event.timeStamp
 
       .mouseup (event) =>
         @stopMoveFontPanel()
-
-      .click (event) =>
-        event.stopPropagation()
-        event.preventDefault()
 
       .on 'containerMouseMove', (event, containerMouseEvent, delta) =>
         if event.target == @element.get(0)
@@ -123,8 +113,8 @@ class FontPanel extends Graphic
       .on 'containerMouseLeave', () =>
         @stopMoveFontPanel()
 
-    .keydown (event) =>
-      @_processKeyDownEvent(event) if!@isFocused()
+      .focusin (event) =>
+        @stopMoveFontPanel() if event.target != @element.get 0
 
     @element.find("select.fontTypeBtn").change (event) =>
       newFontType = $(event.target).find("option:selected").val()
@@ -296,7 +286,6 @@ class FontPanel extends Graphic
 
   selectFontPanel: ->
     @element.addClass('ppedit-panel-selected')
-    @prevPosition = @currentFontPanelPosition()
 
   moveFontPanel: (deltaX, deltaY) ->
     currentPos = @currentFontPanelPosition()

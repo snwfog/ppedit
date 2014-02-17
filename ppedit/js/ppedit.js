@@ -384,16 +384,10 @@
           return event.preventDefault();
         }
       }).dblclick(function(event) {
-        var heightPos, leftPos, topPos, widthPos;
         event.stopPropagation();
         if (!_this.element.hasClass('ppedit-box-focus')) {
-          event.preventDefault();
+          return event.preventDefault();
         }
-        leftPos = $(event.target).position().left;
-        topPos = $(event.target).position().top;
-        heightPos = $(event.target).height();
-        widthPos = $(event.target).width();
-        return _this.root.parent().trigger('toolTipShowsUp', [leftPos, topPos, heightPos, widthPos]);
       }).focus(function(event) {
         return _this.element.trigger('boxSelected', [_this]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
@@ -416,19 +410,10 @@
         if (!_this.isFocused()) {
           return _this._processKeyDownEvent(event);
         }
-      }).mouseover(function(event) {
-        var heightPos, leftPos, topPos, widthPos;
-        event.stopPropagation();
-        event.preventDefault();
-        leftPos = $(event.target).position().left;
-        topPos = $(event.target).position().top;
-        heightPos = $(event.target).height();
-        widthPos = $(event.target).width();
-        return _this.root.parent().trigger('toolTipShowsUp', [leftPos, topPos, heightPos, widthPos]);
+      }).mouseenter(function(event) {
+        return _this.element.trigger('boxMouseOver', [_this]);
       }).mouseleave(function(event) {
-        return _this.toolTipTimeout = setTimeout((function() {
-          return _this.root.parent().trigger('removeToolTip');
-        }), Box.TOOLTIP_DISPEAR_MILLS);
+        return _this.element.trigger('boxMouseLeave', [_this]);
       });
       return this.helper.bindEvents();
     };
@@ -830,8 +815,8 @@
           return _this.element.trigger('addBoxRequested', [boxCssOptions]);
         }
       }).click(function(event) {
-        _this.root.trigger('unSelectBoxes');
-        return _this.root.trigger('removeToolTip');
+        _this.element.trigger('unSelectBoxes');
+        return _this.element.trigger('removeToolTip');
       });
       _ref = this.boxes;
       _results = [];
@@ -1131,6 +1116,7 @@
       this.grid = void 0;
       this.boxesContainer = void 0;
       this.fontPanel = void 0;
+      this.toolTipTimeout = 0;
     }
 
     EditArea.prototype.buildElement = function() {
@@ -1176,14 +1162,20 @@
       }).on('canvasRectSelect', function(event, rect) {
         return _this.boxesContainer.selectBoxesInRect(rect);
       }).on('boxSelected', function(event, box) {
-        return _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
-      }).on('toolTipShowsUp', function(event, leftPos, topPos, heightPos, widthPos) {
+        _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
         _this.showToolTip();
-        return _this.setToolTipPosition(leftPos, topPos, heightPos, widthPos);
-      }).on('removeToolTip', function(event) {
-        if (!_this.fontPanel.element.is(':hover')) {
+        return _this.setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width());
+      }).on('boxMouseOver', function(event, box) {
+        _this.fontPanel.setSettingsFromStyle(box.element.get(0).style);
+        _this.showToolTip();
+        return _this.setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width());
+      }).on('boxMouseLeave', function(event) {
+        return _this.toolTipTimeout = setTimeout((function() {
           return _this.removeToolTip();
-        }
+        }), Box.TOOLTIP_DISPEAR_MILLS);
+      });
+      this.fontPanel.element.mouseover(function(event) {
+        return clearTimeout(_this.toolTipTimeout);
       });
       this.boxesContainer.bindEvents();
       this.canvas.bindEvents();
@@ -1365,9 +1357,11 @@
     LoadBoxesCommand.prototype.execute = function() {
       var addCmd, area, box, boxElement, i, id, pages, panel, rows, _i, _j, _ref, _ref1, _results;
       pages = this.jsonBoxes;
-      for (i = _i = 0, _ref = pages.length - this.editor.areas.length; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-        addCmd = new AddOrRemoveCommand(this.editor, true);
-        addCmd.execute();
+      if (pages.length > this.editor.areas.length) {
+        for (i = _i = 0, _ref = pages.length - this.editor.areas.length; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+          addCmd = new AddOrRemoveCommand(this.editor, true);
+          addCmd.execute();
+        }
       }
       _results = [];
       for (i = _j = 0, _ref1 = pages.length - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
@@ -1385,14 +1379,14 @@
             area.boxesContainer.addBox(box);
             rows = panel.getRows(i);
             if (rows.length === 0) {
-              _results1.push(panel.addBoxRow(id));
+              _results1.push(panel.addBoxRow(i, id));
             } else {
               _results1.push(rows.each(function(index, rowNode) {
                 var otherBoxId, otherBoxZIndex;
                 otherBoxId = $(rowNode).attr('ppedit-box-id');
                 otherBoxZIndex = area.boxesContainer.boxes[otherBoxId].element.css('z-index');
                 if (parseInt(otherBoxZIndex) < parseInt(box.element.css('z-index')) || index === rows.length - 1) {
-                  panel.addBoxRow(id, index);
+                  panel.addBoxRow(i, id, index);
                   return false;
                 }
               }));
@@ -2254,7 +2248,7 @@
             <div class="deleteElementBtn menu-panel-icon"></div>\
           </td>\
           <td style="width:50%">\
-          <input type="text" class="form-control" placeholder="Element 1">\
+          <input type="text" class="form-control" placeholder="Untitled box">\
           </td>\
           <td style="width:40%">\
             <div class="ppedit-slider"></div>\
@@ -2745,8 +2739,6 @@
     function FontPanel(root) {
       this.root = root;
       FontPanel.__super__.constructor.call(this, this.root);
-      this.prevPosition = void 0;
-      this.prevMouseDownTime = 0;
     }
 
     FontPanel.prototype.buildElement = function() {
@@ -2832,14 +2824,10 @@
     FontPanel.prototype.bindEvents = function() {
       var _this = this;
       this.element.mousedown(function(event) {
-        event.stopPropagation();
-        _this.selectFontPanel();
-        return _this.prevMouseDownTime = event.timeStamp;
+        console.log('font panel selected');
+        return _this.selectFontPanel();
       }).mouseup(function(event) {
         return _this.stopMoveFontPanel();
-      }).click(function(event) {
-        event.stopPropagation();
-        return event.preventDefault();
       }).on('containerMouseMove', function(event, containerMouseEvent, delta) {
         if (event.target === _this.element.get(0)) {
           if (_this.element.position().left <= 0) {
@@ -2864,9 +2852,9 @@
         }
       }).on('containerMouseLeave', function() {
         return _this.stopMoveFontPanel();
-      }).keydown(function(event) {
-        if (!_this.isFocused()) {
-          return _this._processKeyDownEvent(event);
+      }).focusin(function(event) {
+        if (event.target !== _this.element.get(0)) {
+          return _this.stopMoveFontPanel();
         }
       });
       this.element.find("select.fontTypeBtn").change(function(event) {
@@ -3034,8 +3022,7 @@
     };
 
     FontPanel.prototype.selectFontPanel = function() {
-      this.element.addClass('ppedit-panel-selected');
-      return this.prevPosition = this.currentFontPanelPosition();
+      return this.element.addClass('ppedit-panel-selected');
     };
 
     FontPanel.prototype.moveFontPanel = function(deltaX, deltaY) {
@@ -3047,6 +3034,7 @@
     };
 
     FontPanel.prototype.stopMoveFontPanel = function() {
+      console.log('panel stopped');
       return this.element.removeClass('ppedit-panel-selected');
     };
 

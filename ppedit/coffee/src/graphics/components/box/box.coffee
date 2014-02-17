@@ -92,15 +92,10 @@ class Box extends Graphic
       .click (event) =>
         event.stopPropagation()
         event.preventDefault() if !@element.hasClass 'ppedit-box-focus'
-        
+
       .dblclick (event) =>
         event.stopPropagation()
         event.preventDefault() if !@element.hasClass 'ppedit-box-focus'
-        leftPos = $(event.target).position().left
-        topPos = $(event.target).position().top
-        heightPos = $(event.target).height()
-        widthPos = $(event.target).width()
-        @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
 
       .focus (event) =>
         @element.trigger 'boxSelected', [this]
@@ -122,20 +117,11 @@ class Box extends Graphic
       .keydown (event) =>
         @_processKeyDownEvent(event) if !@isFocused()
       
-      .mouseover (event) =>
-        event.stopPropagation()
-        event.preventDefault()
-        leftPos = $(event.target).position().left
-        topPos = $(event.target).position().top
-        heightPos = $(event.target).height()
-        widthPos = $(event.target).width()
-        @root.parent().trigger 'toolTipShowsUp', [leftPos,topPos,heightPos,widthPos]
-      
-      .mouseleave (event) =>
-        @toolTipTimeout = setTimeout ( =>
-          @root.parent().trigger 'removeToolTip'
+      .mouseenter (event) =>
+        @element.trigger 'boxMouseOver', [this]
 
-        ), Box.TOOLTIP_DISPEAR_MILLS
+      .mouseleave (event) =>
+        @element.trigger 'boxMouseLeave', [this]
       
     @helper.bindEvents()
       

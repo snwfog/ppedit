@@ -16,6 +16,7 @@ class EditArea extends Graphic
     @grid = undefined
     @boxesContainer = undefined
     @fontPanel = undefined
+    @toolTipTimeout = 0
 
   buildElement: ->
     @element = $('<div class="editContainer shadow-effect"></div>')
@@ -35,7 +36,6 @@ class EditArea extends Graphic
     @boxesContainer.buildElement()
     @canvas.buildElement()
     @grid.buildElement()
-    # @fontPanel.buildElement()
     
     @element.append @boxesContainer.element
     @element.append @canvas.element
@@ -72,14 +72,21 @@ class EditArea extends Graphic
     
       .on 'boxSelected', (event, box) =>
         @fontPanel.setSettingsFromStyle box.element.get(0).style
-
-      .on 'toolTipShowsUp', (event, leftPos,topPos,heightPos,widthPos) =>
         @showToolTip()
-        @setToolTipPosition(leftPos,topPos,heightPos,widthPos)
-        
-      .on 'removeToolTip', (event) =>
-        if(!@fontPanel.element.is(':hover'))
+        @setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width())
+
+      .on 'boxMouseOver', (event, box) =>
+        @fontPanel.setSettingsFromStyle box.element.get(0).style
+        @showToolTip()
+        @setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width())
+
+      .on 'boxMouseLeave', (event) =>
+        @toolTipTimeout = setTimeout ( =>
           @removeToolTip()
+        ), Box.TOOLTIP_DISPEAR_MILLS
+
+    @fontPanel.element.mouseover (event) =>
+      clearTimeout @toolTipTimeout
 
     @boxesContainer.bindEvents()
     @canvas.bindEvents()
