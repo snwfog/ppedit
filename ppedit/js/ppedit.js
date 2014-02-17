@@ -1626,8 +1626,8 @@
 
 
     CommandManager.prototype.getUndoJSON = function() {
-      var command, hunkId, i, id, result, shaObj, _i, _j, _len, _len1, _ref, _ref1;
-      result = {
+      var command, history, hunkId, i, id, key, page, result, shaObj, value, _i, _j, _len, _len1, _ref, _ref1;
+      history = {
         modified: (function() {
           var _i, _ref, _results;
           _results = [];
@@ -1661,46 +1661,118 @@
           id = _ref1[_j];
           switch (command.getType()) {
             case 'Create':
-              result.created[command.getPageNum()]['' + id] = $('#' + id).clone().wrap('<div></div>').parent().html() || '';
+              history.created[command.getPageNum()]['' + id] = {
+                id: id,
+                html: $('#' + id).clone().wrap('<div></div>').parent().html() || '',
+                name: 'dummy'
+              };
               break;
             case 'Modify':
-              if (result.created[command.getPageNum()]['' + id] == null) {
-                result.modified[command.getPageNum()]['' + id] = $('#' + id).clone().wrap('<div></div>').parent().html() || '';
+              if (history.created[command.getPageNum()]['' + id] == null) {
+                history.modified[command.getPageNum()]['' + id] = {
+                  id: id,
+                  html: $('#' + id).clone().wrap('<div></div>').parent().html() || '',
+                  name: 'dummy'
+                };
               }
               break;
             case 'Remove':
-              delete result.modified[command.getPageNum()]['' + id];
-              if (result.created[command.getPageNum()]['' + id] != null) {
-                delete result.created[command.getPageNum()]['' + id];
+              delete history.modified[command.getPageNum()]['' + id];
+              if (history.created[command.getPageNum()]['' + id] != null) {
+                delete history.created[command.getPageNum()]['' + id];
               } else {
-                result.removed[command.getPageNum()]['' + id] = '';
+                history.removed[command.getPageNum()]['' + id] = {
+                  id: id,
+                  html: '',
+                  name: 'dummy'
+                };
               }
               break;
             case 'removePage':
-              delete result.modified[command.getPageNum()]['' + id];
-              if (result.created[command.getPageNum()]['' + id] != null) {
-                delete result.created[command.getPageNum()]['' + id];
+              delete history.modified[command.getPageNum()]['' + id];
+              if (history.created[command.getPageNum()]['' + id] != null) {
+                delete history.created[command.getPageNum()]['' + id];
               } else {
-                result.removed[command.getPageNum()]['' + id] = '';
+                history.removed[command.getPageNum()]['' + id] = {
+                  id: id,
+                  html: '',
+                  name: 'dummy'
+                };
               }
           }
         }
         if (command.getType() === 'removePage') {
-          if (command.getPageNum() < result.modified.length - 2) {
-            result.modified[command.getPageNum()] = $.extend(result.modified[command.getPageNum()], result.modified[command.getPageNum() + 1]);
-            result.created[command.getPageNum()] = $.extend(result.created[command.getPageNum()], result.created[command.getPageNum() + 1]);
-            result.removed[command.getPageNum()] = $.extend(result.removed[command.getPageNum()], result.removed[command.getPageNum() + 1]);
-            result.modified.splice(command.getPageNum() + 1, 1);
-            result.created.splice(command.getPageNum() + 1, 1);
-            result.removed.splice(command.getPageNum() + 1, 1);
+          if (command.getPageNum() < history.modified.length - 2) {
+            history.modified[command.getPageNum()] = $.extend(history.modified[command.getPageNum()], history.modified[command.getPageNum() + 1]);
+            history.created[command.getPageNum()] = $.extend(history.created[command.getPageNum()], history.created[command.getPageNum() + 1]);
+            history.removed[command.getPageNum()] = $.extend(history.removed[command.getPageNum()], history.removed[command.getPageNum() + 1]);
+            history.modified.splice(command.getPageNum() + 1, 1);
+            history.created.splice(command.getPageNum() + 1, 1);
+            history.removed.splice(command.getPageNum() + 1, 1);
           }
         } else if (command.getType() === 'addPage') {
-          result.modified.push({});
-          result.created.push({});
-          result.removed.push({});
+          history.modified.push({});
+          history.created.push({});
+          history.removed.push({});
         }
       }
-      shaObj = new jsSHA(JSON.stringify(result), "TEXT");
+      result = {
+        modified: (function() {
+          var _k, _len2, _ref2, _results;
+          _ref2 = history.modified;
+          _results = [];
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            page = _ref2[_k];
+            _results.push((function() {
+              var _results1;
+              _results1 = [];
+              for (key in page) {
+                value = page[key];
+                _results1.push(value);
+              }
+              return _results1;
+            })());
+          }
+          return _results;
+        })(),
+        removed: (function() {
+          var _k, _len2, _ref2, _results;
+          _ref2 = history.removed;
+          _results = [];
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            page = _ref2[_k];
+            _results.push((function() {
+              var _results1;
+              _results1 = [];
+              for (key in page) {
+                value = page[key];
+                _results1.push(value);
+              }
+              return _results1;
+            })());
+          }
+          return _results;
+        })(),
+        created: (function() {
+          var _k, _len2, _ref2, _results;
+          _ref2 = history.created;
+          _results = [];
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            page = _ref2[_k];
+            _results.push((function() {
+              var _results1;
+              _results1 = [];
+              for (key in page) {
+                value = page[key];
+                _results1.push(value);
+              }
+              return _results1;
+            })());
+          }
+          return _results;
+        })()
+      };
+      shaObj = new jsSHA(JSON.stringify(history), "TEXT");
       hunkId = shaObj.getHMAC("", "TEXT", "SHA-256", "HEX");
       result.etag = hunkId;
       return JSON.stringify(result);
@@ -2425,7 +2497,7 @@
         }
       }).on('graphicContentChanged', function(event, params) {
         var pageNum;
-        pageNum = _this.getPageNum(params.graphic);
+        pageNum = _this.getPageNum(params.graphic.element);
         return _this.commandManager.pushCommand(_this.cmdFactory.createCreateChangeBoxContentCommand(params.graphic, pageNum, params.prevContent, params.newContent), false);
       }).on('boxMoved', function(event, box, currentPosition, originalPosition) {
         var pageNum;

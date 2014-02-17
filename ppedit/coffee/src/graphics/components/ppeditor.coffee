@@ -84,7 +84,7 @@ class PPEditor extends Graphic
           @commandManager.pushCommand @cmdFactory.createChangeTextColorCommand(this, boxSelected, hex)
 
       .on 'graphicContentChanged', (event, params) =>
-        pageNum = @getPageNum params.graphic
+        pageNum = @getPageNum params.graphic.element
         @commandManager.pushCommand(@cmdFactory.createCreateChangeBoxContentCommand(params.graphic, pageNum, params.prevContent, params.newContent), false)
 
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
