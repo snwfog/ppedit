@@ -5,8 +5,10 @@
 class AddOrRemoveCommand extends Command
 
   constructor: (@editor, @addPage, @pageNum) ->
-    @area = undefined ;
     super()
+    @area = undefined ;
+
+    @boxIds = if @editor.areas[@pageNum]? then Object.getOwnPropertyNames(@editor.areas[pageNum].boxesContainer.boxes) else []
 
   execute: ->
     if @addPage
@@ -67,6 +69,11 @@ class AddOrRemoveCommand extends Command
 
     for i in [0..@editor.areas.length-1]
       @editor.areas[i].element.attr('id', 'ppedit-page-' + i)
+      @editor.areas[i].grid.toggleGrid()
+      @editor.areas[i].grid.toggleGrid()
 
   getType: ->
-    return 'Modify'
+    return if @addPage then 'addPage' else 'removePage'
+
+  getPageNum: ->
+    return @pageNum

@@ -1,9 +1,12 @@
+#= require Constants
+
 ###
 Class that manages a set of commands to undo/redo.
 ###
 class CommandManager
 
   constructor: ->
+    @initNumOfPages = Constants.INIT_NUM_OF_PAGES
     @undoStack = []
     @redoStack = []
 
@@ -40,44 +43,73 @@ class CommandManager
   Returns a json string specifying the boxes that have been created, modified and/or removed.
   ###
   getUndoJSON: ->
-    modifiedBoxes = {}
-    createdBoxes = {}
-    removedBoxes = {}
+
+    history =
+      modified:({} for i in [0..@initNumOfPages-1])
+      removed:({} for i in [0..@initNumOfPages-1])
+      created:({} for i in [0..@initNumOfPages-1])
 
     for command in @undoStack
-      for id in command.boxIds             
+      for id in command.boxIds
 
         switch command.getType()
           when 'Create'
-            createdBoxes['' + id] =
+            history.created[command.getPageNum()]['' + id] =
+              id:id
               html:$('#' + id).clone().wrap('<div></div>').parent().html() or ''
-              pageNum:command.getPageNum()
+              name:'dummy'
 
           when 'Modify'
-            if !createdBoxes['' + id]?
-              modifiedBoxes['' + id] = $('#' + id).clone().wrap('<div></div>').parent().html() or ''
+            if !history.created[command.getPageNum()]['' + id]?
+              history.modified[command.getPageNum()]['' + id] =
+                id:id
+                html:$('#' + id).clone().wrap('<div></div>').parent().html() or ''
+                name:'dummy'
 
           when 'Remove'
-            delete modifiedBoxes['' + id]
+            delete history.modified[command.getPageNum()]['' + id]
 
-            if createdBoxes['' + id]?
-              delete createdBoxes['' + id]
-            else 
-              removedBoxes['' + id] = ''
+            if history.created[command.getPageNum()]['' + id]?
+              delete history.created[command.getPageNum()]['' + id]
+            else
+              history.removed[command.getPageNum()]['' + id] =
+                id:id
+                html:''
+                name:'dummy'
 
-    # building the return object value
+          when 'removePage'
+            delete history.modified[command.getPageNum()]['' + id]
+
+            if history.created[command.getPageNum()]['' + id]?
+              delete history.created[command.getPageNum()]['' + id]
+            else
+              history.removed[command.getPageNum()]['' + id] =
+                id:id
+                html:''
+                name:'dummy'
+
+      if command.getType() == 'removePage'
+        if command.getPageNum() < history.modified.length - 2
+          history.modified[command.getPageNum()] = $.extend history.modified[command.getPageNum()], history.modified[command.getPageNum()+1]
+          history.created[command.getPageNum()] = $.extend history.created[command.getPageNum()], history.created[command.getPageNum()+1]
+          history.removed[command.getPageNum()] = $.extend history.removed[command.getPageNum()], history.removed[command.getPageNum()+1]
+
+          history.modified.splice command.getPageNum()+1, 1
+          history.created.splice command.getPageNum()+1, 1
+          history.removed.splice command.getPageNum()+1, 1
+
+      else if command.getType() == 'addPage'
+        history.modified.push {}
+        history.created.push {}
+        history.removed.push {}
+
     result =
-      modified:({id:boxid, html:value} for boxid, value of modifiedBoxes)
-      removed:({id:boxid, html:value} for boxid, value of removedBoxes)
-      created:[[], []]
+      modified:((value for key, value of page) for page in history.modified)
+      removed:((value for key, value of page) for page in history.removed)
+      created:((value for key, value of page) for page in history.created)
 
-    for boxid, value of createdBoxes
-      result.created[value.pageNum].push
-        id: boxid
-        html: value.html
-
-    # hashing the result changeset
-    shaObj = new jsSHA(JSON.stringify(result), "TEXT");
+    # hashing the history changeset
+    shaObj = new jsSHA(JSON.stringify(history), "TEXT");
     hunkId = shaObj.getHMAC("", "TEXT", "SHA-256", "HEX");
     result.etag = hunkId
 

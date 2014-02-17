@@ -7,7 +7,6 @@ class ChangeBoxOpacityCommand extends Command
     super()
 
   execute: ->
-    newArea = new EditArea row
     @changeOpacityToVal @newVal
 
   undo: ->
@@ -19,3 +18,6 @@ class ChangeBoxOpacityCommand extends Command
 
   getType: ->
     return 'Modify'
+
+  getPageNum: ->
+    return @pageNum

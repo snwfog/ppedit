@@ -1,5 +1,6 @@
 #= require Command
 #= require Box
+#= require AddOrRemoveCommand
 
 ###
 A command that populates the editor with the boxes
@@ -28,6 +29,12 @@ class LoadBoxesCommand extends Command
 
   execute: ->
     pages = @jsonBoxes
+
+    # Adding new pages if there are not enough
+    for i in [0..pages.length - @editor.areas.length]
+      addCmd = new AddOrRemoveCommand @editor, true
+      addCmd.execute()
+
     for i in [0..pages.length-1]
       for id, boxElement of pages[i]
         area = @editor.areas[i]
