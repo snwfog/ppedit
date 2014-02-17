@@ -87,6 +87,13 @@ class PPEditor extends Graphic
         pageNum = @getPageNum params.graphic.element
         @commandManager.pushCommand(@cmdFactory.createCreateChangeBoxContentCommand(params.graphic, pageNum, params.prevContent, params.newContent), false)
 
+        boxName = @panel.getBoxName params.graphic.element.attr 'id'
+        clone = params.graphic.element.clone()
+        clone.children().remove()
+        newName = clone.html()
+        if boxName.length == 0 and newName.length > 0
+          @commandManager.pushCommand @cmdFactory.createChangeBoxNameCommand(this, params.graphic.element.attr('id'), pageNum, '', newName)
+
       .on 'boxMoved', (event, box, currentPosition, originalPosition) =>
         pageNum = @getPageNum box.element
         @commandManager.pushCommand(@cmdFactory.createMoveBoxCommand(box, pageNum, currentPosition, originalPosition), false)

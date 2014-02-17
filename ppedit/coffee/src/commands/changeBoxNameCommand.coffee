@@ -1,3 +1,6 @@
+#= require Command
+#= require Constants
+
 class ChangeBoxNameCommand extends Command
 
   constructor: (@editor, boxId, @pageNum, @prevName, @newName) ->
@@ -5,10 +8,10 @@ class ChangeBoxNameCommand extends Command
     @boxIds.push boxId
 
   execute: ->
-    @editor.panel.setBoxName @boxIds[0], @newName
+    @editor.panel.setBoxName @boxIds[0], @newName.substr(0, Constants.HUNK_NAME_MAX_NUM_OF_CHAR)
 
   undo: ->
-    @editor.panel.setBoxName @boxIds[0], @prevName
+    @editor.panel.setBoxName @boxIds[0], @prevName.substr(0, Constants.HUNK_NAME_MAX_NUM_OF_CHAR)
 
   getType: ->
     return 'Modify'

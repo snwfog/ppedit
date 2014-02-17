@@ -181,12 +181,6 @@ class Panel extends Graphic
     @_getRowContainer(tabIndex).find(".ppedit-panel-row").eq(index)
 
   ###
-  Sets the name of the row.
-  ###
-  setRowName: (boxId, name) ->
-    @getRowWithBoxId(boxId).find('ppedit-rowName').val(name)
-
-  ###
   Returns a selector matching with all rows.
   ###
   getRows:(tabIndex) ->
@@ -225,6 +219,9 @@ class Panel extends Graphic
             @_displayTab index
 
     @_displayTab tabIndex
+
+  getBoxName:(boxId) ->
+    @getRowWithBoxId(boxId).find('input').val()
 
   _getRowContainer:(tabIndex) ->
     @element.find('.ppedit-row-container').eq(tabIndex)

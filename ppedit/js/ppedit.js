@@ -2005,11 +2005,11 @@
     }
 
     ChangeBoxNameCommand.prototype.execute = function() {
-      return this.editor.panel.setBoxName(this.boxIds[0], this.newName);
+      return this.editor.panel.setBoxName(this.boxIds[0], this.newName.substr(0, Constants.HUNK_NAME_MAX_NUM_OF_CHAR));
     };
 
     ChangeBoxNameCommand.prototype.undo = function() {
-      return this.editor.panel.setBoxName(this.boxIds[0], this.prevName);
+      return this.editor.panel.setBoxName(this.boxIds[0], this.prevName.substr(0, Constants.HUNK_NAME_MAX_NUM_OF_CHAR));
     };
 
     ChangeBoxNameCommand.prototype.getType = function() {
@@ -2364,15 +2364,6 @@
     };
 
     /*
-    Sets the name of the row.
-    */
-
-
-    Panel.prototype.setRowName = function(boxId, name) {
-      return this.getRowWithBoxId(boxId).find('ppedit-rowName').val(name);
-    };
-
-    /*
     Returns a selector matching with all rows.
     */
 
@@ -2408,6 +2399,10 @@
         });
       });
       return this._displayTab(tabIndex);
+    };
+
+    Panel.prototype.getBoxName = function(boxId) {
+      return this.getRowWithBoxId(boxId).find('input').val();
     };
 
     Panel.prototype._getRowContainer = function(tabIndex) {
@@ -2551,9 +2546,17 @@
           return _this.commandManager.pushCommand(_this.cmdFactory.createChangeTextColorCommand(_this, boxSelected, hex));
         }
       }).on('graphicContentChanged', function(event, params) {
-        var pageNum;
+        var boxName, clone, newName, pageNum;
         pageNum = _this.getPageNum(params.graphic.element);
-        return _this.commandManager.pushCommand(_this.cmdFactory.createCreateChangeBoxContentCommand(params.graphic, pageNum, params.prevContent, params.newContent), false);
+        _this.commandManager.pushCommand(_this.cmdFactory.createCreateChangeBoxContentCommand(params.graphic, pageNum, params.prevContent, params.newContent), false);
+        boxName = _this.panel.getBoxName(params.graphic.element.attr('id'));
+        clone = params.graphic.element.clone();
+        clone.children().remove();
+        newName = clone.html();
+        console.log(newName);
+        if (boxName.length === 0 && newName.length > 0) {
+          return _this.commandManager.pushCommand(_this.cmdFactory.createChangeBoxNameCommand(_this, params.graphic.element.attr('id'), pageNum, '', newName));
+        }
       }).on('boxMoved', function(event, box, currentPosition, originalPosition) {
         var pageNum;
         pageNum = _this.getPageNum(box.element);
