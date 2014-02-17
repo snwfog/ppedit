@@ -42,7 +42,7 @@ class LoadBoxesCommand extends Command
         panel = @editor.panel
 
         box = new Box area.boxesContainer.element
-        box.element = $(boxElement)
+        box.element = $(boxElement.html)
         area.boxesContainer.addBox box
 
         # Add row associated with box in the panel.
@@ -53,6 +53,7 @@ class LoadBoxesCommand extends Command
           # Insert new row in panel at a position
           # determined by its associated box's z-index property.
           rows.each (index, rowNode) =>
+
             otherBoxId = $(rowNode).attr('ppedit-box-id')
             otherBoxZIndex = area.boxesContainer.boxes[otherBoxId].element.css('z-index')
 
@@ -60,6 +61,9 @@ class LoadBoxesCommand extends Command
                 index == rows.length - 1)
               panel.addBoxRow i, id, index
               return false # break statement
+
+        panel.setBoxName id, boxElement.name
+
 
   undo: ->
     return # no need to implement for now.

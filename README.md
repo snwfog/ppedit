@@ -45,12 +45,24 @@ The PPEdit plugin exposes the following interface:
              hunks:
              [
                {
-                 "box-id-1":'<div class="ppedit-box">box-id-1 contents in page 1</div>',
-                 "box-id-2":'<div class="ppedit-box">box-id-2 contents in page 1</div>'
+                 "box-id-1":{
+                    html:'<div class="ppedit-box" id="box-id-1">box-id-1 contents in page 1</div>',
+                    name:'box-name-1'
+                   },
+                 "box-id-2":{
+                    html:'<div class="ppedit-box" id="box-id-2">box-id-2 contents in page 1</div>',
+                    name:'box-name-2'
+                   }
                },
                {
-                 "box-id-3":'<div class="ppedit-box">box-id-3 contents in page 2</div>',
-                 "box-id-4":'<div class="ppedit-box">box-id-4 contents in page 2</div>'
+                 "box-id-3":{
+                    html:'<div class="ppedit-box" id="box-id-3">box-id-3 contents in page 2</div>',
+                    name:'box-name-3'
+                   },
+                 "box-id-4":{
+                    html:'<div class="ppedit-box" id="box-id-4">box-id-4 contents in page 2</div>',
+                    name:'box-name-4'
+                   }
                }
              ]
          });

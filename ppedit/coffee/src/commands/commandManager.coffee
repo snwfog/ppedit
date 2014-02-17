@@ -57,14 +57,14 @@ class CommandManager
             history.created[command.getPageNum()]['' + id] =
               id:id
               html:$('#' + id).clone().wrap('<div></div>').parent().html() or ''
-              name:'dummy'
+              name:$('tr[ppedit-box-id=' + id + ']').find('input').val()
 
           when 'Modify'
             if !history.created[command.getPageNum()]['' + id]?
               history.modified[command.getPageNum()]['' + id] =
                 id:id
                 html:$('#' + id).clone().wrap('<div></div>').parent().html() or ''
-                name:'dummy'
+                name:$('tr[ppedit-box-id=' + id + ']').find('input').val()
 
           when 'Remove'
             delete history.modified[command.getPageNum()]['' + id]
@@ -75,7 +75,7 @@ class CommandManager
               history.removed[command.getPageNum()]['' + id] =
                 id:id
                 html:''
-                name:'dummy'
+                name:''
 
           when 'removePage'
             delete history.modified[command.getPageNum()]['' + id]
@@ -86,7 +86,7 @@ class CommandManager
               history.removed[command.getPageNum()]['' + id] =
                 id:id
                 html:''
-                name:'dummy'
+                name:''
 
       if command.getType() == 'removePage'
         if command.getPageNum() < history.modified.length - 2

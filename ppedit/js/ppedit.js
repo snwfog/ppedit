@@ -1375,22 +1375,24 @@
             area = this.editor.areas[i];
             panel = this.editor.panel;
             box = new Box(area.boxesContainer.element);
-            box.element = $(boxElement);
+            box.element = $(boxElement.html);
             area.boxesContainer.addBox(box);
             rows = panel.getRows(i);
             if (rows.length === 0) {
-              _results1.push(panel.addBoxRow(i, id));
+              panel.addBoxRow(i, id);
             } else {
-              _results1.push(rows.each(function(index, rowNode) {
+              rows.each(function(index, rowNode) {
                 var otherBoxId, otherBoxZIndex;
                 otherBoxId = $(rowNode).attr('ppedit-box-id');
+                console.log(otherBoxId);
                 otherBoxZIndex = area.boxesContainer.boxes[otherBoxId].element.css('z-index');
                 if (parseInt(otherBoxZIndex) < parseInt(box.element.css('z-index')) || index === rows.length - 1) {
                   panel.addBoxRow(i, id, index);
                   return false;
                 }
-              }));
+              });
             }
+            _results1.push(panel.setBoxName(id, boxElement.name));
           }
           return _results1;
         }).call(this));
@@ -1564,7 +1566,7 @@
 
     Constants.MAX_NUM_OF_PAGES = 3;
 
-    Constants.HUNK_NAME_MAX_NUM_OF_CHAR = 3;
+    Constants.HUNK_NAME_MAX_NUM_OF_CHAR = 10;
 
     return Constants;
 
@@ -1669,7 +1671,7 @@
               history.created[command.getPageNum()]['' + id] = {
                 id: id,
                 html: $('#' + id).clone().wrap('<div></div>').parent().html() || '',
-                name: 'dummy'
+                name: $('tr[ppedit-box-id=' + id + ']').find('input').val()
               };
               break;
             case 'Modify':
@@ -1677,7 +1679,7 @@
                 history.modified[command.getPageNum()]['' + id] = {
                   id: id,
                   html: $('#' + id).clone().wrap('<div></div>').parent().html() || '',
-                  name: 'dummy'
+                  name: $('tr[ppedit-box-id=' + id + ']').find('input').val()
                 };
               }
               break;
@@ -1689,7 +1691,7 @@
                 history.removed[command.getPageNum()]['' + id] = {
                   id: id,
                   html: '',
-                  name: 'dummy'
+                  name: ''
                 };
               }
               break;
@@ -1701,7 +1703,7 @@
                 history.removed[command.getPageNum()]['' + id] = {
                   id: id,
                   html: '',
-                  name: 'dummy'
+                  name: ''
                 };
               }
           }
@@ -2553,7 +2555,6 @@
         clone = params.graphic.element.clone();
         clone.children().remove();
         newName = clone.html();
-        console.log(newName);
         if (boxName.length === 0 && newName.length > 0) {
           return _this.commandManager.pushCommand(_this.cmdFactory.createChangeBoxNameCommand(_this, params.graphic.element.attr('id'), pageNum, '', newName));
         }
