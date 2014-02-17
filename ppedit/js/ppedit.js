@@ -1203,7 +1203,7 @@
 
     EditArea.prototype.showToolTip = function(box) {
       this.element.append(this.fontPanel.element);
-      if ((!this.fontPanel.leftPosition) && (!this.fontPanel.topPosition)) {
+      if ((!FontPanel.LEFT_POSITION) && (!FontPanel.TOP_POSITION)) {
         return this.setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width());
       } else {
         this.fontPanel.element.css('left', this.fontPanel.leftPosition + 'px');
@@ -2863,11 +2863,13 @@
   FontPanel = (function(_super) {
     __extends(FontPanel, _super);
 
+    FontPanel.LEFT_POSITION = void 0;
+
+    FontPanel.TOP_POSITION = void 0;
+
     function FontPanel(root) {
       this.root = root;
       FontPanel.__super__.constructor.call(this, this.root);
-      this.leftPosition = void 0;
-      this.topPosition = void 0;
     }
 
     FontPanel.prototype.buildElement = function() {
@@ -2955,8 +2957,8 @@
       this.element.mousedown(function(event) {
         return _this.selectFontPanel();
       }).mouseup(function(event) {
-        _this.leftPosition = _this.currentFontPanelPosition().left;
-        _this.topPosition = _this.currentFontPanelPosition().right;
+        FontPanel.LEFT_POSITION = _this.currentFontPanelPosition().left;
+        FontPanel.TOP_POSITION = _this.currentFontPanelPosition().right;
         return _this.stopMoveFontPanel();
       }).on('containerMouseMove', function(event, containerMouseEvent, delta) {
         if (event.target === _this.element.get(0)) {

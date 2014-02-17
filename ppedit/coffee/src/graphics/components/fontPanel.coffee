@@ -4,11 +4,14 @@
 Graphic containing the font settings to apply to boxes.
 ###
 class FontPanel extends Graphic
+  
+  @LEFT_POSITION: undefined
+  @TOP_POSITION: undefined
+
   constructor: (@root) ->
     super @root
 
-    @leftPosition = undefined
-    @topPosition = undefined
+    
 
 
   buildElement: ->
@@ -96,8 +99,8 @@ class FontPanel extends Graphic
         @selectFontPanel()
 
       .mouseup (event) =>
-        @leftPosition = @currentFontPanelPosition().left
-        @topPosition = @currentFontPanelPosition().right
+        FontPanel.LEFT_POSITION = @currentFontPanelPosition().left
+        FontPanel.TOP_POSITION = @currentFontPanelPosition().right
         @stopMoveFontPanel()
 
       .on 'containerMouseMove', (event, containerMouseEvent, delta) =>

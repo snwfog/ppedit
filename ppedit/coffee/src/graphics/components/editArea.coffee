@@ -113,12 +113,11 @@ class EditArea extends Graphic
 
   showToolTip: (box) ->
     @element.append @fontPanel.element
-    if (!@fontPanel.leftPosition)&&(!@fontPanel.topPosition)
+    if (!FontPanel.LEFT_POSITION)&&(!FontPanel.TOP_POSITION)
       @setToolTipPosition(box.currentPosition().left, box.currentPosition().top, box.element.height(), box.element.width())
     else
       @fontPanel.element.css 'left', @fontPanel.leftPosition + 'px'
       @fontPanel.element.css 'top', @fontPanel.topPosition + 'px'
-      
 
 
   removeToolTip: ->
