@@ -318,6 +318,7 @@
       this.clickCount = 0;
       this.prevMouseUpTime = 0;
       this.clickTimeoutId = 0;
+      this.preventDefaultMouseDown = true;
     }
 
     Box.prototype.buildElement = function() {
@@ -355,7 +356,9 @@
       var _this = this;
       this.element.mousedown(function(event) {
         event.stopPropagation();
-        event.preventDefault();
+        if (!_this.element.hasClass('ppedit-box-focus')) {
+          event.preventDefault();
+        }
         _this.select();
         return _this.prevMouseDownTime = event.timeStamp;
       }).mouseup(function(event) {
@@ -377,11 +380,15 @@
         return _this.stopMoving();
       }).click(function(event) {
         event.stopPropagation();
-        return event.preventDefault();
+        if (!_this.element.hasClass('ppedit-box-focus')) {
+          return event.preventDefault();
+        }
       }).dblclick(function(event) {
         var heightPos, leftPos, topPos, widthPos;
         event.stopPropagation();
-        event.preventDefault();
+        if (!_this.element.hasClass('ppedit-box-focus')) {
+          event.preventDefault();
+        }
         leftPos = $(event.target).position().left;
         topPos = $(event.target).position().top;
         heightPos = $(event.target).height();
@@ -391,8 +398,10 @@
         return _this.element.trigger('boxSelected', [_this]);
       }).on('containerMouseMove', function(event, mouseMoveEvent, delta) {
         if (event.target === _this.element.get(0)) {
-          if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
-            return _this.move(delta.x, delta.y);
+          if (!_this.element.hasClass('ppedit-box-focus')) {
+            if (_this.element.hasClass('ppedit-box-selected') && (delta != null)) {
+              return _this.move(delta.x, delta.y);
+            }
           }
         }
       }).on('containerMouseLeave', function() {
@@ -2770,6 +2779,22 @@
         return event.preventDefault();
       }).on('containerMouseMove', function(event, containerMouseEvent, delta) {
         if (event.target === _this.element.get(0)) {
+          if (_this.element.position().left <= 0) {
+            _this.stopMoveFontPanel();
+            _this.element.css('left', '1px');
+          }
+          if (_this.element.position().left >= _this.element.parent().width() - _this.element.width()) {
+            _this.stopMoveFontPanel();
+            _this.element.css('left', _this.element.parent().width() - _this.element.width() - 1 + 'px');
+          }
+          if (_this.element.position().top <= 0) {
+            _this.stopMoveFontPanel();
+            _this.element.css('top', '1px');
+          }
+          if (_this.element.position().top >= _this.element.parent().height() - _this.element.height()) {
+            _this.stopMoveFontPanel();
+            _this.element.css('top', _this.element.parent().height() - _this.element.height() - 1 + 'px');
+          }
           if (_this.element.hasClass('ppedit-panel-selected') && (delta != null)) {
             return _this.moveFontPanel(delta.x, delta.y);
           }
@@ -2951,9 +2976,11 @@
     };
 
     FontPanel.prototype.moveFontPanel = function(deltaX, deltaY) {
-      var currentPos;
+      var currentPos, leftPos, topPos;
       currentPos = this.currentFontPanelPosition();
-      return this.setFontPanelPosition(deltaX + currentPos.left, deltaY + currentPos.top);
+      leftPos = deltaX + currentPos.left;
+      topPos = deltaY + currentPos.top;
+      return this.setFontPanelPosition(leftPos, topPos);
     };
 
     FontPanel.prototype.stopMoveFontPanel = function() {

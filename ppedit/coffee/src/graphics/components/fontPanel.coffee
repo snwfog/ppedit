@@ -106,6 +106,18 @@ class FontPanel extends Graphic
 
       .on 'containerMouseMove', (event, containerMouseEvent, delta) =>
         if event.target == @element.get(0)
+          if @element.position().left <= 0
+            @stopMoveFontPanel()
+            @element.css 'left', '1px'
+          if @element.position().left >= @element.parent().width() - @element.width()
+            @stopMoveFontPanel()
+            @element.css 'left', @element.parent().width() - @element.width()-1 +'px'
+          if @element.position().top <= 0 
+            @stopMoveFontPanel()
+            @element.css 'top', '1px'
+          if @element.position().top >= @element.parent().height() - @element.height()
+            @stopMoveFontPanel()
+            @element.css 'top', @element.parent().height() - @element.height()-1 +'px'
           @moveFontPanel delta.x, delta.y if @element.hasClass('ppedit-panel-selected') && delta?
 
       .on 'containerMouseLeave', () =>
@@ -288,7 +300,9 @@ class FontPanel extends Graphic
 
   moveFontPanel: (deltaX, deltaY) ->
     currentPos = @currentFontPanelPosition()
-    @setFontPanelPosition deltaX + currentPos.left, deltaY + currentPos.top
+    leftPos = deltaX + currentPos.left
+    topPos = deltaY + currentPos.top
+    @setFontPanelPosition leftPos, topPos
 
   stopMoveFontPanel: ->
     @element.removeClass('ppedit-panel-selected')

@@ -21,6 +21,8 @@ class Box extends Graphic
 
     @clickTimeoutId = 0
 
+    @preventDefaultMouseDown = true;
+
   buildElement: ->
     highestZIndex = undefined
 
@@ -59,7 +61,7 @@ class Box extends Graphic
     @element
       .mousedown (event) =>
         event.stopPropagation()
-        event.preventDefault()
+        event.preventDefault() if !@element.hasClass 'ppedit-box-focus'
 
         @select()
         @prevMouseDownTime = event.timeStamp
@@ -89,11 +91,11 @@ class Box extends Graphic
 
       .click (event) =>
         event.stopPropagation()
-        event.preventDefault()
+        event.preventDefault() if !@element.hasClass 'ppedit-box-focus'
         
       .dblclick (event) =>
         event.stopPropagation()
-        event.preventDefault()
+        event.preventDefault() if !@element.hasClass 'ppedit-box-focus'
         leftPos = $(event.target).position().left
         topPos = $(event.target).position().top
         heightPos = $(event.target).height()
@@ -105,7 +107,8 @@ class Box extends Graphic
 
       .on 'containerMouseMove', (event, mouseMoveEvent, delta) =>
         if event.target == @element.get(0)
-          @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
+          if !@element.hasClass('ppedit-box-focus')
+            @move delta.x, delta.y if @element.hasClass('ppedit-box-selected') && delta?
 
       .on 'containerMouseLeave', () =>
         @stopMoving()
@@ -133,7 +136,7 @@ class Box extends Graphic
           @root.parent().trigger 'removeToolTip'
 
         ), Box.TOOLTIP_DISPEAR_MILLS
-
+      
     @helper.bindEvents()
       
   ###
