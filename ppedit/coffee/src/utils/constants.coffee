@@ -2,3 +2,5 @@ class Constants
 
   @INIT_NUM_OF_PAGES: 2
   @MAX_NUM_OF_PAGES: 3
+
+  @HUNK_NAME_MAX_NUM_OF_CHAR: 3

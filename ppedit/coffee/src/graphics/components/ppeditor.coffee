@@ -208,6 +208,9 @@ class PPEditor extends Graphic
         boxes = @areas[pageNum].boxesContainer.getBoxesFromSelector(boxesSelected.eq(0))
         box.addOrderedPointList() for id, box of boxes
 
+      .on 'boxNameChanged', (event, boxid, pageNum, prevVal, newVal) =>
+        @commandManager.pushCommand @cmdFactory.createChangeBoxNameCommand(this, boxid, pageNum, prevVal, newVal), false
+
 
     @panel.bindEvents()
     @controller.bindEvents()

@@ -8,6 +8,7 @@
 #= require LoadBoxesCommand
 #= require ChangeBoxOpacityCommand
 #= require AddOrRemoveCommand
+#= require ChangeBoxNameCommand
 
 ###
 This class is responsible for creating and providing commands on the fly.
@@ -85,3 +86,6 @@ class CommandFactory
 
   createRemovePageCommand: (editor, pageNum) ->
     return new AddOrRemoveCommand editor, false, pageNum
+
+  createChangeBoxNameCommand: (editor, boxId, pageNum, prevName, newName) ->
+    return new ChangeBoxNameCommand editor, boxId, pageNum, prevName, newName

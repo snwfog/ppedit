@@ -1,4 +1,5 @@
 #= require Graphic
+#= require Constants
 
 ###
 Graphic containing the settings to apply to boxes.
@@ -6,6 +7,7 @@ Graphic containing the settings to apply to boxes.
 class Panel extends Graphic
   constructor: (@root) ->
     @prevOpacityVal = undefined
+    @prevBoxNameVal = {}
     super @root
 
   buildElement: ->
@@ -152,6 +154,13 @@ class Panel extends Graphic
       index = newRow.parents('.ppedit-row-container').index()-1
       $(event.target).trigger 'onRowDeleteBtnClick', [index, boxid]
 
+    newRow.find("input").blur (event) =>
+      newVal = $(event.target).val()
+      if newVal != @prevBoxNameVal[boxid]
+        index = newRow.parents('.ppedit-row-container').index()-1
+        $(event.target).trigger 'boxNameChanged', [boxid, index, @prevBoxNameVal[boxid] or '', newVal]
+        @prevBoxNameVal[boxid] = newVal
+
   ###
   Removes the row associated with the passed box id.
   ###
@@ -182,6 +191,9 @@ class Panel extends Graphic
   ###
   getRows:(tabIndex) ->
     @_getRowContainer(tabIndex).find(".ppedit-panel-row")
+
+  setBoxName: (boxId, newBoxName) ->
+    @getRowWithBoxId(boxId).find('input').val newBoxName
 
   _displayTab:(tabIndex) ->
     @element
