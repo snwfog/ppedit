@@ -131,11 +131,13 @@
 
 
   requestDelete = function() {
-    $('.ppedit-box-container').simulate('key-combo', {
-      combo: 'ctrl+46'
-    });
-    return $('.ppedit-box-container').simulate('key-combo', {
-      combo: 'meta+8'
+    return $('.ppedit-box-container').each(function() {
+      $(this).simulate('key-combo', {
+        combo: 'ctrl+46'
+      });
+      return $(this).simulate('key-combo', {
+        combo: 'meta+8'
+      });
     });
   };
 
@@ -405,7 +407,7 @@
     return it("snap the position of box to closest sanpping point after moving the box", function() {
       var box;
       addBox(1);
-      $('.snapBtn').simulate('click');
+      $('.snapImg').simulate('click');
       box = $('.ppedit-box');
       box.simulate('mousedown', {
         clientX: box.position().left + 1,
@@ -456,26 +458,24 @@
       });
     });
     it("change to right alignment by click left alignment button on the panel", function() {
-      var box, btn,
+      var box,
         _this = this;
       addBox(1);
       box = $('.ppedit-box');
-      btn = $('.rightAlignBtn');
       return simulateBoxDblClick(box, function() {
-        btn.simulate('click');
+        $('.rightAlignBtn').simulate('click');
         return expect($(".ppedit-box")).toHaveCss({
           'text-align': "right"
         });
       });
     });
     return it("change to center alignment by click left alignment button on the panel", function() {
-      var box, btn,
+      var box,
         _this = this;
       addBox(1);
       box = $('.ppedit-box');
-      btn = $('.centerAlignBtn');
       return simulateBoxDblClick(box, function() {
-        btn.simulate('click');
+        $('.centerAlignBtn').simulate('click');
         return expect($(".ppedit-box")).toHaveCss({
           'text-align': "center"
         });
@@ -656,7 +656,7 @@
     });
   });
 
-  ppeditDescribe("A test for issue CAP-13 : As a user,   I want to change font settings of my text documents.", function() {
+  ppeditDescribe("A test for issue CAP-13 : As a user, I want to change font settings of my text documents.", function() {
     it("change font family on select font family on the panel", function() {
       var box,
         _this = this;
@@ -685,7 +685,7 @@
       addBox(1);
       box = $('.ppedit-box');
       return simulateBoxDblClick(box, function() {
-        $('.weightBtn').simulate('click');
+        $('.boldButton').simulate('click');
         return expect($(".ppedit-box").css('font-weight')).toEqual('bold');
       });
     });
@@ -695,7 +695,7 @@
       addBox(1);
       box = $('.ppedit-box');
       return simulateBoxDblClick(box, function() {
-        $('.underlineBtn').simulate('click');
+        $('.underlineButton').simulate('click');
         return expect(box.css('text-decoration')).toMatch(/underline/);
       });
     });
@@ -705,7 +705,7 @@
       addBox(1);
       box = $('.ppedit-box');
       return simulateBoxDblClick(box, function() {
-        $('.italicBtn').simulate('click');
+        $('.italicButton').simulate('click');
         return expect($(".ppedit-box").css('font-style')).toEqual('italic');
       });
     });

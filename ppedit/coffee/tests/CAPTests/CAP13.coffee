@@ -1,6 +1,6 @@
 #= require <ppeditTest.coffee>
 
-ppeditDescribe "A test for issue CAP-13 : As a user,   I want to change font settings of my text documents.", ->
+ppeditDescribe "A test for issue CAP-13 : As a user, I want to change font settings of my text documents.", ->
   
   it "change font family on select font family on the panel", ->
     
@@ -26,7 +26,7 @@ ppeditDescribe "A test for issue CAP-13 : As a user,   I want to change font set
     box = $('.ppedit-box')
 
     simulateBoxDblClick box, =>
-      $('.weightBtn').simulate 'click'
+      $('.boldButton').simulate 'click'
       expect($(".ppedit-box").css('font-weight')).toEqual('bold')
 
   it "change font underline on font underline on the panel", ->
@@ -35,7 +35,7 @@ ppeditDescribe "A test for issue CAP-13 : As a user,   I want to change font set
     box = $('.ppedit-box')
 
     simulateBoxDblClick box, =>
-      $('.underlineBtn').simulate 'click'
+      $('.underlineButton').simulate 'click'
       expect(box.css('text-decoration')).toMatch(/underline/)
 
   it "change font italic on font italic on the panel", ->
@@ -44,5 +44,5 @@ ppeditDescribe "A test for issue CAP-13 : As a user,   I want to change font set
     box = $('.ppedit-box')
 
     simulateBoxDblClick box, =>
-      $('.italicBtn').simulate 'click'
+      $('.italicButton').simulate 'click'
       expect($(".ppedit-box").css('font-style')).toEqual('italic')

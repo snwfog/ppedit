@@ -87,8 +87,9 @@ enterText = (box, text) ->
 Simulates ctrl/cmd + delete
 ###
 requestDelete = ->
-  $('.ppedit-box-container').simulate 'key-combo', {combo: 'ctrl+46'}; # If Windows
-  $('.ppedit-box-container').simulate 'key-combo', {combo: 'meta+8'}; # If Mac
+  $('.ppedit-box-container').each ->
+    $(this).simulate 'key-combo', {combo: 'ctrl+46'} # If Windows
+    $(this).simulate 'key-combo', {combo: 'meta+8'} # If Mac
 
 ###
 Simulates click on a box

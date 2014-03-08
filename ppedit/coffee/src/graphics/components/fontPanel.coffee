@@ -51,7 +51,7 @@ class FontPanel extends Graphic
                 <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>  
                
                <div>
-               <img class="icon-set letter-space-img" src="./ppedit/img/icons/text_letterspacing25.png" style="float:left;display:inline;">
+               <img class="icon-set letter-space-img" src="images/icons/text_letterspacing25.png" style="float:left;display:inline;">
                <select class="letter-space from-control edit-menu-row1-dd-fs">
                  <option value="0" selected>0</option>
                  <option value="1">1</option>
@@ -63,7 +63,7 @@ class FontPanel extends Graphic
                </div>
 
                <div>
-               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-line-spacing25.png" style="float:left;display:inline;">
+               <img class="icon-set line-height-img" src="images/icons/text-line-spacing25.png" style="float:left;display:inline;">
                <select class="line-height from-control edit-menu-row1-dd-fs">
                  <option value="117" selected>1.0</option>
                  <option value="175">1.5</option>
@@ -76,7 +76,7 @@ class FontPanel extends Graphic
                </div>
 
                <div>
-               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-padding25.png" style="float:left;display:inline;">
+               <img class="icon-set line-height-img" src="images/icons/text-padding25.png" style="float:left;display:inline;">
                <select class="padding from-control edit-menu-row1-dd-fs">
                  <option value="0" selected>0</option>
                  <option value="5">0.5</option>
