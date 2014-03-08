@@ -8,25 +8,46 @@ PPedit is a web based WYSIWYG editor written as a JQuery plugin for the PeerPen 
     <!DOCTYPE html>
     <html>
       <head>
-        <link href="ppedit/css/ppedit.css" rel="stylesheet" media="screen">    
+	    <!-- Bootsrap latest compiled and minified CSS -->
+	    <link href="libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	
+	    <!-- Optional theme -->  
+	    <link rel="stylesheet" href="libs/bootstrap/css/bootstrap-theme.min.css">
+	
+	    <!-- Bootstrap compatible widgets -->
+	    <link href="libs/bootstrap/css/slider.css" rel="stylesheet" media="screen">
+	    <link href="libs/bootstrap/css/colpick.css" rel="stylesheet" media="screen">
+	
+	    <!-- Custom Css -->
+	    <link rel="stylesheet" href="ppedit/css/style.min.css" type="text/css"> 
+	    <link href="ppedit/css/ppedit.css" rel="stylesheet" media="screen"> 
       </head>
+      
       <body>
       
         <div class="editor"></div>
       
-        <!-- PPedit REQUIRES jQuery -->
-        <script src="libs/jquery/jquery-2.0.3.min.js"></script>
-
-        <script src="libs/cssjson/cssjson.js"></script>
-
-        <script src="ppedit/js/ppedit.js"></script>
-    
-        <script>
-        $(document).ready(function()
-        {
-            $(".editor").ppedit();
-        });        
-        </script>
+	    <!-- jQuery - Non-compatible with IE8 and below -->
+	    <script src="libs/jquery/jquery-2.0.3.min.js"></script>
+	
+	    <!-- Bootstrap lib -->
+	    <script src="libs/bootstrap/js/bootstrap.min.js"></script>
+	    <script src="libs/bootstrap/js/bootstrap-slider.js"></script>
+	    <script src="libs/bootstrap/js/colpick.js"></script>
+	
+	    <!- Other 3rd party libs -->
+	    <script src="libs/jsSHA/src/sha256.js"></script>
+	    <script src="libs/cssjson/cssjson.js"></script>
+	    
+	    <!-- PPedit plugin -->
+	    <script src="ppedit/js/ppedit.js"></script>
+		    
+	    <script>
+	    $(document).ready(function()
+	    {
+	        $(".editor").ppedit();
+	    });        
+	    </script>
       </body>
     </html>
     
