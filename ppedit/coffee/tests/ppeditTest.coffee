@@ -9,6 +9,7 @@ ppeditDescribe = (suitDescription, specDefinitions) ->
       $(".editor").ppedit()
 
     afterEach ->
-      $('.editor').children().remove()
+      $('.editor').find('*').off()
+      $('.editor').html('')
 
     describe suitDescription, specDefinitions
