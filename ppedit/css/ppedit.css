@@ -71,7 +71,7 @@ body {
     
     border-style:solid;
     border-width:1px;
-    border-color:#cacaca; 
+    border-color:#cacaca;
     
     resize:both;
     overflow:auto;
@@ -148,6 +148,7 @@ body {
     padding-bottom: 15px;
     margin-bottom: 15px;
 }
+
 .snapBtn.icon-set {
     padding-top: 17px;
     padding-bottom: 17px;
@@ -157,26 +158,89 @@ body {
 }*/
 
 .undoBtn {
-    background-image:url('../img/icons/glyphicons_221_unshare.png');
+    background-image:url('../../images/icons/glyphicons_221_unshare.png');
     background-color:#888;
     border-color:#888;
 }
 
 .redoBtn {
-    background-image:url('../img/icons/glyphicons_222_share.png');
+    background-image:url('../../images/icons/glyphicons_222_share.png');
     background-color:#888;
     border-color:#888;
 }
 
 .gridElementBtn {
-    background-image:url('../img/icons/glyphicons_155_show_big_thumbnails.png');
+    background-image:url('../../images/icons/glyphicons_155_show_big_thumbnails.png');
     background-color:#888;
     border-color:#888;
 }
 .snapBtn {
-    background-image:url('../img/icons/glyphicons_023_magnet.png');
+    background-image:url('../../images/icons/glyphicons_023_magnet.png');
     background-color:#888;
     border-color:#888;
+}
+
+.main-panel-icon {
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.undoImg{
+    background-image: url('../../images/icons/OFF/glyphicons_221_unshare.png');
+}
+
+.undoImg:hover{
+    background-image: url('../../images/icons/ON/glyphicons_221_unshare.png');
+}
+
+.redoImg{
+    background-image: url('../../images/icons/OFF/glyphicons_222_share.png');
+}
+
+.redoImg:hover{
+    background-image: url('../../images/icons/ON/glyphicons_222_share.png');
+}
+
+.gridImg{
+    background-image: url('../../images/icons/OFF/glyphicons_155_show_big_thumbnails.png');
+}
+
+.gridImg:hover{
+    background-image: url('../../images/icons/ON/glyphicons_155_show_big_thumbnails.png');
+}
+
+.snapImg{
+    background-image: url('../../images/icons/OFF/glyphicons_023_magnet.png');
+}
+
+.snapImg:hover{
+    background-image: url('../../images/icons/ON/glyphicons_023_magnet.png');
+}
+
+.font-panel-icon {
+    float: left;
+    display: inline;
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+}
+
+.letter-space-img{
+    background-image: url('../../images/icons/text_letterspacing25.png');
+}
+
+.line-space-img{
+    background-image: url('../../images/icons/text-line-spacing25.png');
+}
+
+.text-padding-img{
+    background-image: url('../../images/icons/text-padding25.png');
 }
 
 /* Right side panel */
@@ -336,87 +400,87 @@ body {
 
 .boldButtonEnable
 {
-    background-image: url(../img/icons/ON/glyphicons_102_bold.png);
+    background-image: url(../../images/icons/ON/glyphicons_102_bold.png);
 }
 
 .boldButtonDisable
 {
-    background-image: url(../img/icons/OFF/glyphicons_102_bold.png);
+    background-image: url(../../images/icons/OFF/glyphicons_102_bold.png);
 }
 
 .italicButtonEnable
 {
-    background-image: url(../img/icons/ON/glyphicons_101_italic.png);
+    background-image: url(../../images/icons/ON/glyphicons_101_italic.png);
 }
 
 .italicButtonDisable
 {
-    background-image: url(../img/icons/OFF/glyphicons_101_italic.png);
+    background-image: url(../../images/icons/OFF/glyphicons_101_italic.png);
 }
 
 .underlineButtonEnable
 {
-    background-image: url(../img/icons/ON/glyphicons_103_text_underline.png);
+    background-image: url(../../images/icons/ON/glyphicons_103_text_underline.png);
 }
 
 .underlineButtonDisable
 {
-    background-image: url(../img/icons/OFF/glyphicons_103_text_underline.png);
+    background-image: url(../../images/icons/OFF/glyphicons_103_text_underline.png);
 }
 
 .leftAlignButtonEnable
 {
-    background-image: url(../img/icons/ON/glyphicons_110_align_left.png);
+    background-image: url(../../images/icons/ON/glyphicons_110_align_left.png);
 }
 
 .leftAlignButtonDisable
 {
-    background-image: url(../img/icons/OFF/glyphicons_110_align_left.png);
+    background-image: url(../../images/icons/OFF/glyphicons_110_align_left.png);
 }
 
 .centerAlignButtonEnable
 {
-    background-image: url(../img/icons/ON/glyphicons_111_align_center.png);
+    background-image: url(../../images/icons/ON/glyphicons_111_align_center.png);
 }
 
 .centerAlignButtonDisable
 {
-    background-image: url(../img/icons/OFF/glyphicons_111_align_center.png);
+    background-image: url(../../images/icons/OFF/glyphicons_111_align_center.png);
 }
 
 .rightAlignButtonEnable
 {
-    background-image: url(../img/icons/ON/glyphicons_112_align_right.png);
+    background-image: url(../../images/icons/ON/glyphicons_112_align_right.png);
 }
 
 .rightAlignButtonDisable
 {
-    background-image: url(../img/icons/OFF/glyphicons_112_align_right.png);
+    background-image: url(../../images/icons/OFF/glyphicons_112_align_right.png);
 }
 
 .colorPickerButton
 {
-    background-image: url(../img/icons/OFF/glyphicons_092_tint.png);
+    background-image: url(../../images/icons/OFF/glyphicons_092_tint.png);
 }
 
 .bulletPointButtonDisable
 {
-    background-image: url(../img/icons/OFF/glyphicons_114_list.png);
+    background-image: url(../../images/icons/OFF/glyphicons_114_list.png);
 }
 
 .orderedBulletPointButtonDisable
 {
-    background-image: url(../img/icons/OFF/glyphicons_406_sort-by-order.png);
+    background-image: url(../../images/icons/OFF/glyphicons_406_sort-by-order.png);
 }
 
 .bulletPointButtonEnable
 {
-    background-image: url(../img/icons/ON/glyphicons_114_list.png);
+    background-image: url(../../images/icons/ON/glyphicons_114_list.png);
 }
 
 .orderedBulletPointButtonEnable
 {
-    background-image: url(../img/icons/ON/glyphicons_406_sort-by-order.png);
+    background-image: url(../../images/icons/ON/glyphicons_406_sort-by-order.png);
 }
 
 .font-panel-icon-row
@@ -434,7 +498,7 @@ body {
 
 .moveElementUpBtn
 {
-    background-image: url(../img/icons/OFF/glyphicons_213_up_arrow.png);
+    background-image: url(../../images/icons/OFF/glyphicons_213_up_arrow.png);
 }
 
 .edit-menu {
@@ -451,13 +515,13 @@ body {
 
 .moveElementUpBtn:hover
 {
-    background-image: url(../img/icons/ON/glyphicons_213_up_arrow.png);
+    background-image: url(../../images/icons/ON/glyphicons_213_up_arrow.png);
 
 }
 
 .moveElementDownBtn
 {
-    background-image: url(../img/icons/OFF/glyphicons_212_down_arrow.png);
+    background-image: url(../../images/icons/OFF/glyphicons_212_down_arrow.png);
 }
 
 .ppedit-pageNumLabel
@@ -469,12 +533,12 @@ body {
 
 .ppedit-deletePage
 {
-    background-image: url(../img/icons/OFF/glyphicons_192_circle_remove.png);
+    background-image: url(../../images/icons/OFF/glyphicons_192_circle_remove.png);
 }
 
 .ppedit-deletePage:hover
 {
-    background-image: url(../img/icons/ON/glyphicons_192_circle_remove.png);
+    background-image: url(../../images/icons/ON/glyphicons_192_circle_remove.png);
 }
 
 .edit-menu-row1-dd-ff {
@@ -511,27 +575,27 @@ body {
 }
 .moveElementDownBtn:hover
 {
-    background-image: url(../img/icons/ON/glyphicons_212_down_arrow.png);
+    background-image: url(../../images/icons/ON/glyphicons_212_down_arrow.png);
 }
 
 .addElementBtn
 {
-    background-image: url(../img/icons/OFF/glyphicons_432_plus.png);
+    background-image: url(../../images/icons/OFF/glyphicons_432_plus.png);
 }
 
 .addElementBtn:hover
 {
-    background-image: url(../img/icons/ON/glyphicons_432_plus.png);
+    background-image: url(../../images/icons/ON/glyphicons_432_plus.png);
 }
 
 .deleteElementBtn
 {
     margin-left: 10px;
-    background-image: url(../img/icons/OFF/glyphicons_192_circle_remove.png);
+    background-image: url(../../images/icons/OFF/glyphicons_192_circle_remove.png);
 }
 
 .deleteElementBtn:hover
 {
-    background-image: url(../img/icons/ON/glyphicons_192_circle_remove.png);
+    background-image: url(../../images/icons/ON/glyphicons_192_circle_remove.png);
 }
 /* Right Side Panel -- END */

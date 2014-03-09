@@ -2843,7 +2843,7 @@
                 <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>  \
                \
                <div>\
-               <img class="icon-set letter-space-img" src="./ppedit/img/icons/text_letterspacing25.png" style="float:left;display:inline;">\
+               <div class="font-panel-icon letter-space-img" ></div>\
                <select class="letter-space from-control edit-menu-row1-dd-fs">\
                  <option value="0" selected>0</option>\
                  <option value="1">1</option>\
@@ -2851,11 +2851,12 @@
                  <option value="3">3</option>\
                  <option value="4">4</option>\
                  <option value="5">5</option>\
-               </select>\
+                 </select>\
                </div>\
 \
                <div>\
-               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-line-spacing25.png" style="float:left;display:inline;">\
+\
+              <div class="font-panel-icon line-space-img" ></div>\
                <select class="line-height from-control edit-menu-row1-dd-fs">\
                  <option value="117" selected>1.0</option>\
                  <option value="175">1.5</option>\
@@ -2868,7 +2869,8 @@
                </div>\
 \
                <div>\
-               <img class="icon-set line-height-img" src="./ppedit/img/icons/text-padding25.png" style="float:left;display:inline;">\
+                <div class="font-panel-icon text-padding-img" ></div>\
+                   <!-- <img class="icon-set line-height-img" src="images/icons/text-padding25.png" style="float:left;display:inline;"> -->\
                <select class="padding from-control edit-menu-row1-dd-fs">\
                  <option value="0" selected>0</option>\
                  <option value="5">0.5</option>\
@@ -3127,10 +3129,10 @@
     MainPanel.prototype.buildElement = function() {
       return this.element = $('\
             <div class="left-sidebar">\
-              <img class="icon-set undoImg" src="./ppedit/img/icons/OFF/glyphicons_221_unshare.png">\
-              <img class="icon-set redoImg" src="./ppedit/img//icons/OFF/glyphicons_222_share.png">\
-              <img class="icon-set gridImg" src="./ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png">\
-              <img class="icon-set snapImg" src="./ppedit/img/icons/OFF/glyphicons_023_magnet.png">\
+              <div class="main-panel-icon undoImg"></div>\
+              <div class="main-panel-icon redoImg"></div>\
+              <div class="main-panel-icon gridImg"></div>\
+              <div class="main-panel-icon snapImg"></div>\
           </div>');
     };
 
@@ -3143,38 +3145,14 @@
           return $(event.target).removeClass("snapBtn-selected");
         }
       });
-      this.element.find('.snapImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_023_magnet.png');
-      });
-      this.element.find('.snapImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_023_magnet.png');
-      });
       this.element.find(".gridImg").click(function() {
         return _this.root.trigger('panelClickGridBtnClick');
-      });
-      this.element.find('.gridImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_155_show_big_thumbnails.png');
-      });
-      this.element.find('.gridImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_155_show_big_thumbnails.png');
       });
       this.element.find(".undoImg").click(function() {
         return _this.root.trigger('requestUndo');
       });
-      this.element.find('.undoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_221_unshare.png');
-      });
-      this.element.find('.undoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_221_unshare.png');
-      });
-      this.element.find(".redoImg").click(function() {
+      return this.element.find(".redoImg").click(function() {
         return _this.root.trigger('requestRedo');
-      });
-      this.element.find('.redoImg').mouseover(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/ON/glyphicons_222_share.png');
-      });
-      return this.element.find('.redoImg').mouseout(function(event) {
-        return $(event.target).attr('src', './ppedit/img/icons/OFF/glyphicons_222_share.png');
       });
     };
 
