@@ -96,7 +96,7 @@ class FontPanel extends Graphic
   bindEvents: ->
     @element
       .mousedown (event) =>
-        event.stopPropagation()
+        event.stopPropagation() 
         @selectFontPanel()
 
       .mouseup (event) =>

@@ -26,7 +26,7 @@ ppeditDescribe "A test for issue CAP-14 : As a user, I want to reposition elemen
 
   it "deletes a box when clicking on ctrl+delete", ->
     addBox 1
-
     simulateBoxDblClick $('.ppedit-box'), ->
       requestDelete()
       expect($('.ppedit-box')).toHaveLength(0)
+      console.log($('.ppedit-box').length)

@@ -309,6 +309,7 @@
         dx: 200,
         dy: 0
       });
+      console.log(boxes.position());
       canvas = $('.ppedit-canvas');
       selectRectangle(canvas, {
         topLeft: {
@@ -316,8 +317,8 @@
           top: viewPortPosition(canvas).top + 49
         },
         size: {
-          width: 500,
-          height: 100
+          width: 10000,
+          height: 10000
         }
       });
       $('.ppedit-box-container').simulate("key-combo", {
@@ -332,7 +333,8 @@
       $('.ppedit-box-container').simulate("key-combo", {
         combo: "ctrl+shift+v"
       });
-      return expect($('.ppedit-box')).toHaveLength(4);
+      expect($('.ppedit-box')).toHaveLength(4);
+      return console.log($('.ppedit-box').length);
     });
     return it("does not copy and past one box if not pressing the shift button", function() {
       var box;
@@ -588,7 +590,8 @@
       addBox(1);
       return simulateBoxDblClick($('.ppedit-box'), function() {
         requestDelete();
-        return expect($('.ppedit-box')).toHaveLength(0);
+        expect($('.ppedit-box')).toHaveLength(0);
+        return console.log($('.ppedit-box').length);
       });
     });
   });
