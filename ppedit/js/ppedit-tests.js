@@ -20,7 +20,8 @@
         return $(".editor").ppedit();
       });
       afterEach(function() {
-        return $('.editor').children().remove();
+        $('.editor').find('*').off();
+        return $('.editor').html('');
       });
       return describe(suitDescription, specDefinitions);
     });
@@ -203,8 +204,11 @@
     var boxObjects;
     boxObjects = [
       {
-        1234: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1234" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"></div>'
-      }
+        '1234': {
+          'html': '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1234" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"></div>',
+          'name': 'my-box-name'
+        }
+      }, {}
     ];
     it("identifies boxes that were created then deleted during current editing as non existent", function() {
       addBox(1);
@@ -212,30 +216,28 @@
         var result;
         requestDelete();
         result = JSON.parse($('.editor').ppedit('save'));
-        expect(result.removed.length).toEqual(0);
+        expect(result.removed[0].length).toEqual(0);
         expect(result.created[0].length).toEqual(0);
         expect(result.created[1].length).toEqual(0);
-        return expect(result.modified.length).toEqual(0);
+        return expect(result.modified[1].length).toEqual(0);
       });
     });
     it("identifies two boxes newly created as saved when the saving API is called", function() {
       var result;
       addBox(2);
       result = JSON.parse($('.editor').ppedit('save'));
-      expect(result.removed.length).toEqual(0);
-      expect(result.created[0].length).toEqual(2);
-      return expect(result.modified.length).toEqual(0);
+      expect(result.removed[0].length).toEqual(0);
+      expect(result.created[1].length).toEqual(2);
+      return expect(result.modified[0].length).toEqual(0);
     });
     it("identifies a new box as created when the saving API is called", function() {
-      addBox(1);
       return simulateBoxDblClick($('.ppedit-box'), function() {
         var result;
-        requestDelete();
         addBox(1);
         result = JSON.parse($('.editor').ppedit('save'));
-        expect(result.removed.length).toEqual(0);
-        expect(result.created[0].length).toEqual(1);
-        return expect(result.modified.length).toEqual(0);
+        expect(result.removed[1].length).toEqual(0);
+        expect(result.created[1].length).toEqual(1);
+        return expect(result.modified[1].length).toEqual(0);
       });
     });
     it("generates a unique hash for each different hunk", function() {
@@ -244,39 +246,38 @@
       result = JSON.parse($('.editor').ppedit('save'));
       expect(result.etag).toBeDefined();
       expect(result.etag.length).toBeGreaterThan(5);
-      $(".addElementBtn").click();
+      $(".addElementBtn").eq(0).simulate('click');
       result2 = JSON.parse($('.editor').ppedit('save'));
-      console.log(JSON.stringify(result2, null, 4));
       return expect(result.etag).not.toEqual(result2.etag);
     });
     it("identifies a box which is first loaded and then deleted as removed", function() {
       $('.editor').ppedit('load', {
-        hunks: JSON.stringify(boxObjects)
+        hunks: boxObjects
       });
       return simulateBoxDblClick($('.ppedit-box'), function() {
         var result;
         requestDelete();
         result = JSON.parse($('.editor').ppedit('save'));
-        expect(result.removed.length).toEqual(1);
+        expect(result.removed[0].length).toEqual(1);
         expect(result.created[0].length).toEqual(0);
         expect(result.created[1].length).toEqual(0);
-        return expect(result.modified.length).toEqual(0);
+        return expect(result.modified[0].length).toEqual(0);
       });
     });
     return it("identifies a box which is first loaded and then moved as modified", function() {
       var result;
       $('.editor').ppedit('load', {
-        hunks: JSON.stringify(boxObjects)
+        hunks: boxObjects
       });
       moveBox($('.ppedit-box'), {
         dx: 100,
         dy: 50
       });
       result = JSON.parse($('.editor').ppedit('save'));
-      expect(result.removed.length).toEqual(0);
+      expect(result.removed[0].length).toEqual(0);
       expect(result.created[0].length).toEqual(0);
       expect(result.created[1].length).toEqual(0);
-      return expect(result.modified.length).toEqual(1);
+      return expect(result.modified[0].length).toEqual(1);
     });
   });
 

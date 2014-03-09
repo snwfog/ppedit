@@ -656,6 +656,10 @@
       return 'Remove';
     };
 
+    RemoveBoxesCommand.prototype.getPageNum = function() {
+      return this.pageNum;
+    };
+
     return RemoveBoxesCommand;
 
   })(Command);
