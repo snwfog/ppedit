@@ -2910,7 +2910,9 @@
                 <div class="bulletPointBtn bulletPointButtonDisable font-panel-icon-row"></div>  \
                \
                <div>\
+
                <img class="icon-set letter-space-img" src="images/icons/text_letterspacing25.png" style="float:left;display:inline;">\
+
                <select class="letter-space from-control edit-menu-row1-dd-fs">\
                  <option value="0" selected>0</option>\
                  <option value="1">1</option>\
@@ -2918,11 +2920,13 @@
                  <option value="3">3</option>\
                  <option value="4">4</option>\
                  <option value="5">5</option>\
-               </select>\
+                 </select>\
                </div>\
 \
                <div>\
+
                <img class="icon-set line-height-img" src="images/icons/text-line-spacing25.png" style="float:left;display:inline;">\
+
                <select class="line-height from-control edit-menu-row1-dd-fs">\
                  <option value="117" selected>1.0</option>\
                  <option value="175">1.5</option>\
@@ -2935,7 +2939,9 @@
                </div>\
 \
                <div>\
+
                <img class="icon-set line-height-img" src="images/icons/text-padding25.png" style="float:left;display:inline;">\
+
                <select class="padding from-control edit-menu-row1-dd-fs">\
                  <option value="0" selected>0</option>\
                  <option value="5">0.5</option>\
@@ -2956,6 +2962,7 @@
     FontPanel.prototype.bindEvents = function() {
       var _this = this;
       this.element.mousedown(function(event) {
+        event.stopPropagation();
         return _this.selectFontPanel();
       }).mouseup(function(event) {
         FontPanel.LEFT_POSITION = _this.currentFontPanelPosition().left;
@@ -3182,6 +3189,50 @@
     return FontPanel;
 
   })(Graphic);
+
+
+  MainPanel = (function(_super) {
+    __extends(MainPanel, _super);
+
+    function MainPanel(root) {
+      this.root = root;
+      MainPanel.__super__.constructor.call(this, this.root);
+    }
+
+    MainPanel.prototype.buildElement = function() {
+      return this.element = $('\
+            <div class="left-sidebar">\
+              <div class="main-panel-icon undoImg"></div>\
+              <div class="main-panel-icon redoImg"></div>\
+              <div class="main-panel-icon gridImg"></div>\
+              <div class="main-panel-icon snapImg"></div>\
+          </div>');
+    };
+
+    MainPanel.prototype.bindEvents = function() {
+      var _this = this;
+      this.element.find('.snapImg').click(function() {
+        if (!$(event.target).hasClass("snapBtn-selected")) {
+          return $(event.target).addClass("snapBtn-selected");
+        } else {
+          return $(event.target).removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find(".gridImg").click(function() {
+        return _this.root.trigger('panelClickGridBtnClick');
+      });
+      this.element.find(".undoImg").click(function() {
+        return _this.root.trigger('requestUndo');
+      });
+      return this.element.find(".redoImg").click(function() {
+        return _this.root.trigger('requestRedo');
+      });
+    };
+
+    return MainPanel;
+
+  })(Graphic);
+
 
   /*
   FooBar jQuery Plugin v1.0 - It makes Foo as easy as coding Bar (?).
