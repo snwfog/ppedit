@@ -392,7 +392,7 @@
       expect($(".ppedit-grid")).toHaveCss({
         display: "block"
       });
-      $(".gridElementBtn").click();
+      $(".gridImg").click();
       return expect($(".ppedit-grid")).toHaveCss({
         display: "none"
       });
