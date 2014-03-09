@@ -2891,6 +2891,7 @@
     FontPanel.prototype.bindEvents = function() {
       var _this = this;
       this.element.mousedown(function(event) {
+        event.stopPropagation();
         return _this.selectFontPanel();
       }).mouseup(function(event) {
         FontPanel.LEFT_POSITION = _this.currentFontPanelPosition().left;
