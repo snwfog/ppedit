@@ -2794,48 +2794,6 @@
 
   })(Graphic);
 
-  MainPanel = (function(_super) {
-    __extends(MainPanel, _super);
-
-    function MainPanel(root) {
-      this.root = root;
-      MainPanel.__super__.constructor.call(this, this.root);
-    }
-
-    MainPanel.prototype.buildElement = function() {
-      return this.element = $('\
-            <div class="left-sidebar">\
-              <div class="main-panel-icon undoImg"></div>\
-              <div class="main-panel-icon redoImg"></div>\
-              <div class="main-panel-icon gridImg"></div>\
-              <div class="main-panel-icon snapImg"></div>\
-          </div>');
-    };
-
-    MainPanel.prototype.bindEvents = function() {
-      var _this = this;
-      this.element.find('.snapImg').click(function() {
-        if (!$(event.target).hasClass("snapBtn-selected")) {
-          return $(event.target).addClass("snapBtn-selected");
-        } else {
-          return $(event.target).removeClass("snapBtn-selected");
-        }
-      });
-      this.element.find(".gridImg").click(function() {
-        return _this.root.trigger('panelClickGridBtnClick');
-      });
-      this.element.find(".undoImg").click(function() {
-        return _this.root.trigger('requestUndo');
-      });
-      return this.element.find(".redoImg").click(function() {
-        return _this.root.trigger('requestRedo');
-      });
-    };
-
-    return MainPanel;
-
-  })(Graphic);
-
   /*
   Graphic containing the font settings to apply to boxes.
   */
@@ -3163,6 +3121,48 @@
     };
 
     return FontPanel;
+
+  })(Graphic);
+
+  MainPanel = (function(_super) {
+    __extends(MainPanel, _super);
+
+    function MainPanel(root) {
+      this.root = root;
+      MainPanel.__super__.constructor.call(this, this.root);
+    }
+
+    MainPanel.prototype.buildElement = function() {
+      return this.element = $('\
+            <div class="left-sidebar">\
+              <div class="main-panel-icon undoImg"></div>\
+              <div class="main-panel-icon redoImg"></div>\
+              <div class="main-panel-icon gridImg"></div>\
+              <div class="main-panel-icon snapImg"></div>\
+          </div>');
+    };
+
+    MainPanel.prototype.bindEvents = function() {
+      var _this = this;
+      this.element.find('.snapImg').click(function() {
+        if (!$(event.target).hasClass("snapBtn-selected")) {
+          return $(event.target).addClass("snapBtn-selected");
+        } else {
+          return $(event.target).removeClass("snapBtn-selected");
+        }
+      });
+      this.element.find(".gridImg").click(function() {
+        return _this.root.trigger('panelClickGridBtnClick');
+      });
+      this.element.find(".undoImg").click(function() {
+        return _this.root.trigger('requestUndo');
+      });
+      return this.element.find(".redoImg").click(function() {
+        return _this.root.trigger('requestRedo');
+      });
+    };
+
+    return MainPanel;
 
   })(Graphic);
 
