@@ -41,6 +41,7 @@ The PPEdit plugin exposes the following interface:
    - Populates the editor with the boxes information defined in the passed options parameter.
    - Example :
 
+```
         .ppedit('load',{
              hunks:
              [
@@ -66,6 +67,8 @@ The PPEdit plugin exposes the following interface:
                }
              ]
          });
+```
+
 
 - `.ppedit('save')`
   - Returns a json string specifying the boxes that have been created, modified and/or removed since the editor has been loaded.
