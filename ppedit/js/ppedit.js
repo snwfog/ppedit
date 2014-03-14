@@ -855,7 +855,6 @@
       }
       return this.getAllBoxes().each(function(index, box) {
         if (Geometry.rectContainsRect(selectRect, _this.boxBounds($(box)))) {
-          console.log(_this.boxes[box.id].element);
           return _this.boxes[box.id].select();
         }
       });
@@ -2519,7 +2518,6 @@
         return _this.commandManager.redo();
       }).on('requestDelete', function(event) {
         var i, _i, _ref, _results;
-        console.log("deleted");
         _results = [];
         for (i = _i = 0, _ref = Constants.INIT_NUM_OF_PAGES - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
           if (_this.areas[i].boxesContainer.getSelectedBoxes().length !== 0) {
