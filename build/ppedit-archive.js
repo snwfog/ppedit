@@ -4337,6 +4337,9 @@ var CSSJSON = new function () {
         _editor.buildElement();
         $this.append(_editor.element);
         _editor.bindEvents();
+        if (options.onload != null) {
+          options.onload();
+        }
         return $this;
       },
       doSomething: function(what) {
@@ -4374,6 +4377,20 @@ var CSSJSON = new function () {
         return $.error("Method " + method + " does not exist on jquery.ppedit");
       }
     };
+    /*
+    # contentloaded.js
+    #
+    # Author: Diego Perini (diego.perini at gmail.com)
+    # Summary: cross-browser wrapper for DOMContentLoaded
+    # Updated: 20101020
+    # License: MIT
+    # Version: 1.2
+    #
+    # URL:
+    # http://javascript.nwbox.com/ContentLoaded/
+    # http://javascript.nwbox.com/ContentLoaded/MIT-LICENSE
+    */
+
   })(jQuery, window, document);
 
 }).call(this);
