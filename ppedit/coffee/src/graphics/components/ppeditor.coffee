@@ -61,7 +61,6 @@ class PPEditor extends Graphic
         @commandManager.redo()
 
       .on 'requestDelete', (event) =>
-        console.log("deleted")
         for i in [0..Constants.INIT_NUM_OF_PAGES-1]
           if @areas[i].boxesContainer.getSelectedBoxes().length != 0
             @commandManager.pushCommand @cmdFactory.createRemoveBoxesCommand(this, i, @areas[0].boxesContainer.getSelectedBoxes())

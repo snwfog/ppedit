@@ -39,7 +39,7 @@ class Canvas extends Graphic
         @clear()
 
       .on 'containerMouseUp', () =>
-        @root.trigger 'canvasRectSelect', [
+        @element.trigger 'canvasRectSelect', [
           topLeft:@downPosition
           size:@rectSize] if @downPosition? && @rectSize?
         @clear()

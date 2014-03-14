@@ -741,7 +741,7 @@
         return _this.clear();
       }).on('containerMouseUp', function() {
         if ((_this.downPosition != null) && (_this.rectSize != null)) {
-          _this.root.trigger('canvasRectSelect', [
+          _this.element.trigger('canvasRectSelect', [
             {
               topLeft: _this.downPosition,
               size: _this.rectSize
@@ -855,6 +855,7 @@
       }
       return this.getAllBoxes().each(function(index, box) {
         if (Geometry.rectContainsRect(selectRect, _this.boxBounds($(box)))) {
+          console.log(_this.boxes[box.id].element);
           return _this.boxes[box.id].select();
         }
       });
