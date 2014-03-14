@@ -38,7 +38,7 @@
     <!-- Other 3rd party libs -->
     <script src="libs/jsSHA/src/sha256.js"></script>
     <script src="libs/cssjson/cssjson.js"></script>
-    
+
     <!-- PPedit plugin -->
     <script src="ppedit/js/ppedit.js"></script>
 
@@ -48,8 +48,8 @@
         var $ppedit = $(".editor").ppedit();
         $('button#submit').click(function(event) {
             var hunks = $ppedit.ppedit('save');
-            var appId = "0e04d8638c7cd715a1b2d6000433b8fe78422708";
-            var postUrl = "http://localhost:8080/peer/2/document&appId=" + appId;
+            // var appId = "0e04d8638c7cd715a1b2d6000433b8fe78422708";
+            var postUrl = "http://localhost:8080/peer/2/document";
             $.ajax({
                 type: "post",
                 url: postUrl,

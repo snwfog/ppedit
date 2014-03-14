@@ -50,7 +50,8 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
       _editor.buildElement()
       $this.append _editor.element
       _editor.bindEvents()
-      
+
+      options.onload() if options.onload?
       return $this
 
     doSomething: (what) ->
@@ -100,4 +101,55 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
       methods.init.apply this, arguments
     else
       $.error "Method " + method + " does not exist on jquery.ppedit"
+
+  ###
+  # contentloaded.js
+  #
+  # Author: Diego Perini (diego.perini at gmail.com)
+  # Summary: cross-browser wrapper for DOMContentLoaded
+  # Updated: 20101020
+  # License: MIT
+  # Version: 1.2
+  #
+  # URL:
+  # http://javascript.nwbox.com/ContentLoaded/
+  # http://javascript.nwbox.com/ContentLoaded/MIT-LICENSE
+  ###
+
+  # @win window reference
+  # @fn function reference
+  # contentLoaded = (win, fn) ->
+  #   done = false
+  #   top = true
+  #   doc = win.document
+  #   root = doc.documentElement
+  #   add = (if doc.addEventListener then "addEventListener" else "attachEvent")
+  #   rem = (if doc.addEventListener then "removeEventListener" else "detachEvent")
+  #   pre = (if doc.addEventListener then "" else "on")
+  #   init = (e) ->
+  #     return  if e.type is "readystatechange" and doc.readyState isnt "complete"
+  #     ((if e.type is "load" then win else doc))[rem] pre + e.type, init, false
+  #     fn.call win, e.type or e  if not done and (done = true)
+
+  #   poll = ->
+  #     try
+  #       root.doScroll "left"
+  #     catch e
+  #       setTimeout poll, 50
+  #       return
+  #     init "poll"
+
+  #   unless doc.readyState is "complete"
+  #     if doc.createEventObject and root.doScroll
+  #       try
+  #         top = not win.frameElement
+  #       poll()  if top
+  #     doc[add] pre + "DOMContentLoaded", init, false
+  #     doc[add] pre + "readystatechange", init, false
+  #     win[add] pre + "load", init, false
+
+  # ppeditorLoaded = ->
+  #   $this.trigger("ppeditor.loaded")
+
+  # contentLoaded(window, ppeditorLoaded)
 ) jQuery, window, document
