@@ -22,3 +22,6 @@ class RemoveBoxesCommand extends Command
 
   getType: ->
     return 'Remove'
+
+  getPageNum: ->
+    return @pageNum

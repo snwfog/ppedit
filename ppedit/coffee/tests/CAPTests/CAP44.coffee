@@ -4,5 +4,5 @@ ppeditDescribe "A test for issue CAP-44 : As a user,  I want options to show or 
   it "adds a box on grid button click", ->
 
     expect($(".ppedit-grid")).toHaveCss({display: "block"})
-    $(".gridElementBtn").click()
+    $(".gridImg").click()
     expect($(".ppedit-grid")).toHaveCss({display: "none"})

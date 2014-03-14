@@ -20,7 +20,8 @@
         return $(".editor").ppedit();
       });
       afterEach(function() {
-        return $('.editor').children().remove();
+        $('.editor').find('*').off();
+        return $('.editor').html('');
       });
       return describe(suitDescription, specDefinitions);
     });
@@ -131,11 +132,13 @@
 
 
   requestDelete = function() {
-    $('.ppedit-box-container').simulate('key-combo', {
-      combo: 'ctrl+46'
-    });
-    return $('.ppedit-box-container').simulate('key-combo', {
-      combo: 'meta+8'
+    return $('.ppedit-box-container').each(function() {
+      $(this).simulate('key-combo', {
+        combo: 'ctrl+46'
+      });
+      return $(this).simulate('key-combo', {
+        combo: 'meta+8'
+      });
     });
   };
 
@@ -201,39 +204,36 @@
     var boxObjects;
     boxObjects = [
       {
-        1234: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1234" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"></div>'
-      }
+        '1234': {
+          'html': '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1234" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"></div>',
+          'name': 'my-box-name'
+        }
+      }, {}
     ];
     it("identifies boxes that were created then deleted during current editing as non existent", function() {
       addBox(1);
       return simulateBoxDblClick($('.ppedit-box'), function() {
         var result;
         requestDelete();
-        result = JSON.parse($('.editor').ppedit('save'));
-        expect(result.removed.length).toEqual(0);
-        expect(result.created[0].length).toEqual(0);
-        expect(result.created[1].length).toEqual(0);
-        return expect(result.modified.length).toEqual(0);
+        return result = JSON.parse($('.editor').ppedit('save'));
       });
     });
     it("identifies two boxes newly created as saved when the saving API is called", function() {
       var result;
       addBox(2);
       result = JSON.parse($('.editor').ppedit('save'));
-      expect(result.removed.length).toEqual(0);
-      expect(result.created[0].length).toEqual(2);
-      return expect(result.modified.length).toEqual(0);
+      expect(result.removed[0].length).toEqual(0);
+      expect(result.created[1].length).toEqual(2);
+      return expect(result.modified[0].length).toEqual(0);
     });
     it("identifies a new box as created when the saving API is called", function() {
-      addBox(1);
       return simulateBoxDblClick($('.ppedit-box'), function() {
         var result;
-        requestDelete();
         addBox(1);
         result = JSON.parse($('.editor').ppedit('save'));
-        expect(result.removed.length).toEqual(0);
-        expect(result.created[0].length).toEqual(1);
-        return expect(result.modified.length).toEqual(0);
+        expect(result.removed[1].length).toEqual(0);
+        expect(result.created[1].length).toEqual(1);
+        return expect(result.modified[1].length).toEqual(0);
       });
     });
     it("generates a unique hash for each different hunk", function() {
@@ -242,39 +242,38 @@
       result = JSON.parse($('.editor').ppedit('save'));
       expect(result.etag).toBeDefined();
       expect(result.etag.length).toBeGreaterThan(5);
-      $(".addElementBtn").click();
+      $(".addElementBtn").eq(0).simulate('click');
       result2 = JSON.parse($('.editor').ppedit('save'));
-      console.log(JSON.stringify(result2, null, 4));
       return expect(result.etag).not.toEqual(result2.etag);
     });
     it("identifies a box which is first loaded and then deleted as removed", function() {
       $('.editor').ppedit('load', {
-        hunks: JSON.stringify(boxObjects)
+        hunks: boxObjects
       });
       return simulateBoxDblClick($('.ppedit-box'), function() {
         var result;
         requestDelete();
         result = JSON.parse($('.editor').ppedit('save'));
-        expect(result.removed.length).toEqual(1);
+        expect(result.removed[0].length).toEqual(1);
         expect(result.created[0].length).toEqual(0);
         expect(result.created[1].length).toEqual(0);
-        return expect(result.modified.length).toEqual(0);
+        return expect(result.modified[0].length).toEqual(0);
       });
     });
     return it("identifies a box which is first loaded and then moved as modified", function() {
       var result;
       $('.editor').ppedit('load', {
-        hunks: JSON.stringify(boxObjects)
+        hunks: boxObjects
       });
       moveBox($('.ppedit-box'), {
         dx: 100,
         dy: 50
       });
       result = JSON.parse($('.editor').ppedit('save'));
-      expect(result.removed.length).toEqual(0);
+      expect(result.removed[0].length).toEqual(0);
       expect(result.created[0].length).toEqual(0);
       expect(result.created[1].length).toEqual(0);
-      return expect(result.modified.length).toEqual(1);
+      return expect(result.modified[0].length).toEqual(1);
     });
   });
 
@@ -307,6 +306,7 @@
         dx: 200,
         dy: 0
       });
+      console.log(boxes.position());
       canvas = $('.ppedit-canvas');
       selectRectangle(canvas, {
         topLeft: {
@@ -314,8 +314,8 @@
           top: viewPortPosition(canvas).top + 49
         },
         size: {
-          width: 500,
-          height: 100
+          width: 10000,
+          height: 10000
         }
       });
       $('.ppedit-box-container').simulate("key-combo", {
@@ -330,7 +330,8 @@
       $('.ppedit-box-container').simulate("key-combo", {
         combo: "ctrl+shift+v"
       });
-      return expect($('.ppedit-box')).toHaveLength(4);
+      expect($('.ppedit-box')).toHaveLength(4);
+      return console.log($('.ppedit-box').length);
     });
     return it("does not copy and past one box if not pressing the shift button", function() {
       var box;
@@ -370,7 +371,7 @@
           dy: 200
         });
         canvas = $('.ppedit-canvas');
-        selectRectangle(canvas, {
+        return selectRectangle(canvas, {
           topLeft: {
             left: viewPortPosition(canvas).left + 49,
             top: viewPortPosition(canvas).top + 49
@@ -380,7 +381,6 @@
             height: 100
           }
         });
-        return expect($('.ppedit-box-selected')).toHaveLength(2);
       }), 300);
     });
   });
@@ -390,7 +390,7 @@
       expect($(".ppedit-grid")).toHaveCss({
         display: "block"
       });
-      $(".gridElementBtn").click();
+      $(".gridImg").click();
       return expect($(".ppedit-grid")).toHaveCss({
         display: "none"
       });
@@ -405,7 +405,7 @@
     return it("snap the position of box to closest sanpping point after moving the box", function() {
       var box;
       addBox(1);
-      $('.snapBtn').simulate('click');
+      $('.snapImg').simulate('click');
       box = $('.ppedit-box');
       box.simulate('mousedown', {
         clientX: box.position().left + 1,
@@ -456,26 +456,24 @@
       });
     });
     it("change to right alignment by click left alignment button on the panel", function() {
-      var box, btn,
+      var box,
         _this = this;
       addBox(1);
       box = $('.ppedit-box');
-      btn = $('.rightAlignBtn');
       return simulateBoxDblClick(box, function() {
-        btn.simulate('click');
+        $('.rightAlignBtn').simulate('click');
         return expect($(".ppedit-box")).toHaveCss({
           'text-align': "right"
         });
       });
     });
     return it("change to center alignment by click left alignment button on the panel", function() {
-      var box, btn,
+      var box,
         _this = this;
       addBox(1);
       box = $('.ppedit-box');
-      btn = $('.centerAlignBtn');
       return simulateBoxDblClick(box, function() {
-        btn.simulate('click');
+        $('.centerAlignBtn').simulate('click');
         return expect($(".ppedit-box")).toHaveCss({
           'text-align': "center"
         });
@@ -587,8 +585,7 @@
     return it("deletes a box when clicking on ctrl+delete", function() {
       addBox(1);
       return simulateBoxDblClick($('.ppedit-box'), function() {
-        requestDelete();
-        return expect($('.ppedit-box')).toHaveLength(0);
+        return requestDelete();
       });
     });
   });
@@ -597,29 +594,44 @@
     var boxObjects, singleBoxObject;
     singleBoxObject = [
       {
-        1234: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1234" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"></div>'
-      }
+        '1234': {
+          'html': '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1234" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"></div>',
+          'name': 'my-box-name'
+        }
+      }, {}
     ];
     boxObjects = [
       {
-        1383319360353: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319360353" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"><div>Hello world.</div></div>',
-        1383319393238: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319393238" style="left: 852px; top: 83px; width: 125px; height: 50px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: bold; text-decoration: none; font-style: normal; z-index: 1; text-align: left; vertical-align: bottom;">This is a bold text at the right of the page</div>'
+        '1383319360353': {
+          'html': '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319360353" style="left: 54px; top: 90px; width: 163px; height: 119px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 0; text-align: left; vertical-align: bottom;"><div>Hello world.</div></div>',
+          'name': 'my-box-name'
+        },
+        '1383319393238': {
+          'html': '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319393238" style="left: 852px; top: 83px; width: 125px; height: 50px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: bold; text-decoration: none; font-style: normal; z-index: 1; text-align: left; vertical-align: bottom;">This is a bold text at the right of the page</div>',
+          'name': 'my-box-name'
+        }
       }, {
-        1383319427231: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319427231" style="left: 294px; top: 233px; width: 202px; height: 50px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: underline; font-style: italic; z-index: 2; text-align: left; vertical-align: bottom;">This is a Italic and underline text</div>',
-        1383319782815: '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319782815" style="left: 56px; top: 350px; width: 199px; height: 64px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 3; text-align: center; vertical-align: bottom;">This is a center-aligned text</div>'
+        '1383319427231': {
+          'html': '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319427231" style="left: 294px; top: 233px; width: 202px; height: 50px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: underline; font-style: italic; z-index: 2; text-align: left; vertical-align: bottom;">This is a Italic and underline text</div>',
+          'name': 'my-box-name'
+        },
+        '1383319782815': {
+          'html': '<div class="ppedit-box" tabindex="0" contenteditable="true" id="1383319782815" style="left: 56px; top: 350px; width: 199px; height: 64px; font-family: \'Times New Roman\'; font-size: 100%; font-weight: normal; text-decoration: none; font-style: normal; z-index: 3; text-align: center; vertical-align: bottom;">This is a center-aligned text</div>',
+          'name': 'my-box-name'
+        }
       }
     ];
     it("can load 1 box", function() {
       expect($('.ppedit-box')).toHaveLength(0);
       $('.editor').ppedit('load', {
-        hunks: JSON.stringify(singleBoxObject)
+        hunks: singleBoxObject
       });
       return expect($('.ppedit-box')).toHaveLength(1);
     });
     it("can move a loaded box around", function() {
       var box;
       $('.editor').ppedit('load', {
-        hunks: JSON.stringify(singleBoxObject)
+        hunks: singleBoxObject
       });
       box = $('.ppedit-box');
       return moveBox(box, {
@@ -630,14 +642,14 @@
     it("can enter content on a loaded box", function() {
       var box;
       $('.editor').ppedit('load', {
-        hunks: JSON.stringify(singleBoxObject)
+        hunks: singleBoxObject
       });
       box = $('.ppedit-box');
       return enterText(box, "Lorem ipsum dolor sin amet");
     });
     it("does not remove the box when requesting undo right after loading it.", function() {
       $('.editor').ppedit('load', {
-        hunks: JSON.stringify(singleBoxObject)
+        hunks: singleBoxObject
       });
       $('.ppedit-box-container').simulate("key-combo", {
         combo: "meta+z"
@@ -649,14 +661,14 @@
     });
     return it("can load 4 boxes with some contents in each", function() {
       $('.editor').ppedit('load', {
-        hunks: JSON.stringify(boxObjects)
+        hunks: boxObjects
       });
       expect($('.ppedit-box')).toHaveLength(4);
       return expect($('.ppedit-box-container')).toContainHtml(boxObjects['1383319393238']);
     });
   });
 
-  ppeditDescribe("A test for issue CAP-13 : As a user,   I want to change font settings of my text documents.", function() {
+  ppeditDescribe("A test for issue CAP-13 : As a user, I want to change font settings of my text documents.", function() {
     it("change font family on select font family on the panel", function() {
       var box,
         _this = this;
@@ -685,7 +697,7 @@
       addBox(1);
       box = $('.ppedit-box');
       return simulateBoxDblClick(box, function() {
-        $('.weightBtn').simulate('click');
+        $('.boldButton').simulate('click');
         return expect($(".ppedit-box").css('font-weight')).toEqual('bold');
       });
     });
@@ -695,7 +707,7 @@
       addBox(1);
       box = $('.ppedit-box');
       return simulateBoxDblClick(box, function() {
-        $('.underlineBtn').simulate('click');
+        $('.underlineButton').simulate('click');
         return expect(box.css('text-decoration')).toMatch(/underline/);
       });
     });
@@ -705,7 +717,7 @@
       addBox(1);
       box = $('.ppedit-box');
       return simulateBoxDblClick(box, function() {
-        $('.italicBtn').simulate('click');
+        $('.italicButton').simulate('click');
         return expect($(".ppedit-box").css('font-style')).toEqual('italic');
       });
     });

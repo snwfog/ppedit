@@ -7,7 +7,7 @@ ppeditDescribe 'A test for issue CAP-40 : "As a user, I want my elements in my w
 
     addBox 1
 
-    $('.snapBtn').simulate 'click'
+    $('.snapImg').simulate 'click'
 
     box = $('.ppedit-box')
     box
