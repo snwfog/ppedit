@@ -3193,8 +3193,8 @@
         _editor.buildElement();
         $this.append(_editor.element);
         _editor.bindEvents();
-        if (options.onload != null) {
-          options.onload();
+        if (_settings.onload != null) {
+          _settings.onload();
         }
         return $this;
       },

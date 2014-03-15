@@ -51,7 +51,7 @@ Licensed under the WTFPL license: http://www.wtfpl.net/txt/copying/
       $this.append _editor.element
       _editor.bindEvents()
 
-      options.onload() if options.onload?
+      _settings.onload() if _settings.onload?
       return $this
 
     doSomething: (what) ->
