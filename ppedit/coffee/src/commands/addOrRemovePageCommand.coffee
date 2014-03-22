@@ -2,6 +2,9 @@
 #= require Command
 #= require EditArea
 
+###
+Command Used To Add Or Remove one Page
+###
 class AddOrRemoveCommand extends Command
 
   constructor: (@editor, @addPage, @pageNum) ->

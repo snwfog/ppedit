@@ -1,6 +1,9 @@
 #= require Box
 #= require Command
 
+###
+Command used to make copies of one or more boxes
+###
 class CopyBoxesCommand extends Command
 
   constructor: (@editor, @pageNum, @boxesClones) ->

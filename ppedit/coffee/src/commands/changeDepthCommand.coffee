@@ -1,6 +1,9 @@
 #= require Box
 #= require Command
 
+###
+Command used to change the z-index of a specific box
+###
 class ChangeDepthCommand extends Command
 
   ###

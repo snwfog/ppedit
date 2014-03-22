@@ -1,6 +1,9 @@
 #= require Box
 #= require Command
 
+###
+Command used to change the contents of a specific box
+###
 class ChangeBoxContentCommand extends Command
 
   constructor: (@box, @pageNum, @prevContent, @newContent) ->

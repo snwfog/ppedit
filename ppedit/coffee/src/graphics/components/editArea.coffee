@@ -94,6 +94,9 @@ class EditArea extends Graphic
     @grid.bindEvents()
     @fontPanel.bindEvents()
 
+  ###
+  Sets the position of the Tooltip Panel
+  ###
   setToolTipPosition: (leftPos, topPos,heightPos,widthPos) ->
     toolTip = @fontPanel.element
 
@@ -111,6 +114,9 @@ class EditArea extends Graphic
         toolTip.css 'left', (leftPos+widthPos/2) + 'px'
       toolTip.css 'top', (topPos+heightPos+10) + 'px'
 
+  ###
+  Shows the Tooltip Panel
+  ###
   showToolTip: (box) ->
     @element.append @fontPanel.element
     if (!FontPanel.LEFT_POSITION)&&(!FontPanel.TOP_POSITION)
@@ -119,6 +125,8 @@ class EditArea extends Graphic
       @fontPanel.element.css 'left', @fontPanel.leftPosition + 'px'
       @fontPanel.element.css 'top', @fontPanel.topPosition + 'px'
 
-
+  ###
+  Hides the Tooltip Panel
+  ###
   removeToolTip: ->
     @fontPanel.element.detach()

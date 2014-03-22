@@ -1,6 +1,9 @@
 #= require Box
 #= require Command
 
+###
+Command used to remove one or more boxes.
+###
 class RemoveBoxesCommand extends Command
 
   constructor: (@editor, @pageNum, boxesSelector) ->

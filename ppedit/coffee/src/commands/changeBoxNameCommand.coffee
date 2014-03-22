@@ -1,6 +1,9 @@
 #= require Command
 #= require Constants
 
+###
+Command to change the name of a specific box.
+###
 class ChangeBoxNameCommand extends Command
 
   constructor: (@editor, boxId, @pageNum, @prevName, @newName) ->

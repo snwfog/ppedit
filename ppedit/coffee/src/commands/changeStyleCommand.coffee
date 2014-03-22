@@ -1,6 +1,9 @@
 #= require Box
 #= require Command
 
+###
+Command used to change the style of a specific box
+###
 class ChangeStyleCommand extends Command
 
   constructor: (@editor, @boxesSelector, @newCssOptions) ->

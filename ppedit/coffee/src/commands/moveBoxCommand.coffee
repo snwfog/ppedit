@@ -1,6 +1,9 @@
 #= require Box
 #= require Command
 
+###
+Command used to change the position of a specific box
+###
 class MoveBoxCommand extends Command
 
   constructor: (@box, @pageNum, @toPosition, @fromPosition) ->
