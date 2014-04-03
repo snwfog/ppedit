@@ -1751,6 +1751,11 @@ var CSSJSON = new function () {
 
   })(Graphic);
 
+  /*
+  Command used to remove one or more boxes.
+  */
+
+
   RemoveBoxesCommand = (function(_super) {
     __extends(RemoveBoxesCommand, _super);
 
@@ -1807,6 +1812,11 @@ var CSSJSON = new function () {
     return RemoveBoxesCommand;
 
   })(Command);
+
+  /*
+  Command used to change the position of a specific box
+  */
+
 
   MoveBoxCommand = (function(_super) {
     __extends(MoveBoxCommand, _super);
@@ -2329,6 +2339,11 @@ var CSSJSON = new function () {
       return this.fontPanel.bindEvents();
     };
 
+    /*
+    Sets the position of the Tooltip Panel
+    */
+
+
     EditArea.prototype.setToolTipPosition = function(leftPos, topPos, heightPos, widthPos) {
       var toolTip;
       toolTip = this.fontPanel.element;
@@ -2349,6 +2364,11 @@ var CSSJSON = new function () {
       }
     };
 
+    /*
+    Shows the Tooltip Panel
+    */
+
+
     EditArea.prototype.showToolTip = function(box) {
       this.element.append(this.fontPanel.element);
       if ((!FontPanel.LEFT_POSITION) && (!FontPanel.TOP_POSITION)) {
@@ -2359,6 +2379,11 @@ var CSSJSON = new function () {
       }
     };
 
+    /*
+    Hides the Tooltip Panel
+    */
+
+
     EditArea.prototype.removeToolTip = function() {
       return this.fontPanel.element.detach();
     };
@@ -2366,6 +2391,11 @@ var CSSJSON = new function () {
     return EditArea;
 
   })(Graphic);
+
+  /*
+  Command Used To Add Or Remove one Page
+  */
+
 
   AddOrRemoveCommand = (function(_super) {
     __extends(AddOrRemoveCommand, _super);
@@ -2652,6 +2682,11 @@ var CSSJSON = new function () {
     return CreateBoxesCommand;
 
   })(Command);
+
+  /*
+  Command used to make copies of one or more boxes
+  */
+
 
   CopyBoxesCommand = (function(_super) {
     __extends(CopyBoxesCommand, _super);
@@ -2949,6 +2984,11 @@ var CSSJSON = new function () {
 
   })();
 
+  /*
+  Command used to change the style of a specific box
+  */
+
+
   ChangeStyleCommand = (function(_super) {
     __extends(ChangeStyleCommand, _super);
 
@@ -2988,6 +3028,11 @@ var CSSJSON = new function () {
     return ChangeStyleCommand;
 
   })(Command);
+
+  /*
+  Command used to change the z-index of a specific box
+  */
+
 
   ChangeDepthCommand = (function(_super) {
     __extends(ChangeDepthCommand, _super);
@@ -3076,6 +3121,11 @@ var CSSJSON = new function () {
 
   })(Command);
 
+  /*
+  Command used to change the contents of a specific box
+  */
+
+
   ChangeBoxContentCommand = (function(_super) {
     __extends(ChangeBoxContentCommand, _super);
 
@@ -3107,6 +3157,11 @@ var CSSJSON = new function () {
     return ChangeBoxContentCommand;
 
   })(Command);
+
+  /*
+  Command used to change the opacity of a specific box
+  */
+
 
   ChangeBoxOpacityCommand = (function(_super) {
     __extends(ChangeBoxOpacityCommand, _super);
@@ -3144,6 +3199,11 @@ var CSSJSON = new function () {
     return ChangeBoxOpacityCommand;
 
   })(Command);
+
+  /*
+  Command to change the name of a specific box.
+  */
+
 
   ChangeBoxNameCommand = (function(_super) {
     __extends(ChangeBoxNameCommand, _super);
@@ -3450,7 +3510,7 @@ var CSSJSON = new function () {
       if ((index == null) || index === 0) {
         this._getRowContainer(tabIndex).find('.right-sidebar-menu2').prepend(newRow);
       } else {
-        newRow.insertBefore(this._getRowContainer(tabIndex).find('.ppedit-panel-row:nth-child("' + index + '")'));
+        newRow.insertBefore(this._getRowContainer(tabIndex).find('.ppedit-panel-row:nth-child(' + (index + 1) + ')'));
       }
       newRow.find(".ppedit-slider").slider({
         min: 0,

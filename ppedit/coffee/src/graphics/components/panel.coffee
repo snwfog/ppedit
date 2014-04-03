@@ -129,7 +129,7 @@ class Panel extends Graphic
     if !index? or index == 0
       @_getRowContainer(tabIndex).find('.right-sidebar-menu2').prepend newRow
     else
-      newRow.insertBefore(@_getRowContainer(tabIndex).find('.ppedit-panel-row:nth-child("' + index + '")'))
+      newRow.insertBefore(@_getRowContainer(tabIndex).find('.ppedit-panel-row:nth-child(' + (index+1) + ')'))
     newRow.find(".ppedit-slider")
       .slider(
           min: 0
