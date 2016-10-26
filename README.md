@@ -163,7 +163,7 @@ First clone this repository then follow the instructions below.
 
 ###Testing :
 
- - [Jasmine](http://pivotal.github.io/jasmine/) : Jasmine is a behavior-driven testing framework for testing JavaScript code.
+ - [Jasmine](http://jasmine.github.io/) : Jasmine is a behavior-driven testing framework for testing JavaScript code.
 
  - [Jasmine-query](https://github.com/velesin/jasmine-jquery) : jasmine-jquery provides two extensions for Jasmine.
 
